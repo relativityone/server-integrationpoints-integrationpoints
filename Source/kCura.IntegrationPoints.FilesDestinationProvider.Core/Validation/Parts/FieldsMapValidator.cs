@@ -30,15 +30,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
         {
             var result = new ValidationResult();
 
-            if (string.IsNullOrWhiteSpace(value.FieldsMap))
+            if (value.FieldsMap == null)
             {
                 result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
                 return result;
             }
 
-            var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
-
-            if (fieldMap.Count() == 0)
+            if (value.FieldsMap.Count() == 0)
             {
                 result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
             }
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
                 var exportSettings = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
 
                 var exportableFields = RetrieveExportableFields(value, exportSettings);
-                var selectedFields = fieldMap.Select(x => x.SourceField);
+                var selectedFields = value.FieldsMap.Select(x => x.SourceField);
 
                 var orphanedFields = selectedFields.Except(exportableFields, new FieldEntryEqualityComparer());
 

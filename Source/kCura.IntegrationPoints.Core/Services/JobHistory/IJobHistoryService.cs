@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Models;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
@@ -14,18 +15,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// <param name="batchInstance">The batch instance guid.</param>
         /// <param name="startTimeUtc">The job start time in UTC format.</param>
         /// <returns>The job history object of the integration point.</returns>
-        Data.JobHistory GetOrCreateScheduledRunHistoryRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc);
+        Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc);
 
         /// <summary>
         /// Creates a job history object for an integration point if the given batch instance guid does not already exist;
         /// otherwise, we retrieve the existing job history object.
         /// </summary>
-        /// <param name="integrationPoint">The integration point object.</param>
+        /// <param name="integrationPoinDtot">The integration point object.</param>
         /// <param name="batchInstance">The batch instance guid.</param>
         /// <param name="jobType">The job type.</param>
         /// <param name="startTimeUtc">The job start time in UTC zone.</param>
         /// <returns>The job history object of the integration point.</returns>
-        Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc);
+        Data.JobHistory CreateRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc);
 
         /// <summary>
         /// Retrieves a list of job history objects given the job history artifact ids.

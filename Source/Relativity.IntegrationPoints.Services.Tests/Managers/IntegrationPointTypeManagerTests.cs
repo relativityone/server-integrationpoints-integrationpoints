@@ -91,8 +91,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             MockValidPermissions();
 
-            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeRepository>();
-            _container.Resolve<IIntegrationPointTypeRepository>().Returns(integrationPointTypeRepository);
+            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeAccessor>();
+            _container.Resolve<IIntegrationPointTypeAccessor>().Returns(integrationPointTypeRepository);
 
             var expectedResult = new List<IntegrationPointTypeModel>();
 
@@ -110,9 +110,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             MockValidPermissions();
 
-            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeRepository>();
+            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeAccessor>();
             integrationPointTypeRepository.GetIntegrationPointTypes().Throws(new ArgumentException());
-            _container.Resolve<IIntegrationPointTypeRepository>().Returns(integrationPointTypeRepository);
+            _container.Resolve<IIntegrationPointTypeAccessor>().Returns(integrationPointTypeRepository);
 
             Assert.That(() => _integrationPointTypeManager.GetIntegrationPointTypes(_WORKSPACE_ID).Wait(),
                 Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
@@ -126,9 +126,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             var expectedException = new ArgumentException();
 
-            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeRepository>();
+            var integrationPointTypeRepository = Substitute.For<IIntegrationPointTypeAccessor>();
             integrationPointTypeRepository.GetIntegrationPointTypes().Throws(expectedException);
-            _container.Resolve<IIntegrationPointTypeRepository>().Returns(integrationPointTypeRepository);
+            _container.Resolve<IIntegrationPointTypeAccessor>().Returns(integrationPointTypeRepository);
 
             try
             {

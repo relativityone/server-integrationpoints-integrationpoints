@@ -19,6 +19,7 @@ namespace kCura.ScheduleQueue.Core.Services
     {
         private readonly IKubernetesMode _kubernetesMode;
         private readonly IAPILog _log;
+        private readonly ISerializer _serializer;
 
         public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
         {
@@ -26,6 +27,7 @@ namespace kCura.ScheduleQueue.Core.Services
             AgentService = agentService;
             _log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
             DataProvider = dataProvider;
+            _serializer = new IntegrationPointSerializer(_log);
         }
 
         protected IJobServiceDataProvider DataProvider { get; set; }
@@ -59,7 +61,7 @@ namespace kCura.ScheduleQueue.Core.Services
             if(job != null)
             {
                 LogJobInformation(job, agentID);
-            }    
+            }
 
             return job;
         }
@@ -109,7 +111,7 @@ namespace kCura.ScheduleQueue.Core.Services
                 {
                     BatchInstance = Guid.NewGuid()
                 };
-                string jobDetails = new JSONSerializer().Serialize(taskParameters);
+                string jobDetails = _serializer.Serialize(taskParameters);
                 CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
@@ -257,7 +259,7 @@ namespace kCura.ScheduleQueue.Core.Services
         }
 
         public void DeleteJob(long jobID)
-        {            
+        {
             DataProvider.DeleteJob(jobID);
         }
 
@@ -413,7 +415,7 @@ namespace kCura.ScheduleQueue.Core.Services
                 "An error occured during update of stop states of jobs with IDs ({jobIds}) to state {state} in {TypeName}",
                 string.Join(",", jobIds), state, nameof(JobService));
         }
-        
+
 
         private void LogCompletedUpdatedJobStopState(IList<long> jobIds, StopState state, int updatedCount)
         {
@@ -427,7 +429,7 @@ namespace kCura.ScheduleQueue.Core.Services
                 "Attempting to retrieve jobs for Integration Point with ID: {integrationPointID} in {TypeName}", integrationPointId,
                 nameof(JobService));
         }
-        
+
         private void LogOnCreatedScheduledJob(Job job)
         {
             _log.LogInformation("Scheduled Job has been created:\n {job}", job.ToString());

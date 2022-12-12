@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Relativity.IntegrationPoints.Contracts.Models;
+using kCura.Apps.Common.Utils.Serializers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     {
         protected IRelativityObjectManager ObjectManager;
 
-        protected IIntegrationPointSerializer Serializer;
+        protected ISerializer Serializer;
         protected ICaseServiceContext Context;
 
         protected IChoiceQuery ChoiceQuery;
@@ -33,14 +33,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         protected IHelper _helper;
 
         protected static readonly object Lock = new object();
-        
+
         protected abstract string UnableToSaveFormat { get; }
 
         protected IntegrationPointServiceBase(
             IHelper helper,
             ICaseServiceContext context,
             IChoiceQuery choiceQuery,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IManagerFactory managerFactory,
             IValidationExecutor validationExecutor,
             IRelativityObjectManager objectManager)
@@ -54,13 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ObjectManager = objectManager;
         }
 
-        public FieldEntry GetIdentifierFieldEntry(string fieldMap)
-        {
-            var fields = Serializer.Deserialize<List<FieldMap>>(fieldMap);
-            return fields.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
-        }
-
-        protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointModelBase model)
+        protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointDtoBase model)
         {
             const string dateFormat = "M/dd/yyyy";
             var periodicScheduleRule = new PeriodicScheduleRule();
@@ -114,9 +108,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return periodicScheduleRule;
         }
 
-        protected SourceProvider GetSourceProvider(int? sourceProviderArtifactId)
+        protected SourceProvider GetSourceProvider(int sourceProviderArtifactId)
         {
-            if (!sourceProviderArtifactId.HasValue)
+            if (sourceProviderArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
             }
@@ -124,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             SourceProvider sourceProvider = null;
             try
             {
-                sourceProvider = ObjectManager.Read<SourceProvider>(sourceProviderArtifactId.Value);
+                sourceProvider = ObjectManager.Read<SourceProvider>(sourceProviderArtifactId);
             }
             catch (Exception e)
             {
@@ -134,9 +128,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return sourceProvider;
         }
 
-        protected DestinationProvider GetDestinationProvider(int? destinationProviderArtifactId)
+        protected DestinationProvider GetDestinationProvider(int destinationProviderArtifactId)
         {
-            if (!destinationProviderArtifactId.HasValue)
+            if (destinationProviderArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_DESTINATION_PROVIDER_SPECIFIED);
             }
@@ -144,19 +138,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             DestinationProvider destinationProvider = null;
             try
             {
-                destinationProvider = ObjectManager.Read<DestinationProvider>(destinationProviderArtifactId.Value);
+                destinationProvider = ObjectManager.Read<DestinationProvider>(destinationProviderArtifactId);
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID, destinationProviderArtifactId), e);
+                throw new Exception(string.Format(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID, destinationProviderArtifactId), e);
             }
 
             return destinationProvider;
         }
 
-        protected IntegrationPointType GetIntegrationPointType(int? integrationPointTypeArtifactId)
+        protected IntegrationPointType GetIntegrationPointType(int integrationPointTypeArtifactId)
         {
-            if (!integrationPointTypeArtifactId.HasValue)
+            if (integrationPointTypeArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_INTEGRATION_POINT_TYPE_SPECIFIED);
             }
@@ -164,17 +158,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IntegrationPointType integrationPointType = null;
             try
             {
-                integrationPointType = ObjectManager.Read<Data.IntegrationPointType>(integrationPointTypeArtifactId.Value);
+                integrationPointType = ObjectManager.Read<IntegrationPointType>(integrationPointTypeArtifactId);
             }
             catch (Exception e)
             {
-                throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE, e);
+                throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE, e);
             }
 
             return integrationPointType;
         }
 
-        protected void ValidateConfigurationWhenUpdatingObject(IntegrationPointModelBase model, IntegrationPointModelBase existingModel)
+        protected void ValidateConfigurationWhenUpdatingObject(IntegrationPointDtoBase model, IntegrationPointDtoBase existingModel)
         {
             // check that only fields that are allowed to be changed are changed
             List<string> invalidProperties = new List<string>();
@@ -187,10 +181,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 invalidProperties.Add("Destination Provider");
             }
-            if (existingModel.Destination != model.Destination)
+            if (existingModel.DestinationConfiguration != model.DestinationConfiguration)
             {
-                dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
-                dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+                dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.DestinationConfiguration);
+                dynamic newDestination = JsonConvert.DeserializeObject(model.DestinationConfiguration);
 
                 if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
                 {
@@ -236,9 +230,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         }
 
         protected void RunValidation(
-            IntegrationPointModelBase model, 
-            SourceProvider sourceProvider, 
-            DestinationProvider destinationProvider, 
+            IntegrationPointDtoBase model,
+            SourceProvider sourceProvider,
+            DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
             Guid objectTypeGuid)
         {
@@ -253,6 +247,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             };
 
             _validationExecutor.ValidateOnSave(context);
+        }
+
+        protected void SanitizeFieldsMapping(List<FieldMap> fieldsMapping)
+        {
+            fieldsMapping?.ForEach(map => map.SourceField.IsIdentifier = map.FieldMapType == FieldMapTypeEnum.Identifier);
         }
     }
 }

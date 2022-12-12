@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobStatisticsService statisticsService,
             IToggleProvider toggleProvider,
             IAgentValidator agentValidator,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer,
             IDiagnosticLog diagnosticLog)
@@ -88,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 statisticsService,
                 synchronizerFactory,
                 agentValidator,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             _repositoryFactory = repositoryFactory;
@@ -138,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 HandleGenericException(ex, job);
 
                 IExtendedJob extendedJob =
-                    new ExtendedJob(job, JobHistoryService, IntegrationPointDto, Serializer, Logger);
+                    new ExtendedJob(job, JobHistoryService, IntegrationPointService, Serializer, Logger);
                 IJobHistoryRepository jobHistoryRepository =
                     _repositoryFactory.GetJobHistoryRepository(extendedJob.WorkspaceId);
                 try
@@ -183,7 +184,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             using (IExporterService exporter = _exporterFactory.BuildExporter(
                 JobStopManager,
-                MappedFields.ToArray(),
+                IntegrationPointDto.FieldMappings.ToArray(),
                 IntegrationPointDto.SourceConfiguration,
                 savedSearchID,
                 userImportApiSettings,
@@ -210,7 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 {
                     Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
 
-                    synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings, JobStopManager, DiagnosticLog);
+                    synchronizer.SyncData(dataTransferContext, IntegrationPointDto.FieldMappings, userImportApiSettings, JobStopManager, DiagnosticLog);
                 }
                 LogPushingDocumentsSuccessfulEnd(job);
             }
@@ -250,7 +251,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetImportAuditLevel(importSettings);
             SetOverwriteModeAccordingToUsersChoice(importSettings);
 
-            bool shouldUseDgPaths = ShouldUseDgPaths(importSettings, MappedFields, SourceConfiguration);
+            bool shouldUseDgPaths = ShouldUseDgPaths(IntegrationPointDto.FieldMappings, SourceConfiguration);
             Logger.LogInformation("Should use DataGrid Paths set to {shouldUseDgPath}", shouldUseDgPaths);
             importSettings.LoadImportedFullTextFromServer = shouldUseDgPaths;
         }
@@ -272,7 +273,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private bool ShouldUseDgPaths(ImportSettings settings, List<FieldMap> fieldMap, SourceConfiguration configuration)
+        private bool ShouldUseDgPaths(List<FieldMap> fieldMap, SourceConfiguration configuration)
         {
             IQueryFieldLookupRepository sourceQueryFieldLookupRepository =
                 _repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);
@@ -379,7 +380,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 JobHistoryErrorManager,
                 JobStopManager,
                 sourceWorkspaceTagsCreator,
-                MappedFields.ToArray(),
+                IntegrationPointDto.FieldMappings.ToArray(),
                 SourceConfiguration,
                 UpdateStatusType,
                 JobHistory,

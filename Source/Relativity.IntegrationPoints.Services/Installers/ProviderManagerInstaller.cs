@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
 
         protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
         {
-            container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
+            container.Register(Component.For<IProviderAccessor>().ImplementedBy<ProviderAccessor>().LifestyleTransient());
 
             container
                 .AddWorkspaceContext(workspaceID)

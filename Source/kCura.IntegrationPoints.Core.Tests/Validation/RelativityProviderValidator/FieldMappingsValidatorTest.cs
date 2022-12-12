@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private readonly string DestinationConfiguration = "{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}";
 
         private readonly int[] _fieldsArtifactId = new int[] { 1000186, 1003667, 1035368, 1038073, 1038074, 1038389, 1035395 };
+
+        private readonly JSONSerializer _serializer = new JSONSerializer();
 
         [SetUp]
         public void Setup()
@@ -273,7 +276,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             return new IntegrationPointProviderValidationModel()
             {
-                FieldsMap = fieldsMap,
+                FieldsMap = _serializer.Deserialize<List<FieldMap>>(fieldsMap),
                 SourceProviderIdentifier = IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID,
                 DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
                 SourceConfiguration = SourceConfiguration,

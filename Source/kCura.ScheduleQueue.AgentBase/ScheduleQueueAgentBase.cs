@@ -178,7 +178,7 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_taskParameterHelper == null)
             {
                 _taskParameterHelper = new TaskParameterHelper(
-                    SerializerWithLogging.Create(Logger),
+                    new IntegrationPointSerializer(Logger),
                     new DefaultGuidService());
             }
 

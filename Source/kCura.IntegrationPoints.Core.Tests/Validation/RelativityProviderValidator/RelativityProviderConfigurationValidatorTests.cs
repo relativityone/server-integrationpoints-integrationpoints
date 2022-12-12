@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
@@ -14,6 +15,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
@@ -83,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [TestCaseSource(typeof(RelativityProviderConfigurationValidatorTests), nameof(ConfigurationTestsData))]
         public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, string destinationConfiguration)
         {
-            // arrange            
+            // arrange
             _workspaceValidatorMock.Validate(Arg.Any<int>())
                 .Returns(new ValidationResult());
             _validatorsFactoryMock.CreateWorkspaceNameValidator(Arg.Any<string>(), Arg.Any<int?>(), Arg.Any<string>())
@@ -120,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
             IntegrationPointProviderValidationModel model = new IntegrationPointProviderValidationModel
             {
-                FieldsMap = string.Empty,
+                FieldsMap = new List<FieldMap>(),
                 SourceProviderIdentifier = Domain.Constants.RELATIVITY_PROVIDER_GUID,
                 DestinationProviderIdentifier = Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString(),
                 SourceConfiguration = _sourceConfiguration,

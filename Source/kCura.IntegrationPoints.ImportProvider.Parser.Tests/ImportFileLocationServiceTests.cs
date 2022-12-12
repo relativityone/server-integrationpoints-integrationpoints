@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 _fileInfoFactory);
 
             //Act
-            string generatedErrorFilePath = locationService.ErrorFilePath(_integrationPoint);
+            string generatedErrorFilePath = locationService.ErrorFilePath(_integrationPoint.ArtifactId, _integrationPoint.Name, _integrationPoint.SourceConfiguration, _integrationPoint.DestinationConfiguration);
 
             //Assert
             Assert.AreEqual(_ERROR_FILE_LOCATION, generatedErrorFilePath);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 _fileInfoFactory);
 
             //Act
-            LoadFileInfo loadFile = locationService.LoadFileInfo(_integrationPoint);
+            LoadFileInfo loadFile = locationService.LoadFileInfo(_integrationPoint.SourceConfiguration, _integrationPoint.DestinationConfiguration);
 
             //Assert
             Assert.AreEqual(_LOAD_FILE_LOCATION, loadFile.FullPath);
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
             //Assert that it throws because we should not have a rooted load file path in the settings object
             //This would be a security vulnerability
-            Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint));
+            Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint.SourceConfiguration, _integrationPoint.DestinationConfiguration));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 _fileInfoFactory);
 
             //Assert that it throws because we should not have a load file path that doesn't point to the DataTransfer\Import path
-            Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint));
+            Assert.Throws<Exception>(() => locationService.LoadFileInfo(_integrationPoint.SourceConfiguration, _integrationPoint.DestinationConfiguration));
         }
 
         [TestCase(false)]
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 _fileInfoFactory);
 
             //Act
-            locationService.ErrorFilePath(_integrationPoint);
+            locationService.ErrorFilePath(_integrationPoint.ArtifactId, _integrationPoint.Name, _integrationPoint.SourceConfiguration, _integrationPoint.DestinationConfiguration);
 
             //Assert
             _directoryHelper.Received(directoryExists ? 0 : 1).CreateDirectory(Arg.Any<string>());

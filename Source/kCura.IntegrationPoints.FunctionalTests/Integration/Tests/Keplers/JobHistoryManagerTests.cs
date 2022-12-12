@@ -147,7 +147,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             WorkspaceTest destinationWorkspace = SetupDestinationWorkspace(out string destinationName);
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
-            SetupJobHistoryTestData(integrationPoint, destinationName);          
+            SetupJobHistoryTestData(integrationPoint, destinationName);
         }
 
         private WorkspaceTest SetupDestinationWorkspace(out string destinationName)

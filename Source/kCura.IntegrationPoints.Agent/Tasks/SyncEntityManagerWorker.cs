@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IRepositoryFactory repositoryFactory,
             IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext,
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 managerFactory,
                 jobService,
                 providerTypeService,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             _queueQueryManager = queueQueryManager;
@@ -129,13 +130,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     }
 
                     IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
-                    IEnumerable<FieldMap> fieldMap = GetFieldMap(IntegrationPoint.FieldMappings);
-                    List<FieldEntry> sourceFields = GetSourceFields(fieldMap);
+                    List<FieldEntry> sourceFields = GetSourceFields(IntegrationPointDto.FieldMappings);
                     IList<string> managersLdapQueryStrings = GetManagersLdapQueryStrings();
                     IEnumerable<IDictionary<string, object>> managersData = ReadManagersData(sourceProvider, sourceFields,
                         managersLdapQueryStrings);
 
-                    string identifierFieldName = GetSourceFieldIdentifierFieldName(fieldMap);
+                    string identifierFieldName = GetSourceFieldIdentifierFieldName(IntegrationPointDto.FieldMappings);
                     string managerIdentifiedFieldName = GetDestinationFieldIdentifierName(jobParameters);
 
                     managersLookup = CreateManagersLookup(managersData, managerIdentifiedFieldName, identifierFieldName);
@@ -312,7 +312,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             List<FieldEntry> sourceFields, IList<string> managersLdapQueryStrings)
         {
             using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, managersLdapQueryStrings,
-                new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration)))
+                new DataSourceProviderConfiguration(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.SecuredConfiguration)))
             {
                 IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader).ToList();
                 return sourceData.Select(x => x.ToDictionary(y => y.Key.FieldIdentifier, y => y.Value));
@@ -439,11 +439,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private string ReconfigureImportAPISettings(int entityManagerFieldArtifactID)
         {
             LogReconfigureImportApiSettingsStart(entityManagerFieldArtifactID);
-            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPoint.DestinationConfiguration);
+            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
             importSettings.ObjectFieldIdListContainsArtifactId = new[] { entityManagerFieldArtifactID };
             importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
             importSettings.EntityManagerFieldContainsLink = false;
-            importSettings.FederatedInstanceCredentials = IntegrationPoint.SecuredConfiguration;
+            importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
 
             if (importSettings.IsFederatedInstance())
             {

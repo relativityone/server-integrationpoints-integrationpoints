@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         {
             IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
-            integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
+            integrationPointProfile.SourceConfiguration = _serializer.Serialize(new
             {
                 SourceWorkspaceArtifactId = Workspace.ArtifactId,
                 TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
@@ -124,27 +124,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointProfile;
         }
 
-        public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
+        public IntegrationPointProfileDto CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
         {
             IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-            IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
+            IntegrationPointProfileDto integrationPointProfileDto = new IntegrationPointProfileDto
             {
                 Name = integrationPointProfile.Name,
                 SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
                 SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
-                Destination = integrationPointProfile.DestinationConfiguration,
+                DestinationConfiguration = integrationPointProfile.DestinationConfiguration,
                 SourceConfiguration = integrationPointProfile.SourceConfiguration,
                 DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
                 Type = integrationPointProfile.Type,
                 Scheduler = new Scheduler(integrationPointProfile.EnableScheduler.GetValueOrDefault(false), integrationPointProfile.ScheduleRule),
-                NotificationEmails = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
+                EmailNotificationRecipients = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
                 NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
-                Map = integrationPointProfile.FieldMappings
+                FieldMappings = _serializer.Deserialize<List<FieldMap>>(integrationPointProfile.FieldMappings),
             };
 
             Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
-            return integrationPointProfileModel;
+            return integrationPointProfileDto;
         }
     }
 }

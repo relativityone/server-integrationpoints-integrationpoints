@@ -14,6 +14,7 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.Core.Tests
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private AgentJobManager _manager;
         private IEddsServiceContext _context;
         private IJobService _jobService;
-        private IIntegrationPointSerializer _serializer;
+        private ISerializer _serializer;
         private IJobTrackerQueryManager _jobTrackerQueryManager;
         private IQueueQueryManager _queueQueryManager;
         private IHelper _helper;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
             _helper = Substitute.For<IHelper>();
             _jobService = Substitute.For<IJobService>();
-            _serializer = Substitute.For<IIntegrationPointSerializer>();
+            _serializer = Substitute.For<ISerializer>();
             _jobTrackerQueryManager = Substitute.For<IJobTrackerQueryManager>();
             _queueQueryManager = Substitute.For<IQueueQueryManager>();
             _logger = Substitute.For<IAPILog>();
@@ -168,7 +169,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             Assert.IsNotNull(batchInstanceToJob);
             Assert.IsEmpty(batchInstanceToJob);
         }
-        
+
         [Test]
         public void GetJobsByBatchInstanceId_ReturnEmptyDictionary_WhenNullReturned()
         {

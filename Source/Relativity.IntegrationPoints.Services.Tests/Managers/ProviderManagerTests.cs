@@ -131,13 +131,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             var expectedException = new ArgumentException();
 
-            var providerRepository = Substitute.For<IProviderRepository>();
+            var providerRepository = Substitute.For<IProviderAccessor>();
             providerRepository.GetDesinationProviders(Arg.Any<int>()).Throws(expectedException);
             providerRepository.GetDestinationProviderArtifactId(Arg.Any<int>(), Arg.Any<string>()).Throws(expectedException);
             providerRepository.GetSourceProviders(Arg.Any<int>()).Throws(expectedException);
             providerRepository.GetSourceProviderArtifactId(Arg.Any<int>(), Arg.Any<string>()).Throws(expectedException);
 
-            _container.Resolve<IProviderRepository>().Returns(providerRepository);
+            _container.Resolve<IProviderAccessor>().Returns(providerRepository);
 
             Assert.That(() => _providerManager.GetDestinationProviderArtifactIdAsync(_WORKSPACE_ID, Guid.NewGuid().ToString()).Wait(),
                 Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
@@ -171,8 +171,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.SourceProvider), ArtifactPermission.View).Returns(true);
 
-            var providerRepository = Substitute.For<IProviderRepository>();
-            _container.Resolve<IProviderRepository>().Returns(providerRepository);
+            var providerRepository = Substitute.For<IProviderAccessor>();
+            _container.Resolve<IProviderAccessor>().Returns(providerRepository);
 
             var expectedResult = new List<ProviderModel>();
             providerRepository.GetSourceProviders(_WORKSPACE_ID).Returns(expectedResult);
@@ -190,8 +190,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.SourceProvider), ArtifactPermission.View).Returns(true);
 
-            var providerRepository = Substitute.For<IProviderRepository>();
-            _container.Resolve<IProviderRepository>().Returns(providerRepository);
+            var providerRepository = Substitute.For<IProviderAccessor>();
+            _container.Resolve<IProviderAccessor>().Returns(providerRepository);
 
             var guid = Guid.NewGuid();
 
@@ -211,8 +211,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.DestinationProvider), ArtifactPermission.View).Returns(true);
 
-            var providerRepository = Substitute.For<IProviderRepository>();
-            _container.Resolve<IProviderRepository>().Returns(providerRepository);
+            var providerRepository = Substitute.For<IProviderAccessor>();
+            _container.Resolve<IProviderAccessor>().Returns(providerRepository);
 
             var expectedResult = new List<ProviderModel>();
             providerRepository.GetDesinationProviders(_WORKSPACE_ID).Returns(expectedResult);
@@ -230,8 +230,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.DestinationProvider), ArtifactPermission.View).Returns(true);
 
-            var providerRepository = Substitute.For<IProviderRepository>();
-            _container.Resolve<IProviderRepository>().Returns(providerRepository);
+            var providerRepository = Substitute.For<IProviderAccessor>();
+            _container.Resolve<IProviderAccessor>().Returns(providerRepository);
 
             var guid = Guid.NewGuid();
 

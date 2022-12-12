@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -13,6 +12,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
@@ -32,9 +32,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IValidationExecutor _validationExecutor;
         private readonly ICryptographyHelper _cryptographyHelper;
         private readonly IAPILog _logger;
+        private readonly ICamelCaseSerializer _serializer;
 
-        public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-            IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor, ICryptographyHelper cryptographyHelper, IAPILog logger)
+        public IntegrationPointProfilesAPIController(
+            ICPHelper cpHelper,
+            IIntegrationPointProfileService profileService,
+            IIntegrationPointService integrationPointService,
+            IRelativityUrlHelper urlHelper,
+            IRelativityObjectManager objectManager,
+            IValidationExecutor validationExecutor,
+            ICryptographyHelper cryptographyHelper,
+            IAPILog logger,
+            ICamelCaseSerializer serializer)
         {
             _cpHelper = cpHelper;
             _profileService = profileService;
@@ -44,13 +53,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _validationExecutor = validationExecutor;
             _cryptographyHelper = cryptographyHelper;
             _logger = logger;
+            _serializer = serializer;
         }
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profiles.")]
         public HttpResponseMessage GetAll()
         {
-            var models = _profileService.ReadIntegrationPointProfiles();
+            var models = _profileService
+                .ReadAllSlim()
+                .Select(dto => dto.ToWebModel())
+                .ToList();
             return Request.CreateResponse(HttpStatusCode.OK, models);
         }
 
@@ -58,7 +71,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profiles.")]
         public HttpResponseMessage GetByType(int artifactId)
         {
-            var models = _profileService.ReadIntegrationPointProfilesSimpleModel();
+            var models = _profileService
+                .ReadAllSlim()
+                .Select(dto => dto.ToWebModel())
+                .ToList();
             var profileModelsByType = models.Where(_ => _.Type == artifactId);
             return Request.CreateResponse(HttpStatusCode.OK, profileModelsByType);
         }
@@ -67,17 +83,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profile.")]
         public HttpResponseMessage Get(int artifactId)
         {
-            IntegrationPointProfileModel model;
+            IntegrationPointProfileWebModel webModel;
             if (artifactId > 0)
             {
-                model = _profileService.ReadIntegrationPointProfileModel(artifactId);
+                webModel = _profileService.Read(artifactId).ToWebModel(_serializer);
             }
             else
             {
-                model = new IntegrationPointProfileModel();
+                webModel = new IntegrationPointProfileWebModel();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, model);
+            return Request.CreateResponse(HttpStatusCode.OK, webModel);
         }
 
         [LogApiExceptionFilter(Message = "Unable to validate integration point profile.")]
@@ -85,25 +101,25 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             if (artifactId > 0)
             {
-                IntegrationPointProfileModel model = _profileService.ReadIntegrationPointProfileModel(artifactId);
-                ValidationResultDTO validationResult = ValidateIntegrationPointProfile(model);
-                
-                var output = new ValidatedProfileDTO(model, validationResult);
+                IntegrationPointProfileDto dto = _profileService.Read(artifactId);
+                ValidationResultDTO validationResult = ValidateIntegrationPointProfile(dto);
+
+                var output = new ValidatedProfileDTO(dto.ToWebModel(_serializer), validationResult);
                 return Request.CreateResponse(HttpStatusCode.OK, output);
             }
 
             return Request.CreateResponse(HttpStatusCode.NotAcceptable);
         }
-        
+
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to save or update integration point profile.")]
-        public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileModel model)
+        public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileWebModel webModel)
         {
             using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
             {
                 using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
                 {
-                    string nameHash = _cryptographyHelper.CalculateHash(model.Name);
+                    string nameHash = _cryptographyHelper.CalculateHash(webModel.Name);
                     var apmMetricProperties = new APMMetric
                     {
                         Name =
@@ -116,7 +132,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                         using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
                             Guid.Empty, nameHash))
                         {
-                            return SaveIntegrationPointProfile(workspaceID, model);
+                            return SaveIntegrationPointProfile(workspaceID, webModel.ToDto(_serializer));
                         }
                     }
                 }
@@ -147,10 +163,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                             using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
                                 Guid.Empty, profileNameHash))
                             {
-                                IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(model.IntegrationPointArtifactId);
-                                IntegrationPointProfileModel profileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, model.ProfileName);
+                                IntegrationPointDto integrationPointDto = _integrationPointService.Read(model.IntegrationPointArtifactId);
+                                IntegrationPointProfileDto profileDto = integrationPointDto.ToProfileDto(model.ProfileName);
 
-                                response = SaveIntegrationPointProfile(workspaceID, profileModel);
+                                response = SaveIntegrationPointProfile(workspaceID, profileDto);
 
                                 return response;
                             }
@@ -170,12 +186,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
         }
 
-        private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileModel model)
+        private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileDto profileDto)
         {
             int createdID;
             try
             {
-                createdID = _profileService.SaveIntegration(model);
+                createdID = _profileService.SaveProfile(profileDto);
             }
             catch (IntegrationPointValidationException ex)
             {
@@ -189,17 +205,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
         }
 
-        private ValidationResultDTO ValidateIntegrationPointProfile(IntegrationPointProfileModel model)
+        private ValidationResultDTO ValidateIntegrationPointProfile(IntegrationPointProfileDto dto)
         {
-            SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(model.SourceProvider);
-            DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(model.DestinationProvider);
-            IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(model.Type);
+            SourceProvider sourceProvider = _objectManager.Read<SourceProvider>(dto.SourceProvider);
+            DestinationProvider destinationProvider = _objectManager.Read<DestinationProvider>(dto.DestinationProvider);
+            IntegrationPointType integrationPointType = _objectManager.Read<IntegrationPointType>(dto.Type);
 
             ValidationContext validationContext = new ValidationContext
             {
                 DestinationProvider = destinationProvider,
                 IntegrationPointType = integrationPointType,
-                Model = model,
+                Model = dto,
                 SourceProvider = sourceProvider,
                 ObjectTypeGuid = ObjectTypeGuids.IntegrationPointProfileGuid
             };

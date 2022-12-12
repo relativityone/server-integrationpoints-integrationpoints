@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var integrationPointTypeRepository = container.Resolve<IIntegrationPointTypeRepository>();
+                    var integrationPointTypeRepository = container.Resolve<IIntegrationPointTypeAccessor>();
                     return await Task.Run(() => integrationPointTypeRepository.GetIntegrationPointTypes()).ConfigureAwait(false);
                 }
             }

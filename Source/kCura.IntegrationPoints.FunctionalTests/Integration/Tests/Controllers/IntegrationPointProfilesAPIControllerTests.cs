@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using System;
@@ -12,12 +11,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
+using kCura.IntegrationPoints.Web.Extensions;
+using kCura.IntegrationPoints.Web.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
-    public class IntegrationPointProfilesAPIControllerTests: TestsBase
+    public class IntegrationPointProfilesAPIControllerTests : TestsBase
     {
-        private int _longTextLimit; 
+        private int _longTextLimit;
         private const string _LONG_TEXT_LIMIT_SECTION = "kCura.EDDS.Web";
         private const string _LONG_TEXT_LIMIT_NAME = "MaximumNumberOfCharactersSupportedByLongText";
 
@@ -42,8 +43,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             var objectContent = response.Content as ObjectContent;
-            var result = (List<IntegrationPointProfileModel>)objectContent?.Value;
-            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel());
+            var result = (List<IntegrationPointProfileWebModel>)objectContent?.Value;
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto().ToWebModel(CamelCaseSerializer)).ToList();
+            expected.ForEach(x =>
+            {
+                x.Map = null;
+                x.SourceConfiguration = null;
+                x.Destination = null;
+            });
 
             result.ShouldAllBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -62,8 +69,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
-            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel()).First();
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto(CamelCaseSerializer);
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto()).First();
 
             result.ShouldBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -72,7 +79,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         [IdentifiedTest("d6cfade7-ccf0-4618-9173-4a52bb351172")]
         public void GetValidatedProfileModel_ShouldReturnSuccessStatusCode()
         {
-            // Arrange 
+            // Arrange
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
             IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
@@ -82,8 +89,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
-            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel()).First();
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto(CamelCaseSerializer);
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto()).First();
 
             result.ShouldBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -92,7 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         [IdentifiedTest("d6cfade7-ccf0-4618-9173-4a52bb351172")]
         public void GetByType_ShouldReturnSuccessStatusCode()
         {
-            // Arrange 
+            // Arrange
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
             IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             int typeArtifactId = integrationPointProfile.Type;
@@ -102,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.GetByType(integrationPointProfile.Type);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileModel>>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileWebModel>>(response);
 
             AssertIntegrationPointProfilesSimpleMatches(integrationPointProfile, result.First());
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -122,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
 
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
             AssertFieldDeserializationDoesNotThrow<IDictionary<string, string>>(result.SourceConfiguration);
@@ -141,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
             AssertFieldDeserializationDoesNotThrow<IDictionary<string, string>>(result.Destination);
@@ -160,10 +167,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileModel>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response);
 
             response.IsSuccessStatusCode.Should().BeTrue();
-            AssertFieldDeserializationDoesNotThrow<FieldMap[]>(result.Map);
         }
 
         [IdentifiedTest("d6cfade7-ccf0-4618-9173-4a52bb351172")]
@@ -171,17 +177,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileModel integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(destinationWorkspace);
+            IntegrationPointProfileDto integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Post, "");
             var expectedResult = new { returnURL = "RelativityViewUrlMock" };
 
             // Act
-            var response = sut.Save(SourceWorkspace.ArtifactId, integrationPointProfile);
+            var response = sut.Save(SourceWorkspace.ArtifactId, integrationPointProfile.ToWebModel(CamelCaseSerializer));
 
             // Assert
             var objectContent = response.Content as ObjectContent;
             var result = objectContent?.Value;
-            
+
             result.ShouldBeEquivalentTo(expectedResult);
             SourceWorkspace.IntegrationPointProfiles.Count.Should().Be(1);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -192,11 +198,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointModel integrationPointModel = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPointModel(destinationWorkspace);
+            IntegrationPointDto integrationPointDto = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPointModel(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Post, "");
             IntegrationPointProfileFromIntegrationPointModel integrationPointProfileFromIntegrationPointModel = new IntegrationPointProfileFromIntegrationPointModel
             {
-                IntegrationPointArtifactId = integrationPointModel.ArtifactID,
+                IntegrationPointArtifactId = integrationPointDto.ArtifactId,
                 ProfileName = "TestIntegrationPointProfile"
             };
             var expectedResult = new { returnURL = "RelativityViewUrlMock" };
@@ -228,6 +234,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             return sut;
         }
+
         private void AssertFieldDeserializationDoesNotThrow<T>(string fieldTextValue)
         {
             Action deserializeSourceConfig = () => Serializer.Deserialize<T>(fieldTextValue);
@@ -241,7 +248,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return result;
         }
 
-        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileModel result)
+        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileWebModel result)
         {
             result.ArtifactID.Should().Be(initial.ArtifactId);
             result.Name.Should().Be(initial.Name);

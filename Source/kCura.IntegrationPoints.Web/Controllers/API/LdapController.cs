@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;

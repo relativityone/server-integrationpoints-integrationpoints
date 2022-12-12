@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         private Mock<IMemoryUsageReporter> _memoryUsageReporter;
         private Mock<IHeartbeatReporter> _heartbeatReporter;
         private Mock<IAPILog> _loggerMock;
+        private Mock<IIntegrationPointService> _integrationPointServiceMock;
 
         private IWindsorContainer _container;
         private Mock<IKubernetesMode> _kubernetesModeMock;
@@ -147,12 +149,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
             const int integrationPointId = 200;
             Mock<ITaskFactoryJobHistoryService> jobHistoryServiceMock = new Mock<ITaskFactoryJobHistoryService>();
 
-            Mock<IIntegrationPointRepository> integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
-            integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
-
             Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
-            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<Data.IntegrationPoint>())).Returns(jobHistoryServiceMock.Object);
-            RegisterMock(integrationPointRepositoryFake);
+            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<IntegrationPointDto>())).Returns(jobHistoryServiceMock.Object);
             RegisterMock(jobHistoryServiceFactoryFake);
 
             IScheduleRule scheduleRule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Now, TimeSpan.FromDays(2));
@@ -169,13 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Assert
             result.Status.Should().Be(TaskStatusEnum.Fail);
             result.Exceptions.Single().Should().BeOfType<InvalidOperationException>();
-            integrationPointRepositoryFake.Verify(
-                x =>
-                    x.Update(It.Is<Data.IntegrationPoint>(
-                        y =>
-                            y.ScheduleRule == null &&
-                            y.NextScheduledRuntimeUTC == null &&
-                            y.EnableScheduler == job.JobFailed.MaximumConsecutiveFailuresReached)));
+            _integrationPointServiceMock.Verify(x => x.DisableScheduler(It.IsAny<int>()), Times.Once);
         }
 
         [Test]
@@ -212,7 +204,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
 
             Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
-            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<Data.IntegrationPoint>())).Returns(jobHistoryServiceMock.Object);
+            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<IntegrationPointDto>())).Returns(jobHistoryServiceMock.Object);
 
             RegisterMock(integrationPointRepositoryFake);
             RegisterMock(jobHistoryServiceFactoryFake);
@@ -257,10 +249,18 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Mock<ITaskParameterHelper> taskParameterHelper = new Mock<ITaskParameterHelper>();
             taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_batchInstanceGuid);
 
-            Mock<IIntegrationPointService> integrationPointService = new Mock<IIntegrationPointService>();
-            integrationPointService.Setup(x => x.ReadIntegrationPoint(It.IsAny<int>()))
-                .Returns(new Data.IntegrationPoint
+            _integrationPointServiceMock = new Mock<IIntegrationPointService>();
+            _integrationPointServiceMock.Setup(x => x.Read(It.IsAny<int>()))
+                .Returns(new IntegrationPointDto
                 {
+                    Name = "abc",
+                    SourceProvider = It.IsAny<int>(),
+                    DestinationProvider = It.IsAny<int>()
+                });
+            _integrationPointServiceMock.Setup(x => x.ReadSlim(It.IsAny<int>()))
+                .Returns(new IntegrationPointSlimDto
+                {
+                    Name = "abc",
                     SourceProvider = It.IsAny<int>(),
                     DestinationProvider = It.IsAny<int>()
                 });
@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             RegisterMock(config);
             RegisterMock(relativitySyncConstrainsChecker);
             RegisterMock(taskParameterHelper);
-            RegisterMock(integrationPointService);
+            RegisterMock(_integrationPointServiceMock);
             RegisterMock(_jobHistoryServiceFake);
             RegisterMock(_memoryUsageReporter);
             RegisterMock(_heartbeatReporter);
