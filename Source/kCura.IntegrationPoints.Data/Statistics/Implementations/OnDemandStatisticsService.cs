@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.UtilityDTO;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
-    public class CalculationChecker : ICalculationChecker
+    public class OnDemandStatisticsService : IOnDemandStatisticsService
     {
         private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IDateTime _dateTime;
         private readonly IAPILog _logger;
 
-        public CalculationChecker(IRelativityObjectManager relativityObjectManager, IAPILog logger)
+        public OnDemandStatisticsService(IRelativityObjectManager relativityObjectManager, IDateTime dateTime, IAPILog logger)
         {
             _relativityObjectManager = relativityObjectManager;
+            _dateTime = dateTime;
             _logger = logger;
         }
 
@@ -41,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
         public async Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics)
         {
-            CalculationState calculationState = await GetCalculationStateValue(integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = GetCalculationState(integrationPointId);
 
             if (calculationState.Status == CalculationStatus.Error)
             {
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             }
 
             calculationState.Status = CalculationStatus.Completed;
-            statistics.CalculatedOn = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
+            statistics.CalculatedOn = _dateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
             calculationState.DocumentStatistics = statistics;
 
             await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
@@ -64,29 +65,18 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             return calculationState;
         }
 
-        public async Task<CalculationState> GetCalculationState(int integrationPointId)
-        {
-            return await GetCalculationStateValue(integrationPointId).ConfigureAwait(false);
-        }
-
-        private async Task<CalculationState> GetCalculationStateValue(int integrationPointId)
+        public CalculationState GetCalculationState(int integrationPointId)
         {
             CalculationState result;
             try
             {
-                QueryRequest queryRequest = new QueryRequest()
+                IEnumerable<Guid> integrationPointFields = new[]
                 {
-                    ObjectType = new ObjectTypeRef
-                    {
-                        Guid = Guid.Parse(ObjectTypeGuids.IntegrationPoint)
-                    },
-                    Fields = new FieldRef[] { new FieldRef { Guid = IntegrationPointFieldGuids.CalculationStateGuid } },
-                    Condition = $"'Artifact ID' == {integrationPointId}"
+                    IntegrationPointFieldGuids.CalculationStateGuid
                 };
 
-                ResultSet<RelativityObject> queryResult = await _relativityObjectManager.QueryAsync(queryRequest, 0, 1).ConfigureAwait(false);
-                object fieldValue = queryResult?.Items.Single().FieldValues?.Single().Value;
-                if (fieldValue == null)
+                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId, integrationPointFields);
+                if (string.IsNullOrWhiteSpace(integrationPoint.CalculationState))
                 {
                     result = new CalculationState
                     {
@@ -95,8 +85,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 }
                 else
                 {
-                    string calculationStateValue = fieldValue.ToString();
-                    result = JsonConvert.DeserializeObject<CalculationState>(calculationStateValue);
+                    result = JsonConvert.DeserializeObject<CalculationState>(integrationPoint.CalculationState);
                 }
             }
             catch (Exception ex)
@@ -127,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Could not set calculation state for Integration Point {integrationPointId}", integrationPointId);
+                _logger.LogError(ex, "Could not set calculation state for Integration Point {integrationPointId} = {@currentState}", integrationPointId, currentState);
                 return false;
             }
         }

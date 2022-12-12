@@ -44,7 +44,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             _permissionRepository = Substitute.For<IPermissionRepository>();
             _permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            _calculationChecker = Substitute.For<ICalculationChecker>();
             _serializer = new JSONSerializer();
 
             var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
@@ -55,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _instance =
                 new EventHandlers.IntegrationPoints.ConsoleEventHandler(
-                    new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _integrationPointRepository, _calculationChecker, false),
+                    new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _integrationPointRepository, false),
                     _onClickEventHelper, new ConsoleBuilder())
                 {
                     ActiveArtifact = activeArtifact,
@@ -88,7 +87,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
         private IPermissionRepository _permissionRepository;
         private IIntegrationPointPermissionValidator _permissionValidator;
         private ISerializer _serializer;
-        private ICalculationChecker _calculationChecker;
 
         private ConsoleEventHandler _instance;
 

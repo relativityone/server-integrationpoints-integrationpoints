@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
-        private readonly ICalculationChecker _calculationChecker;
+        private readonly IOnDemandStatisticsService _onDemandStatisticsService;
 
         public SummaryPageController(
             ICaseServiceContext context,
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             IDocumentAccumulatedStatistics documentAccumulatedStatistics,
             IIntegrationPointService integrationPointService,
             IIntegrationPointProfileService integrationPointProfileService,
-            ICalculationChecker calculationChecker)
+            IOnDemandStatisticsService onDemandStatisticsService)
         {
             _context = context;
             _providerTypeService = providerTypeService;
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
             _integrationPointService = integrationPointService;
             _integrationPointProfileService = integrationPointProfileService;
-            _calculationChecker = calculationChecker;
+            _onDemandStatisticsService = onDemandStatisticsService;
         }
 
         [HttpPost]
@@ -63,9 +63,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get CalculationState info from IntegrationPoint")]
-        public async Task<ActionResult> GetCalculationStateInfo(int integrationPointId)
+        public JsonResult GetCalculationStateInfo(int integrationPointId)
         {
-            CalculationState calculationState = await _calculationChecker.GetCalculationState(integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = _onDemandStatisticsService.GetCalculationState(integrationPointId);
             return Json(calculationState);
         }
 
@@ -73,11 +73,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
         public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
         {
-            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
             }
 
             return Json(calculationState);
@@ -87,12 +87,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
         public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
         {
-            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
                .ConfigureAwait(false);
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
             }
 
             return Json(calculationState);
@@ -102,12 +102,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
         public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
         {
-            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
                 .ConfigureAwait(false);
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
             }
 
             return Json(calculationState);

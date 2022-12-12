@@ -2,12 +2,12 @@
 
 namespace kCura.IntegrationPoints.Data.Statistics
 {
-    public interface ICalculationChecker
+    public interface IOnDemandStatisticsService
     {
         Task<CalculationState> MarkAsCalculating(int integrationPointId);
 
         Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics);
 
-        Task<CalculationState> GetCalculationState(int integrationPointId);
+        CalculationState GetCalculationState(int integrationPointId);
     }
 }

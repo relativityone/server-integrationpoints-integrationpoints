@@ -1,5 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider;
@@ -68,9 +69,13 @@ namespace kCura.IntegrationPoints.Web.Installers
                     .ImplementedBy<DateTimeHelper>()
                     .LifestyleTransient(),
                 Component
-                    .For<ICalculationChecker>()
-                    .ImplementedBy<CalculationChecker>()
-                    .LifestyleTransient());
+                    .For<IOnDemandStatisticsService>()
+                    .ImplementedBy<OnDemandStatisticsService>()
+                    .LifestyleTransient(),
+                Component
+                   .For<IDateTime>()
+                   .ImplementedBy<DateTimeWrapper>()
+                   .LifestyleTransient());
         }
     }
 }

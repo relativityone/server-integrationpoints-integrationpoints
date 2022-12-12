@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatistics, CalculationType } from "../helpers/fieldValuesForRelativityExport";
+import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatistics, calculationType } from "../helpers/fieldValuesForRelativityExport";
 
 export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, action = "") {
     var request = {
@@ -26,15 +26,15 @@ export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceCon
 
     if (sourceConfiguration["SourceProductionId"]) {
         getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"], integrationPointId).then(data => {
-            handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForProduction);
+            handleStatistics(convenienceApi, data, calculationType.ImagesStatsForProduction);
         })
     } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
         getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], integrationPointId).then(data => {
-            handleStatistics(convenienceApi, data, CalculationType.NativesStats);
+            handleStatistics(convenienceApi, data, calculationType.NativesStats);
         })
     } else {
         getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true'), integrationPointId).then(data => {
-            handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
+            handleStatistics(convenienceApi, data, calculationType.ImagesStatsForSavedSearch);
         })
     }
 }

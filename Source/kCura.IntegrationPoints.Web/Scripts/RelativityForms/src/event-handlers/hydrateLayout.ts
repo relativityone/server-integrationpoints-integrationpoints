@@ -1,6 +1,6 @@
 import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
-import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails, getCalculationStateInfo, CalculationType, handleStatistics } from "../helpers/fieldValuesForRelativityExport";
+import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails, getCalculationStateInfo, calculationType, handleStatistics } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object, integrationPointArtifactId) {
@@ -91,16 +91,16 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
 
-        getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {
+        getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {          
 
             if (data["Status"] == 2) {  
                 //calculation completed
                 if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
-                    handleStatistics(convenienceApi, data, CalculationType.NativesStats);
+                    handleStatistics(convenienceApi, data, calculationType.NativesStats);
                 }
                 else {
                     // TODO: for now there is no difference in label naming, but we need to add separate condition for ImagesStatsForProduction enum in REL-786615
-                    handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
+                    handleStatistics(convenienceApi, data, calculationType.ImagesStatsForSavedSearch);
                 }
             } else {
                 var info = "";

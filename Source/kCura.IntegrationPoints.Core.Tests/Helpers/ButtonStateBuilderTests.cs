@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private ICPHelper _helper;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
-        private ICalculationChecker _calculationChecker;
 
         [SetUp]
         public override void SetUp()
@@ -58,7 +57,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _helper = Substitute.For<ICPHelper>();
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
             _managerFactory = Substitute.For<IManagerFactory>();
-            _calculationChecker = Substitute.For<ICalculationChecker>();
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true, false)]
@@ -176,7 +174,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     _integrationPointRepository,
                     _providerTypeService,
                     _syncConstrainsChecker,
-                    _calculationChecker,
                     _WORKSPACE_ID,
                     _INTEGRATION_POINT_ID);
 
@@ -235,7 +232,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             bool expectedInProgressFlagValue)
         {
             // Arrange
-            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, status);
+            string calculationState = JsonConvert.SerializeObject(new CalculationState { Status = status });
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, calculationState);
 
             _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
                 .Returns(new ValidationResult());
@@ -263,13 +261,47 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(expectedInProgressFlagValue));
         }
 
-        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0, CalculationStatus status = CalculationStatus.New)
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task CreateButtonStateAsync_ShouldSetInProgressFlagToFalse_WhenCalculationStateIsNullOrEmpty(
+            string serializedCalculationState)
+        {
+            // Arrange
+            bool expectedInProgressFlagValue = false;
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, serializedCalculationState);
+
+            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+                .Returns(new ValidationResult());
+
+            _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
+                .Returns(GetJobHistoryCollection(false, false));
+
+            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
+
+            ButtonStateBuilder sut = GetSut(true);
+
+            // Act
+            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+
+            // Assert
+            _stateManager.Received()
+                .GetButtonState(
+                    Arg.Any<ExportType>(),
+                    Arg.Any<ProviderType>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Is(expectedInProgressFlagValue));
+        }
+
+        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0, string calculationState = null)
         {
             const int sourceProviderArtifactId = 210;
             const int destinationProviderArtifactId = 220;
 
             ImportSettings settings = new ImportSettings { ImageImport = isImageImport };
-            CalculationState calculationState = new CalculationState { Status = status };
 
             Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
             {
@@ -278,7 +310,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 DestinationProvider = destinationProviderArtifactId,
                 DestinationConfiguration = JsonConvert.SerializeObject(settings),
                 SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType }),
-                CalculationState = JsonConvert.SerializeObject(calculationState)
+                CalculationState = calculationState
             };
 
             _integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID)
@@ -306,7 +338,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 _permissionRepository,
                 _permissionValidator,
                 _integrationPointRepository,
-                _calculationChecker,
                 isSyncAppInUse);
         }
     }

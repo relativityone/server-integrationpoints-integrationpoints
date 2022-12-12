@@ -1,13 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Http;
+﻿using System.Web.Http;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity.API;
@@ -22,7 +19,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IProviderTypeService _providerTypeService;
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
-        private readonly ICalculationChecker _calculationChecker;
 
         public ConsoleStateController(
             ICPHelper helper,
@@ -30,8 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             IManagerFactory managerFactory,
             IIntegrationPointRepository integrationPointRepository,
             IProviderTypeService providerTypeService,
-            IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            ICalculationChecker calculationChecker)
+            IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker)
         {
             _helper = helper;
             _respositoryFactory = respositoryFactory;
@@ -39,7 +34,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _integrationPointRepository = integrationPointRepository;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _providerTypeService = providerTypeService;
-            _calculationChecker= calculationChecker;
         }
 
         [HttpGet]
@@ -53,7 +47,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
           _integrationPointRepository,
           _providerTypeService,
           _relativitySyncConstrainsChecker,
-          _calculationChecker,
           workspaceId,
           integrationPointArtifactId);
 

@@ -1,6 +1,6 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
-export const enum CalculationType {
+export const enum calculationType {
     ImagesStatsForProduction = 1,
     NativesStats = 2,
     ImagesStatsForSavedSearch = 3
@@ -36,7 +36,7 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
     }
 }
 
-export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, integrationPointId: number) {
+export function getCalculationStateInfo(convenienceApi: IConvenienceApi, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -144,13 +144,13 @@ function prepareStatsInfo(total, size) {
     return result;
 }
 
-export function handleStatistics(convenienceApi, data, calculationType) {
+export function handleStatistics(convenienceApi, data, type) {
     var documentsLabelName = "";
     var nativesOrImagesLabelName = "";
     var totalCountFieldName = "";
     var totalSizeFieldName = "";
 
-    if (calculationType == CalculationType.NativesStats) {
+    if (type == calculationType.NativesStats) {
         documentsLabelName = "Total of Documents";
         nativesOrImagesLabelName = "Total of Natives";
         totalCountFieldName = "TotalNativesCount";
@@ -158,7 +158,7 @@ export function handleStatistics(convenienceApi, data, calculationType) {
     }
 
     // TODO: for now there is no difference in label naming, but we need to split conditions for ImagesStatsForProduction and ImagesStatsForSavedSearch enum in REL-786615
-    if (calculationType == CalculationType.ImagesStatsForProduction || calculationType == CalculationType.ImagesStatsForSavedSearch) {
+    if (type == calculationType.ImagesStatsForProduction || type == calculationType.ImagesStatsForSavedSearch) {
         documentsLabelName = "Total of Documents";
         nativesOrImagesLabelName = "Total of Images";
         totalCountFieldName = "TotalImagesCount";

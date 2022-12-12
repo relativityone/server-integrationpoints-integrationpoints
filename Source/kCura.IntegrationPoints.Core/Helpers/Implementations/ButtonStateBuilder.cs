@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IQueueManager _queueManager;
         private readonly IStateManager _stateManager;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
-        private readonly ICalculationChecker _calculationChecker;
 
         public bool IsSyncAppInUse { get; }
 
@@ -41,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IPermissionRepository permissionRepository,
             IIntegrationPointPermissionValidator permissionValidator,
             IIntegrationPointRepository integrationPointRepository,
-            ICalculationChecker calculationChecker,
             bool isSyncAppInUse)
         {
             _providerTypeService = providerTypeService;
@@ -51,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _permissionRepository = permissionRepository;
             _permissionValidator = permissionValidator;
             _integrationPointRepository = integrationPointRepository;
-            _calculationChecker = calculationChecker;
 
             IsSyncAppInUse = isSyncAppInUse;
         }
@@ -63,7 +60,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IIntegrationPointRepository integrationPointRepository,
             IProviderTypeService providerTypeService,
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            ICalculationChecker calculationChecker,
             int workspaceId,
             int integrationPointId)
         {
@@ -92,7 +88,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 permissionRepository,
                 permissionValidator,
                 integrationPointRepository,
-                calculationChecker,
                 isSyncAppInUse);
 
             return buttonStateBuilder;
@@ -137,11 +132,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 
-            CalculationState calculationState = string.IsNullOrWhiteSpace(integrationPoint.CalculationState) ?
-                new CalculationState { Status = CalculationStatus.New }
-                : JsonConvert.DeserializeObject<CalculationState>(integrationPoint.CalculationState);
-
-            bool calculationInProgress = calculationState.Status == CalculationStatus.InProgress;
+            CalculationState calculationState = JsonConvert.DeserializeObject<CalculationState>(integrationPoint.CalculationState ?? string.Empty);
+            bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,
