@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             cmd.Execute();
 
-            _integrationPointRepository.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
+            _integrationPointRepository.DidNotReceive().UpdateSourceConfiguration(Arg.Any<int>(), Arg.Any<string>());
             _objectManager.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
         }
 
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             cmd.Execute();
 
-            _integrationPointRepository.DidNotReceive().Update(Arg.Any<Data.IntegrationPoint>());
+            _integrationPointRepository.DidNotReceive().UpdateSourceConfiguration(Arg.Any<int>(), Arg.Any<string>());
             _objectManager.DidNotReceive().Update(Arg.Any<IntegrationPointProfile>());
         }
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             cmd.Execute();
 
-            _integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
+            _integrationPointRepository.Received().UpdateSourceConfiguration(Arg.Any<int>(), Arg.Any<string>());
             _integrationPointProfileService.Received().UpdateConfiguration(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>());
         }
 

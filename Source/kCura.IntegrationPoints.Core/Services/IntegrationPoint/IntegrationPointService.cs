@@ -261,9 +261,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _integrationPointRepository.UpdateJobHistory(artifactId, jobHistory);
         }
 
-        public void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration)
+        public void UpdateSourceConfiguration(int artifactId, string sourceConfiguration)
         {
-            _integrationPointRepository.UpdateConfiguration(artifactId, sourceConfiguration, destinationConfiguration);
+            _integrationPointRepository.UpdateSourceConfiguration(artifactId, sourceConfiguration);
+        }
+
+        public void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration)
+        {
+            _integrationPointRepository.UpdateDestinationConfiguration(artifactId, destinationConfiguration);
         }
 
         public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -611,8 +616,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             AddValidationErrorToJobHistory(jobHistory, ex);
             AddValidationErrorToErrorTab(ex);
             SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryValidationFailed);
-            SetHasErrorOnIntegrationPoint(integrationPointDto.ArtifactId);
             SendValidationFailedMessage(integrationPointDto, jobHistory.BatchInstance);
+            _integrationPointRepository.UpdateHasErrors(integrationPointDto.ArtifactId, true);
         }
 
         private void SendValidationFailedMessage(IntegrationPointDto integrationPointDto, string batchInstance)
@@ -636,13 +641,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private void AddValidationErrorToErrorTab(Exception ex)
         {
             CreateRelativityError(_VALIDATION_FAILED, ex.Message);
-        }
-
-        private void SetHasErrorOnIntegrationPoint(int integrationPointArtifactId)
-        {
-            Data.IntegrationPoint integrationPoint =  _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-            integrationPoint.HasErrors = true;
-            _integrationPointRepository.Update(integrationPoint);
         }
 
         private static string GetValidationErrorMessage(Exception ex)

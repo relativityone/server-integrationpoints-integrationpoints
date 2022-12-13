@@ -67,9 +67,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         void UpdateJobHistory(int artifactId, List<int> jobHistory);
 
         /// <summary>
-        /// Updates configuration
+        /// Updates source configuration
         /// </summary>
-        void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration);
+        void UpdateSourceConfiguration(int artifactId, string sourceConfiguration);
+
+        /// <summary>
+        /// Updates destination configuration
+        /// </summary>
+        void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration);
 
         /// <summary>
         /// Run integration point as a new job.

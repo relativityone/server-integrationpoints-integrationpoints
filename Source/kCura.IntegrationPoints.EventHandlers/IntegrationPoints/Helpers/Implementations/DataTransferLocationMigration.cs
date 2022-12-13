@@ -112,17 +112,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
         }
 
-        private void UpdateIntegrationPoint(IntegrationPoint integrationPoint, IList<string> processingSourceLocations,
-            string newDataTransferLocationRoot)
+        private void UpdateIntegrationPoint(IntegrationPoint integrationPoint, IList<string> processingSourceLocations, string newDataTransferLocationRoot)
         {
             try
             {
-                string updatedSourceConfigurationString =
-                    _dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(integrationPoint.SourceConfiguration,
-                        processingSourceLocations, newDataTransferLocationRoot);
-                integrationPoint.SourceConfiguration = updatedSourceConfigurationString;
+                string updatedSourceConf = _dataTransferLocationMigrationHelper.GetUpdatedSourceConfiguration(
+                    integrationPoint.SourceConfiguration,
+                    processingSourceLocations,
+                    newDataTransferLocationRoot);
 
-                _integrationPointRepository.Update(integrationPoint);
+                integrationPoint.SourceConfiguration = updatedSourceConf;
+                _integrationPointRepository.UpdateSourceConfiguration(integrationPoint.ArtifactId, updatedSourceConf);
             }
             catch (Exception ex)
             {
