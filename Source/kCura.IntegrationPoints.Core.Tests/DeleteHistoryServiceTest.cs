@@ -42,13 +42,11 @@ namespace kCura.IntegrationPoints.Core.Tests
                 }
             };
 
-            _integrationPointRepository.ReadAllByIds(Arg.Any<List<int>>()).Returns(integrationPoints);
-
             // act
             _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs);
 
             // assert
-            _integrationPointRepository.Received(2).Update(Arg.Is<Data.IntegrationPoint>(x => !x.JobHistory.Any()));
+            _integrationPointRepository.Received(2).UpdateJobHistory(Arg.Any<int>(), Arg.Is<List<int>>(x => x == null));
         }
 
         [Test]
@@ -63,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             // assert
             _integrationPointRepository
                 .DidNotReceiveWithAnyArgs()
-                .ReadAllByIds(Arg.Any<List<int>>());
+                .UpdateJobHistory(Arg.Any<int>(), Arg.Any<List<int>>());
         }
 
         [Test]

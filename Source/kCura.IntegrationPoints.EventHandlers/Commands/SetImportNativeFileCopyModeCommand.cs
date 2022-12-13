@@ -29,11 +29,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         {
             foreach (IntegrationPointDto point in _integrationPointService.ReadAll())
             {
-                string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
-                    point.DestinationProvider, point.DestinationConfiguration);
+                string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(
+                    point.SourceProvider,
+                    point.DestinationProvider,
+                    point.DestinationConfiguration);
+
                 if (destinationConfiguration != null)
                 {
-                    _integrationPointService.UpdateConfiguration(point.ArtifactId, point.SourceConfiguration, destinationConfiguration);
+                    _integrationPointService.UpdateDestinationConfiguration(point.ArtifactId, destinationConfiguration);
                 }
             }
         }

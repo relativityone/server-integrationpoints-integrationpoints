@@ -58,9 +58,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         internal void ExecuteInstanced()
         {
-            IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository.ReadAll();
+            IList<IntegrationPoint> integrationPoints = _integrationPointRepository.ReadAll();
 
-            foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
+            foreach (IntegrationPoint integrationPoint in integrationPoints)
             {
                 UpdateIntegrationPointHasErrorsField(integrationPoint);
             }
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
                 }
             }
 
-            _integrationPointRepository.Update(integrationPoint);
+            _integrationPointRepository.UpdateHasErrors(integrationPoint.ArtifactId, integrationPoint.HasErrors.Value);
         }
     }
 }

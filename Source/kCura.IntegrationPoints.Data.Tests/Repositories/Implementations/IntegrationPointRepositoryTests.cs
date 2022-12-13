@@ -97,30 +97,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         }
 
         [Test]
-        public async Task ReadEncryptedAsync_ShouldReturnValidIntegrationPoint()
-        {
-            // Arrange
-            _integrationPoint = CreateTestIntegrationPoint();
-            _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID,ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
-
-            SetupConfigurationStreamRead();
-
-            // Act
-            IntegrationPoint actualResult = await _sut.ReadEncryptedAsync(_ARTIFACT_ID).ConfigureAwait(false);
-
-            // Assert
-            _secretsRepositoryMock.Verify(x => x.DecryptAsync(It.IsAny<SecretPath>()), Times.Never);
-            _objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
-            _internalLoggerMock.Verify(
-                x => x.LogError(
-                    It.IsAny<Exception>(),
-                    It.IsAny<string>(),
-                    It.IsAny<object[]>()),
-                Times.Never);
-            actualResult.Should().Be(_integrationPoint);
-        }
-
-        [Test]
         public void Read_ShouldThrowException_WhenObjectManagerReadThrowsException()
         {
             // Arrange
