@@ -36,11 +36,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return ReadAsync(integrationPointArtifactID, true);
         }
 
-        public Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID)
-        {
-            return ReadAsync(integrationPointArtifactID, false);
-        }
-
         public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)
         {
             return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid }).ConfigureAwait(false);
@@ -73,15 +68,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return integrationPointsWithoutFields
                 .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId, false).GetAwaiter().GetResult())
                 .ToList();
-        }
-
-        public List<IntegrationPoint> ReadAllByIds(List<int> integrationPointIDs)
-        {
-            var request = new QueryRequest
-            {
-                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
-            };
-            return _objectManager.Query<IntegrationPoint>(request).ToList();
         }
 
         public async Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
@@ -128,16 +114,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 integrationPoint.ArtifactId = _objectManager.Create(emptyIntegrationPoint);
             }
 
-            Update(integrationPoint);
-            return integrationPoint.ArtifactId;
-        }
-
-        public void Update(IntegrationPoint integrationPoint)
-        {
             string decryptedSecuredConfiguration = integrationPoint.SecuredConfiguration;
             SetEncryptedSecuredConfiguration(_workspaceID, integrationPoint);
             _objectManager.Update(integrationPoint);
+
             integrationPoint.SecuredConfiguration = decryptedSecuredConfiguration;
+            return integrationPoint.ArtifactId;
+        }
+
+        public void UpdateType(int artifactId, int? type)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.TypeGuid },
+                    Value = type,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
         }
 
         public void UpdateHasErrors(int artifactId, bool hasErrors)
@@ -204,14 +200,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 new FieldRefValuePair
                 {
                     Field = new FieldRef { Guid = IntegrationPointFieldGuids.JobHistoryGuid },
-                    Value = jobHistory.ToArray(),
+                    Value = jobHistory?.ToArray(),
                 },
             };
 
             _objectManager.Update(artifactId, fieldValues);
         }
 
-        public void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration)
+        public void UpdateSourceConfiguration(int artifactId, string sourceConfiguration)
         {
             List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
             {
@@ -220,6 +216,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     Field = new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid },
                     Value = sourceConfiguration,
                 },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
                 new FieldRefValuePair
                 {
                     Field = new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid },

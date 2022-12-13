@@ -8,8 +8,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
     {
         Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID);
 
-        Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID);
-
         Task<string> GetFieldMappingAsync(int integrationPointArtifactID);
 
         Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID);
@@ -22,7 +20,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         int CreateOrUpdate(IntegrationPoint integrationPoint);
 
-        void Update(IntegrationPoint integrationPoint);
+        void UpdateType(int artifactId, int? type);
 
         void UpdateHasErrors(int integrationPointArtifactId, bool hasErrors);
 
@@ -32,11 +30,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         void UpdateJobHistory(int artifactId, List<int> jobHistory);
 
-        void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration);
+        void UpdateSourceConfiguration(int artifactId, string sourceConfiguration);
+
+        void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration);
 
         void Delete(int integrationPointID);
-
-        List<IntegrationPoint> ReadAllByIds(List<int> integrationPointIDs);
 
         Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(
             int sourceProviderArtifactID,

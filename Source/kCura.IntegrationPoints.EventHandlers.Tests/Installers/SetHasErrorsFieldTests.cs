@@ -44,8 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             _instance.UpdateIntegrationPointHasErrorsField(integrationPoint);
 
             // Assert
-            _integrationPointRepository.Received(1)
-                .Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
+            _integrationPointRepository.Received(1).UpdateHasErrors(integrationPoint.ArtifactId, false);
             _jobHistoryService.Received(0).GetJobHistory(null);
         }
 
@@ -142,8 +141,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             // Assert
             _integrationPointRepository.Received(1).ReadAll();
             _jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-            _integrationPointRepository.Received(1)
-                .Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
+            _integrationPointRepository.Received(1).UpdateHasErrors(integrationPoint.ArtifactId, false);
         }
 
         [Test]
@@ -157,10 +155,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             Assert.Throws<Exception>(() => _instance.ExecuteInstanced());
 
             // Assert
-
             _integrationPointRepository.Received(1).ReadAll();
             _jobHistoryService.Received(0).GetJobHistory(null);
-            _integrationPointRepository.Received(0).Update(null);
         }
 
         private void UpdateIntegrationPointHasErrorsField_HasJobHistories_TestsHelper(JobHistory[] jobHistories, bool hasErrorsExpectation)
@@ -175,8 +171,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
             // Assert
             _jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-            _integrationPointRepository.Received(1)
-                .Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == hasErrorsExpectation && x.ArtifactId == integrationPoint.ArtifactId));
+            _integrationPointRepository.Received(1).UpdateHasErrors(integrationPoint.ArtifactId, hasErrorsExpectation);
         }
 
         private bool CompareLists(int[] actualValues, int[] expectedValues)

@@ -98,7 +98,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             {
                 integrationPoint.Type = integrationPointTypes.First(x => x.Identifier == Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()).ArtifactId;
             }
-            IntegrationPointRepository.Update(integrationPoint);
+
+            IntegrationPointRepository.UpdateType(integrationPoint.ArtifactId, integrationPoint.Type);
         }
     }
 }
