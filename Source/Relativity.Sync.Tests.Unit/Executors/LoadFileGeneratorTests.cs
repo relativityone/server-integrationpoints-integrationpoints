@@ -160,9 +160,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
-            _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor), Times.Once);
             _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
-            _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleRemainingErrorsAsync(), Times.Once);
         }
 
         [Test]
@@ -214,7 +213,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Paused), Times.Once);
             _batchMock.Verify(x => x.SetStartingIndexAsync(It.IsAny<int>()), Times.Once);
-            _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleRemainingErrorsAsync(), Times.Once);
         }
 
         private string PrepareFakeLoadFilePath()

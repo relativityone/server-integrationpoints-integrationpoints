@@ -7,6 +7,14 @@ namespace Relativity.Sync.Transfer
     {
         private readonly Dictionary<string, ItemInfo> _items = new Dictionary<string, ItemInfo>();
 
+        private int _readItemsCount = 0;
+
+        public int ProcessedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Succeed);
+
+        public int FailedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Failed);
+
+        public int ReadItemsCount => _readItemsCount;
+
         public void AddItem(string itemIdentifier, int artifactId)
         {
             _items[itemIdentifier] = new ItemInfo(artifactId);
@@ -22,15 +30,6 @@ namespace Relativity.Sync.Transfer
             MarkItemWithStatus(itemIdentifier, ItemStatus.Failed);
         }
 
-        private void MarkItemWithStatus(string itemIdentifier, ItemStatus status)
-        {
-            ItemInfo item;
-            if (_items.TryGetValue(itemIdentifier, out item))
-            {
-                item.Status = status;
-            }
-        }
-
         public void MarkReadSoFarAsSuccessful()
         {
             MarkReadSoFarWithStatus(ItemStatus.Succeed);
@@ -39,15 +38,6 @@ namespace Relativity.Sync.Transfer
         public void MarkReadSoFarAsFailed()
         {
             MarkReadSoFarWithStatus(ItemStatus.Failed);
-        }
-
-        private void MarkReadSoFarWithStatus(ItemStatus itemStatus)
-        {
-            IEnumerable<ItemInfo> itemsRead = _items.Values.Where(s => s.Status == ItemStatus.Read);
-            foreach (var item in itemsRead)
-            {
-                item.Status = itemStatus;
-            }
         }
 
         public IEnumerable<int> GetSuccessfulItemArtifactIds()
@@ -64,10 +54,6 @@ namespace Relativity.Sync.Transfer
             return identifiers;
         }
 
-        public int ProcessedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Succeed);
-
-        public int FailedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Failed);
-
         public int GetArtifactId(string itemIdentifier)
         {
             if (_items.ContainsKey(itemIdentifier))
@@ -78,17 +64,36 @@ namespace Relativity.Sync.Transfer
             return -1;
         }
 
+        private void MarkItemWithStatus(string itemIdentifier, ItemStatus status)
+        {
+            ItemInfo item;
+            if (_items.TryGetValue(itemIdentifier, out item))
+            {
+                item.Status = status;
+                ++_readItemsCount;
+            }
+        }
+
+        private void MarkReadSoFarWithStatus(ItemStatus itemStatus)
+        {
+            IEnumerable<ItemInfo> itemsRead = _items.Values.Where(s => s.Status == ItemStatus.Read);
+            foreach (var item in itemsRead)
+            {
+                item.Status = itemStatus;
+            }
+        }
+
         private class ItemInfo
         {
-            public int ArtifactId { get; }
-
-            public ItemStatus Status { get; set; }
-
             public ItemInfo(int artifactId)
             {
                 ArtifactId = artifactId;
                 Status = ItemStatus.Created;
             }
+
+            public int ArtifactId { get; }
+
+            public ItemStatus Status { get; set; }
         }
 
         private enum ItemStatus
