@@ -41,10 +41,6 @@ namespace Relativity.Sync.Configuration
 
         int DataSourceArtifactId { get; }
 
-        char MultiValueDelimiter { get; }
-
-        char NestedValueDelimiter { get; }
-
         Task<int> GetImportApiBatchSizeAsync();
     }
 }

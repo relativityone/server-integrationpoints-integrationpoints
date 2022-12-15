@@ -70,6 +70,7 @@ namespace Relativity.Sync.Executors
                         .ConfigureAwait(false);
 
                     ImportDetails result;
+                    ImportState state = ImportState.Unknown;
                     do
                     {
                         if (token.IsStopRequested)
@@ -87,7 +88,11 @@ namespace Relativity.Sync.Executors
                         await HandleDataSourceStatusAsync(batches, sourceController, configuration).ConfigureAwait(false);
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
-                        _logger.LogInformation("Import status: {@status}", result);
+                        if (result.State != state)
+                        {
+                            state = result.State;
+                            _logger.LogInformation("Import status: {@status}", result);
+                        }
                     }
                     while (!result.IsFinished);
 

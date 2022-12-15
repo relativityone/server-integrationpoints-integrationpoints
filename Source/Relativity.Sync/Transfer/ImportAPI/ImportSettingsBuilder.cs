@@ -212,7 +212,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
                     }
 
                     _logger.LogInformation(
-                        "Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName",
+                        "Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName: {destinationName}",
                         pair.DocumentFieldIndex,
                         pair.SourceFieldName,
                         pair.DestinationFieldName);
