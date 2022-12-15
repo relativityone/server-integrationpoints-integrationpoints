@@ -4,6 +4,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AutoFixture;
+using AutoFixture.AutoMoq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -18,6 +20,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using Moq.Language;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
@@ -37,6 +40,14 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         private Mock<IDateTime> _dateTime;
         private Mock<IConfig> _config;
         private Mock<IRelativityObjectManager> _objectManagerFake;
+
+        private IFixture _fxt = FixtureFactory;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
+        }
 
         [Test]
         public void Execute_ShouldProcessJobInQueue()
@@ -279,6 +290,46 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                     It.Is<Job>(y => y.JobFailed != null),
                     It.IsAny<IScheduleRuleFactory>(),
                     It.IsAny<TaskResult>()));
+        }
+
+        [Test]
+        public void Execute_ShouldUnlockAndPickUpTransientJob_WhenJobIsAzureADWorker()
+        {
+            // Arrange
+            long jobId = _fxt.Create<long>();
+            int integrationPointId = _fxt.Create<int>();
+            int sourceProviderId = _fxt.Create<int>();
+
+            TestAgent sut = GetSut();
+
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithLockedByAgentId(null)
+                .WithRelatedObjectArtifactId(integrationPointId)
+                .WithStopState(StopState.DrainStopping)
+                .WithTaskType(IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
+                .Build();
+            SetupJobQueue(job);
+
+            _objectManagerFake.Setup(x => x.Read<kCura.IntegrationPoints.Data.IntegrationPoint>(integrationPointId))
+                .Return(new kCura.IntegrationPoints.Data.IntegrationPoint
+                {
+                    SourceProvider = sourceProviderId
+                });
+
+            _objectManagerFake.Setup(x => x.Read<kCura.IntegrationPoints.Data.SourceProvider>(sourceProviderId)
+                .Returns(new kCura.IntegrationPoints.Data.SourceProvider
+                {
+                    ApplicationIdentifier = new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5")
+                });
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            _jobServiceMock.Verify(x => x.UnlockJob(job));
+
+            sut.ProcessedJobs.Should().Contain(job);
         }
 
         [Test]
