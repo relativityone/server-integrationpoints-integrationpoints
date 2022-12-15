@@ -48,9 +48,9 @@ namespace kCura.ScheduleQueue.Core.Data
             return new UnlockScheduledJob(_queueDbContext, agentId);
         }
 
-        public ICommand UnlockJob(long jobId)
+        public ICommand UnlockJob(long jobId, StopState state)
         {
-            return new UnlockJob(_queueDbContext, jobId);
+            return new UnlockJob(_queueDbContext, jobId, state);
         }
 
         public ICommand DeleteJob(long jobId)

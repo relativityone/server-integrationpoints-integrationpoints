@@ -6,12 +6,16 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -53,6 +57,7 @@ namespace kCura.ScheduleQueue.AgentBase
         private IConfig _config;
         private IAPM _apm;
         private IDbContextFactory _dbContextFactory;
+        private IRelativityObjectManagerFactory _objectManagerFactory;
 
         private DateTime _agentStartTime;
 
@@ -68,7 +73,8 @@ namespace kCura.ScheduleQueue.AgentBase
             IAPILog logger = null,
             IConfig config = null,
             IAPM apm = null,
-            IDbContextFactory dbContextFactory = null)
+            IDbContextFactory dbContextFactory = null,
+            IRelativityObjectManagerFactory objectManagerFactory = null)
         {
             // Lazy init is required for things depending on Helper
             // Helper property in base class is assigned AFTER object construction
@@ -90,6 +96,8 @@ namespace kCura.ScheduleQueue.AgentBase
             _apm = apm;
             _dbContextFactory = dbContextFactory;
             ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+
+            _objectManagerFactory = objectManagerFactory;
 
             _agentId = new Lazy<int>(GetAgentID);
             _agentInstanceGuid = Guid.NewGuid();
@@ -202,6 +210,11 @@ namespace kCura.ScheduleQueue.AgentBase
                 _dbContextFactory = new DbContextFactory(Helper, Logger);
             }
 
+            if (_objectManagerFactory == null)
+            {
+                _objectManagerFactory = new RelativityObjectManagerFactory(Helper);
+            }
+
             _agentStartTime = _dateTime.UtcNow;
         }
 
@@ -264,6 +277,16 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 foreach (Job job in transientStateJobs)
                 {
+                    if (IsAzureADWorker(job))
+                    {
+                        Logger.LogInformation(
+                            "Job {jobId} is in unknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin. JobDetails: {@job}",
+                            job.JobId,
+                            job);
+                        _jobService.UnlockJob(job);
+                        continue;
+                    }
+
                     KubernetesException k8sException = new KubernetesException($"Job {job.JobId} failed because Job Agent stopped due to underlying system layer error and job was left in unknown state. Please try to run this job again.");
 
                     Logger.LogError(k8sException, "Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
@@ -287,6 +310,34 @@ namespace kCura.ScheduleQueue.AgentBase
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error occurred during cleaning invalid jobs from the queue.");
+            }
+        }
+
+        private bool IsAzureADWorker(Job job)
+        {
+            try
+            {
+                if (job.TaskType != nameof(TaskType.SyncWorker) && job.TaskType != nameof(TaskType.SyncEntityManagerWorker))
+                {
+                    return false;
+                }
+
+                IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
+
+                IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+                if (!integrationPoint.SourceProvider.HasValue)
+                {
+                    return false;
+                }
+
+                SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
+
+                return Guid.Parse(sourceProvider.ApplicationIdentifier) == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error occurred while checking if the Job {jobId} is type of Azure AD. JobDetails: {@job}", job.JobId, job);
+                return false;
             }
         }
 
@@ -335,7 +386,7 @@ namespace kCura.ScheduleQueue.AgentBase
             IServiceHealthChecker keplerHealthChecker = new KeplerPingReporter(Helper, Logger);
             IServiceHealthChecker dnsHealthChecker = new DnsHealthReporter(new RealDnsService(), Logger);
 
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new [] { dbHealthChecker, keplerHealthChecker, dnsHealthChecker }, Logger);
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new[] { dbHealthChecker, keplerHealthChecker, dnsHealthChecker }, Logger);
 
             bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 

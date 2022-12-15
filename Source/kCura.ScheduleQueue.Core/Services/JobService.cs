@@ -58,7 +58,7 @@ namespace kCura.ScheduleQueue.Core.Services
             }
 
             Job job = CreateJob(row);
-            if(job != null)
+            if (job != null)
             {
                 LogJobInformation(job, agentID);
             }
@@ -75,7 +75,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
             if (job == null)
             {
-                return new FinalizeJobResult {JobState = JobLogState.Finished};
+                return new FinalizeJobResult { JobState = JobLogState.Finished };
             }
 
             LogOnFinalizeJob(job.JobId, job.JobDetails, taskResult);
@@ -278,7 +278,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
         public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
         {
-            return GetScheduledJobs(workspaceID, relatedObjectArtifactID, new List<string> {taskName}).FirstOrDefault();
+            return GetScheduledJobs(workspaceID, relatedObjectArtifactID, new List<string> { taskName }).FirstOrDefault();
         }
 
         public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
@@ -331,7 +331,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
         public void UpdateJobDetails(Job job)
         {
-            if(job == null)
+            if (job == null)
             {
                 throw new ArgumentNullException(nameof(job));
             }
@@ -354,8 +354,13 @@ namespace kCura.ScheduleQueue.Core.Services
 
         public void FinalizeDrainStoppedJob(Job job)
         {
-            UpdateStopState(new List<long>() { job.JobId }, StopState.DrainStopped);
-            DataProvider.UnlockJob(job.JobId);
+            DataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
+            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
+        }
+
+        public void UnlockJob(Job job)
+        {
+            DataProvider.UnlockJob(job.JobId, StopState.None);
             _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
         }
 
@@ -394,7 +399,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
         public void LogOnGetJob(long jobId)
         {
-            _log.LogInformation ("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
+            _log.LogInformation("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
         }
 
         public void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)

@@ -8,14 +8,16 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class UnlockJob : ICommand
     {
         private readonly IQueueDBContext _dbContext;
-        
-        private readonly long _jobId;
 
-        public UnlockJob(IQueueDBContext dbContext, long jobId)
+        private readonly long _jobId;
+        private readonly StopState _state;
+
+        public UnlockJob(IQueueDBContext dbContext, long jobId, StopState state)
         {
             _dbContext = dbContext;
-            
+
             _jobId = jobId;
+            _state = state;
         }
 
         public void Execute()
@@ -24,7 +26,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
             List<SqlParameter> sqlParams = new List<SqlParameter>
             {
-                new SqlParameter("@JobID", _jobId)
+                new SqlParameter("@JobID", _jobId),
+                new SqlParameter("@StopState", _state),
             };
 
             _dbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());

@@ -15,10 +15,10 @@ namespace kCura.IntegrationPoints.Data
         IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 
         IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId);
-        
+
         ICommand UnlockScheduledJob(int agentId);
 
-        ICommand UnlockJob(long jobId);
+        ICommand UnlockJob(long jobId, StopState state);
 
         ICommand DeleteJob(long jobId);
 
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data
         ICommand CleanupScheduledJobsQueue();
 
         IQuery<DataTable> GetAllJobs();
-        
+
         IQuery<int> UpdateStopState(IList<long> jobIds, StopState state);
 
         IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId,
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data
 
         ICommand UpdateJobDetails(long jobId, string jobDetails);
 
-        IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);            
+        IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);
 
         IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime);
     }
