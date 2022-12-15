@@ -9,6 +9,8 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
@@ -34,6 +36,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         private Mock<IKubernetesMode> _kubernetesModeFake;
         private Mock<IDateTime> _dateTime;
         private Mock<IConfig> _config;
+        private Mock<IRelativityObjectManager> _objectManagerFake;
 
         [Test]
         public void Execute_ShouldProcessJobInQueue()
@@ -397,6 +400,12 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _config = new Mock<IConfig>();
             _config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.MaxValue);
 
+            _objectManagerFake = new Mock<IRelativityObjectManager>();
+
+            Mock<IRelativityObjectManagerFactory> objectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
+            objectManagerFactory.Setup(x => x.CreateRelativityObjectManager(It.IsAny<int>()))
+                .Returns(_objectManagerFake.Object);
+
             return new TestAgent(
                 agentService.Object,
                 _jobServiceMock.Object,
@@ -406,7 +415,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 _kubernetesModeFake.Object,
                 _dateTime.Object,
                 emptyLog.Object,
-                _config.Object)
+                _config.Object,
+                objectManagerFactory.Object)
             {
                 JobResult = jobStatus
             };
@@ -444,8 +454,20 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 IKubernetesMode kubernetesMode = null,
                 IDateTime dateTime = null,
                 IAPILog log = null,
-                IConfig config = null)
-                : base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log, config)
+                IConfig config = null,
+                IRelativityObjectManagerFactory objectManagerFactory = null)
+                    : base(
+                        Guid.NewGuid(),
+                        kubernetesMode,
+                        agentService,
+                        jobService,
+                        scheduleRuleFactory,
+                        queueJobValidator,
+                        queryManager,
+                        dateTime,
+                        log,
+                        config,
+                        objectManagerFactory: objectManagerFactory)
             {
                 // 'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
                 typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
