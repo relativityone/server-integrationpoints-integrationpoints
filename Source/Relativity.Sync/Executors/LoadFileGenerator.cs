@@ -8,6 +8,7 @@ using Relativity.Import.V1.Models.Sources;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
@@ -98,7 +99,12 @@ namespace Relativity.Sync.Executors
         {
             return DataSourceSettingsBuilder.Create()
                     .ForLoadFile(batchPath)
-                    .WithDefaultDelimiters()
+                    .WithDelimiters(d => d
+                        .WithColumnDelimiters(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII)
+                        .WithQuoteDelimiter(LoadFileOptions._DEFAULT_QUOTE_DELIMITER_ASCII)
+                        .WithNewLineDelimiter(LoadFileOptions._DEFAULT_NEWLINE_DELIMITER_ASCII)
+                        .WithNestedValueDelimiter(LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII)
+                        .WithMultiValueDelimiter(LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII))
                     .WithoutFirstLineContainingHeaders()
                     .WithEndOfLineForWindows()
                     .WithStartFromBeginning()

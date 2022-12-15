@@ -5,6 +5,9 @@ namespace Relativity.Sync.Storage
 {
     internal class BatchDataSourcePreparationConfiguration : IBatchDataSourcePreparationConfiguration
     {
+        private const int _ASCII_GROUP_SEPARATOR = 29;
+        private const int _ASCII_RECORD_SEPARATOR = 30;
+
         private readonly IConfiguration _cache;
         private readonly SyncJobParameters _parameters;
 
