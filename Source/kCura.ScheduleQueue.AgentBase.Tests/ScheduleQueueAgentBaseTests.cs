@@ -10,6 +10,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -20,7 +21,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using Moq.Language;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
@@ -41,7 +41,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         private Mock<IConfig> _config;
         private Mock<IRelativityObjectManager> _objectManagerFake;
 
-        private IFixture _fxt = FixtureFactory;
+        private IFixture _fxt;
 
         [SetUp]
         public void SetUp()
@@ -292,8 +292,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                     It.IsAny<TaskResult>()));
         }
 
-        [Test]
-        public void Execute_ShouldUnlockAndPickUpTransientJob_WhenJobIsAzureADWorker()
+        [TestCase(TaskType.SyncWorker)]
+        [TestCase(TaskType.SyncEntityManagerWorker)]
+        public void Execute_ShouldUnlockAndPickUpTransientJob_WhenJobIsAzureADWorker(TaskType taskType)
         {
             // Arrange
             long jobId = _fxt.Create<long>();
@@ -307,20 +308,20 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 .WithLockedByAgentId(null)
                 .WithRelatedObjectArtifactId(integrationPointId)
                 .WithStopState(StopState.DrainStopping)
-                .WithTaskType(IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
+                .WithTaskType(taskType)
                 .Build();
             SetupJobQueue(job);
 
-            _objectManagerFake.Setup(x => x.Read<kCura.IntegrationPoints.Data.IntegrationPoint>(integrationPointId))
-                .Return(new kCura.IntegrationPoints.Data.IntegrationPoint
+            _objectManagerFake.Setup(x => x.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointId, ExecutionIdentity.CurrentUser))
+                .Returns(new IntegrationPoints.Data.IntegrationPoint
                 {
                     SourceProvider = sourceProviderId
                 });
 
-            _objectManagerFake.Setup(x => x.Read<kCura.IntegrationPoints.Data.SourceProvider>(sourceProviderId)
-                .Returns(new kCura.IntegrationPoints.Data.SourceProvider
+            _objectManagerFake.Setup(x => x.Read<SourceProvider>(sourceProviderId, ExecutionIdentity.CurrentUser))
+                .Returns(new SourceProvider
                 {
-                    ApplicationIdentifier = new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5")
+                    ApplicationIdentifier = "8C8D2241-706A-47E1-B0C1-DB3F4F990DC5"
                 });
 
             // Act
@@ -330,6 +331,65 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _jobServiceMock.Verify(x => x.UnlockJob(job));
 
             sut.ProcessedJobs.Should().Contain(job);
+        }
+
+        [Test]
+        public void Execute_ShouldCleanUpTransientJob_WhenJobIsNotAzureADWorker()
+        {
+            // Arrange
+            long jobId = _fxt.Create<long>();
+
+            TestAgent sut = GetSut();
+
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithLockedByAgentId(null)
+                .WithStopState(StopState.DrainStopping)
+                .WithTaskType(TaskType.ExportService)
+                .Build();
+            SetupJobQueue(job);
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            _jobServiceMock.Verify(
+                x => x.FinalizeJob(
+                    It.Is<Job>(y => y.JobFailed != null && y.JobId == jobId),
+                    It.IsAny<IScheduleRuleFactory>(),
+                    It.IsAny<TaskResult>()));
+        }
+
+        [Test]
+        public void Execute_ShouldCleanUpTransientJob_WhenCheckingAzureADThrows()
+        {
+            // Arrange
+            long jobId = _fxt.Create<long>();
+
+            TestAgent sut = GetSut();
+
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithLockedByAgentId(null)
+                .WithStopState(StopState.DrainStopping)
+                .WithTaskType(TaskType.SyncWorker)
+                .Build();
+            SetupJobQueue(job);
+
+            _objectManagerFake.Setup(
+                    x => x.Read<IntegrationPoints.Data.IntegrationPoint>(
+                        It.IsAny<int>(), ExecutionIdentity.CurrentUser))
+                .Throws<Exception>();
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            _jobServiceMock.Verify(
+                x => x.FinalizeJob(
+                    It.Is<Job>(y => y.JobFailed != null && y.JobId == jobId),
+                    It.IsAny<IScheduleRuleFactory>(),
+                    It.IsAny<TaskResult>()));
         }
 
         [Test]
