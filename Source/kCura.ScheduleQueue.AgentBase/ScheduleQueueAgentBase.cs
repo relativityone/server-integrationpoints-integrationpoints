@@ -280,7 +280,7 @@ namespace kCura.ScheduleQueue.AgentBase
                     if (IsAzureADWorker(job))
                     {
                         Logger.LogInformation(
-                            "Job {jobId} is in uknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin. JobDetails: {@job}",
+                            "Job {jobId} is in unknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin. JobDetails: {@job}",
                             job.JobId,
                             job);
                         _jobService.UnlockJob(job);
