@@ -35,7 +35,7 @@ namespace kCura.ScheduleQueue.Core.Data
         /// <summary>
         /// Clears the LockedByAgentID value.
         /// </summary>
-        void UnlockJob(long jobID);
+        void UnlockJob(long jobID, StopState state);
 
         void UpdateJobDetails(long jobId, string jobDetails);
     }

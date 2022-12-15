@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
         public RelativityObjectManagerFactory(IHelper helper)
             : this(
-                helper, 
+                helper,
                 instrumentationProvider: null)
         {
             _instrumentationProvider = new ExternalServiceInstrumentationProviderWithoutJobContext(_logger);
@@ -40,15 +40,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
         {
             var retryHandlerFactory = new RetryHandlerFactory(_logger);
             var objectManagerFacadeFactory = new ObjectManagerFacadeFactory(
-                servicesMgr, 
-                _logger, 
-                _instrumentationProvider, 
+                servicesMgr,
+                _logger,
+                _instrumentationProvider,
                 retryHandlerFactory
             );
 
             return new RelativityObjectManager(
-                workspaceId, 
-                _logger, 
+                workspaceId,
+                _logger,
                 objectManagerFacadeFactory
             );
         }

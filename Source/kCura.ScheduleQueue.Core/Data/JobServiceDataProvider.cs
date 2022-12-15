@@ -34,7 +34,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             return dataTable?.Rows?.Count > 0 ? dataTable.Rows[0] : null;
         }
-        
+
         public void UnlockScheduledJob(int agentId)
         {
             _queryManager
@@ -42,10 +42,10 @@ namespace kCura.ScheduleQueue.Core.Data
                 .Execute();
         }
 
-        public void UnlockJob(long jobID)
+        public void UnlockJob(long jobID, StopState state)
         {
             _queryManager
-                .UnlockJob(jobID)
+                .UnlockJob(jobID, state)
                 .Execute();
         }
 
@@ -60,8 +60,8 @@ namespace kCura.ScheduleQueue.Core.Data
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
-            _queryManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID, 
-                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+            _queryManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID,
+                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
                     jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute();
         }
@@ -71,7 +71,7 @@ namespace kCura.ScheduleQueue.Core.Data
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
             using (DataTable dataTable = _queryManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
-                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails, 
+                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
                     jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute())
             {
@@ -103,7 +103,7 @@ namespace kCura.ScheduleQueue.Core.Data
 
         public DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, string taskType)
         {
-            return GetJobs(workspaceId, relatedObjectArtifactId, new List<string> {taskType});
+            return GetJobs(workspaceId, relatedObjectArtifactId, new List<string> { taskType });
         }
 
         public DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
