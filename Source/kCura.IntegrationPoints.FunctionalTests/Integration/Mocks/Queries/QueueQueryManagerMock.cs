@@ -95,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             });
         }
 
-        public ICommand UnlockJob(long jobId)
+        public ICommand UnlockJob(long jobId, StopState state)
         {
             return new ActionCommand(() =>
             {
@@ -104,6 +104,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
                 if (lockedJob != null)
                 {
                     lockedJob.LockedByAgentID = null;
+                    lockedJob.StopState = state;
                 }
             });
         }

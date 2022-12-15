@@ -50,5 +50,7 @@ namespace kCura.ScheduleQueue.Core.Interfaces
         void UpdateJobDetails(Job job);
 
         void FinalizeDrainStoppedJob(Job job);
+
+        void UnlockJob(Job job);
     }
 }
