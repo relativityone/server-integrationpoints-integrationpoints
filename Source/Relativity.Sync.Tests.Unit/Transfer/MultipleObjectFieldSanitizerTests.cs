@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -18,15 +17,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [Parallelizable(ParallelScope.All)]
     internal class MultipleObjectFieldSanitizerTests
     {
-        private const char _NESTED_DELIM = (char)29;
-        private const char _MUTLI_DELIM = (char)30;
-
         [Test]
         public void ItShouldSupportMultipleObject()
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             RelativityDataType supportedType = instance.SupportedType;
@@ -47,8 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFails(object initialValue)
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
@@ -64,8 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ItShouldThrowInvalidExportFieldValueExceptionWithInnerExceptionWhenDeserializationFails(object initialValue)
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
@@ -87,8 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task SanitizeAsync_ShouldThrowSyncItemLevelErrorException_WhenAnyElementsAreInvalid(object initialValue)
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
@@ -99,15 +91,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsMultiValueDelimiterTestCases()
         {
-            yield return new TestCaseData(ObjectValueJArrayFromNames($"{_MUTLI_DELIM} Sick Name"))
+            yield return new TestCaseData(ObjectValueJArrayFromNames($"{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Sick Name"))
             {
                 TestName = "Singleton violating name"
             };
-            yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", "Awesome Name"))
+            yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name", "Awesome Name"))
             {
                 TestName = "Single violating name in larger collection"
             };
-            yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{_MUTLI_DELIM} Name", $"Awesome{_MUTLI_DELIM} Name"))
+            yield return new TestCaseData(ObjectValueJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name", $"Awesome{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name"))
             {
                 TestName = "Many violating names in larger collection"
             };
@@ -117,8 +109,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ItShouldThrowSyncExceptionWhenNameContainsMultiValueDelimiter(object initialValue)
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             Func<Task> action = () => instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue);
@@ -127,7 +118,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             (await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
                 .Which.Message.Should()
                 .Be("Unable to parse data from Relativity Export API: " +
-                    "The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII 30'). " +
+                    $"The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII {(int)LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}'). " +
                     "Rename these objects to not contain delimiter.");
         }
 
@@ -147,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             };
             yield return new TestCaseData(
                 ObjectValueJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
-                $"Sick Name{_MUTLI_DELIM}Cool Name{_MUTLI_DELIM}Awesome Name")
+                $"Sick Name{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}Cool Name{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}Awesome Name")
             {
                 TestName = "Multiple"
             };
@@ -157,22 +148,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ItShouldCombineNamesIntoReturnValue(object initialValue, string expectedResult)
         {
             // Arrange
-            IDocumentSynchronizationConfiguration configuration = CreateConfiguration();
-            var instance = new MultipleObjectFieldSanitizer(configuration);
+            var instance = new MultipleObjectFieldSanitizer();
 
             // Act
             object result = await instance.SanitizeAsync(0, "foo", "bar", "baz", initialValue).ConfigureAwait(false);
 
             // Assert
             result.Should().Be(expectedResult);
-        }
-
-        private static IDocumentSynchronizationConfiguration CreateConfiguration()
-        {
-            var config = new Mock<IDocumentSynchronizationConfiguration>();
-            config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_DELIM);
-            config.SetupGet(x => x.MultiValueDelimiter).Returns(_MUTLI_DELIM);
-            return config.Object;
         }
 
         private static JArray ObjectValueJArrayFromNames(params string[] names)
