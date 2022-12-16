@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -9,6 +10,7 @@ using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Utils;
 
@@ -19,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<ITimerFactory> _timerFactoryFake;
         private Mock<IInstanceSettings> _instanceSettingsFake;
         private Mock<IJobProgressUpdater> _jobProgressUpdaterMock;
+        private Mock<IBatchRepository> _batchRepositoryMock;
 
         private Mock<IImportJobController> _importJobControllerFake;
 
@@ -40,8 +43,8 @@ namespace Relativity.Sync.Tests.Unit
                 .ReturnsAsync(_importJobControllerFake.Object);
 
             _instanceSettingsFake = _fxt.Freeze<Mock<IInstanceSettings>>();
-
             _jobProgressUpdaterMock = _fxt.Freeze<Mock<IJobProgressUpdater>>();
+            _batchRepositoryMock = _fxt.Freeze<Mock<IBatchRepository>>();
 
             _sut = _fxt.Create<ProgressHandler>();
         }
@@ -58,7 +61,8 @@ namespace Relativity.Sync.Tests.Unit
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    It.IsAny<Guid>())
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>())
                 .ConfigureAwait(false);
 
             // Assert
@@ -91,7 +95,8 @@ namespace Relativity.Sync.Tests.Unit
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    It.IsAny<Guid>())
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>())
                 .ConfigureAwait(false);
 
             // Assert
@@ -103,11 +108,26 @@ namespace Relativity.Sync.Tests.Unit
         {
             // Arrange
             ImportProgress progress = _fxt.Create<ImportProgress>();
-
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
-
             _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(valueProgress);
+
+            List<IBatch> batches = new List<IBatch>(3);
+            int completedRecordsCount = progress.ImportedRecords;
+            int failedRecordsCount = progress.ErroredRecords;
+            foreach (IBatch _ in batches)
+            {
+                IBatch batch = _fxt.Create<IBatch>();
+                completedRecordsCount += batch.ReadDocumentsCount;
+                failedRecordsCount += batch.FailedReadDocumentsCount;
+                batches.Add(batch);
+            }
+            _batchRepositoryMock.Setup(x => x.GetBatchesWithIdsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<List<int>>(),
+                    It.IsAny<Guid>()))
+                .ReturnsAsync(batches);
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -117,8 +137,8 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    progress.ImportedRecords,
-                    progress.ErroredRecords),
+                    completedRecordsCount,
+                    failedRecordsCount),
                 Times.Once());
         }
 

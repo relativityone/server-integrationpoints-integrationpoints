@@ -97,14 +97,27 @@ namespace Relativity.Sync
             {
                 if (!_batchesArtifactIds.Any())
                 {
-                    return;
+                    _batchesArtifactIds = (await _batchRepository
+                            .GetAllAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _importJobId)
+                            .ConfigureAwait(false))
+                        .Where(x => x.Status != BatchStatus.Generated)
+                        .Select(x => x.ArtifactId)
+                        .ToList();
+
+                    if (!_batchesArtifactIds.Any())
+                    {
+                        return;
+                    }
                 }
 
                 ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
 
-                List<IBatch> batches = (await _batchRepository.GetBatchesWithIdsAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _batchesArtifactIds, _importJobId)
+                List<IBatch> batches = (await _batchRepository.GetBatchesWithIdsAsync(
+                            _sourceWorkspaceId,
+                            _syncConfigurationArtifactId,
+                            _batchesArtifactIds,
+                            _importJobId)
                         .ConfigureAwait(false))
-                    .Where(x => !_batchesArtifactIds.Contains(x.ArtifactId))
                     .ToList();
 
                 int readDocumentsCount = 0;

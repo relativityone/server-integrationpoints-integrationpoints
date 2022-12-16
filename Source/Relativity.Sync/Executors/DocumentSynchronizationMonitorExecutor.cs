@@ -53,7 +53,8 @@ namespace Relativity.Sync.Executors
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.JobHistoryArtifactId,
                     configuration.ExportRunId,
-                    configuration.SyncConfigurationArtifactId))
+                    configuration.SyncConfigurationArtifactId)
+                           .ConfigureAwait(false))
                 {
                     List<IBatch> batches = (await _batchRepository.GetAllAsync(
                             configuration.SourceWorkspaceArtifactId,

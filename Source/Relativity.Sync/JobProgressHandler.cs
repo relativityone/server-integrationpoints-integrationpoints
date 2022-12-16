@@ -31,8 +31,8 @@ namespace Relativity.Sync
             foreach (IBatch alreadyExecutedBatch in alreadyExecutedBatches)
             {
                 _batchProgresses[alreadyExecutedBatch.ArtifactId] = new SyncBatchProgress(
-                        alreadyExecutedBatch.ArtifactId, totalItems:
-                        alreadyExecutedBatch.TotalDocumentsCount,
+                        alreadyExecutedBatch.ArtifactId,
+                        totalItems: alreadyExecutedBatch.TotalDocumentsCount,
                         alreadyExecutedBatch.FailedItemsCount,
                         alreadyExecutedBatch.TransferredItemsCount)
                 { Completed = true };

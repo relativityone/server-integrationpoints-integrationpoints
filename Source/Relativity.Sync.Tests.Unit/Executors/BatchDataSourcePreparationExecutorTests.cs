@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
         private Mock<IImportSourceController> _importSourceControllerMock;
         private Mock<IImportJobController> _importJobControllerMock;
+        private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IAPILog> _loggerMock;
         private BatchDataSourcePreparationExecutor _sut;
 
@@ -42,6 +43,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock = new Mock<IBatchDataSourcePreparationConfiguration>();
             _importSourceControllerMock = new Mock<IImportSourceController>();
             _importJobControllerMock = new Mock<IImportJobController>();
+            _progressHandlerMock = new Mock<IProgressHandler>();
             _loggerMock = new Mock<IAPILog>();
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_importSourceControllerMock.Object);
@@ -54,6 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _serviceFactoryMock.Object,
                 _batchRepositoryMock.Object,
                 _loadFileGeneratorMock.Object,
+                _progressHandlerMock.Object,
                 _loggerMock.Object);
         }
 
