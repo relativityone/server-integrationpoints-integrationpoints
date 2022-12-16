@@ -59,6 +59,10 @@ namespace Relativity.Sync.Storage
 
         public int TaggedDocumentsCount => _batchRdo.TaggedDocumentsCount;
 
+        public int FailedReadDocumentsCount => _batchRdo.FailedReadDocumentsCount;
+
+        public int ReadDocumentsCount => _batchRdo.ReadDocumentsCount;
+
         public int StartingIndex => _batchRdo.StartingIndex;
 
         public BatchStatus Status => _batchRdo.Status;
@@ -110,6 +114,16 @@ namespace Relativity.Sync.Storage
         public async Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount)
         {
             await UpdateFieldValueAsync(x => x.TaggedDocumentsCount, taggedDocumentsCount).ConfigureAwait(false);
+        }
+
+        public async Task SetFailedReadDocumentsCount(int failedReadDocumentsCount)
+        {
+            await UpdateFieldValueAsync(x => x.FailedReadDocumentsCount, failedReadDocumentsCount).ConfigureAwait(false);
+        }
+
+        public async Task SetReadDocumentsCount(int readDocumentsCount)
+        {
+            await UpdateFieldValueAsync(x => x.ReadDocumentsCount, readDocumentsCount).ConfigureAwait(false);
         }
 
         public async Task SetStartingIndexAsync(int newStartIndex)

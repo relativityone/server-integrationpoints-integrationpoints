@@ -54,5 +54,9 @@ namespace Relativity.Sync.Storage
         Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount);
 
         Task SetStartingIndexAsync(int newStartIndex);
+
+        Task SetFailedReadDocumentsCount(int failedReadDocumentsCount);
+
+        Task SetReadDocumentsCount(int readDocumentsCount);
     }
 }
