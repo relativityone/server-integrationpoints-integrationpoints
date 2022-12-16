@@ -17,6 +17,7 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly IFileShareService _fileShareService;
         private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
+        private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
@@ -24,12 +25,14 @@ namespace Relativity.Sync.Executors
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IFileShareService fileShareService,
             IItemLevelErrorHandler itemLevelErrorHandler,
+            IInstanceSettings instanceSettings,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
             _fileShareService = fileShareService;
             _itemLevelErrorHandler = itemLevelErrorHandler;
+            _instanceSettings = instanceSettings;
             _logger = logger;
         }
 
@@ -51,14 +54,22 @@ namespace Relativity.Sync.Executors
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
                     using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                     {
+                        int items = 0;
+                        int updateBatchStatusCount = await _instanceSettings.GetImportAPIBatchStatusItemsUpdateCountAsync().ConfigureAwait(false);
                         while (reader.Read())
                         {
                             string line = GetLineContent(reader, settings);
                             writer.WriteLine(line);
+                            items++;
+                            if (items >= updateBatchStatusCount)
+                            {
+                                items = 0;
+                                await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                            }
                         }
                     }
 
-                    await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                    await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
                     await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
                         .ConfigureAwait(false);
 
@@ -142,9 +153,10 @@ namespace Relativity.Sync.Executors
             return batchFullPath;
         }
 
-        private async Task HandleBatchStatusOnReadFinish(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
+        private async Task HandleBatchStatusAsync(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
         {
-            await batch.SetFailedDocumentsCountAsync(monitor.FailedItemsCount).ConfigureAwait(false);
+            await batch.SetFailedReadDocumentsCount(monitor.FailedItemsCount).ConfigureAwait(false);
+            await batch.SetReadDocumentsCount(monitor.ReadItemsCount).ConfigureAwait(false);
 
             if (token.IsStopRequested)
             {
