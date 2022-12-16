@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using System.Configuration;
+﻿using System.Configuration;
 using System.IO;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional
 {
@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
         public static string DataTransferLegacyRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "DataTransfer.Legacy\\lib\\DataTransfer.Legacy.rap");
 
-        public static string AzureADProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "RIP_AAD_Provider\\lib\\AADProvider.rap");
+        public static string AzureADProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "AADProvider\\lib\\AADProvider.rap");
 
         public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
 
