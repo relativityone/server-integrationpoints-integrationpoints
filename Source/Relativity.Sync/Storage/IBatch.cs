@@ -31,6 +31,10 @@ namespace Relativity.Sync.Storage
 
         long TotalBytesTransferred { get; }
 
+        int FailedReadDocumentsCount { get; }
+
+        int ReadDocumentsCount { get; }
+
         int TaggedDocumentsCount { get; }
 
         bool IsFinished { get; }
