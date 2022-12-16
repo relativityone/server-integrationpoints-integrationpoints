@@ -19,6 +19,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Integration
@@ -37,8 +38,8 @@ namespace Relativity.Sync.Tests.Integration
         private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
         private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
         private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-        private const char _NESTED_DELIM = (char)29;
-        private const char _MULTI_DELIM = (char)30;
+        private const char _NESTED_DELIM = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
+        private const char _MULTI_DELIM = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
 
         [SetUp]
         public void InitializeMocks()
@@ -294,7 +295,7 @@ namespace Relativity.Sync.Tests.Integration
             (await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
                 .Which.Message.Should()
                     .Be("Unable to parse data from Relativity Export API: " +
-                        "The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII 30'). " +
+                        $"The identifiers of the objects in Multiple Object field contain the character specified as the multi-value delimiter ('ASCII {(int)_MULTI_DELIM}'). " +
                         "Rename these objects to not contain delimiter.");
         }
 
@@ -314,8 +315,8 @@ namespace Relativity.Sync.Tests.Integration
             (await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
                 .Which.Message.Should()
                 .Be("Unable to parse data from Relativity Export API: " +
-                    "The identifiers of the choices contain the character specified as the multi-value delimiter ('ASCII 30') or " +
-                    "nested value delimiter ('ASCII 29'). Rename choices to not contain delimiters.");
+                    $"The identifiers of the choices contain the character specified as the multi-value delimiter ('ASCII {(int)_MULTI_DELIM}') or " +
+                    $"nested value delimiter ('ASCII {(int)_NESTED_DELIM}'). Rename choices to not contain delimiters.");
         }
 
         private void SetupStreamTestCase(string value, Encoding fieldEncoding)

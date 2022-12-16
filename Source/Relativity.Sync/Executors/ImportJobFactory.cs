@@ -15,6 +15,7 @@ using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
@@ -63,8 +64,8 @@ namespace Relativity.Sync.Executors
             importJob.SourceData.SourceData = sourceWorkspaceDataReader;
             importJob.Settings.ArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
 
-            importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
-            importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+            importJob.Settings.MultiValueDelimiter = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
+            importJob.Settings.NestedValueDelimiter = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
 
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
@@ -91,8 +92,8 @@ namespace Relativity.Sync.Executors
             importJob.SourceData.SourceData = sourceWorkspaceDataReader;
             importJob.Settings.ArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
 
-            importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
-            importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+            importJob.Settings.MultiValueDelimiter = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
+            importJob.Settings.NestedValueDelimiter = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
 
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
@@ -161,8 +162,8 @@ namespace Relativity.Sync.Executors
             importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
             importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
 
-            importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
-            importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+            importJob.Settings.MultiValueDelimiter = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
+            importJob.Settings.NestedValueDelimiter = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
 
             bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
             if (shouldUseADFToCopyFiles)

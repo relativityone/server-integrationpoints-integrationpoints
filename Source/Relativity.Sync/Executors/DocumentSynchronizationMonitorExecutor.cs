@@ -70,6 +70,7 @@ namespace Relativity.Sync.Executors
                         .ConfigureAwait(false);
 
                     ImportDetails result;
+                    ImportState state = ImportState.Unknown;
                     do
                     {
                         if (token.IsStopRequested)
@@ -84,8 +85,14 @@ namespace Relativity.Sync.Executors
 
                         await Task.Delay(statusCheckDelay).ConfigureAwait(false);
 
-                        result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
                         await HandleDataSourceStatusAsync(batches, sourceController, configuration).ConfigureAwait(false);
+
+                        result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
+                        if (result.State != state)
+                        {
+                            state = result.State;
+                            _logger.LogInformation("Import status: {@status}", result);
+                        }
                     }
                     while (!result.IsFinished);
 
@@ -119,16 +126,19 @@ namespace Relativity.Sync.Executors
         {
             foreach (IBatch batch in batches.Where(x => !x.IsFinished))
             {
-                DataSourceDetails dataSource = (await sourceController.GetDetailsAsync(
+                DataSourceDetails dataSourceDetails = (await sourceController.GetDetailsAsync(
                         configuration.DestinationWorkspaceArtifactId,
                         configuration.ExportRunId,
                         batch.BatchGuid)
                     .ConfigureAwait(false))
                     .Value;
-                if (dataSource.IsFinished())
+
+                _logger.LogInformation("Data source details: {@details}", dataSourceDetails);
+
+                if (dataSourceDetails.IsFinished())
                 {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSource.State);
-                    await EndBatchAsync(batch, dataSource.State, configuration).ConfigureAwait(false);
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSourceDetails.State);
+                    await EndBatchAsync(batch, dataSourceDetails.State, configuration).ConfigureAwait(false);
                 }
             }
         }
