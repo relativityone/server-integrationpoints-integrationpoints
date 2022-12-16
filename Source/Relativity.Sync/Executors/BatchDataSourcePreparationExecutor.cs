@@ -16,17 +16,20 @@ namespace Relativity.Sync.Executors
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly IBatchRepository _batchRepository;
         private readonly ILoadFileGenerator _fileGenerator;
+        private readonly IProgressHandler _progressHandler;
         private readonly IAPILog _logger;
 
         public BatchDataSourcePreparationExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
             IBatchRepository batchRepository,
             ILoadFileGenerator fileGenerator,
+            IProgressHandler progressHandler,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _batchRepository = batchRepository;
             _fileGenerator = fileGenerator;
+            _progressHandler = progressHandler;
             _logger = logger;
         }
 
@@ -34,6 +37,12 @@ namespace Relativity.Sync.Executors
         {
             using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
             using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            using (await _progressHandler.AttachAsync(
+                       configuration.SourceWorkspaceArtifactId,
+                       configuration.DestinationWorkspaceArtifactId,
+                       configuration.JobHistoryArtifactId,
+                       configuration.ExportRunId)
+                       .ConfigureAwait(false))
             {
                 try
                 {
@@ -45,6 +54,7 @@ namespace Relativity.Sync.Executors
                              .ToList();
 
                     _logger.LogInformation("Retrieved {batchesCount} Batches to Import.", batchIdList.Count);
+
                     foreach (int batchId in batchIdList)
                     {
                         _logger.LogInformation("Reading Batch {batchId}...", batchId);
@@ -82,6 +92,7 @@ namespace Relativity.Sync.Executors
                         await batch.SetStatusAsync(BatchStatus.Generated).ConfigureAwait(false);
                     }
 
+                    await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
                     await EndJobAsync(job, configuration).ConfigureAwait(false);
                 }
                 catch (Exception ex)
