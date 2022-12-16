@@ -57,6 +57,11 @@ namespace Relativity.Sync
             return await GetAsync("ImportAPIStatusCheckDelay", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
         }
 
+        public async Task<int> GetImportAPIBatchStatusItemsUpdateCountAsync(int defaultValue = 1000)
+        {
+            return await GetAsync("ImportAPIBatchStatusItemsUpdateCount", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
+        }
+
         public async Task<T> GetAsync<T>(string name, string section, T defaultValue)
         {
             InstanceSettingQueryResultSet resultSet = await TryReadInstanceSettingAsync(name, section).ConfigureAwait(false);

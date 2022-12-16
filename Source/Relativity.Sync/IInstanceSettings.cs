@@ -19,6 +19,8 @@ namespace Relativity.Sync
 
         Task<TimeSpan> GetImportAPIStatusCheckDelayAsync(TimeSpan defaultValue);
 
+        Task<int> GetImportAPIBatchStatusItemsUpdateCountAsync(int defaultValue = 1000);
+
         Task<T> GetAsync<T>(string name, string section, T defaultValue);
     }
 }
