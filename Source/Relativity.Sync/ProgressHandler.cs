@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -6,6 +8,7 @@ using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
@@ -16,6 +19,7 @@ namespace Relativity.Sync
         private readonly ISourceServiceFactoryForAdmin _serviceFactory;
         private readonly IInstanceSettings _instanceSettings;
         private readonly IJobProgressUpdater _progressUpdater;
+        private readonly IBatchRepository _batchRepository;
         private readonly IAPILog _log;
 
         private readonly TimeSpan _DEFAULT_PROGRESS_UPDATE_PERIOD = TimeSpan.FromSeconds(10);
@@ -24,12 +28,18 @@ namespace Relativity.Sync
         private int _destinationWorkspaceId;
         private Guid _importJobId;
         private int _jobHistoryId;
+        private int _syncConfigurationArtifactId;
+
+        private int _completedRecordsCountForGeneratedItems = 0;
+        private int _failedRecordsCountForGeneratedItems = 0;
+        private List<int> _batchesArtifactIds = new List<int>();
 
         public ProgressHandler(
             ITimerFactory timerFactory,
             ISourceServiceFactoryForAdmin serviceFactory,
             IInstanceSettings instanceSettings,
             IJobProgressUpdater progressUpdater,
+            IBatchRepository batchRepository,
             IAPILog log)
         {
             _timerFactory = timerFactory;
@@ -37,9 +47,10 @@ namespace Relativity.Sync
             _instanceSettings = instanceSettings;
             _log = log;
             _progressUpdater = progressUpdater;
+            _batchRepository = batchRepository;
         }
 
-        public async Task<IDisposable> AttachAsync(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, Guid importJobId)
+        public async Task<IDisposable> AttachAsync(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, Guid importJobId, int syncConfigurationArtifactId)
         {
             try
             {
@@ -56,6 +67,13 @@ namespace Relativity.Sync
                 _destinationWorkspaceId = destinationWorkspaceId;
                 _importJobId = importJobId;
                 _jobHistoryId = jobHistoryId;
+                _syncConfigurationArtifactId = syncConfigurationArtifactId;
+
+                _batchesArtifactIds = (await _batchRepository
+                    .GetAllAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _importJobId)
+                    .ConfigureAwait(false))
+                    .Select(x => x.ArtifactId)
+                    .ToList();
 
                 TimeSpan progressUpdatePeriod = await _instanceSettings.GetSyncProgressUpdatePeriodAsync(_DEFAULT_PROGRESS_UPDATE_PERIOD).ConfigureAwait(false);
 
@@ -77,13 +95,38 @@ namespace Relativity.Sync
         {
             try
             {
+                if (!_batchesArtifactIds.Any())
+                {
+                    return;
+                }
+
                 ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
+
+                List<IBatch> batches = (await _batchRepository.GetBatchesWithIdsAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _batchesArtifactIds, _importJobId)
+                        .ConfigureAwait(false))
+                    .Where(x => !_batchesArtifactIds.Contains(x.ArtifactId))
+                    .ToList();
+
+                int readDocumentsCount = 0;
+                int failedReadDocumentsCount = 0;
+                foreach (IBatch batch in batches)
+                {
+                    if (batch.Status == BatchStatus.Generated)
+                    {
+                        _batchesArtifactIds.Remove(batch.ArtifactId);
+                    }
+                    readDocumentsCount += batch.ReadDocumentsCount;
+                    failedReadDocumentsCount += batch.FailedReadDocumentsCount;
+                }
+
+                int completedRecordsCount = _completedRecordsCountForGeneratedItems + readDocumentsCount + importProgress.ImportedRecords;
+                int failedRecordsCount = _failedRecordsCountForGeneratedItems + failedReadDocumentsCount + importProgress.ErroredRecords;
 
                 await _progressUpdater.UpdateJobProgressAsync(
                         _sourceWorkspaceId,
                         _jobHistoryId,
-                        importProgress.ImportedRecords,
-                        importProgress.ErroredRecords)
+                        completedRecordsCount,
+                        failedRecordsCount)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

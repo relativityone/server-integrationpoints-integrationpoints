@@ -41,7 +41,8 @@ namespace Relativity.Sync.Executors
                        configuration.SourceWorkspaceArtifactId,
                        configuration.DestinationWorkspaceArtifactId,
                        configuration.JobHistoryArtifactId,
-                       configuration.ExportRunId)
+                       configuration.ExportRunId,
+                       configuration.SyncConfigurationArtifactId)
                        .ConfigureAwait(false))
             {
                 try
@@ -90,6 +91,7 @@ namespace Relativity.Sync.Executors
                         }
 
                         await batch.SetStatusAsync(BatchStatus.Generated).ConfigureAwait(false);
+                        await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
                     }
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
