@@ -31,8 +31,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             _logger = logger;
         }
 
-        public async Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(int workspaceId,
-            int savedSearchId, CancellationToken token = default(CancellationToken))
+        public async Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(
+            int workspaceId,
+            int savedSearchId,
+            CancellationToken token = default(CancellationToken))
         {
             DocumentsStatistics StatisticsCalculation(DocumentsStatistics statistics, IEnumerable<RelativityObjectSlim> result)
             {
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 statistics.DocumentsCount += result.Count();
                 statistics.TotalNativesCount += result.Count(DocumentHasNative);
-                
+
                 statistics.TotalNativesSizeBytes +=
                     _nativeFileSizeStatistics.GetTotalFileSize(result.Select(x => x.ArtifactID), workspaceId);
 
@@ -55,23 +57,31 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     .AddField(DocumentFieldsConstants.HasNativeFieldGuid)
                     .Build();
 
-                DocumentsStatistics statistics = await QueryDocumentsWithExport(workspaceId, query,
-                    nameof(GetNativesStatisticsForSavedSearchAsync), token,
+                DocumentsStatistics statistics = await QueryDocumentsWithExport(
+                    workspaceId,
+                    query,
+                    nameof(GetNativesStatisticsForSavedSearchAsync),
+                    token,
                     StatisticsCalculation).ConfigureAwait(false);
 
                 return statistics;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                _logger.LogError(
+                    ex,
                     "Exception occurred while calculating natives statistics for Saved Search ID: {savedSearchId} in Workspace ID: {workspaceId}",
-                    savedSearchId, workspaceId);
+                    savedSearchId,
+                    workspaceId);
                 throw;
             }
         }
 
-        public async Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId,
-            int savedSearchId, bool calculateSize, CancellationToken token = default(CancellationToken))
+        public async Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(
+            int workspaceId,
+            int savedSearchId,
+            bool calculateSize,
+            CancellationToken token = default(CancellationToken))
         {
             DocumentsStatistics StatisticsCalculation(DocumentsStatistics stats, IEnumerable<RelativityObjectSlim> result)
             {
@@ -89,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     })
                     .Select(x => x.ArtifactID)
                     .ToList();
-                    
+
                     stats.TotalImagesSizeBytes += _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
                 }
 
@@ -103,23 +113,30 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     .AddField(DocumentFieldsConstants.HasImagesFieldName)
                     .AddField(DocumentFieldsConstants.RelativityImageCountGuid)
                     .Build();
-                
-                DocumentsStatistics statistics = await QueryDocumentsWithExport(workspaceId, query,
-                    nameof(GetImagesStatisticsForSavedSearchAsync), token,
+
+                DocumentsStatistics statistics = await QueryDocumentsWithExport(
+                    workspaceId,
+                    query,
+                    nameof(GetImagesStatisticsForSavedSearchAsync),
+                    token,
                     StatisticsCalculation).ConfigureAwait(false);
 
                 return statistics;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                _logger.LogError(
+                    ex,
                     "Exception occurred while calculating images statistics for Saved Search ID: {savedSearchId} in Workspace ID: {workspaceId}",
-                    savedSearchId, workspaceId);
+                    savedSearchId,
+                    workspaceId);
                 throw;
             }
         }
 
-        public async Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(int workspaceId, int productionId,
+        public async Task<DocumentsStatistics> GetImagesStatisticsForProductionAsync(
+            int workspaceId,
+            int productionId,
             CancellationToken token = default(CancellationToken))
         {
             DocumentsStatistics StatisticsCalculation(DocumentsStatistics statistics, IEnumerable<RelativityObjectSlim> result)
@@ -129,11 +146,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 statistics.DocumentsCount += result.Count();
                 statistics.TotalImagesCount += result.Sum(x => DocumentHasImage(x));
-                
+
                 statistics.TotalImagesSizeBytes += _imageFileSizeStatistics.GetTotalFileSize(productionId, workspaceId);
 
                 return statistics;
             }
+
             try
             {
                 QueryRequest query = new ProductionInformationQueryBuilder()
@@ -141,23 +159,32 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     .AddField(ProductionConsts.ImageCountFieldGuid)
                     .Build();
 
-                DocumentsStatistics statistics = await QueryDocumentsWithExport(workspaceId, query,
-                    nameof(GetImagesStatisticsForProductionAsync), token,
+                DocumentsStatistics statistics = await QueryDocumentsWithExport(
+                    workspaceId,
+                    query,
+                    nameof(GetImagesStatisticsForProductionAsync),
+                    token,
                     StatisticsCalculation).ConfigureAwait(false);
 
                 return statistics;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,
+                _logger.LogError(
+                    ex,
                     "Exception occurred while calculating images statistics for Production ID: {productionId} in Workspace ID: {workspaceId}",
-                    productionId, workspaceId);
+                    productionId,
+                    workspaceId);
                 throw;
             }
         }
 
-        private async Task<DocumentsStatistics> QueryDocumentsWithExport(int workspaceId, QueryRequest query,
-            string callingMethodName, CancellationToken token, Func<DocumentsStatistics, IEnumerable<RelativityObjectSlim>, DocumentsStatistics> function)
+        private async Task<DocumentsStatistics> QueryDocumentsWithExport(
+            int workspaceId,
+            QueryRequest query,
+            string callingMethodName,
+            CancellationToken token,
+            Func<DocumentsStatistics, IEnumerable<RelativityObjectSlim>, DocumentsStatistics> function)
         {
             IRelativityObjectManager objectManager =
                 _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
@@ -166,26 +193,26 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             using (IExportQueryResult export = await objectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
             {
                 stopwatch.Restart();
-                _logger.LogInformation("Exported {count} documents ({method}) in {elapsed} s",
-                    export.ExportResult.RecordCount, callingMethodName, stopwatch.Elapsed.TotalSeconds);
+                _logger.LogInformation("Exported {count} documents ({method}) in {elapsed} s", export.ExportResult.RecordCount, callingMethodName, stopwatch.Elapsed.TotalSeconds);
 
                 DocumentsStatistics statistics = new DocumentsStatistics();
                 IEnumerable<RelativityObjectSlim> result;
                 int startIndex = 0;
                 do
                 {
-                    result = (await export.GetNextBlockAsync(startIndex, token).ConfigureAwait(false));
+                    result = await export.GetNextBlockAsync(startIndex, token).ConfigureAwait(false);
+
                     if (result.Any())
                     {
                         statistics = function(statistics, result);
                     }
+
                     startIndex += result.Count();
                 }
                 while (result.Any());
 
                 stopwatch.Stop();
-                _logger.LogInformation("Calculated total items size for method {callingMethodName} in {elapsed} ms", 
-                    callingMethodName, stopwatch.ElapsedMilliseconds);
+                _logger.LogInformation("Calculated total items size for method {callingMethodName} in {elapsed} ms", callingMethodName, stopwatch.ElapsedMilliseconds);
 
                 return statistics;
             }

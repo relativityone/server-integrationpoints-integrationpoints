@@ -1,7 +1,7 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath } from "./buttonFunctionalities";
+import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
-export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer:Element) {
+export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
     return consoleApi.generate.button({
         innerText: "Run",
         disabled: !enabled,
@@ -81,7 +81,7 @@ function createMessageContainer(message: string, theme: string, lqMessageContain
         messageContainer.setAttribute("message-collection-title-prefix", title);
     }
     messageContainer.setAttribute("messages", message);
-    lqMessageContainer.appendChild(messageContainer); 
+    lqMessageContainer.appendChild(messageContainer);
 }
 
 export function removeMessageContainers() {
@@ -93,7 +93,7 @@ export function removeMessageContainers() {
     } catch (err) {
         console.log(err)
     }
-    
+
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
@@ -116,6 +116,32 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
                         });
                 }
             })
+        }
+    });
+}
+
+export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
+    var operationType = "";
+    if (sourceConfiguration["SourceProductionId"]) {
+        operationType = "Production";
+    } else {
+        operationType = "Saved Search";
+    }
+
+    return consoleApi.generate.button({
+        innerText: "Calculate statistics",
+        disabled: !enabled,        
+        onclick: function () {
+            return convenienceApi.modalService.confirm({
+                title: "Calculate statistics",
+                message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming, depending on size of the " + operationType + ". Statistics calculation runs in the background so you can still use other Transfer Options or leave this page and return for the results later.",
+                acceptText: "Calculate",
+                cancelText: "Cancel",
+                acceptAction: function () {                   
+
+                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
+                }
+            });
         }
     });
 }
@@ -234,7 +260,7 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
                                 model.cancel("Cancel payload");
                             }
                         }
-                    ] 
+                    ]
                 };
 
                 return convenienceApi.modalService.openCustomModal(model);
