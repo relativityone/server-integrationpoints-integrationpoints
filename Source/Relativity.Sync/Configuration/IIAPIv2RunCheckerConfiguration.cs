@@ -13,5 +13,7 @@
         bool IsDrainStopped { get; }
 
         int SourceWorkspaceArtifactId { get; }
+
+        int DestinationWorkspaceArtifactId { get; }
     }
 }

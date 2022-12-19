@@ -4,7 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.LibraryApplication;
+using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
@@ -14,10 +18,13 @@ namespace Relativity.Sync.Pipelines
 {
     internal class IAPIv2RunChecker : IIAPIv2RunChecker
     {
+        private static readonly Guid ImportAppGuid = new Guid("21f65fdc-3016-4f2b-9698-de151a6186a2");
+
         private readonly ISyncToggles _toggles;
         private readonly IIAPIv2RunCheckerConfiguration _configuration;
         private readonly IFieldMappings _fieldMappings;
         private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
+        private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
         private readonly IAPILog _logger;
 
         private bool? _shouldBeUsed;
@@ -27,12 +34,14 @@ namespace Relativity.Sync.Pipelines
             ISyncToggles toggles,
             IFieldMappings fieldMappings,
             IObjectFieldTypeRepository objectFieldTypeRepository,
+            IDestinationServiceFactoryForAdmin serviceFactory,
             IAPILog logger)
         {
             _toggles = toggles;
             _configuration = configuration;
             _fieldMappings = fieldMappings;
             _objectFieldTypeRepository = objectFieldTypeRepository;
+            _serviceFactory = serviceFactory;
             _logger = logger;
         }
 
@@ -50,13 +59,15 @@ namespace Relativity.Sync.Pipelines
         {
             try
             {
-                return _toggles.IsEnabled<EnableIAPIv2Toggle>()
-                       && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
-                       && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
-                       && !_configuration.IsRetried
-                       && !_configuration.IsDrainStopped
-                       && !_configuration.ImageImport
-                       && !await LongTextFieldsMapped().ConfigureAwait(false);
+                bool result = _toggles.IsEnabled<EnableIAPIv2Toggle>()
+                                                && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
+                                                && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+                                                && !_configuration.IsRetried
+                                                && !_configuration.IsDrainStopped
+                                                && !_configuration.ImageImport
+                                                && await IsImportInstalledInDestinationWorkspaceAsync().ConfigureAwait(false)
+                                                && !await AreLongTextFieldsMappedAsync().ConfigureAwait(false);
+                return result;
             }
             catch (Exception ex)
             {
@@ -65,7 +76,30 @@ namespace Relativity.Sync.Pipelines
             }
         }
 
-        private async Task<bool> LongTextFieldsMapped()
+        private async Task<bool> IsImportInstalledInDestinationWorkspaceAsync()
+        {
+            try
+            {
+                using (IApplicationInstallManager appManager = await _serviceFactory.CreateProxyAsync<IApplicationInstallManager>().ConfigureAwait(false))
+                {
+                    GetInstallStatusResponse status = await appManager.GetStatusAsync(_configuration.DestinationWorkspaceArtifactId, ImportAppGuid).ConfigureAwait(false);
+                    bool isInstalled = status.InstallStatus.Code == InstallStatusCode.Completed;
+                    return isInstalled;
+                }
+            }
+            catch (NotFoundException ex)
+            {
+                _logger.LogError(ex, "Import application is not installed in destination workspace Artifact ID: {destinationWorkspaceArtifactID}", _configuration.DestinationWorkspaceArtifactId);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to check if Import application is installed in destination workspace Artifact ID: {destinationWorkspaceArtifactID}", _configuration.DestinationWorkspaceArtifactId);
+                return false;
+            }
+        }
+
+        private async Task<bool> AreLongTextFieldsMappedAsync()
         {
             IList<FieldMap> mappedFields = _fieldMappings.GetFieldMappings();
             ICollection<string> fieldNames = mappedFields.Select(x => x.SourceField.DisplayName).ToArray();
@@ -77,7 +111,8 @@ namespace Relativity.Sync.Pipelines
                 CancellationToken.None)
              .ConfigureAwait(false);
 
-            return fieldDataTypes.Any(x => x.Value == RelativityDataType.LongText);
+            bool hasLongTextMapped = fieldDataTypes.Any(x => x.Value == RelativityDataType.LongText);
+            return hasLongTextMapped;
         }
     }
 }

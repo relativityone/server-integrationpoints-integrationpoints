@@ -59,7 +59,7 @@ namespace Relativity.Sync.Executors
         {
             using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
-                _logger.LogInformation("Creating ImportJob with {importJobId} ID...", context.ImportJobId);
+                _logger.LogInformation("Creating ImportJob with ID: {importJobId}", context.ImportJobId);
 
                 Response response = await importJobController.CreateAsync(
                         workspaceID: context.DestinationWorkspaceId,

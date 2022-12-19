@@ -24,5 +24,7 @@ namespace Relativity.Sync.Storage
         public bool IsDrainStopped => _cache.GetFieldValue(x => x.Resuming);
 
         public int SourceWorkspaceArtifactId => _jobParameters.WorkspaceId;
+
+        public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
     }
 }
