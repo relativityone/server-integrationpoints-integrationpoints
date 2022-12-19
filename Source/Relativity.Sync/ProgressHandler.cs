@@ -69,12 +69,7 @@ namespace Relativity.Sync
                 _jobHistoryId = jobHistoryId;
                 _syncConfigurationArtifactId = syncConfigurationArtifactId;
 
-                _batchesArtifactIds = (await _batchRepository
-                    .GetAllAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _importJobId)
-                    .ConfigureAwait(false))
-                    .Select(x => x.ArtifactId)
-                    .ToList();
-
+                await UpdateBatchesArtifactIds().ConfigureAwait(false);
                 TimeSpan progressUpdatePeriod = await _instanceSettings.GetSyncProgressUpdatePeriodAsync(_DEFAULT_PROGRESS_UPDATE_PERIOD).ConfigureAwait(false);
 
                 _log.LogInformation("Progress will be updated every {period}", progressUpdatePeriod);
@@ -95,57 +90,65 @@ namespace Relativity.Sync
         {
             try
             {
-                if (!_batchesArtifactIds.Any())
-                {
-                    _batchesArtifactIds = (await _batchRepository
-                            .GetAllAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _importJobId)
-                            .ConfigureAwait(false))
-                        .Where(x => x.Status != BatchStatus.Generated)
-                        .Select(x => x.ArtifactId)
-                        .ToList();
-
-                    if (!_batchesArtifactIds.Any())
-                    {
-                        return;
-                    }
-                }
-
-                ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
-
-                List<IBatch> batches = (await _batchRepository.GetBatchesWithIdsAsync(
-                            _sourceWorkspaceId,
-                            _syncConfigurationArtifactId,
-                            _batchesArtifactIds,
-                            _importJobId)
-                        .ConfigureAwait(false))
-                    .ToList();
-
-                int readDocumentsCount = 0;
-                int failedReadDocumentsCount = 0;
-                foreach (IBatch batch in batches)
-                {
-                    if (batch.Status == BatchStatus.Generated)
-                    {
-                        _batchesArtifactIds.Remove(batch.ArtifactId);
-                    }
-                    readDocumentsCount += batch.ReadDocumentsCount;
-                    failedReadDocumentsCount += batch.FailedReadDocumentsCount;
-                }
-
-                int completedRecordsCount = _completedRecordsCountForGeneratedItems + readDocumentsCount + importProgress.ImportedRecords;
-                int failedRecordsCount = _failedRecordsCountForGeneratedItems + failedReadDocumentsCount + importProgress.ErroredRecords;
-
-                await _progressUpdater.UpdateJobProgressAsync(
-                        _sourceWorkspaceId,
-                        _jobHistoryId,
-                        completedRecordsCount,
-                        failedRecordsCount)
-                    .ConfigureAwait(false);
+                await UpdateBatchesArtifactIds().ConfigureAwait(false);
+                await HandleProgressWithBatches().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, "Sync Job progress update failed. Progress won't be updated in this cycle.");
             }
+        }
+
+        private async Task UpdateBatchesArtifactIds()
+        {
+            if (!_batchesArtifactIds.Any())
+            {
+                _batchesArtifactIds = (await _batchRepository
+                        .GetAllAsync(_sourceWorkspaceId, _syncConfigurationArtifactId, _importJobId)
+                        .ConfigureAwait(false))
+                    .Where(x => x.Status != BatchStatus.Generated)
+                    .Select(x => x.ArtifactId)
+                    .ToList();
+
+                if (!_batchesArtifactIds.Any())
+                {
+                    _log.LogWarning("No batches returned with not Generated status while Progress handling.");
+                }
+            }
+        }
+
+        private async Task HandleProgressWithBatches()
+        {
+            ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
+            List<IBatch> batches = (await _batchRepository.GetBatchesWithIdsAsync(
+                        _sourceWorkspaceId,
+                        _syncConfigurationArtifactId,
+                        _batchesArtifactIds,
+                        _importJobId)
+                    .ConfigureAwait(false))
+                .ToList();
+
+            int readDocumentsCount = 0;
+            int failedReadDocumentsCount = 0;
+            foreach (IBatch batch in batches)
+            {
+                readDocumentsCount += batch.ReadDocumentsCount;
+                failedReadDocumentsCount += batch.FailedReadDocumentsCount;
+                if (batch.Status == BatchStatus.Generated)
+                {
+                    _batchesArtifactIds.Remove(batch.ArtifactId);
+                }
+            }
+
+            int completedRecordsCount = _completedRecordsCountForGeneratedItems + readDocumentsCount + importProgress.ImportedRecords;
+            int failedRecordsCount = _failedRecordsCountForGeneratedItems + failedReadDocumentsCount + importProgress.ErroredRecords;
+
+            await _progressUpdater.UpdateJobProgressAsync(
+                    _sourceWorkspaceId,
+                    _jobHistoryId,
+                    completedRecordsCount,
+                    failedRecordsCount)
+                .ConfigureAwait(false);
         }
 
         private async Task<ImportProgress> GetImportJobProgressAsync()
