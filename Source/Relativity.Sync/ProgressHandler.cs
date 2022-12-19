@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1;
@@ -20,6 +21,7 @@ namespace Relativity.Sync
         private readonly IInstanceSettings _instanceSettings;
         private readonly IJobProgressUpdater _progressUpdater;
         private readonly IBatchRepository _batchRepository;
+        private readonly ISemaphoreSlim _semaphoreSlim;
         private readonly IAPILog _log;
 
         private readonly TimeSpan _DEFAULT_PROGRESS_UPDATE_PERIOD = TimeSpan.FromSeconds(10);
@@ -40,12 +42,14 @@ namespace Relativity.Sync
             IInstanceSettings instanceSettings,
             IJobProgressUpdater progressUpdater,
             IBatchRepository batchRepository,
+            ISemaphoreSlim semaphoreSlim,
             IAPILog log)
         {
             _timerFactory = timerFactory;
             _serviceFactory = serviceFactory;
             _instanceSettings = instanceSettings;
             _log = log;
+            _semaphoreSlim = semaphoreSlim;
             _progressUpdater = progressUpdater;
             _batchRepository = batchRepository;
         }
@@ -101,6 +105,7 @@ namespace Relativity.Sync
 
         private async Task UpdateBatchesArtifactIds()
         {
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
             if (!_batchesArtifactIds.Any())
             {
                 _batchesArtifactIds = (await _batchRepository
@@ -115,6 +120,7 @@ namespace Relativity.Sync
                     _log.LogWarning("No batches returned with not Generated status while Progress handling.");
                 }
             }
+            _semaphoreSlim.Release();
         }
 
         private async Task HandleProgressWithBatches()
@@ -136,7 +142,9 @@ namespace Relativity.Sync
                 failedReadDocumentsCount += batch.FailedReadDocumentsCount;
                 if (batch.Status == BatchStatus.Generated)
                 {
+                    await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
                     _batchesArtifactIds.Remove(batch.ArtifactId);
+                    _semaphoreSlim.Release();
                 }
             }
 
