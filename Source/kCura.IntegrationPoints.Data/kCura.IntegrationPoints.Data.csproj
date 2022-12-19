@@ -58,6 +58,7 @@
     <Compile Include="BaseRdo.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
+    <Compile Include="CalculationStatus.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />
@@ -189,9 +190,12 @@
     </Compile>
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
+    <Compile Include="Statistics\CalculationState.cs" />
     <Compile Include="RipSerializationException.cs" />
     <Compile Include="Statistics\DocumentsStatistics.cs" />
+    <Compile Include="Statistics\IOnDemandStatisticsService.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
+    <Compile Include="Statistics\Implementations\OnDemandStatisticsService.cs" />
     <Compile Include="Statistics\Implementations\DocumentAccumulatedStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />

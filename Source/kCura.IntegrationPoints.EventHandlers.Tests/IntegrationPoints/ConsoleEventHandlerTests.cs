@@ -12,6 +12,8 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -110,13 +112,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
             var importSettings = new ImportSettings { ImageImport = false };
+            CalculationState state = new CalculationState { Status = CalculationStatus.New };
             var integrationPoint = new Data.IntegrationPoint
             {
                 HasErrors = true,
                 SourceProvider = 8392,
                 DestinationProvider = 437,
                 SourceConfiguration = _serializer.Serialize(sourceConfiguration),
-                DestinationConfiguration = _serializer.Serialize(importSettings)
+                DestinationConfiguration = _serializer.Serialize(importSettings),
+                CalculationState = _serializer.Serialize(state)
             };
 
             string[] viewErrorMessages = { Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
@@ -181,7 +185,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                     integrationPoint.HasErrors.Value,
                     hasViewErrorsPermissions,
                     hasStoppableJobs,
-                    hasProfileAddPermission)
+                    hasProfileAddPermission,
+                    false)
                 .Returns(buttonStates);
 
             string actionButtonOnClickEvent;
@@ -294,13 +299,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
             var importSettings = new ImportSettings { ImageImport = false };
+            CalculationState state = new CalculationState { Status = CalculationStatus.New };
             var integrationPoint = new Data.IntegrationPoint
             {
                 HasErrors = true,
                 SourceProvider = 8392,
                 DestinationProvider = 243,
                 SourceConfiguration = _serializer.Serialize(sourceConfiguration),
-                DestinationConfiguration = _serializer.Serialize(importSettings)
+                DestinationConfiguration = _serializer.Serialize(importSettings),
+                CalculationState = _serializer.Serialize(state)
             };
 
             _managerFactory.CreateStateManager().Returns(_stateManager);
@@ -348,7 +355,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             };
 
             _stateManager
-                .GetButtonState(sourceConfiguration.TypeOfExport, providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true)
+                .GetButtonState(sourceConfiguration.TypeOfExport, providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true, false)
                 .Returns(buttonStates);
 
             string actionButtonOnClickEvent;

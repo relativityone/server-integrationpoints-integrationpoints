@@ -1,10 +1,12 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
@@ -19,13 +21,16 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
+        private readonly IOnDemandStatisticsService _onDemandStatisticsService;
 
-        public SummaryPageController(ICaseServiceContext context,
+        public SummaryPageController(
+            ICaseServiceContext context,
             IProviderTypeService providerTypeService,
             SummaryPageSelector summaryPageSelector,
             IDocumentAccumulatedStatistics documentAccumulatedStatistics,
             IIntegrationPointService integrationPointService,
-            IIntegrationPointProfileService integrationPointProfileService)
+            IIntegrationPointProfileService integrationPointProfileService,
+            IOnDemandStatisticsService onDemandStatisticsService)
         {
             _context = context;
             _providerTypeService = providerTypeService;
@@ -33,6 +38,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
             _integrationPointService = integrationPointService;
             _integrationPointProfileService = integrationPointProfileService;
+            _onDemandStatisticsService = onDemandStatisticsService;
         }
 
         [HttpPost]
@@ -56,26 +62,55 @@ namespace kCura.IntegrationPoints.Web.Controllers
         }
 
         [HttpPost]
-        [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
+        [LogApiExceptionFilter(Message = "Unable to get CalculationState info from IntegrationPoint")]
+        public JsonResult GetCalculationStateInfo(int integrationPointId)
         {
-            DocumentsStatistics result = await
-                _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
-            return Json(result);
+            CalculationState calculationState = _onDemandStatisticsService.GetCalculationState(integrationPointId);
+            return Json(calculationState);
+        }
+
+        [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
+        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
+        {
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            if (calculationState.Status != CalculationStatus.Error)
+            {
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
-        public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
+        public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
         {
-            return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            if (calculationState.Status != CalculationStatus.Error)
+            {
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
+               .ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
-        public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId)
+        public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
         {
-            return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
+            CalculationState calculationState = await _onDemandStatisticsService.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
+            if (calculationState.Status != CalculationStatus.Error)
+            {
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
+                .ConfigureAwait(false);
+                calculationState = await _onDemandStatisticsService.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         private Tuple<int, int> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
@@ -98,6 +133,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
     public static class IntegrationPointApiControllerNames
     {
         public static string IntegrationPointApiControllerName => "IntegrationPointsAPI";
+
         public static string IntegrationPointProfileApiControllerName => "IntegrationPointProfilesAPI";
     }
 }

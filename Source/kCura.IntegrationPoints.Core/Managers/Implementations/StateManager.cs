@@ -13,7 +13,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasErrors,
             bool hasErrorViewPermissions,
             bool hasStoppableJobs,
-            bool hasProfileAddPermission)
+            bool hasProfileAddPermission,
+            bool calculationInProgress)
         {
             bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
             bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
             bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
+            bool calculateStatsButtonEnabled = IsCalculateStatisticsButtonEnabled(providerType, calculationInProgress);
 
             return new ButtonStateDTO
             {
@@ -35,8 +37,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 StopButtonEnabled = stopButtonEnabled,
                 SaveAsProfileButtonVisible = saveAsProfileButtonVisible,
                 DownloadErrorFileLinkEnabled = downloadErrorFileLinkEnabled,
-                DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible
+                DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible,
+                CalculateStatisticsButtonEnabled = calculateStatsButtonEnabled
             };
+        }
+
+        private bool IsCalculateStatisticsButtonEnabled(ProviderType providerType, bool calculationInProgress)
+        {
+            return (providerType == ProviderType.Relativity) && !calculationInProgress;
         }
 
         private bool IsRunButtonEnable(bool hasJobsExecutingOrInQueue)

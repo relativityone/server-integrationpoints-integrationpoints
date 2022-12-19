@@ -339,6 +339,18 @@ namespace kCura.IntegrationPoints.Data
                 SetField<string>(new System.Guid(IntegrationPointFieldGuids.Name), value);
             }
         }
+        [DynamicField(IntegrationPointFields.CalculationState, IntegrationPointFieldGuids.CalculationState, FieldTypes.LongText)]
+        public string CalculationState
+        {
+            get
+            {
+                return GetField<string>(new System.Guid(IntegrationPointFieldGuids.CalculationState));
+            }
+            set
+            {
+                SetField<string>(new System.Guid(IntegrationPointFieldGuids.CalculationState), value);
+            }
+        }
         private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
         public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
         {
@@ -1167,6 +1179,18 @@ namespace kCura.IntegrationPoints.Data
             set
             {
                 SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.Name), value);
+            }
+        }
+        [DynamicField(IntegrationPointProfileFields.CalculationState, IntegrationPointProfileFieldGuids.CalculationState, FieldTypes.LongText)]
+        public string CalculationState
+        {
+            get
+            {
+                return GetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.CalculationState));
+            }
+            set
+            {
+                SetField<string>(new System.Guid(IntegrationPointProfileFieldGuids.CalculationState), value);
             }
         }
         private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
