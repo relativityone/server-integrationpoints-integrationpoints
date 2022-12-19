@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
         public HttpResponseMessage Run(Payload payload)
-        {
+        {            
             try
             {
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
@@ -80,12 +81,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                     _integrationPointService,
                     ActionType.Run
                 );
+
                 return httpResponseMessage;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, "Failed to Run job.");
-                throw;
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest);
+                response.Content = new StringContent(ex.Message, System.Text.Encoding.UTF8, "text/plain");
+                return response;
+                //throw;
             }
         }
 
