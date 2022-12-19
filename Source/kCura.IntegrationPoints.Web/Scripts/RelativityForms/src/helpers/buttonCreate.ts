@@ -134,7 +134,7 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
-                message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming. Statistics calculation runs in the background so all other activities on this Integration Point will be enabled.",
+                message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming, depending on size of the " + operationType + ". Statistics calculation runs in the background so you can still use other Transfer Options or leave this page and return for the results later.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
                 acceptAction: function () {                   
