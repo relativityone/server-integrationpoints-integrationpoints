@@ -57,6 +57,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
+                // TODO: REMOVE AFTER TESTS:
+                throw new Exception("Spinner error test");
+
                 IntegrationPointSlimDto integrationPoint = _integrationPointService
                     .ReadSlim(Convert.ToInt32(payload.ArtifactId));
 

@@ -26,11 +26,18 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise.then(function (result) {
-                                console.log(result.ok);
                                 if (!result.ok) {
-                                    let res = result.json();
+
+
+                                    let res = result.json().catch(() => {
+                                        console.log("Inside catch block");
+                                        throw new Error('Unable to get JSON content from received response.');
+                                    });
 
                                     res.then(res => {
+
+                                        console.log("We should not be here!");
+
                                         let header = "Failed to submit integration job: ";
                                         let messages = '["';
                                         res.errors.forEach(x => {
@@ -44,6 +51,7 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                                         // @ts-ignore
                                         model.close("Close model");
                                     })
+
                                 } else {
                                     createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
 
@@ -53,6 +61,8 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             })
                                 .catch(err => {
                                     console.log(err);
+                                    console.log("Error caught!");
+                                    createMessageContainer('["Unexpected error occurred"]', "error", lqMessageContainer, "");
                                     // @ts-ignore
                                     model.cancel("Unable to run");
                                 });
@@ -130,16 +140,16 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
 
     return consoleApi.generate.button({
         innerText: "Calculate statistics",
-        disabled: !enabled,        
+        disabled: !enabled,
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
                 message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming, depending on size of the " + operationType + ". Statistics calculation runs in the background so you can still use other Transfer Options or leave this page and return for the results later.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
-                acceptAction: function () {                   
+                acceptAction: function () {
 
-                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
+                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);
                 }
             });
         }
