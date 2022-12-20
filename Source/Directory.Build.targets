@@ -14,6 +14,7 @@
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <!-- Changing version here also requires changing version in assembly binding present in system tests app.config -->
   <ItemGroup>
-    <PackageReference Update="Relativity.DataExchange.Client.SDK" Version="[1.18.6]" />
+    <PackageReference Update="Relativity.DataExchange.Client.SDK" Version="[1.19.8-REL-789615-add-retries-for-bulk-imports]" />
+    <PackageReference Update="Relativity.DataTransfer.Legacy.SDK" Version="0.2.55" />
   </ItemGroup>
 </Project>
