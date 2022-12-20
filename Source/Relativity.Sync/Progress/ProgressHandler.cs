@@ -31,8 +31,8 @@ namespace Relativity.Sync.Progress
         private int _syncConfigurationArtifactId;
         private bool _isRunning;
 
-        private int _readDocumentsCountCache = 0;
-        private int _failedReadDocumentsCountCache = 0;
+        private int _readDocumentsCountCache;
+        private int _failedReadDocumentsCountCache;
         private List<int> _batchesArtifactIds;
 
         public ProgressHandler(
@@ -150,12 +150,11 @@ namespace Relativity.Sync.Progress
                     _batchesArtifactIds.Remove(batch.ArtifactId);
                 }
             }
+            _readDocumentsCountCache = readDocumentsCountCache;
+            _failedReadDocumentsCountCache = failedReadDocumentsCountCache;
 
             int completedRecordsCount = _readDocumentsCountCache + readDocumentsCount;
             int failedRecordsCount = _failedReadDocumentsCountCache + failedReadDocumentsCount;
-
-            _readDocumentsCountCache = readDocumentsCountCache;
-            _failedReadDocumentsCountCache = failedReadDocumentsCountCache;
 
             return new Progress(completedRecordsCount, failedRecordsCount, 0);
         }

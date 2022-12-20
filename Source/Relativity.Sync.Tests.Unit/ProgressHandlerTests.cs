@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -112,22 +114,7 @@ namespace Relativity.Sync.Tests.Unit
             _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(valueProgress);
 
-            List<IBatch> batches = new List<IBatch>(3);
-            int completedRecordsCount = progress.ImportedRecords;
-            int failedRecordsCount = progress.ErroredRecords;
-            foreach (IBatch _ in batches)
-            {
-                IBatch batch = _fxt.Create<IBatch>();
-                completedRecordsCount += batch.ReadDocumentsCount;
-                failedRecordsCount += batch.FailedReadDocumentsCount;
-                batches.Add(batch);
-            }
-            _batchRepositoryMock.Setup(x => x.GetBatchesWithIdsAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<List<int>>(),
-                    It.IsAny<Guid>()))
-                .ReturnsAsync(batches);
+            (int completedRecordsCount, int failedRecordsCount) = PrepareBatches(progress);
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -190,6 +177,103 @@ namespace Relativity.Sync.Tests.Unit
 
             // Assert
             action.Should().NotThrow();
+        }
+
+        [Test]
+        public void HandleProgressAsync_ShouldRunOnlyOneThreadAtOnce()
+        {
+            // Arrange
+            ImportProgress progress = _fxt.Create<ImportProgress>();
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            _importJobControllerFake
+                .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(valueProgress);
+
+            PrepareBatches(progress);
+
+            // Act
+            Parallel.For(0, 2, (i) =>
+            {
+                 _sut.HandleProgressAsync().GetAwaiter().GetResult();
+            });
+
+            // Assert
+            _jobProgressUpdaterMock.Verify(
+                x => x.UpdateJobProgressAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<Progress.Progress>()),
+                Times.Once());
+        }
+
+        [Test]
+        public async Task HandleProgressAsync_ShouldAddToCacheOnlyFinishedBatches()
+        {
+            // Arrange
+            ImportProgress progress = _fxt.Create<ImportProgress>();
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            _importJobControllerFake
+                .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(valueProgress);
+
+            List<IBatch> batches = new List<IBatch>();
+            int expectedReadDocumentsCountCache = 0;
+            int expectedFailedReadDocumentsCountCache = 0;
+            IEnumerable<BatchStatus> batchStatuses = Enum.GetValues(typeof(BatchStatus)).Cast<BatchStatus>();
+            foreach (BatchStatus batchStatus in batchStatuses)
+            {
+                IBatch batch = _fxt.Create<IBatch>();
+                batch.GetType().GetProperty("Status", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(batch, batchStatus);
+                batches.Add(batch);
+                if (batch.IsFinished || batch.Status == BatchStatus.Generated)
+                {
+                    expectedReadDocumentsCountCache += batch.ReadDocumentsCount;
+                    expectedFailedReadDocumentsCountCache += batch.FailedReadDocumentsCount;
+                }
+            }
+            PrepareBatches(progress, batches);
+
+            // Act
+            await _sut.HandleProgressAsync().ConfigureAwait(false);
+
+            // Assert
+            var readDocumentsCountCache = _sut?
+                .GetType()?
+                .GetField("_readDocumentsCountCache", BindingFlags.Instance | BindingFlags.NonPublic)?
+                .GetValue(_sut);
+
+            var failedReadDocumentsCountCache = _sut?
+                .GetType()?
+                .GetField("_failedReadDocumentsCountCache", BindingFlags.Instance | BindingFlags.NonPublic)?
+                .GetValue(_sut);
+
+            readDocumentsCountCache.Should().Be(expectedReadDocumentsCountCache);
+            failedReadDocumentsCountCache.Should().Be(expectedFailedReadDocumentsCountCache);
+        }
+
+        private (int, int) PrepareBatches(ImportProgress progress, List<IBatch> batches = null)
+        {
+            
+            if (batches == null)
+            {
+                batches = new List<IBatch>(3);
+                foreach (var _ in batches)
+                {
+                    IBatch batch = _fxt.Create<IBatch>();
+                    batches.Add(batch);
+                }
+            }
+
+            int completedRecordsCount = progress.ImportedRecords + batches.Select(x => x.ReadDocumentsCount).Sum();
+            int failedRecordsCount = progress.ErroredRecords + batches.Select(x => x.FailedReadDocumentsCount).Sum();
+
+            _batchRepositoryMock.Setup(x => x.GetBatchesWithIdsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<List<int>>(),
+                    It.IsAny<Guid>()))
+                .ReturnsAsync(batches);
+            return (completedRecordsCount, failedRecordsCount);
         }
     }
 }
