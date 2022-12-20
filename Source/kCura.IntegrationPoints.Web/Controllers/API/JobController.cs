@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Mail;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -53,13 +51,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
         public HttpResponseMessage Run(Payload payload)
-        {            
+        {
             try
             {
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
-
-                // TODO: REMOVE AFTER TESTS:
-                throw new Exception("Spinner error test");
 
                 IntegrationPointSlimDto integrationPoint = _integrationPointService
                     .ReadSlim(Convert.ToInt32(payload.ArtifactId));
@@ -87,10 +82,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             catch (Exception ex)
             {
                 _log.LogError(ex, "Failed to Run job.");
-                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest);
-                response.Content = new StringContent(ex.Message, System.Text.Encoding.UTF8, "text/plain");
-                return response;
-                //throw;
+                throw;
             }
         }
 

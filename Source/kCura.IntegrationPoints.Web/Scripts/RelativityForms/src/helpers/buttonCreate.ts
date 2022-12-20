@@ -26,33 +26,13 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise.then(function (result) {
-                                if (!result.ok) {                                    
+                                if (!result.ok) {
 
-                                    if (result.status > 400) {                                        
-                                        createMessageContainer('["Failed to submit integration job. Unexpected error occurred. Response status: "' + result.status + '"]', "error", lqMessageContainer, "");
-                                        // @ts-ignore
-                                        model.close("Close model");
-                                    }
-                                    else {
-                                        let res = result.json();
-                                        res.then(res => {
+                                    var message = '["Failed to submit integration point job."]';
+                                    createMessageContainer(message, "error", lqMessageContainer, "");
 
-                                            console.log("We should not be here!");
-
-                                            let header = "Failed to submit integration job: ";
-                                            let messages = '["';
-                                            res.errors.forEach(x => {
-                                                messages += x.message + '",';
-                                            })
-
-                                            messages = messages.slice(0, -1) + ']';
-
-                                            createMessageContainer(messages, "error", lqMessageContainer, header);
-
-                                            // @ts-ignore
-                                            model.close("Close model");
-                                        })
-                                    }                         
+                                    // @ts-ignore
+                                    model.close("Close model");                                   
 
                                 } else {
                                     createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
