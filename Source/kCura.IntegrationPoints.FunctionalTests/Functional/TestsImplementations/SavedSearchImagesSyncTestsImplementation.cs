@@ -111,8 +111,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
             integrationPointViewPage.GetEmailNotificationRecipients().ShouldBeEquivalentTo("Adler@Sieben.com");
-            integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(_imagesCount);
-            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{_imagesCount} (0 Bytes)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
         }
 
