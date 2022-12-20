@@ -187,7 +187,11 @@ namespace Relativity.Sync.Tests.Unit
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
             _importJobControllerFake
                 .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(valueProgress);
+                .ReturnsAsync(() =>
+                {
+                    Task.Delay(1000).GetAwaiter().GetResult();
+                    return valueProgress;
+                });
 
             PrepareBatches(progress);
 
