@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;

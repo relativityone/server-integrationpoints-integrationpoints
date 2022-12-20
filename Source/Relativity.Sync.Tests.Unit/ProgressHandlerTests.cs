@@ -10,6 +10,7 @@ using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Utils;
@@ -72,8 +73,7 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()),
+                    It.IsAny<Progress.Progress>()),
                 Times.Never);
         }
 
@@ -137,8 +137,7 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    completedRecordsCount,
-                    failedRecordsCount),
+                    new Progress.Progress(completedRecordsCount, failedRecordsCount, 0)),
                 Times.Once());
         }
 
@@ -164,8 +163,7 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()),
+                    It.IsAny<Progress.Progress>()),
                 Times.Never());
         }
 
@@ -184,8 +182,7 @@ namespace Relativity.Sync.Tests.Unit
                 x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
+                    It.IsAny<Progress.Progress>()))
                 .Throws<Exception>();
 
             // Act

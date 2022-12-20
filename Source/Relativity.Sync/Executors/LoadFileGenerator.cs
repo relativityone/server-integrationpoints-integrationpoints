@@ -54,16 +54,13 @@ namespace Relativity.Sync.Executors
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
                     using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                     {
-                        int items = 0;
                         int updateBatchStatusCount = await _instanceSettings.GetImportAPIBatchStatusItemsUpdateCountAsync().ConfigureAwait(false);
                         while (reader.Read())
                         {
                             string line = GetLineContent(reader, settings);
                             writer.WriteLine(line);
-                            items++;
-                            if (items >= updateBatchStatusCount)
+                            if (reader.ItemStatusMonitor.ReadItemsCount % updateBatchStatusCount == 0)
                             {
-                                items = 0;
                                 await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
                             }
                         }

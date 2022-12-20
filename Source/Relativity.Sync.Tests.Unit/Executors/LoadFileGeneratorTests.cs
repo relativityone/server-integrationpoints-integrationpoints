@@ -191,7 +191,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
 
             // Assert
-            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Cancelled), Times.Once);
+            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Cancelled), Times.Exactly(2));
         }
 
         [Test]
@@ -216,8 +216,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
 
             // Assert
-            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Paused), Times.Once);
-            _batchMock.Verify(x => x.SetStartingIndexAsync(It.IsAny<int>()), Times.Once);
+            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Paused), Times.Exactly(2));
+            _batchMock.Verify(x => x.SetStartingIndexAsync(It.IsAny<int>()), Times.Exactly(2));
             _itemLevelErrorHandlerMock.Verify(x => x.HandleRemainingErrorsAsync(), Times.Once);
         }
 

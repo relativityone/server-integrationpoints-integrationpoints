@@ -11,6 +11,7 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
