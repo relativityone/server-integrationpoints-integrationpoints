@@ -26,24 +26,14 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise.then(function (result) {
-                                console.log(result.ok);
                                 if (!result.ok) {
-                                    let res = result.json();
 
-                                    res.then(res => {
-                                        let header = "Failed to submit integration job: ";
-                                        let messages = '["';
-                                        res.errors.forEach(x => {
-                                            messages += x.message + '",';
-                                        })
+                                    var message = '["Failed to submit integration point job."]';
+                                    createMessageContainer(message, "error", lqMessageContainer, "");
 
-                                        messages = messages.slice(0, -1) + ']';
+                                    // @ts-ignore
+                                    model.close("Close model");                                   
 
-                                        createMessageContainer(messages, "error", lqMessageContainer, header);
-
-                                        // @ts-ignore
-                                        model.close("Close model");
-                                    })
                                 } else {
                                     createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
 
@@ -130,16 +120,16 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
 
     return consoleApi.generate.button({
         innerText: "Calculate statistics",
-        disabled: !enabled,        
+        disabled: !enabled,
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
                 message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming, depending on size of the " + operationType + ". Statistics calculation runs in the background so you can still use other Transfer Options or leave this page and return for the results later.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
-                acceptAction: function () {                   
+                acceptAction: function () {
 
-                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
+                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);
                 }
             });
         }
