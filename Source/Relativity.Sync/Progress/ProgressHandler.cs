@@ -150,13 +150,13 @@ namespace Relativity.Sync.Progress
                     _batchesArtifactIds.Remove(batch.ArtifactId);
                 }
             }
-            int completedRecordsCount = _readDocumentsCountCache + readDocumentsCount;
+            int readRecordsCount = _readDocumentsCountCache + readDocumentsCount;
             int failedRecordsCount = _failedReadDocumentsCountCache + failedReadDocumentsCount;
 
             _readDocumentsCountCache = readDocumentsCountCache;
             _failedReadDocumentsCountCache = failedReadDocumentsCountCache;
 
-            return new Progress(completedRecordsCount, failedRecordsCount, 0);
+            return new Progress(readRecordsCount, failedRecordsCount, 0);
         }
 
         private async Task<Progress> GetImportJobProgressAsync()

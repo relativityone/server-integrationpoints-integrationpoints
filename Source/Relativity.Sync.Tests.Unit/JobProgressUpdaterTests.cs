@@ -216,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit
             JobProgressUpdater sut = PrepareSut();
 
             // Act
-            await sut.UpdateJobProgressAsync(new Progress.Progress(completedItems, failedItems, 0));
+            await sut.UpdateJobProgressAsync(new Progress.Progress(0, failedItems, completedItems));
 
             // Assert
             FieldRefValuePair[] expectedFields = new[]

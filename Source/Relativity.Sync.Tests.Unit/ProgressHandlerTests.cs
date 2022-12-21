@@ -109,12 +109,12 @@ namespace Relativity.Sync.Tests.Unit
         public async Task HandleProgressAsync_ShouldUpdateProgressOnJobHistory()
         {
             // Arrange
-            ImportProgress progress = _fxt.Create<ImportProgress>();
-            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            ImportProgress importProgress = _fxt.Create<ImportProgress>();
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
             _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(valueProgress);
 
-            (int completedRecordsCount, int failedRecordsCount) = PrepareBatches(progress);
+            Progress.Progress progress = PrepareBatches(importProgress);
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -124,7 +124,7 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    new Progress.Progress(completedRecordsCount, failedRecordsCount, 0)),
+                    progress),
                 Times.Once());
         }
 
@@ -158,9 +158,9 @@ namespace Relativity.Sync.Tests.Unit
         public void HandleProgressAsync_ShouldNotThrow_WhenUpdateProgressOnJobHistoryThrewException()
         {
             // Arrange
-            ImportProgress progress = _fxt.Create<ImportProgress>();
+            ImportProgress importProgress = _fxt.Create<ImportProgress>();
 
-            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
 
             _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(valueProgress);
@@ -183,8 +183,8 @@ namespace Relativity.Sync.Tests.Unit
         public void HandleProgressAsync_ShouldRunOnlyOneThreadAtOnce()
         {
             // Arrange
-            ImportProgress progress = _fxt.Create<ImportProgress>();
-            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            ImportProgress importProgress = _fxt.Create<ImportProgress>();
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
             _importJobControllerFake
                 .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(() =>
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit
                     return valueProgress;
                 });
 
-            PrepareBatches(progress);
+            PrepareBatches(importProgress);
 
             // Act
             Parallel.For(0, 2, _ =>
@@ -214,8 +214,8 @@ namespace Relativity.Sync.Tests.Unit
         public async Task HandleProgressAsync_ShouldAddToCacheOnlyFinishedBatches()
         {
             // Arrange
-            ImportProgress progress = _fxt.Create<ImportProgress>();
-            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), progress);
+            ImportProgress importProgress = _fxt.Create<ImportProgress>();
+            ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
             _importJobControllerFake
                 .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(valueProgress);
@@ -235,7 +235,7 @@ namespace Relativity.Sync.Tests.Unit
                     expectedFailedReadDocumentsCountCache += batch.FailedReadDocumentsCount;
                 }
             }
-            PrepareBatches(progress, batches);
+            PrepareBatches(importProgress, batches);
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -255,21 +255,23 @@ namespace Relativity.Sync.Tests.Unit
             failedReadDocumentsCountCache.Should().Be(expectedFailedReadDocumentsCountCache);
         }
 
-        private (int, int) PrepareBatches(ImportProgress progress, List<IBatch> batches = null)
+        private Progress.Progress PrepareBatches(ImportProgress importProgress, List<IBatch> batches = null, BatchStatus batchStatus = BatchStatus.Generated)
         {
-            
             if (batches == null)
             {
-                batches = new List<IBatch>(3);
-                foreach (var _ in batches)
+                batches = new List<IBatch>();
+                for (int i = 0; i < 3; i++)
                 {
                     IBatch batch = _fxt.Create<IBatch>();
+                    batch.GetType().GetProperty("Status", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(batch, batchStatus);
                     batches.Add(batch);
                 }
             }
 
-            int completedRecordsCount = progress.ImportedRecords + batches.Select(x => x.ReadDocumentsCount).Sum();
-            int failedRecordsCount = progress.ErroredRecords + batches.Select(x => x.FailedReadDocumentsCount).Sum();
+            int readRecordsCount = batches.Select(x => x.ReadDocumentsCount).Sum();
+            int failedRecordsCount = importProgress.ErroredRecords + batches.Select(x => x.FailedReadDocumentsCount).Sum();
+
+            Progress.Progress progress = new Progress.Progress(readRecordsCount, failedRecordsCount, importProgress.ImportedRecords);
 
             _batchRepositoryMock.Setup(x => x.GetBatchesWithIdsAsync(
                     It.IsAny<int>(),
@@ -277,7 +279,7 @@ namespace Relativity.Sync.Tests.Unit
                     It.IsAny<List<int>>(),
                     It.IsAny<Guid>()))
                 .ReturnsAsync(batches);
-            return (completedRecordsCount, failedRecordsCount);
+            return progress;
         }
     }
 }

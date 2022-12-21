@@ -133,7 +133,7 @@ namespace Relativity.Sync.Progress
             int totalProcessedItems = _batchProgresses.Values.Sum(x => x.ItemsAlreadyProcessed + x.ItemsProcessed);
             int totalFailedItems = _batchProgresses.Values.Sum(x => x.ItemsAlreadyFailed + x.ItemsFailed);
 
-            Progress progress = new Progress(totalProcessedItems, totalFailedItems, 0);
+            Progress progress = new Progress(0, totalFailedItems, totalProcessedItems);
 
             return _jobProgressUpdater.UpdateJobProgressAsync(progress);
         }

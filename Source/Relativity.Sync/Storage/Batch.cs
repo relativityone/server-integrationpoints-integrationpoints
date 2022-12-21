@@ -317,7 +317,7 @@ namespace Relativity.Sync.Storage
                     IncludeNameInQueryResult = true
                 };
 
-                batches = await CreateBatches(objectManager, queryRequest).ConfigureAwait(false);
+                batches = await ReadBatches(objectManager, queryRequest).ConfigureAwait(false);
             }
 
             return batches;
@@ -349,7 +349,7 @@ namespace Relativity.Sync.Storage
                     IncludeNameInQueryResult = true
                 };
 
-                batches = await CreateBatches(objectManager, queryRequest).ConfigureAwait(false);
+                batches = await ReadBatches(objectManager, queryRequest).ConfigureAwait(false);
             }
 
             return batches;
@@ -371,13 +371,13 @@ namespace Relativity.Sync.Storage
                     IncludeNameInQueryResult = true
                 };
 
-                batches = await CreateBatches(objectManager, queryRequest).ConfigureAwait(false);
+                batches = await ReadBatches(objectManager, queryRequest).ConfigureAwait(false);
             }
 
             return batches;
         }
 
-        private async Task<ConcurrentBag<IBatch>> CreateBatches(IObjectManager objectManager, QueryRequest queryRequest)
+        private async Task<ConcurrentBag<IBatch>> ReadBatches(IObjectManager objectManager, QueryRequest queryRequest)
         {
             ConcurrentBag<IBatch> batches = new ConcurrentBag<IBatch>();
             QueryResultSlim result = await objectManager
