@@ -196,7 +196,7 @@ namespace Relativity.Sync.Tests.Unit
             PrepareBatches(progress);
 
             // Act
-            Parallel.For(0, 2, (i) =>
+            Parallel.For(0, 2, _ =>
             {
                  _sut.HandleProgressAsync().GetAwaiter().GetResult();
             });

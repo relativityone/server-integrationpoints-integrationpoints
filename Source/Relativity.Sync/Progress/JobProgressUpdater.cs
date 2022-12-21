@@ -232,7 +232,7 @@ namespace Relativity.Sync.Progress
                     workspaceId,
                     jobHistoryId,
                     GetProgressFieldsValues(
-                        progress.ReadDocumentsCount,
+                        progress.TransferredDocumentsCount,
                         progress.FailedReadDocumentsCount))
                 .ConfigureAwait(false);
         }

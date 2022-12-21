@@ -98,8 +98,8 @@ namespace Relativity.Sync.Progress
             {
                 _isRunning = true;
                 Progress batchesProgress = await GetBatchesProgressAsync().ConfigureAwait(false);
-                Progress iApiProgress = await GetIApiProgressAsync().ConfigureAwait(false);
-                Progress progress = batchesProgress + iApiProgress;
+                Progress importJobProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
+                Progress progress = batchesProgress + importJobProgress;
                 await _progressUpdater.UpdateJobProgressAsync(_sourceWorkspaceId, _jobHistoryId, progress).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -150,16 +150,16 @@ namespace Relativity.Sync.Progress
                     _batchesArtifactIds.Remove(batch.ArtifactId);
                 }
             }
-            _readDocumentsCountCache = readDocumentsCountCache;
-            _failedReadDocumentsCountCache = failedReadDocumentsCountCache;
-
             int completedRecordsCount = _readDocumentsCountCache + readDocumentsCount;
             int failedRecordsCount = _failedReadDocumentsCountCache + failedReadDocumentsCount;
+
+            _readDocumentsCountCache = readDocumentsCountCache;
+            _failedReadDocumentsCountCache = failedReadDocumentsCountCache;
 
             return new Progress(completedRecordsCount, failedRecordsCount, 0);
         }
 
-        private async Task<Progress> GetIApiProgressAsync()
+        private async Task<Progress> GetImportJobProgressAsync()
         {
             using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
@@ -175,7 +175,7 @@ namespace Relativity.Sync.Progress
                         $"Error: {importProgress.ErrorCode}:{importProgress.ErrorMessage}");
                 }
 
-                return new Progress(importProgress.Value.ImportedRecords, importProgress.Value.ErroredRecords, 0);
+                return new Progress(0, importProgress.Value.ErroredRecords, importProgress.Value.ImportedRecords);
             }
         }
     }
