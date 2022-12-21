@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit
                 .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(() =>
                 {
-                    Task.Delay(1000).GetAwaiter().GetResult();
+                    Task.Delay(1500).GetAwaiter().GetResult();
                     return valueProgress;
                 });
 
