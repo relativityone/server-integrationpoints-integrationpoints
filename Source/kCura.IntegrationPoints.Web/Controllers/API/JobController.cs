@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -77,6 +76,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                     _integrationPointService,
                     ActionType.Run
                 );
+
                 return httpResponseMessage;
             }
             catch (Exception ex)
