@@ -1,8 +1,8 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using System.Threading.Tasks;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
@@ -19,16 +19,21 @@ namespace kCura.ScheduleQueue.Core.Validation
         {
             using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
-                var request = new ReadRequest()
+                var request = new QueryRequest()
                 {
-                    Object = new RelativityObjectRef() { ArtifactID = job.RelatedObjectArtifactID }
+                    ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuids.IntegrationPointGuid },
+                    Condition = $"'ArtifactID' == {job.RelatedObjectArtifactID}"
                 };
 
-                ReadResult result = await proxy.ReadAsync(job.WorkspaceID, request).ConfigureAwait(false);
+                QueryResult result = await proxy.QueryAsync(job.WorkspaceID, request, 0, 1)
+                    .ConfigureAwait(false);
 
-                return result.Object != null
-                    ? PreValidationResult.Success
-                    : PreValidationResult.InvalidJob(
+                if (result.TotalCount > 0)
+                {
+                    return PreValidationResult.Success;
+                }
+
+                return PreValidationResult.InvalidJob(
                         $"Integration Point {job.RelatedObjectArtifactID} does not exist anymore",
                         false,
                         false);

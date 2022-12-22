@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             // Arrange
             JobTest job = PrepareJob();
 
-            var jobsInQueue = new[] {job.JobId};
+            var jobsInQueue = new[] { job.JobId };
 
             var sut = PrepareSut();
 
@@ -51,19 +51,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             // Assert
             sut.VerifyJobsWereProcessed(jobsInQueue);
-            
+
             FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
         }
-        
+
         [IdentifiedTest("2D67D0B5-73E6-4D57-B0F9-4AC118A835B3")]
         public void Agent_ShouldPickUpJob_AndCreateJobHistoryIfAbsent()
         {
             // Arrange
             MyFirstProviderUtil myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
                 SourceWorkspace, Serializer);
-            
+
             string xmlPath = myFirstProviderUtil.PrepareRecords(100);
-            
+
             SourceProviderTest provider =
                 SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
@@ -75,17 +75,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             integrationPoint.SourceConfiguration = xmlPath;
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
-            
+
             FakeAgent sut = FakeAgent.Create(this.FakeRelativityInstance, this.Container);
 
-            long[] jobsInQueue = {job.JobId};
-            
+            long[] jobsInQueue = { job.JobId };
+
             // Act
             sut.Execute();
 
             // Assert
             sut.VerifyJobsWereProcessed(jobsInQueue);
-            
+
             FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
         }
 
@@ -96,7 +96,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             JobTest job1 = PrepareJob();
             JobTest job2 = PrepareJob();
 
-            var jobsInQueue = new[] {job1.JobId, job2.JobId};
+            var jobsInQueue = new[] { job1.JobId, job2.JobId };
 
             var sut = PrepareSut();
 
@@ -116,7 +116,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
             JobTest job = PrepareJob();
-            
+
             SourceWorkspace.Helpers.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
 
             var jobsInQueue = new[] { job.JobId };
@@ -163,7 +163,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             var sut = PrepareSut();
 
-            sut.ProcessJobMockFunc = j => throw new Exception(); 
+            sut.ProcessJobMockFunc = j => throw new Exception();
 
             // Act
             sut.Execute();
