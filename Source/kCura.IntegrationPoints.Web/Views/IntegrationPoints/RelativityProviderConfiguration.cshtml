@@ -114,6 +114,23 @@
 						</div>
 					</td>
 				</tr>
+				<tr>
+					<td style="width: 48%;">
+						<div class="field-row" data-bind="visible: !IsNonDocumentObjectFlow()">
+							<div class="field-label">Enable Tagging:</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="enable-tagging-0" type="radio" name="enableTagging" value="true" data-bind="checked: EnableTagging">Yes</label>
+									</li>
+									<li>
+										<label><input id="enable-tagging-1" type="radio" name="enableTagging" value="false" data-bind="checked: EnableTagging">No</label>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</td>
+				</tr>
 			</table>
 		</div>
 	</div>
