@@ -1,27 +1,26 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
 import { ButtonState } from "../types/buttonState";
-import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
+import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
-        var workspaceId = ctx.workspaceId;
-
+        var workspaceId = ctx.workspaceId;       
 
         return consoleApi.destroy().then(function () {
             return consoleApi.containersPromise;
-         }).then(function (containers) {
-               var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-               buttonState.then(function (btnStateObj: ButtonState) {
-                    var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
-                   if (consoleContent) {
-                        containers.rootElement.appendChild(consoleContent);
-                    }
+        }).then(function (containers) {
+            var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+            buttonState.then(function (btnStateObj: ButtonState) {
+                var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
+                if (consoleContent) {
+                    containers.rootElement.appendChild(consoleContent);
+                }
 
-                    let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-                    checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+                let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
         })
     })
@@ -34,7 +33,7 @@ function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, i
         if (typeof newBtnStateObj === 'undefined') {
             throw new TypeError("Button state is undefined");
         }
-        else if(compareButtonStates(btnStateObj, newBtnStateObj)) {
+        else if (compareButtonStates(btnStateObj, newBtnStateObj)) {
             if (currentPage === relativityWindow) {
                 setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow);
             }
@@ -93,7 +92,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
         setTimeout(getButtonStateObject, 2000, convenienceApi, ctx, workspaceId, integrationPointId);
     }
 
-    
+
 }
 
 function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
@@ -115,7 +114,19 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
             var val = ctx.backingModelData[value];
         }
         integrationPoint[trimmedKey] = val;
-    });
+    });   
+
+    let keys = Object.keys(ctx.backingModelData);
+    keys.sort((a, b) => { return Number(a) - Number(b) });
+    let sourceConfiguration;
+    try {
+        sourceConfiguration = JSON.parse(ctx.backingModelData[keys[4].toString()]);
+    } catch (e) {
+        sourceConfiguration = {
+            "SourceConfiguration": ctx.backingModelData[keys[4].toString()]
+        }
+    }
+    let destinationConfiguration = JSON.parse(ctx.backingModelData[keys[5].toString()]);
 
     var transferOptionsTitle = consoleApi.generate.sectionTitle({
         innerText: "Transfer Options",
@@ -142,6 +153,12 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     if (buttonState.viewErrorsLinkVisible) {
         var viewErrorsLink = createViewErrorsLink(consoleApi, convenienceApi, ctx, buttonState.viewErrorsLinkEnabled, workspaceId, integrationPointId);
         transferSection.push(viewErrorsLink);
+    }
+
+    if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
+
+        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId, sourceConfiguration, destinationConfiguration);
+        transferSection.push(calculateStatsButton);       
     }
 
     if (buttonState.saveAsProfileButtonVisible) {

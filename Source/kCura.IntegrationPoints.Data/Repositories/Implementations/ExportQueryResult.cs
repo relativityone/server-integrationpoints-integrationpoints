@@ -50,8 +50,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return await GetNextBlockAsync(startIndex, default(CancellationToken), resultsBlockSize);
         }
 
-        public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, CancellationToken token,
-            int resultsBlockSize = 1000)
+        public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, CancellationToken token, int resultsBlockSize = 1000)
         {
             if (startIndex >= _exportResult.RecordCount)
             {
@@ -78,27 +77,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         /// <inheritdoc />
         public ExportInitializationResults ExportResult => _exportResult;
 
-        private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(int resultsBlockSize,
-            int startIndex, IObjectManagerFacade client, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(
+            int resultsBlockSize,
+            int startIndex,
+            IObjectManagerFacade client,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_exportResult.RecordCount == 0)
             {
                 return new List<RelativityObjectSlim>();
             }
 
+            var results = new List<RelativityObjectSlim>(resultsBlockSize);
             try
             {
-                var results = new List<RelativityObjectSlim>(resultsBlockSize);
                 int remainingObjectsCount = resultsBlockSize;
 
                 RelativityObjectSlim[] partialResults;
                 do
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    
+
                     partialResults = await client
-                        .RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID,
-                            remainingObjectsCount, startIndex)
+                        .RetrieveResultsBlockFromExportAsync(
+                        _workspaceArtifactId,
+                        _exportResult.RunID,
+                        remainingObjectsCount,
+                        startIndex)
                         .ConfigureAwait(false);
 
                     results.AddRange(partialResults);

@@ -132,6 +132,7 @@ namespace kCura.IntegrationPoints.Data
         public const string SecuredConfiguration = @"Secured Configuration";
         public const string PromoteEligible = @"Promote Eligible";
         public const string Name = @"Name";
+        public const string CalculationState = @"Calculation State";
     }
 
     public partial class IntegrationPointFieldGuids 
@@ -172,6 +173,8 @@ namespace kCura.IntegrationPoints.Data
         public static readonly Guid  PromoteEligibleGuid = Guid.Parse(PromoteEligible);
         internal const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
         public static readonly Guid  NameGuid = Guid.Parse(Name);
+        internal const string CalculationState = @"e64163ea-a58c-4a90-af30-dd190069210d";
+        public static readonly Guid CalculationStateGuid = Guid.Parse(CalculationState);
     }
 
 
@@ -384,6 +387,7 @@ namespace kCura.IntegrationPoints.Data
         public const string Type = @"Type";
         public const string PromoteEligible = @"Promote Eligible";
         public const string Name = @"Name";
+        public const string CalculationState = @"Calculation State";
     }
 
     public partial class IntegrationPointProfileFieldGuids 
@@ -416,6 +420,8 @@ namespace kCura.IntegrationPoints.Data
         public static readonly Guid  PromoteEligibleGuid = Guid.Parse(PromoteEligible);
         internal const string Name = @"ad0552e0-4511-4507-a60d-23c0c6d05972";
         public static readonly Guid  NameGuid = Guid.Parse(Name);
+        internal const string CalculationState = @"89a16eb5-b493-43f0-b09c-ce1a4f4b3786";
+        public static readonly Guid CalculationStateGuid = Guid.Parse(CalculationState);
     }
     
     #endregion

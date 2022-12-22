@@ -240,7 +240,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
             // assert
-            _integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Never);
             Assert.That(returnedException.Message, Is.EqualTo("Type:Job Id:  Error:Fake job error."));
         }
 
@@ -369,7 +368,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // arrange
             _integrationPointRepositoryFake
-                .Setup(x => x.Update(It.IsAny<Data.IntegrationPoint>()))
+                .Setup(x => x.UpdateHasErrors(It.IsAny<int>(), It.IsAny<bool>()))
                 .Throws(new Exception());
 
             // act & assert

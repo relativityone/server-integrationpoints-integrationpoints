@@ -21,6 +21,6 @@ namespace kCura.IntegrationPoints.Core.Managers
         ///     Provider.
         /// </returns>
         ButtonStateDTO GetButtonState(ExportType exportType, ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
-            bool hasStoppableJobs, bool hasProfileAddPermission);
+            bool hasStoppableJobs, bool hasProfileAddPermission, bool calculationInProgress);
     }
 }

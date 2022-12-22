@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -107,7 +108,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(hasErrors),
                     Arg.Is(hasErrorViewPermission),
                     Arg.Any<bool>(),
-                    Arg.Is(hasAddProfilePermission));
+                    Arg.Is(hasAddProfilePermission),
+                    Arg.Any<bool>());
         }
 
         [TestCase(ProviderType.Other, true, false, false, false, 0, true)]
@@ -152,6 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedIsStoppable),
+                    Arg.Any<bool>(),
                     Arg.Any<bool>());
         }
 
@@ -213,17 +216,92 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedHasStoppableJobs),
+                    Arg.Any<bool>(),
                     Arg.Any<bool>());
 
             _queueManager.DidNotReceive();
         }
 
-        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0)
+        [TestCase(CalculationStatus.New, false)]
+        [TestCase(CalculationStatus.InProgress, true)]
+        [TestCase(CalculationStatus.Error, false)]
+        [TestCase(CalculationStatus.Completed, false)]
+        [TestCase(CalculationStatus.Canceled, false)]
+        public async Task CreateButtonStateAsync_ShouldCreateBasedOnCalculationState(
+            CalculationStatus status,
+            bool expectedInProgressFlagValue)
+        {
+            // Arrange
+            string calculationState = JsonConvert.SerializeObject(new CalculationState { Status = status });
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, calculationState);
+
+            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+                .Returns(new ValidationResult());
+
+            _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
+                .Returns(GetJobHistoryCollection(false, false));
+
+            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
+
+            ButtonStateBuilder sut = GetSut(true);
+
+            // Act
+            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+
+            // Assert
+            _stateManager.Received()
+                .GetButtonState(
+                    Arg.Any<ExportType>(),
+                    Arg.Any<ProviderType>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Is(expectedInProgressFlagValue));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task CreateButtonStateAsync_ShouldSetInProgressFlagToFalse_WhenCalculationStateIsNullOrEmpty(
+            string serializedCalculationState)
+        {
+            // Arrange
+            bool expectedInProgressFlagValue = false;
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, serializedCalculationState);
+
+            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+                .Returns(new ValidationResult());
+
+            _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
+                .Returns(GetJobHistoryCollection(false, false));
+
+            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
+
+            ButtonStateBuilder sut = GetSut(true);
+
+            // Act
+            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+
+            // Assert
+            _stateManager.Received()
+                .GetButtonState(
+                    Arg.Any<ExportType>(),
+                    Arg.Any<ProviderType>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Any<bool>(),
+                    Arg.Is(expectedInProgressFlagValue));
+        }
+
+        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0, string calculationState = null)
         {
             const int sourceProviderArtifactId = 210;
             const int destinationProviderArtifactId = 220;
 
-            var settings = new ImportSettings { ImageImport = isImageImport };
+            ImportSettings settings = new ImportSettings { ImageImport = isImageImport };
 
             Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
             {
@@ -231,7 +309,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 SourceProvider = sourceProviderArtifactId,
                 DestinationProvider = destinationProviderArtifactId,
                 DestinationConfiguration = JsonConvert.SerializeObject(settings),
-                SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType })
+                SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType }),
+                CalculationState = calculationState
             };
 
             _integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID)

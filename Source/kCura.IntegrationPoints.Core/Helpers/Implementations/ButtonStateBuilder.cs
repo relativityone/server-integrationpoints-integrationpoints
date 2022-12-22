@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -131,6 +132,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 
+            CalculationState calculationState = JsonConvert.DeserializeObject<CalculationState>(integrationPoint.CalculationState ?? string.Empty);
+            bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
+
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,
                 providerType,
@@ -138,7 +142,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 integrationPointHasErrors,
                 canViewErrors,
                 integrationPointIsStoppable,
-                userCanSaveAsProfile);
+                userCanSaveAsProfile,
+                calculationInProgress);
 
             return buttonState;
         }

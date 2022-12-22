@@ -30,12 +30,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         {
             foreach (IntegrationPoint point in _integrationPointRepository.ReadAll())
             {
-                string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
-                    point.DestinationProvider, point.SourceConfiguration);
-                if (resultConf != null)
+                string sourceConf = _integrationPointRepository.GetSourceConfigurationAsync(point.ArtifactId).GetAwaiter().GetResult();
+
+                string correctedSourceConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(
+                    point.SourceProvider,
+                    point.DestinationProvider,
+                    sourceConf);
+
+                if (correctedSourceConf != null)
                 {
-                    point.SourceConfiguration = resultConf;
-                    _integrationPointRepository.Update(point);
+                    _integrationPointRepository.UpdateSourceConfiguration(point.ArtifactId, correctedSourceConf);
                 }
             }
         }
@@ -44,8 +48,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         {
             foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAll())
             {
-                string sourceConfiguration = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(profile.SourceProvider,
-                    profile.DestinationProvider, profile.SourceConfiguration);
+                string sourceConfiguration = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(
+                    profile.SourceProvider,
+                    profile.DestinationProvider,
+                    profile.SourceConfiguration);
+
                 if (sourceConfiguration != null)
                 {
                     _integrationPointProfileService.UpdateConfiguration(profile.ArtifactId, sourceConfiguration, profile.DestinationConfiguration);
