@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit
             }
 
             // Aassert
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, numberOfItemErrorEvents, expectedNumberOfItemsProcessed)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(expectedNumberOfItemsProcessed, numberOfItemErrorEvents, expectedNumberOfItemsProcessed)));
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit
             }
 
             // Assert
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, itemsWithErrors, itemsProcessed)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(itemsProcessed, itemsWithErrors, itemsProcessed)));
         }
 
         [Test]
@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit
             }
 
             // Assert
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, itemsWithErrors, itemsProcessed)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(itemsProcessed, itemsWithErrors, itemsProcessed)));
         }
 
         [Test]
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit
             _testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
 
             // Assert
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, batchCount, batchCount)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(batchCount, batchCount, batchCount)));
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit
 
             // Assert
             const int expectedTransferredItemsCount = 2;
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, 1, expectedTransferredItemsCount)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(expectedTransferredItemsCount, 1, expectedTransferredItemsCount)));
         }
 
         [Test]
@@ -269,7 +269,7 @@ namespace Relativity.Sync.Tests.Unit
 
             // Assert
             const int expectedReportCount = 2;
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, 0, expectedReportCount)), Times.AtLeastOnce);
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(expectedReportCount, 0, expectedReportCount)), Times.AtLeastOnce);
         }
 
         [Test]
@@ -321,7 +321,7 @@ namespace Relativity.Sync.Tests.Unit
             // Assert
             int expectedTransferredRecordsCount = (previouslyExecutedBatchTransferredItemsCount * previouslyExecutedBatches.Length) + 1;
             int expectedFailedRecordsCount = (previouslyExecutedBatchFailedItemsCount * previouslyExecutedBatches.Length) + 1;
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, expectedFailedRecordsCount, expectedTransferredRecordsCount)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(expectedTransferredRecordsCount, expectedFailedRecordsCount, expectedTransferredRecordsCount)));
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace Relativity.Sync.Tests.Unit
             // Assert
             const int expectedTransferredRecordsCount = initialTransferredItemsCount + 1;
             const int expectedFailedRecordsCount = initialFailedItemsCount + 1;
-            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(0, expectedFailedRecordsCount, expectedTransferredRecordsCount)));
+            _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(new Progress.Progress(expectedTransferredRecordsCount, expectedFailedRecordsCount, expectedTransferredRecordsCount)));
         }
 
         [Test]
