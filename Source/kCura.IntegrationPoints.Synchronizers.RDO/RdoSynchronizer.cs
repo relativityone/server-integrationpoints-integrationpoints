@@ -172,67 +172,65 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             try
             {
                 LogSyncingData();
-
                 InitializeImportJob(fieldMap, options, jobStopManager, diagnosticLog);
 
                 bool rowProcessed = false;
-                if (jobStopManager?.ShouldDrainStop != true)
-                {
-                    _logger.LogInformation("Data processing loop is starting");
-                    int addedRows = 0;
-                    int skippedRows = 0;
-                    _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
-                    try
-                    {
-                        foreach (var row in data)
-                        {
-                            _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
-                            try
-                            {
-                                Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
-                                if (importRow != null)
-                                {
-                                    ImportService.AddRow(importRow);
-                                    ++addedRows;
-                                }
-                                else
-                                {
-                                    ++skippedRows;
-                                }
-                            }
-                            catch (ProviderReadDataException exception)
-                            {
-                                LogSyncDataError(exception);
-                                ItemError(exception.Identifier, exception.Message);
-                            }
-                            catch (Exception ex)
-                            {
-                                LogSyncDataError(ex);
-                                ItemError(string.Empty, ex.Message);
-                            }
-                        }
-                    }
-                    catch (MalformedLineException ex)
-                    {
-                        LogSyncDataError(ex);
-                        ItemError(string.Empty, ex.Message);
-                    }
-
-                    _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
-
-                    if (!jobStopManager?.ShouldDrainStop ?? true)
-                    {
-                        ImportService.PushBatchIfFull(true);
-                        rowProcessed = true;
-                    }
-
-                    WaitUntilTheJobIsDone(rowProcessed);
-                    FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
-                }
-                else
+                if (jobStopManager?.ShouldDrainStop == true)
                 {
                     _logger.LogInformation("Skipping import because DrainStop was requested");
+                    return;
                 }
+
+                _logger.LogInformation("Data processing loop is starting");
+                int addedRows = 0;
+                int skippedRows = 0;
+                _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
+                try
+                {
+                    foreach (var row in data)
+                    {
+                        _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
+                        try
+                        {
+                            Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
+                            if (importRow != null)
+                            {
+                                ImportService.AddRow(importRow);
+                                ++addedRows;
+                            }
+                            else
+                            {
+                                ++skippedRows;
+                            }
+                        }
+                        catch (ProviderReadDataException exception)
+                        {
+                            LogSyncDataError(exception);
+                            ItemError(exception.Identifier, exception.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogSyncDataError(ex);
+                            ItemError(string.Empty, ex.Message);
+                        }
+                    }
+                }
+                catch (MalformedLineException ex)
+                {
+                    LogSyncDataError(ex);
+                    ItemError(string.Empty, ex.Message);
+                }
+
+                _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
+
+                if (!jobStopManager?.ShouldDrainStop ?? true)
+                {
+                    ImportService.PushBatchIfFull(true);
+                    rowProcessed = true;
+                }
+
+                WaitUntilTheJobIsDone(rowProcessed);
+                FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
             }
             catch (Exception ex)
             {

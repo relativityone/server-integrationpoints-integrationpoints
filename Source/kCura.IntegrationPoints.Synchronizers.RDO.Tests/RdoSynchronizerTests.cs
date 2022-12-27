@@ -4,7 +4,6 @@ using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -23,7 +22,8 @@ using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class RdoSynchronizerTests : TestBase
     {
         private Mock<IHelper> _helper;
@@ -62,22 +62,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _diagnosticLogMock = new Mock<IDiagnosticLog>();
         }
 
-        private RdoSynchronizer PrepareSut()
-        {
-            return ChangeWebAPIPath(
-                new RdoSynchronizer(
-                    _relativityFieldQuery.Object,
-                    RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
-                    _importJobFactory.Object,
-                    _helper.Object,
-                    _diagnosticLogMock.Object));
-        }
-
         [Test]
         public void GetRightCountOfFieldsWithSystemAndArtifactFieldsRemoved()
         {
-            //ARRANGE
-
+            // ARRANGE
             var options = new ImportSettings
             {
                 ArtifactTypeId = 1268820
@@ -85,11 +73,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             var fields = new List<RelativityObject>
             {
-                new RelativityObject {Name = "Name", ArtifactID = 1},
-                new RelativityObject {Name = "System Created On", ArtifactID = 2},
-                new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
-                new RelativityObject {Name = "User", ArtifactID = 4},
-                new RelativityObject {Name = "Artifact ID", ArtifactID = 5}
+                new RelativityObject { Name = "Name", ArtifactID = 1 },
+                new RelativityObject { Name = "System Created On", ArtifactID = 2 },
+                new RelativityObject { Name = "Date Modified On", ArtifactID = 3 },
+                new RelativityObject { Name = "User", ArtifactID = 4 },
+                new RelativityObject { Name = "Artifact ID", ArtifactID = 5 }
             };
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
@@ -97,18 +85,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             RdoSynchronizer sut = PrepareSut();
             string optionsStr = JsonConvert.SerializeObject(options);
 
-            //ACT
+            // ACT
             int numberOfFields = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).Count();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(3, numberOfFields);
         }
 
         [Test]
         public void GetRightDataInFieldsWithSystemAndArtifactFieldsRemoved()
         {
-            //ARRANGE
-
+            // ARRANGE
             _objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
             {
                 DescriptorArtifactTypeId = 1,
@@ -122,27 +109,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
                 {
-                    new RelativityObject {Name = "Name", ArtifactID = 1},
-                    new RelativityObject {Name = "System Created On", ArtifactID = 2},
-                    new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
-                    new RelativityObject {Name = "User", ArtifactID = 4},
-                    new RelativityObject {Name = "Artifact ID", ArtifactID = 5}
+                    new RelativityObject { Name = "Name", ArtifactID = 1 },
+                    new RelativityObject { Name = "System Created On", ArtifactID = 2 },
+                    new RelativityObject { Name = "Date Modified On", ArtifactID = 3 },
+                    new RelativityObject { Name = "User", ArtifactID = 4 },
+                    new RelativityObject { Name = "Artifact ID", ArtifactID = 5 }
                 });
 
             var expectedFieldEntry = new List<FieldEntry>
                 {
-                    new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
-                    new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
-                    new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
+                    new FieldEntry { DisplayName = "Name", FieldIdentifier = "1" },
+                    new FieldEntry { DisplayName = "Date Modified On", FieldIdentifier = "3" },
+                    new FieldEntry { DisplayName = "User", FieldIdentifier = "4" },
                 };
 
             string optionsStr = JsonConvert.SerializeObject(options);
             RdoSynchronizer sut = PrepareSut();
 
-            //ACT
+            // ACT
             List<FieldEntry> listOfFieldEntry = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).ToList();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
             for (var i = 0; i < listOfFieldEntry.Count; i++)
             {
@@ -154,7 +141,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetRightCountOfFields()
         {
-            //ARRANGE
+            // ARRANGE
             _objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
             {
                 DescriptorArtifactTypeId = 1,
@@ -168,27 +155,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
                 {
-                    new RelativityObject {Name = "Name", ArtifactID = 1},
-                    new RelativityObject {Name = "Value", ArtifactID = 2},
-                    new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
-                    new RelativityObject {Name = "User", ArtifactID = 4},
-                    new RelativityObject {Name = "FirstName", ArtifactID = 5}
+                    new RelativityObject { Name = "Name", ArtifactID = 1 },
+                    new RelativityObject { Name = "Value", ArtifactID = 2 },
+                    new RelativityObject { Name = "Date Modified On", ArtifactID = 3 },
+                    new RelativityObject { Name = "User", ArtifactID = 4 },
+                    new RelativityObject { Name = "FirstName", ArtifactID = 5 }
                 });
 
             string optionsStr = JsonConvert.SerializeObject(options);
             RdoSynchronizer sut = PrepareSut();
 
-            //ACT
+            // ACT
             int numberOfFields = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).Count();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(5, numberOfFields);
         }
 
         [Test]
         public void GetRightDataInFields()
         {
-            //ARRANGE
+            // ARRANGE
             _objectTypeRepository.Setup(x => x.GetObjectType(It.IsAny<int>())).Returns(new ObjectTypeDTO
             {
                 DescriptorArtifactTypeId = 1,
@@ -202,29 +189,29 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>
                 {
-                    new RelativityObject {Name = "Name", ArtifactID = 1},
-                    new RelativityObject {Name = "Value", ArtifactID = 2},
-                    new RelativityObject {Name = "Date Modified On", ArtifactID = 3},
-                    new RelativityObject {Name = "User", ArtifactID = 4},
-                    new RelativityObject {Name = "FirstName", ArtifactID = 5}
+                    new RelativityObject { Name = "Name", ArtifactID = 1 },
+                    new RelativityObject { Name = "Value", ArtifactID = 2 },
+                    new RelativityObject { Name = "Date Modified On", ArtifactID = 3 },
+                    new RelativityObject { Name = "User", ArtifactID = 4 },
+                    new RelativityObject { Name = "FirstName", ArtifactID = 5 }
                 });
 
             var expectedFieldEntry = new List<FieldEntry>
                 {
-                    new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
-                    new FieldEntry {DisplayName = "Value", FieldIdentifier = "2"},
-                    new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
-                    new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
-                    new FieldEntry {DisplayName = "FirstName", FieldIdentifier = "5"}
+                    new FieldEntry { DisplayName = "Name", FieldIdentifier = "1" },
+                    new FieldEntry { DisplayName = "Value", FieldIdentifier = "2" },
+                    new FieldEntry { DisplayName = "Date Modified On", FieldIdentifier = "3" },
+                    new FieldEntry { DisplayName = "User", FieldIdentifier = "4" },
+                    new FieldEntry { DisplayName = "FirstName", FieldIdentifier = "5" }
                 };
 
             string optionsStr = JsonConvert.SerializeObject(options);
             RdoSynchronizer sut = PrepareSut();
 
-            //ACT
+            // ACT
             List<FieldEntry> listOfFieldEntry = sut.GetFields(new DataSourceProviderConfiguration(optionsStr)).ToList();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
             for (var i = 0; i < listOfFieldEntry.Count; i++)
             {
@@ -236,12 +223,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetSyncDataImportSettings_NoNativeFileImport_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
                 {
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000001" }, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000002" }, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld2" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000003" }, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld3" } },
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
@@ -254,10 +241,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             });
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(1111111, result.ArtifactTypeId);
             Assert.AreEqual(2222222, result.CaseArtifactId);
             Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -275,12 +262,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetSyncDataImportSettings_SetFileLinks_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
                 {
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000001" }, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000002" }, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld2" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000003" }, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld3" } },
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
@@ -301,10 +288,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 }
             };
 
-            //ACT
+            // ACT
             ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(1111111, result.ArtifactTypeId);
             Assert.AreEqual(2222222, result.CaseArtifactId);
             Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -322,13 +309,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetSyncDataImportSettings_NativeFileImport_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
                 {
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-                    new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld4"}},
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000001" }, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000002" }, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld2" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000003" }, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld3" } },
+                    new FieldMap() { DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld4" } },
                 };
 
             var nativeFileImportService = new NativeFileImportService();
@@ -342,10 +329,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             string options = JsonConvert.SerializeObject(importSettings);
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(1111111, result.ArtifactTypeId);
             Assert.AreEqual(2222222, result.CaseArtifactId);
             Assert.AreEqual(4000001, result.IdentityFieldId);
@@ -363,22 +350,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetSyncDataImportSettings_NoFolderInformationPath_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
                 {
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000001" }, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000002" }, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld2" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000003" }, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld3" } },
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
             string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-            //ASSERT
+            // ASSERT
             Assert.IsNull(result.FolderPathSourceFieldName);
             Assert.AreEqual(0, result.DestinationFolderArtifactId);
         }
@@ -386,31 +373,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetSyncDataImportSettings_FolderInformationPath_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
                 {
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
-                    new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
-                    new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.FolderPathInformation, SourceField = new FieldEntry() {DisplayName = "SourceFld4"}},
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000001" }, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000002" }, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld2" } },
+                    new FieldMap() { DestinationField = new FieldEntry() { FieldIdentifier = "4000003" }, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() { FieldIdentifier = "SourceFld3" } },
+                    new FieldMap() { DestinationField = null, FieldMapType = FieldMapTypeEnum.FolderPathInformation, SourceField = new FieldEntry() { DisplayName = "SourceFld4" } },
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
             string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
             Assert.AreEqual(0, result.DestinationFolderArtifactId);
-        }
+         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsNone_True()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
@@ -419,17 +406,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsTrue(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsParent_False()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
@@ -438,17 +425,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsFalse(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsNativeFilePath_False()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
@@ -457,17 +444,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsFalse(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsIdentifier_True()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
@@ -476,17 +463,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsTrue(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsADestination_True()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
@@ -495,17 +482,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsTrue(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsNoDestinationSet_False()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = null,
@@ -514,17 +501,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsFalse(result);
         }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsDestinationHasNullProperties_False()
         {
-            //ARRANGE
+            // ARRANGE
             FieldMap fieldMap = new FieldMap()
             {
                 DestinationField = new FieldEntry(),
@@ -533,45 +520,45 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-            //ACT
+            // ACT
             bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
-            //ASSERT
+            // ASSERT
             Assert.IsFalse(result);
         }
 
         [Test]
         public void GetEmailBodyData_HasWorkspace_CorrectlyFormattedOutput()
         {
-            //ARRANGE
+            // ARRANGE
             int workspaceId = 1111111;
             WorkspaceRef workspaceRef = new WorkspaceRef() { Id = workspaceId, Name = "My Test workspace" };
             IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
             var settings = new ImportSettings { CaseArtifactId = workspaceId };
             string options = JsonConvert.SerializeObject(settings);
 
-            //ACT
+            // ACT
             string returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("\r\nDestination Workspace: My Test workspace - 1111111", returnedString);
         }
 
         [Test]
         public void GetEmailBodyData_NoWorkspace_CorrectlyFormattedOutput()
         {
-            //ARRANGE
+            // ARRANGE
             int workspaceId = 1111111;
             WorkspaceRef workspaceRef = null;
             IEmailBodyData rdoSynchronizer = new MockSynchronizer(workspaceRef);
             var settings = new ImportSettings { CaseArtifactId = workspaceId };
             string options = JsonConvert.SerializeObject(settings);
 
-            //ACT
+            // ACT
             string returnedString = rdoSynchronizer.GetEmailBodyData(null, options);
 
-            //ASSERT
-            Assert.AreEqual("", returnedString);
+            // ASSERT
+            Assert.AreEqual(string.Empty, returnedString);
         }
 
         /// <summary>
@@ -607,6 +594,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             relativityFieldQuery.Verify(x => x.GetFieldsForRdo(artifactTypeId), Times.Once);
             importApiFactory.Verify(x => x.GetImportAPI(It.IsAny<ImportSettings>()), Times.Once);
             importApi.Verify(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId), Times.Once);
+        }
+
+        private RdoSynchronizer PrepareSut()
+        {
+            return ChangeWebAPIPath(
+                new RdoSynchronizer(
+                    _relativityFieldQuery.Object,
+                    RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
+                    _importJobFactory.Object,
+                    _helper.Object,
+                    _diagnosticLogMock.Object));
         }
     }
 
