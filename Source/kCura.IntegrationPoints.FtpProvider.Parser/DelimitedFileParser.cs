@@ -74,14 +74,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             Columns = columnList.ToArray();
         }
 
-        private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
-        {
-            parser.TextFieldType = parserOptions.TextFieldType;
-            parser.Delimiters = parserOptions.Delimiters;
-            parser.HasFieldsEnclosedInQuotes = parserOptions.HasFieldsEnclosedInQuotes;
-            parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
-        }
-
         public bool SourceExists()
         {
             if ((FileLocation != null && !new FileInfo(FileLocation).Exists) && FileStream == null && TextReader == null)
@@ -121,32 +113,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                 }
             }
             return retVal;
-        }
-
-        internal void ValidateColumns(IEnumerable<string> columns)
-        {
-            // Validate Blank Columns
-            foreach (string column in columns)
-            {
-                if (string.IsNullOrWhiteSpace(column))
-                {
-                    throw new Exceptions.BlankColumnException();
-                }
-            }
-
-            // Validate Duplicates
-            var destination = new List<string>();
-            foreach (string column in columns)
-            {
-                if (!destination.Contains(column))
-                {
-                    destination.Add(column);
-                }
-                else
-                {
-                    throw new Exceptions.DuplicateColumnsExistException();
-                }
-            }
         }
 
         public IDataReader ParseData()
@@ -261,7 +227,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public Type GetFieldType(int i)
         {
-            return (CurrentLine[i]).GetType();
+            return CurrentLine[i].GetType();
         }
 
         public float GetFloat(int i)
@@ -337,6 +303,38 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public object this[int i] => GetValue(i);
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        internal void ValidateColumns(IEnumerable<string> columns)
+        {
+            // Validate Blank Columns
+            foreach (string column in columns)
+            {
+                if (string.IsNullOrWhiteSpace(column))
+                {
+                    throw new Exceptions.BlankColumnException();
+                }
+            }
+
+            // Validate Duplicates
+            var destination = new List<string>();
+            foreach (string column in columns)
+            {
+                if (!destination.Contains(column))
+                {
+                    destination.Add(column);
+                }
+                else
+                {
+                    throw new Exceptions.DuplicateColumnsExistException();
+                }
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!Disposed)
@@ -349,10 +347,12 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             Disposed = true;
         }
 
-        public void Dispose()
+        private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            parser.TextFieldType = parserOptions.TextFieldType;
+            parser.Delimiters = parserOptions.Delimiters;
+            parser.HasFieldsEnclosedInQuotes = parserOptions.HasFieldsEnclosedInQuotes;
+            parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
         }
 
         private void SetBatchFirstLineNumber(ParserOptions parserOptions)

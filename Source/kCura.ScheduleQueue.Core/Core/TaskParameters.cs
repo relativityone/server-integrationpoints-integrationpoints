@@ -8,6 +8,6 @@ namespace kCura.ScheduleQueue.Core.Core
 
         public object BatchParameters{ get; set; }
 
-        public long BatchStartingIndex { get; set; }
+        public long? BatchStartingIndex { get; set; }
     }
 }

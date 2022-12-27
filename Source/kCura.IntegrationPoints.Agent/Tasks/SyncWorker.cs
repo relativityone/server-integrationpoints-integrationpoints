@@ -370,7 +370,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void ExtendSourceConfigurationWithBatchStartingIndex(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            if (taskParameters.BatchStartingIndex > -1)
+            if (taskParameters.BatchStartingIndex != null)
             {
                 Dictionary<string, object> sourceConfiguration =
                     Serializer.Deserialize<Dictionary<string, object>>(IntegrationPointDto?.SourceConfiguration);
