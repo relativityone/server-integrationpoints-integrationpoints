@@ -182,27 +182,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     int addedRows = 0;
                     int skippedRows = 0;
                     _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
-                    using (IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator())
+                    try
                     {
-                        for (int i = 0; i < Config.Config.Instance.BatchSize; i++)
+                        foreach (var row in data)
                         {
-                            IDictionary<FieldEntry, object> row = new Dictionary<FieldEntry, object>();
-                            try
-                            {
-                                if (!enumerator.MoveNext())
-                                {
-                                    continue;
-                                }
-
-                                row = enumerator.Current;
-                            }
-                            catch (MalformedLineException ex)
-                            {
-                                LogSyncDataError(ex);
-                                ItemError(string.Empty, ex.Message);
-                                continue;
-                            }
-
                             _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
                             try
                             {
@@ -228,6 +211,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                                 ItemError(string.Empty, ex.Message);
                             }
                         }
+                    }
+                    catch (MalformedLineException ex)
+                    {
+                        LogSyncDataError(ex);
+                        ItemError(string.Empty, ex.Message);
                     }
 
                     _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);

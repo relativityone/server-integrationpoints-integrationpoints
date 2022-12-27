@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
         {
             _diagnosticLog.LogDiagnostic("Start reading data from DataReader.");
             bool readSuccessfuly = true;
-            MalformedLineException malformedLineException = new MalformedLineException();
+            MalformedLineException malformedLineException = null;
             while (readSuccessfuly)
             {
                 try
@@ -35,13 +35,14 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
                 }
                 catch (MalformedLineException ex)
                 {
-                    malformedLineException = new MalformedLineException($"{malformedLineException.Message} {ex.Message}");
+                    string message = malformedLineException == null ? ex.Message : $"{malformedLineException.Message}\n{ex.Message}";
+                    malformedLineException = new MalformedLineException(message);
                     continue;
                 }
                 yield return _objectBuilder.BuildObject<T>(reader);
             }
 
-            if (!string.IsNullOrEmpty(malformedLineException.Message))
+            if (malformedLineException != null)
             {
                 throw malformedLineException;
             }
