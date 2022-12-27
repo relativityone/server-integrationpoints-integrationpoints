@@ -29,7 +29,11 @@ namespace kCura.IntegrationPoints.FtpProvider
         private readonly IParserFactory _parserFactory;
         private readonly ISettingsManager _settingsManager;
 
-        public FtpProvider(IConnectorFactory connectorFactory, ISettingsManager settingsManager, IParserFactory parserFactory, IDataReaderFactory dataReaderFactory,
+        public FtpProvider(
+            IConnectorFactory connectorFactory,
+            ISettingsManager settingsManager,
+            IParserFactory parserFactory,
+            IDataReaderFactory dataReaderFactory,
             IHelper helper)
         {
             _connectorFactory = connectorFactory;
@@ -45,7 +49,7 @@ namespace kCura.IntegrationPoints.FtpProvider
             List<FieldEntry> fields = new List<FieldEntry>();
             string fileName = string.Empty;
             string remoteLocation = string.Empty;
-            
+
             Settings settings = GetSettingsModel(providerConfiguration.Configuration);
             try
             {
@@ -74,11 +78,10 @@ namespace kCura.IntegrationPoints.FtpProvider
                     LogRetrievingFieldsErrorWithDetails(ex, message);
                     throw new Exception(message);
                 }
-                else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
-                        ex.ToString().Contains("The remote server returned an error")))
+                if ((ex is WebException && ex.ToString().Contains("The underlying connection was closed")) || ex.ToString().Contains("The remote server returned an error"))
                 {
-                    //TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
-                    //This is to hide the issue because data is corretly parsed
+                    // TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+                    // This is to hide the issue because data is correctly parsed
                     LogRetrievingFieldsWarning(ex, ex.Message);
                 }
                 else
@@ -113,8 +116,8 @@ namespace kCura.IntegrationPoints.FtpProvider
                     IDataReader fileReader = _dataReaderFactory.GetFileDataReader(fileLocation);
                     if (parserOptions.FirstLineContainsColumnNames)
                     {
-                        //since column list and order is recorded at the last Integration Point save,
-                        //verify that current file has the same structure
+                        // since column list and order is recorded at the last Integration Point save,
+                        // verify that current file has the same structure
                         string columns = fileReader.GetString(0);
                         ValidateColumns(columns, settings, parserOptions);
                     }
@@ -130,7 +133,7 @@ namespace kCura.IntegrationPoints.FtpProvider
                     LogRetrievingBatchableIdsErrorWithDetails(identifier, ex, message);
                     throw new Exception(message);
                 }
-                
+
                 LogRetrievingBatchableIdsError(identifier, ex);
                 throw new IntegrationPointsException(
                     "Failed to extract batch IDs when downloading file from FTP/SFTP server", ex)
@@ -146,7 +149,7 @@ namespace kCura.IntegrationPoints.FtpProvider
             LogRetrievingData(entryIdsList);
             Settings settings = GetSettingsModel(providerConfiguration.Configuration);
             ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
-            parserOptions.FirstLineContainsColumnNames = false;
+            parserOptions.FirstLineNumber = settings.BatchStartingIndex;
             try
             {
                 List<string> columnList = settings.ColumnList.Select(x => x.FieldIdentifier).ToList();
@@ -163,11 +166,11 @@ namespace kCura.IntegrationPoints.FtpProvider
                     LogRetrievingDataErrorWithDetails(entryIdsList, ex, message);
                     throw new Exception(message);
                 }
-                else if ((ex is WebException && (ex.ToString().Contains("The underlying connection was closed")) ||
+                if (ex is WebException && (ex.ToString().Contains("The underlying connection was closed") ||
                         ex.ToString().Contains("The remote server returned an error")))
                 {
-                    //TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
-                    //This is to hide the issue because data is corretly parsed
+                    // TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
+                    // This is to hide the issue because data is corretly parsed
                     LogRetrievingDataWarning(ex, ex.Message);
                 }
                 else
@@ -178,6 +181,11 @@ namespace kCura.IntegrationPoints.FtpProvider
             }
 
             return null;
+        }
+
+        public Settings GetSettingsModel(string options)
+        {
+            return _settingsManager.DeserializeSettings(options);
         }
 
         internal DateTime GetCurrentTime(int? offset)
@@ -201,21 +209,16 @@ namespace kCura.IntegrationPoints.FtpProvider
         internal string AddFileExtension(string input)
         {
             var retVal = input.Trim();
-            if ((retVal.Length < 4) || (String.CompareOrdinal(retVal.Substring(retVal.Length - 4).ToLowerInvariant(), ".csv") != 0))
+            if ((retVal.Length < 4) || (string.CompareOrdinal(retVal.Substring(retVal.Length - 4).ToLowerInvariant(), ".csv") != 0))
             {
                 retVal = retVal + ".csv";
             }
             return retVal;
         }
 
-        public Settings GetSettingsModel(string options)
-        {
-            return _settingsManager.DeserializeSettings(options);
-        }
-
         internal void ValidateColumns(string columns, Settings settings, ParserOptions parserOptions)
         {
-            //must contain the same columns in the same order as it was initially when Integration Point was saved
+            // must contain the same columns in the same order as it was initially when Integration Point was saved
             string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
 
             string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim(' ', '"')));
@@ -266,11 +269,13 @@ namespace kCura.IntegrationPoints.FtpProvider
 
         private void LogRetrievingBatchableIdsErrorWithDetails(FieldEntry identifier, Exception ex, string message)
         {
-            _logger.LogError(ex,
+            _logger.LogError(
+                ex,
                 "Failed to retrieve batchable ids in FTP Provider for field {FieldIdentifier}. Details: {Message}.",
-                identifier.FieldIdentifier, message);
+                identifier.FieldIdentifier,
+                message);
         }
-        
+
         private void LogRetrievingDataError(IList<string> entryIds, Exception ex)
         {
             _logger.LogError(ex, "Failed to retrieve data in FTP Provider for IDs count {count}.", entryIds.Count);
@@ -283,8 +288,11 @@ namespace kCura.IntegrationPoints.FtpProvider
 
         private void LogRetrievingDataErrorWithDetails(IList<string> entryIds, Exception ex, string message)
         {
-            _logger.LogError(ex, "Failed to retrieve data in FTP Provider for IDs count {count}. Details: {Message}.",
-                entryIds.Count, message);
+            _logger.LogError(
+                ex,
+                "Failed to retrieve data in FTP Provider for IDs count {count}. Details: {Message}.",
+                entryIds.Count,
+                message);
         }
 
         private void LogValidatingColumnsError()

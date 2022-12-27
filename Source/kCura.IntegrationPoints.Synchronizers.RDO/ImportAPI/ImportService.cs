@@ -5,27 +5,23 @@ using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.Relativity.DataReaderClient;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
+using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
-using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
     public class ImportService : IImportService, IBatchReporter
     {
-        private Dictionary<int, string> _idToFieldNameDictionary;
-        private IImportAPI _importApi;
-        private int _lastJobStatusUpdate;
-        private int _totalRowsImported;
-        private int _totalRowsWithErrors;
         private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
         private const string _IMPORT_API_ERROR_PREFIX = "IAPI";
+
         private readonly BatchManager _batchManager;
         private readonly Dictionary<string, int> _inputMappings;
         private readonly IAPILog _logger;
@@ -37,8 +33,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
         private readonly NativeFileImportService _nativeFileImportService;
 
-        public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
-            IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+        private Dictionary<int, string> _idToFieldNameDictionary;
+        private IImportAPI _importApi;
+        private int _lastJobStatusUpdate;
+        private int _totalRowsImported;
+        private int _totalRowsWithErrors;
+
+        public ImportService(
+            ImportSettings settings,
+            Dictionary<string, int> fieldMappings,
+            BatchManager batchManager,
+            NativeFileImportService nativeFileImportService,
+            IImportApiFactory factory,
+            IImportJobFactory jobFactory,
+            IHelper helper,
+            IJobStopManager jobStopManager,
+            IDiagnosticLog diagnosticLog)
         {
             _helper = helper;
             _jobStopManager = jobStopManager;
@@ -60,11 +70,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private Dictionary<string, string> FieldMappings { get; set; }
 
         public event StatusUpdate OnStatusUpdate;
+
         public event BatchCompleted OnBatchComplete;
+
         public event BatchSubmitted OnBatchSubmit;
+
         public event BatchCreated OnBatchCreate;
+
         public event StatisticsUpdate OnStatisticsUpdate;
+
         public event JobError OnJobError;
+
         public event RowError OnDocumentError;
 
         public ImportSettings Settings { get; }
@@ -112,7 +128,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                     IDataReader sourceData = _batchManager.GetBatchData();
                     if (sourceData != null)
                     {
-
                         KickOffImport(new DefaultTransferContext(new PausableDataReader(sourceData, _jobStopManager)));
                     }
                     else
@@ -135,7 +150,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _totalRowsImported = context.TransferredItemsCount;
             _totalRowsWithErrors = context.FailedItemsCount;
 
-            //Assign events
+            // Assign events
             importJob.OnComplete += ImportJob_OnComplete;
             importJob.OnFatalException += ImportJob_OnComplete;
             importJob.OnError += ImportJob_OnError;
@@ -146,25 +161,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
             LogImportJobStarted();
             importJob.Execute();
-        }
-
-        internal void Connect(ImportSettings settings)
-        {
-            _importApi = _factory.GetImportAPI(settings);
-        }
-
-        internal void SetupFieldDictionary()
-        {
-            try
-            {
-                IImportApiFacade facade = _factory.GetImportApiFacade(Settings);
-                _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.CaseArtifactId, Settings.ArtifactTypeId);
-            }
-            catch (Exception e)
-            {
-                LogSettingFieldDictionaryError(e);
-                throw;
-            }
         }
 
         public Dictionary<string, string> ValidateAllMappedFieldsAreInWorkspace(Dictionary<string, int> fieldMapping, Dictionary<int, string> rdoAllFields)
@@ -199,6 +195,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         public int TotalRowsProcessed => _totalRowsImported;
 
+        internal void Connect(ImportSettings settings)
+        {
+            _importApi = _factory.GetImportAPI(settings);
+        }
+
+        internal void SetupFieldDictionary()
+        {
+            try
+            {
+                IImportApiFacade facade = _factory.GetImportApiFacade(Settings);
+                _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.CaseArtifactId, Settings.ArtifactTypeId);
+            }
+            catch (Exception e)
+            {
+                LogSettingFieldDictionaryError(e);
+                throw;
+            }
+        }
+
         internal Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, string> mapping)
         {
             Dictionary<string, object> importFields = new Dictionary<string, object>();
@@ -220,6 +235,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                 importFields.Add(_nativeFileImportService.DestinationFieldName, sourceFields[_nativeFileImportService.SourceFieldName]);
             }
             return importFields;
+        }
+
+        internal string PrependString(string prefix, string message)
+        {
+            message = string.IsNullOrWhiteSpace(message) ? "[Unknown message]" : message;
+            return $"{prefix} {message}";
         }
 
         private void ImportService_OnBatchCreate(int batchSize)
@@ -255,12 +276,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             }
 
             CompleteBatch(jobReport.StartTime, jobReport.EndTime, jobReport.TotalRows, jobReport.ErrorRowCount);
-        }
-
-        internal string PrependString(string prefix, string message)
-        {
-            message = string.IsNullOrWhiteSpace(message) ? "[Unknown message]" : message;
-            return $"{prefix} {message}";
         }
 
         private void SaveDocumentsError(IList<JobReport.RowError> errors)
@@ -381,7 +396,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         private void LogBatchCompleted(DateTime start, DateTime end, int totalRows, int errorRows)
         {
-            _logger.LogInformation("Batch completed. Total rows: {TotalRows}. Rows with error: {ErrorRows}. Time in milliseconds: {Time}.", totalRows, errorRows,
+            _logger.LogInformation(
+                "Batch completed. Total rows: {TotalRows}. Rows with error: {ErrorRows}. Time in milliseconds: {Time}.",
+                totalRows,
+                errorRows,
                 (end - start).Milliseconds);
         }
 
