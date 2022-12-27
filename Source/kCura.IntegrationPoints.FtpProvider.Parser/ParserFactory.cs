@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         {
             return new DelimitedFileParser(stream, parserOptions);
         }
+
         public IParser GetDelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
         {
             return new DelimitedFileParser(reader, parserOptions, columnList);

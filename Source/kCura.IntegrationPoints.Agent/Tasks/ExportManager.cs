@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             if (totalCount > 0)
             {
-                CreateBatchJob(job, new List<string>());
+                CreateBatchJob(job, new List<string>(), -1);
             }
 
             LogBatchTaskSuccesfulEnd(job, totalCount);

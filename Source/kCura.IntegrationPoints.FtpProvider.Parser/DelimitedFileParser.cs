@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         internal string[] Columns;
         internal string[] CurrentLine;
         internal int LineNumber = 0;
+        internal long BatchFirstLineNumber = 1;
 
         public int RecordsAffected => LineNumber;
 
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
         {
             FileLocation = fileLocation;
+            SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
                 Parser = new TextFieldParser(FileLocation);
@@ -46,6 +48,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         public DelimitedFileParser(Stream stream, ParserOptions parserOptions)
         {
             FileStream = stream;
+            SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
                 Parser = new TextFieldParser(FileStream, Encoding.UTF8, true);
@@ -57,10 +60,12 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
-        //this one is not tested
+        // this one is not tested
         public DelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
         {
             TextReader = reader;
+            SetBatchFirstLineNumber(parserOptions);
+
             if (SourceExists())
             {
                 Parser = new TextFieldParser(TextReader);
@@ -100,7 +105,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                     if (NextResult())
                     {
                         Columns = CurrentLine;
-                        //Make sure headers exist in file
+
+                        // Make sure headers exist in file
                         if (Columns == null || Columns.Length < 1)
                         {
                             throw new Exceptions.NoColumnsException();
@@ -119,7 +125,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         internal void ValidateColumns(IEnumerable<string> columns)
         {
-            //Validate Blank Columns
+            // Validate Blank Columns
             foreach (string column in columns)
             {
                 if (string.IsNullOrWhiteSpace(column))
@@ -128,7 +134,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                 }
             }
 
-            //Validate Duplicates
+            // Validate Duplicates
             var destination = new List<string>();
             foreach (string column in columns)
             {
@@ -160,16 +166,24 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             var retVal = false;
             if (!Parser.EndOfData)
             {
-                LineNumber++;
-                string[] data = Parser.ReadFields();
-                if (data != null)
+                try
                 {
-                    if (Columns != null && data.Length != Columns.Length)
+                    LineNumber++;
+                    string[] data = Parser.ReadFields();
+                    if (data != null)
                     {
-                        throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(LineNumber);
+                        if (Columns != null && data.Length != Columns.Length)
+                        {
+                            throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(BatchFirstLineNumber + LineNumber);
+                        }
+
+                        CurrentLine = data;
+                        retVal = true;
                     }
-                    CurrentLine = data;
-                    retVal = true;
+                }
+                catch (MalformedLineException ex)
+                {
+                    throw new MalformedLineException($"Exception thrown in Import file line number {BatchFirstLineNumber + LineNumber}", ex);
                 }
             }
             return retVal;
@@ -341,5 +355,17 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             GC.SuppressFinalize(this);
         }
 
+        private void SetBatchFirstLineNumber(ParserOptions parserOptions)
+        {
+            if (parserOptions.FirstLineNumber > -1)
+            {
+                BatchFirstLineNumber = parserOptions.FirstLineNumber;
+            }
+
+            if (parserOptions.FirstLineContainsColumnNames)
+            {
+                BatchFirstLineNumber++;
+            }
+        }
     }
 }
