@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -181,31 +182,51 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     int addedRows = 0;
                     int skippedRows = 0;
                     _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
-                    foreach (var row in data)
+                    using (IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator())
                     {
-                        _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
-                        try
+                        for (int i = 0; i < Config.Config.Instance.BatchSize; i++)
                         {
-                            Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
-                            if (importRow != null)
+                            IDictionary<FieldEntry, object> row = new Dictionary<FieldEntry, object>();
+                            try
                             {
-                                ImportService.AddRow(importRow);
-                                ++addedRows;
+                                if (!enumerator.MoveNext())
+                                {
+                                    continue;
+                                }
+
+                                row = enumerator.Current;
                             }
-                            else
+                            catch (MalformedLineException ex)
                             {
-                                ++skippedRows;
+                                LogSyncDataError(ex);
+                                ItemError(string.Empty, ex.Message);
+                                continue;
                             }
-                        }
-                        catch (ProviderReadDataException exception)
-                        {
-                            LogSyncDataError(exception);
-                            ItemError(exception.Identifier, exception.Message);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogSyncDataError(ex);
-                            ItemError(string.Empty, ex.Message);
+
+                            _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
+                            try
+                            {
+                                Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
+                                if (importRow != null)
+                                {
+                                    ImportService.AddRow(importRow);
+                                    ++addedRows;
+                                }
+                                else
+                                {
+                                    ++skippedRows;
+                                }
+                            }
+                            catch (ProviderReadDataException exception)
+                            {
+                                LogSyncDataError(exception);
+                                ItemError(exception.Identifier, exception.Message);
+                            }
+                            catch (Exception ex)
+                            {
+                                LogSyncDataError(ex);
+                                ItemError(string.Empty, ex.Message);
+                            }
                         }
                     }
 
