@@ -29,8 +29,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
     {
-        protected IImportService ImportService;
-
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IDiagnosticLog _diagnosticLog;
@@ -43,6 +41,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private bool? _disableNativeValidation;
         private HashSet<string> _ignoredList;
         private string _webApiPath;
+
+        protected IImportService ImportService { get; private set; }
 
         public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
         {
@@ -420,7 +420,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
             catch (Exception ex)
             {
-                throw LogAndCreateGetImportSettignsException(ex, fieldMap);
+                throw LogAndCreateGetImportSettingsException(ex, fieldMap);
             }
         }
 
@@ -711,26 +711,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         #region Logging
 
-        private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, IEnumerable<FieldMap> fieldMap)
+        private IntegrationPointsException LogAndCreateGetImportSettingsException(Exception exception, IEnumerable<FieldMap> fieldMap)
         {
-            string message = "Error occured while preparing import settings.";
+            string message = "Error occurred while preparing import settings.";
             IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
-            _logger.LogError("Error occured while preparing import settings\nFields: {@fieldMap}", fieldMapWithoutFieldNames);
+            _logger.LogError("Error occurred while preparing import settings\nFields: {@fieldMap}", fieldMapWithoutFieldNames);
             return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
         private IntegrationPointsException LogAndCreateGetFieldsException(Exception exception)
         {
-            string message = "Error occured while getting fields.";
+            string message = "Error occurred while getting fields.";
             _logger.LogError("Error getting fields.");
             return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
         private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, string options)
         {
-            string message = "Error occured while syncing rdo.";
+            string message = "Error occurred while syncing rdo.";
             IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
-            _logger.LogError("Error occured while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMapWithoutFieldNames);
+            _logger.LogError("Error occurred while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMapWithoutFieldNames);
             return new IntegrationPointsException(message, ex) { ShouldAddToErrorsTab = true };
         }
 
