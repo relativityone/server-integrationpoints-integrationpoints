@@ -290,17 +290,6 @@
     <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
     <Content Include="Scripts\modals\creating-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\export-renamed-fields-vm.js" />
-    <Content Include="Scripts\moment-timezone-utils.js" />
-    <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
-    <Content Include="Scripts\moment-timezone-with-data-2010-2020.min.js" />
-    <Content Include="Scripts\moment-timezone-with-data.js" />
-    <Content Include="Scripts\moment-timezone-with-data.min.js" />
-    <Content Include="Scripts\moment-timezone.js" />
-    <Content Include="Scripts\moment-timezone.min.js" />
-    <Content Include="Scripts\moment-with-locales.js" />
-    <Content Include="Scripts\moment-with-locales.min.js" />
-    <Content Include="Scripts\moment.js" />
-    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\q.js" />
     <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
     <None Include="Scripts\jquery-3.5.1.min.map" />
