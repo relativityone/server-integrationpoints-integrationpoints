@@ -4,25 +4,33 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
+using Microsoft.VisualBasic.FileIO;
+using Moq;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class DelimitedFileParserTests : TestBase
     {
-        [SetUp]
-        public override void SetUp()
-        {
+        private IFieldParserFactory _fieldParserFactory;
 
+        [SetUp]
+        public void SetUp()
+        {
+            _fieldParserFactory = new TextFieldParserFactory();
         }
 
-        [Test, System.ComponentModel.Description("Validates that when the fileLocation constructor is used, the solution should not use the filestream ")]
+        [Test]
+        [System.ComponentModel.Description("Validates that when the fileLocation constructor is used, the solution should not use the filestream ")]
         public void FileStreamNullWhenLocationConstructorUsed()
         {
             string location = CreateFile("Sample Text for temp file");
-            using (var parser = new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, location, new ParserOptions { Delimiters = new[] { "," } }))
             {
                 Assert.IsNull(parser.FileStream);
                 Assert.IsNotNull(parser.FileLocation);
@@ -33,9 +41,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         [Test]
         public void ShouldParseColumnsWhenLocationConstructorUsed()
         {
-            const int numberOfColumns = 2; 
+            const int numberOfColumns = 2;
             string location = CreateFile("Column1,Column2");
-            using (var parser = new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," }, FirstLineContainsColumnNames = true}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, location, new ParserOptions { Delimiters = new[] { "," }, FirstLineContainsColumnNames = true }))
             {
                 Assert.IsNull(parser.FileStream);
                 Assert.IsNotNull(parser.FileLocation);
@@ -44,11 +52,12 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             DeleteFile(location);
         }
 
-        [Test, System.ComponentModel.Description("Validates that when the stream constructor is used, the solution should not use the filelocation ")]
+        [Test]
+        [System.ComponentModel.Description("Validates that when the stream constructor is used, the solution should not use the filelocation ")]
         public void FileLocationNullWhenStreamConstructorUsed()
         {
             Stream streamInput = StringToStream("Test String");
-            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
+            var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } });
 
             Assert.IsNull(parser.FileLocation);
             Assert.IsNotNull(parser.FileStream);
@@ -57,13 +66,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         [Test]
         public void FileLocationNullWhenTextReaderConstructorUsed()
         {
-            //Arrange
+            // Arrange
             string location = CreateFile("Sample Text for temp file");
-            var columns = new List<string>(){ "Column1", "Column2", "Column3" };
+            var columns = new List<string> { "Column1", "Column2", "Column3" };
 
             using (TextReader textReaderInput = File.OpenText(location))
             {
-                var parser = new DelimitedFileParser(textReaderInput, new ParserOptions() { Delimiters = new[] { "," } }, columns);
+                var parser = new DelimitedFileParser(_fieldParserFactory, textReaderInput, new ParserOptions() { Delimiters = new[] { "," } }, columns);
 
                 Assert.IsNull(parser.FileLocation);
                 Assert.IsNull(parser.FileStream);
@@ -73,33 +82,36 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             DeleteFile(location);
         }
 
-        [Test, System.ComponentModel.Description("Validates logic that determines when a file exists")]
+        [Test]
+        [System.ComponentModel.Description("Validates logic that determines when a file exists")]
         public void SourceExistsValidationDetectsfile()
         {
             string location = CreateFile("Sample Text for temp file");
-            using (var parser = new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, location, new ParserOptions() { Delimiters = new[] { "," } }))
             {
                 Assert.DoesNotThrow(() => parser.SourceExists());
             }
             DeleteFile(location);
         }
 
-        [Test, System.ComponentModel.Description("Validates logic that determines when a file does not exists")]
+        [Test]
+        [System.ComponentModel.Description("Validates logic that determines when a file does not exists")]
         public void SourceExistsValidationDetectsMissingfile()
         {
             string location = GenerateTempLocation();
 
             Assert.Throws<Helpers.Exceptions.CantAccessSourceException>(
-                () => new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }));
+                () => new DelimitedFileParser(_fieldParserFactory, location, new ParserOptions { Delimiters = new[] { "," } }));
         }
 
-        [Test, System.ComponentModel.Description("Validates that columns are parsed correctly")]
+        [Test]
+        [System.ComponentModel.Description("Validates that columns are parsed correctly")]
         public void ValidateColumnParsing()
         {
             const int numberOflinesInInputStream = 1;
             var input = @"""Column1"", ""Column2"", ""Column3""";
             Stream streamInput = StringToStream(input);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
                 IEnumerable<string> parsedColumns = parser.ParseColumns();
 
@@ -111,20 +123,20 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         [Test]
         public void ShouldNotValidateColumnsBecaseColumnsAlreadyExist()
         {
-            //Arrange
+            // Arrange
             const int numberOfParsedLines = 0;
             var input = "dummy input";
             Stream streamInput = StringToStream(input);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
-                string[] columns = {"Column1", "Column1", "Column2"};
+                string[] columns = { "Column1", "Column1", "Column2" };
 
                 parser.Columns = columns;
 
-                //Act
+                // Act
                 IEnumerable<string> parsedColumns = parser.ParseColumns();
 
-                //Assert
+                // Assert
                 Assert.AreEqual(columns, parsedColumns);
                 Assert.AreEqual(numberOfParsedLines, parser.RecordsAffected);
             }
@@ -135,11 +147,11 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         {
             var invalidColumns = "    ";
 
-            //Arrange
+            // Arrange
             Stream streamInput = StringToStream(invalidColumns);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
-                //Assert
+                // Assert
                 Assert.Throws<Helpers.Exceptions.NoColumnsException>(() => parser.ParseColumns());
             }
         }
@@ -150,42 +162,45 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             const int expectedDepth = 1;
             var invalidColumns = "    ";
 
-            //Arrange
+            // Arrange
             Stream streamInput = StringToStream(invalidColumns);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
-                //Assert
+                // Assert
                 Assert.AreEqual(expectedDepth, parser.Depth);
             }
         }
 
-        [Test, System.ComponentModel.Description("Validate that blank columns are not allowed")]
+        [Test]
+        [System.ComponentModel.Description("Validate that blank columns are not allowed")]
         public void ValidateBlankColumnsNotAllowed()
         {
             var input = "Hello, this is a test!";
             Stream streamInput = StringToStream(input);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
-                string[] columns = {"Column1", "", "COlumn2"};
+                string[] columns = { "Column1", string.Empty, "COlumn2" };
 
                 Assert.Throws<Helpers.Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
             }
         }
 
-        [Test, System.ComponentModel.Description("Validate that duplicate columns are not allowed")]
+        [Test]
+        [System.ComponentModel.Description("Validate that duplicate columns are not allowed")]
         public void ValidateDuplicateColumnsNotAllowed()
         {
             var input = "Hello, this is a test!";
             Stream streamInput = StringToStream(input);
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions() { Delimiters = new[] { "," } }))
             {
-                string[] columns = {"Column1", "Column1", "Column2"};
+                string[] columns = { "Column1", "Column1", "Column2" };
 
                 Assert.Throws<Helpers.Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
             }
         }
 
-        [Test, System.ComponentModel.Description("Validate columns are added to the datareader")]
+        [Test]
+        [System.ComponentModel.Description("Validate columns are added to the datareader")]
         public void ValidateColumnsAreAddedToDataReader()
         {
             /*Creates csv formatted text for input:
@@ -198,7 +213,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            var dataReader = new DelimitedFileParser(streamInput, new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } });
+            var dataReader = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } });
 
             IEnumerable<string> dataReaderColumns = GetDataReaderColumns(dataReader);
             Assert.AreEqual(columns.Length, dataReaderColumns.Count());
@@ -208,7 +223,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             }
         }
 
-        [Test, System.ComponentModel.Description("Validate that all data is added to the datareader")]
+        [Test]
+        [System.ComponentModel.Description("Validate that all data is added to the datareader")]
         public void ValidateAllDataIsAddedToDataReader()
         {
             /*Creates csv formatted text for input:
@@ -221,8 +237,10 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() {FirstLineContainsColumnNames = true, Delimiters = new[] {","}}))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 var row = new object[dataReader.FieldCount];
                 Assert.AreEqual(data.Length, row.Length);
@@ -244,14 +262,16 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             Column1,Column3
             Data1,Data2,Data3
             */
-            string[] columns = {"Column1", "Column3"};
-            string[] data = {"Data1", "Data2", "Data3"};
+            string[] columns = { "Column1", "Column3" };
+            string[] data = { "Data1", "Data2", "Data3" };
             var delimiter = ",";
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() {FirstLineContainsColumnNames = true, Delimiters = new[] {","}}))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 Assert.Throws<Helpers.Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException>(() => dataReader.Read());
             }
@@ -261,7 +281,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void ShouldReturnDataReader()
         {
             Stream streamInput = StringToStream("Test String");
-            using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions { Delimiters = new[] { "," } }))
             {
                 Assert.IsInstanceOf<IDataReader>(parser.ParseData());
             }
@@ -271,9 +291,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void ShouldBeClosed()
         {
             Stream streamInput = StringToStream("Test String");
-            var dataReader = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
-            
-            //Assert, Act & Assert
+            var dataReader = new DelimitedFileParser(_fieldParserFactory, streamInput, new ParserOptions() { Delimiters = new[] { "," } });
+
+            // Assert, Act & Assert
             Assert.IsTrue(dataReader.FileStream.CanRead);
 
             dataReader.Close();
@@ -286,14 +306,16 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void ShouldReturnDataByStringIndexer()
         {
             const int columnNumber = 1;
-            string[] columns = {"Column1", "Column2", "Column3"};
-            string[] data = {"Data1", "Data2", "Data3"};
+            string[] columns = { "Column1", "Column2", "Column3" };
+            string[] data = { "Data1", "Data2", "Data3" };
             var delimiter = ",";
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 dataReader.Read();
                 Assert.AreEqual(data[columnNumber], dataReader[columns[columnNumber]]);
@@ -309,15 +331,17 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 var dataTable = dataReader.GetSchemaTable();
 
                 Assert.AreEqual(columns.Length, dataTable?.Rows.Count);
                 for (var i = 0; i < columns.Length; i++)
                 {
-                    Assert.AreEqual(columns[i],dataTable?.Rows[i][0]);
+                    Assert.AreEqual(columns[i], dataTable?.Rows[i][0]);
                 }
             }
         }
@@ -332,8 +356,10 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 Assert.AreEqual(columns[columnNumber], dataReader[columnNumber]);
                 dataReader.Read();
@@ -345,18 +371,20 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void ShouldReturnDataParsedToSpecificTypes()
         {
             string[] columns = { "Boolean", "Number", "Float", "Guid", "Char", "DateTime", "Empty" };
-            string[] data = { "True", "5", "0.5", "bd21d781-6c82-43f0-9091-b97084569441", "A", "2015-01-02", "" };
+            string[] data = { "True", "5", "0.5", "bd21d781-6c82-43f0-9091-b97084569441", "A", "2015-01-02", string.Empty };
             var delimiter = ",";
             string input = string.Join(delimiter, columns) + Environment.NewLine + string.Join(delimiter, data);
 
             Stream streamInput = StringToStream(input);
-            using (var dataReader = new DelimitedFileParser(streamInput,
-                new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
+            using (var dataReader = new DelimitedFileParser(
+                       _fieldParserFactory,
+                       streamInput,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } }))
             {
                 dataReader.Read();
 
                 Assert.AreEqual(true, dataReader.GetBoolean(0));
-                
+
                 Assert.AreEqual(5, dataReader.GetByte(1));
                 Assert.AreEqual(typeof(byte), dataReader.GetByte(1).GetType());
 
@@ -374,11 +402,11 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 
                 Assert.AreEqual(0.5, dataReader.GetDouble(2));
                 Assert.AreEqual(typeof(double), dataReader.GetDouble(2).GetType());
-                
+
                 Assert.AreEqual(typeof(string), dataReader.GetFieldType(2));
-                
+
                 Assert.AreEqual(new Guid(data[3]), dataReader.GetGuid(3));
-                
+
                 Assert.AreEqual(5, dataReader.GetDecimal(1));
                 Assert.AreEqual(typeof(decimal), dataReader.GetDecimal(1).GetType());
 
@@ -399,9 +427,31 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             }
         }
 
+        [Test]
+        public void ShouldThrowMalformedExceptionWithValidFileLine()
+        {
+            // Arrange
+            const int firstLineNumber = 100;
+            List<string> columns = new List<string> { "Column1", "Column2", "Column3" };
+            Mock<IFieldParserFactory> fieldParserFactoryMock = new Mock<IFieldParserFactory>();
+            Mock<IFieldParser> fieldParserMock = new Mock<IFieldParser>();
+            Mock<TextReader> textReaderMock = new Mock<TextReader>();
+            fieldParserMock.Setup(x => x.EndOfData).Returns(false);
+            fieldParserMock.Setup(x => x.ReadFields()).Throws<MalformedLineException>();
+            fieldParserFactoryMock.Setup(x => x.Create(It.IsAny<TextReader>())).Returns(fieldParserMock.Object);
+            using (var dataReader = new DelimitedFileParser(
+                       fieldParserFactoryMock.Object,
+                       textReaderMock.Object,
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," }, FirstLineNumber = firstLineNumber},
+                       columns))
+            {
+                // Act
+                Action action = () => dataReader.Read();
 
-        
-
+                // Assert
+                action.ShouldThrow<MalformedLineException>().WithMessage($"Exception thrown in Import file line number {firstLineNumber + 2}");
+            }
+        }
 
         #region helpers
         private IEnumerable<string> GetDataReaderColumns(IDataReader rdr)
@@ -440,7 +490,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 
         private string GenerateTempLocation()
         {
-            return (System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".csv");
+            return System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".csv";
         }
         #endregion
     }
