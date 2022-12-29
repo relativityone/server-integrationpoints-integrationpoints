@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.FtpProvider.Helpers;
+﻿using kCura.IntegrationPoints.FtpProvider.Helpers;
 using Microsoft.VisualBasic.FileIO;
 
 namespace kCura.IntegrationPoints.FtpProvider.Parser

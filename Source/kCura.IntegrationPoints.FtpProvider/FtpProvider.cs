@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.FtpProvider
                         ex.ToString().Contains("The remote server returned an error")))
                 {
                     // TODO: There is a problem with disposing FtpConnector object that needs to be further investigated and fixed.
-                    // This is to hide the issue because data is corretly parsed
+                    // This is to hide the issue because data is correctly parsed
                     LogRetrievingDataWarning(ex, ex.Message);
                 }
                 else

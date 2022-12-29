@@ -15,27 +15,27 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
     public class DelimitedFileParser : IDataReader, IParser
     {
         internal bool Disposed;
-        internal TextFieldParser Parser;
+        internal IFieldParser Parser;
         internal Stream FileStream;
         internal TextReader TextReader;
 
         internal string FileLocation;
         internal string[] Columns;
         internal string[] CurrentLine;
-        internal int LineNumber = 0;
-        internal long BatchFirstLineNumber = 1;
+        internal int LineNumber;
+        internal long BatchFirstLineNumber;
 
         public int RecordsAffected => LineNumber;
 
         public bool IsClosed => Disposed;
 
-        public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, string fileLocation, ParserOptions parserOptions)
         {
             FileLocation = fileLocation;
             SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
-                Parser = new TextFieldParser(FileLocation);
+                Parser = fieldParserFactory.Create(FileLocation);
                 SetParserOptions(Parser, parserOptions);
             }
 
@@ -45,13 +45,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
-        public DelimitedFileParser(Stream stream, ParserOptions parserOptions)
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, Stream stream, ParserOptions parserOptions)
         {
             FileStream = stream;
             SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
-                Parser = new TextFieldParser(FileStream, Encoding.UTF8, true);
+                Parser = fieldParserFactory.Create(FileStream, Encoding.UTF8, true);
                 SetParserOptions(Parser, parserOptions);
             }
             if (parserOptions.FirstLineContainsColumnNames)
@@ -60,15 +60,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
-        // this one is not tested
-        public DelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
+        // this one is not fully tested
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, TextReader reader, ParserOptions parserOptions, List<string> columnList)
         {
             TextReader = reader;
             SetBatchFirstLineNumber(parserOptions);
 
             if (SourceExists())
             {
-                Parser = new TextFieldParser(TextReader);
+                Parser = fieldParserFactory.Create(TextReader);
                 SetParserOptions(Parser, parserOptions);
             }
             Columns = columnList.ToArray();
@@ -347,7 +347,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             Disposed = true;
         }
 
-        private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
+        private void SetParserOptions(IFieldParser parser, ParserOptions parserOptions)
         {
             parser.TextFieldType = parserOptions.TextFieldType;
             parser.Delimiters = parserOptions.Delimiters;
