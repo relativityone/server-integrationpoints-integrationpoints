@@ -20,8 +20,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         private IFieldParserFactory _fieldParserFactory;
 
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             _fieldParserFactory = new TextFieldParserFactory();
         }
 
@@ -442,7 +443,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             using (var dataReader = new DelimitedFileParser(
                        fieldParserFactoryMock.Object,
                        textReaderMock.Object,
-                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," }, FirstLineNumber = firstLineNumber},
+                       new ParserOptions { FirstLineContainsColumnNames = true, Delimiters = new[] { "," }, FirstLineNumber = firstLineNumber },
                        columns))
             {
                 // Act
