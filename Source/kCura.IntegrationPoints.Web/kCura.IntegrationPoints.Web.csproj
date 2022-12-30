@@ -314,6 +314,8 @@
     <Content Include="Scripts\Import\import-provider-settings-step.js" />
     <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
+    <Content Include="Scripts\jstree.js" />
+    <Content Include="Scripts\jstree.min.js" />
     <Content Include="Scripts\RelativityProvider\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
