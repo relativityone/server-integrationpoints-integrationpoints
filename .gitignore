@@ -98,3 +98,4 @@ FunctionalTest.runsettings
 FunctionalTestSettings
 .idea/
 /package-lock.json
+!Source/kCura.IntegrationPoints.Web/node_modules/knockout/build/output/*
