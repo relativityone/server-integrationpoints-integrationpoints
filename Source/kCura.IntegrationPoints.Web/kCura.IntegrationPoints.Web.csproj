@@ -274,8 +274,8 @@
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
     <Content Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\knockout-3.5.1.debug.js" />
-    <Content Include="Scripts\knockout-3.5.1.js" />
+    <Content Include="node_modules\knockout\build\output\knockout-latest.js" />
+    <Content Include="node_modules\knockout\build\output\knockout-latest.debug.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
@@ -400,8 +400,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\knockout.validation.debug.js" />
-    <Content Include="Scripts\knockout.validation.js" />
+    <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />
     <Content Include="Scripts\ldap\ldap-edit.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />

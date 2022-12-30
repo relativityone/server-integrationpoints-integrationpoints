@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "knockout": "^3.5.1",
+    "knockout.validation": "^2.0.4",
     "moment": "^2.29.4"
   }
 }

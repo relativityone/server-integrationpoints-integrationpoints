@@ -14,7 +14,7 @@ IP.mappingType = mappingType.Loaded;
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
-ko.validation.configure({
+ko.validation.init({
 	registerExtenders: true,
 	messagesOnModified: true,
 	insertMessages: true,
