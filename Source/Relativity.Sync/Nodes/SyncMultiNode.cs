@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Nodes
 {

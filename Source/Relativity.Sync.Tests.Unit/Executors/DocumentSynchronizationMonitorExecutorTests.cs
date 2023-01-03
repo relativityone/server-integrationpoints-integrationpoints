@@ -16,6 +16,7 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.Stubs;

@@ -23,6 +23,10 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public long TotalBytesTransferred { get; set; }
 
+        public int FailedReadDocumentsCount { get; set; }
+
+        public int ReadDocumentsCount { get; set; }
+
         public string LockedBy { get; set; }
 
         public int FailedDocumentsCount { get; set; }
@@ -72,6 +76,18 @@ namespace Relativity.Sync.Tests.Common.Stubs
         public Task SetStartingIndexAsync(int newStartIndex)
         {
             StartingIndex = newStartIndex;
+            return Task.CompletedTask;
+        }
+
+        public Task SetFailedReadDocumentsCount(int failedReadDocumentsCount)
+        {
+            FailedReadDocumentsCount = failedReadDocumentsCount;
+            return Task.CompletedTask;
+        }
+
+        public Task SetReadDocumentsCount(int readDocumentsCount)
+        {
+            ReadDocumentsCount = readDocumentsCount;
             return Task.CompletedTask;
         }
 

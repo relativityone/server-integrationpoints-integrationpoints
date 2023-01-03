@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Tests.Unit
 {

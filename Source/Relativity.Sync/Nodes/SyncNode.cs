@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Banzai;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Nodes
 {

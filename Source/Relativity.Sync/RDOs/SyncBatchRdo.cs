@@ -47,5 +47,11 @@ namespace Relativity.Sync.RDOs
 
         [RdoLongField(SyncBatchGuids.TotalBytesTransferredGuid)]
         public long TotalTransferredBytes { get; set; }
+
+        [RdoLongField(SyncBatchGuids.FailedReadDocumentsCountGuid)]
+        public int FailedReadDocumentsCount { get; set; }
+
+        [RdoLongField(SyncBatchGuids.ReadDocumentsCountGuid)]
+        public int ReadDocumentsCount { get; set; }
     }
 }

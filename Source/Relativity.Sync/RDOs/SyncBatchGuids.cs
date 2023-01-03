@@ -10,6 +10,8 @@
         public const string TotalDocumentsCountGuid = "C30CE15E-45D6-49E6-8F62-7C5AA45A4694";
         public const string TransferredDocumentsCountGuid = "A5618A97-48C5-441C-86DF-2867481D30AB";
         public const string FailedDocumentsCountGuid = "4FA1CF50-B261-4157-BD2D-50619F0347D6";
+        public const string FailedReadDocumentsCountGuid = "7EB341C5-D72D-4078-AF09-A6063DEDFCC7";
+        public const string ReadDocumentsCountGuid = "78DA07FE-3113-4851-A093-C3D23592895C";
 
         public const string MetadataBytesTransferredGuid = "E26CF254-144C-45B4-80F8-A2238B21584A";
         public const string FilesBytesTransferredGuid = "C427C22B-D975-4AC6-ACDD-964DB6875FC7";

@@ -4,6 +4,7 @@ using Banzai;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Tests.Unit
 {
