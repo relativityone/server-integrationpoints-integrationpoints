@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
@@ -43,6 +44,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using Relativity.Telemetry.APM;
+using Choice = Relativity.Services.Objects.DataContracts.ChoiceRef;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -151,15 +153,14 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        IIntegrationPointService integrationPointService = Container.Resolve<IIntegrationPointService>();
-                        IntegrationPointDto integrationPointDto = integrationPointService.Read(job.RelatedObjectArtifactID);
-
                         if (job.JobFailed.ShouldBreakSchedule)
                         {
-                            integrationPointService.DisableScheduler(integrationPointDto.ArtifactId);
+                            IIntegrationPointService integrationPointService = Container.Resolve<IIntegrationPointService>();
+                            integrationPointService.DisableScheduler(job.RelatedObjectArtifactID);
                         }
 
-                        MarkJobHistoryAsFailed(integrationPointDto, job);
+                        MarkJobAsFailedAsync(Container, job, job.JobFailed.Exception)
+                            .GetAwaiter().GetResult();
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -190,7 +191,7 @@ namespace kCura.IntegrationPoints.Agent
                                 // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
                                 Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
 
-                                MarkJobAsFailed(Container, job, ex);
+                                MarkJobAsFailedAsync(Container, job, ex).GetAwaiter().GetResult();
 
                                 return new TaskResult
                                 {
@@ -322,15 +323,22 @@ namespace kCura.IntegrationPoints.Agent
             return constrainsChecker.ShouldUseRelativitySync(job.RelatedObjectArtifactID);
         }
 
-        private void MarkJobAsFailed(IWindsorContainer container, Job job, Exception ex)
+        private async Task MarkJobAsFailedAsync(IWindsorContainer container, Job job, Exception ex)
         {
             try
             {
-                IExtendedJob syncJob = container.Resolve<IExtendedJob>();
-                if (syncJob != null)
+                IExtendedJob extendedJob = container.Resolve<IExtendedJob>();
+                if (extendedJob != null)
                 {
-                    IJobHistorySyncService jobHistorySyncService = container.Resolve<IJobHistorySyncService>();
-                    jobHistorySyncService.MarkJobAsFailedAsync(syncJob, ex).GetAwaiter().GetResult();
+                    IJobHistorySyncService jobHistoryService = container.Resolve<IJobHistorySyncService>();
+
+                    Choice failedChoice = new Choice
+                    {
+                        Guid = JobStatusChoices.JobHistoryErrorJobFailed.Guids[0]
+                    };
+
+                    await jobHistoryService.UpdateFinishedJobAsync(extendedJob, failedChoice, true).ConfigureAwait(false);
+                    await jobHistoryService.AddJobHistoryErrorAsync(extendedJob, ex).ConfigureAwait(false);
                 }
             }
             catch (Exception ie)

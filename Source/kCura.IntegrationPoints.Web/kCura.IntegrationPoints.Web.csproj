@@ -40,9 +40,9 @@
     <None Remove="oi\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="jQuery" Version="3.5.1" />
+    <PackageReference Include="jQuery" Version="3.6.1" />
     <PackageReference Include="jquery.jstree" Version="3.3.7" />
-    <PackageReference Include="jQuery.UI.Combined" Version="1.12.1" />
+    <PackageReference Include="jQuery.UI.Combined" Version="1.13.2" />
     <PackageReference Include="jQuery.Validation" Version="1.19.3" />
     <PackageReference Include="Knockout.Validation" Version="1.0.1" />
     <PackageReference Include="knockoutjs" Version="3.5.1" />
@@ -261,14 +261,13 @@
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
     <Content Include="Scripts\integration-point\step-mapFields-type-validator.js" />
     <Content Include="Scripts\integration-point\summary-page-statistics.js" />
-    <Content Include="Scripts\jquery-3.5.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.5.1.js" />
-    <Content Include="Scripts\jquery-3.5.1.min.js" />
-    <Content Include="Scripts\jquery-3.5.1.slim.js" />
-    <Content Include="Scripts\jquery-3.5.1.slim.min.js" />
+    <Content Include="Scripts\jquery-3.6.3.js" />
+    <Content Include="Scripts\jquery-3.6.3.min.js" />
+    <Content Include="Scripts\jquery-3.6.3.slim.js" />
+    <Content Include="Scripts\jquery-3.6.3.slim.min.js" />
     <Content Include="Scripts\jquery-migrate-3.0.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.12.1.js" />
-    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery-ui-1.13.2.js" />
+    <Content Include="Scripts\jquery-ui-1.13.2.min.js" />
     <Content Include="Scripts\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
@@ -292,8 +291,8 @@
     <Content Include="Scripts\modals\export-renamed-fields-vm.js" />
     <Content Include="Scripts\q.js" />
     <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
-    <None Include="Scripts\jquery-3.5.1.min.map" />
-    <None Include="Scripts\jquery-3.5.1.slim.min.map" />
+    <None Include="Scripts\jquery-3.6.3.min.map" />
+    <None Include="Scripts\jquery-3.6.3.slim.min.map" />
     <Content Include="Scripts\ThirdPartyProviders\third-party-provider-summary-page.js" />
     <Content Include="Scripts\unsaved-changes-handler.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
