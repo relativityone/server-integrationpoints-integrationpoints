@@ -9,7 +9,7 @@
  *
  */
 
-/// <reference path="Scripts/jquery-1.6.4.js" />
+/// <reference path="node_modules/jquery/dist/jquery.js" />
 /// <reference path="jquery.signalR.version.js" />
 (function ($, window, undefined) {
 

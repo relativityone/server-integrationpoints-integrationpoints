@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Web
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                "~/Scripts/jquery-{version}.js"
+                "~/node_modules/jquery/dist/jquery.js"
             ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
