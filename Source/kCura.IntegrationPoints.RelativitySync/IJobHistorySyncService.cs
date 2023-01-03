@@ -23,5 +23,9 @@ namespace kCura.IntegrationPoints.RelativitySync
         Task MarkJobAsStartedAsync(IExtendedJob job);
 
         Task MarkJobAsCompletedAsync(IExtendedJob job);
+
+        Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, bool hasErrors);
+
+        Task AddJobHistoryErrorAsync(IExtendedJob job, Exception e);
     }
 }

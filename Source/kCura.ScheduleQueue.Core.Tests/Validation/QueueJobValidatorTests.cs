@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Config;
@@ -114,7 +115,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             await sut.ValidateAsync(job).ConfigureAwait(false);
 
             // Assert
-            _objectManagerMock.Verify(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()), 
+            _objectManagerMock.Verify(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()),
                 Times.Never());
         }
 
@@ -143,7 +144,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
         {
             int expectedTotalCount = exists ? 1 : 0;
 
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(-1, 
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(-1,
                     It.Is<QueryRequest>(r => r.Condition.Contains(_TEST_WORKSPACE_ID.ToString())), 0, 1))
                 .ReturnsAsync(new QueryResultSlim
                 {
@@ -154,13 +155,22 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 
         private void SetUpIntegrationPointExists(bool exists)
         {
-            RelativityObject expectedObject = exists ? new RelativityObject() : null;
+            List<RelativityObject> expectedObjects = exists
+                ? new List<RelativityObject>() { new RelativityObject() }
+                : new List<RelativityObject>();
 
-            _objectManagerMock.Setup(x => x.ReadAsync(_TEST_WORKSPACE_ID, 
-                    It.Is<ReadRequest>(r => r.Object.ArtifactID == _TEST_INTEGRATION_POINT_ID)))
-                .ReturnsAsync(new ReadResult()
+            _objectManagerMock.Setup(
+                    x => x.QueryAsync(
+                        _TEST_WORKSPACE_ID,
+                        It.Is<QueryRequest>(r =>
+                            r.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid &&
+                            r.Condition.Contains(_TEST_INTEGRATION_POINT_ID.ToString())),
+                        0,
+                        1))
+                .ReturnsAsync(new QueryResult()
                 {
-                    Object = expectedObject
+                    Objects = expectedObjects,
+                    TotalCount = expectedObjects.Count
                 })
                 .Verifiable();
         }

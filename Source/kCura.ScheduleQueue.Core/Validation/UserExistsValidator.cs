@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using System.Threading.Tasks;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
@@ -33,7 +33,7 @@ namespace kCura.ScheduleQueue.Core.Validation
                     return PreValidationResult.Success;
                 }
 
-                return result.TotalCount > 0 ? PreValidationResult.Success : PreValidationResult.InvalidJob(
+                return PreValidationResult.InvalidJob(
                     $"User (userId - {job.SubmittedBy}) who scheduled the job no longer exists, so the job schedule will be cancelled. " +
                     $"To enable the schedule again, edit the Integration Point and on Save schedule will be restored",
                     true,
