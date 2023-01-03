@@ -374,7 +374,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 Dictionary<string, object> sourceConfiguration =
                     Serializer.Deserialize<Dictionary<string, object>>(IntegrationPointDto?.SourceConfiguration);
-                sourceConfiguration.Add("BatchStartingIndex", taskParameters.BatchStartingIndex);
+                sourceConfiguration.Add(nameof(TaskParameters.BatchStartingIndex), taskParameters.BatchStartingIndex);
                 IntegrationPointDto.SourceConfiguration = Serializer.Serialize(sourceConfiguration);
             }
         }

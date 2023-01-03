@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
@@ -312,26 +313,18 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         internal void ValidateColumns(IEnumerable<string> columns)
         {
             // Validate Blank Columns
-            foreach (string column in columns)
+            List<string> columnsList = columns.ToList();
+            string blankColumn = columnsList.FirstOrDefault(x => string.IsNullOrWhiteSpace(x));
+            if (!string.IsNullOrEmpty(blankColumn))
             {
-                if (string.IsNullOrWhiteSpace(column))
-                {
-                    throw new Exceptions.BlankColumnException();
-                }
+                throw new Exceptions.BlankColumnException();
             }
 
             // Validate Duplicates
-            var destination = new List<string>();
-            foreach (string column in columns)
+            List<string> distinctColumns = columnsList.Distinct().ToList();
+            if (distinctColumns.Count != columnsList.Count)
             {
-                if (!destination.Contains(column))
-                {
-                    destination.Add(column);
-                }
-                else
-                {
-                    throw new Exceptions.DuplicateColumnsExistException();
-                }
+                throw new Exceptions.DuplicateColumnsExistException();
             }
         }
 

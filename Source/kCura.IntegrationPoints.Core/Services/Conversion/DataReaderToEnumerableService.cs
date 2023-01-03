@@ -19,14 +19,14 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
         public IEnumerable<T> GetData<T>(IDataReader reader)
         {
             _diagnosticLog.LogDiagnostic("Start reading data from DataReader.");
-            bool readSuccessfuly = true;
+            bool readSuccessfully = true;
             MalformedLineException malformedLineException = null;
-            while (readSuccessfuly)
+            while (readSuccessfully)
             {
                 try
                 {
-                    readSuccessfuly = reader.Read();
-                    if (!readSuccessfuly)
+                    readSuccessfully = reader.Read();
+                    if (!readSuccessfully)
                     {
                         break;
                     }
