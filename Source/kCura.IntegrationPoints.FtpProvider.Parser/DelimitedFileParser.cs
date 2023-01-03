@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
+using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.FileIO;
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Parser.Tests")]
@@ -314,8 +315,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         {
             // Validate Blank Columns
             List<string> columnsList = columns.ToList();
-            string blankColumn = columnsList.FirstOrDefault(x => string.IsNullOrWhiteSpace(x));
-            if (!string.IsNullOrEmpty(blankColumn))
+            var blankColumns = columnsList.Where(x => string.IsNullOrWhiteSpace(x)).ToList();
+            if (blankColumns != null && blankColumns.Count > 0 )
             {
                 throw new Exceptions.BlankColumnException();
             }
