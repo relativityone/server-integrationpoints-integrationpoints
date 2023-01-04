@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using kCura.IntegrationPoints.Domain.Logging;
 using Microsoft.VisualBasic.FileIO;
 
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
         {
             _diagnosticLog.LogDiagnostic("Start reading data from DataReader.");
             bool readSuccessfully = true;
-            MalformedLineException malformedLineException = null;
+            StringBuilder exceptionMessageBuilder = new StringBuilder();
             while (readSuccessfully)
             {
                 try
@@ -33,16 +34,16 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
                 }
                 catch (MalformedLineException ex)
                 {
-                    string message = malformedLineException == null ? ex.Message : $"{malformedLineException.Message}\n{ex.Message}";
-                    malformedLineException = new MalformedLineException(message);
+                    exceptionMessageBuilder.AppendLine(ex.Message);
                     continue;
                 }
                 yield return _objectBuilder.BuildObject<T>(reader);
             }
 
-            if (malformedLineException != null)
+            string exceptionMessage = exceptionMessageBuilder.ToString();
+            if (!string.IsNullOrEmpty(exceptionMessage))
             {
-                throw malformedLineException;
+                throw new MalformedLineException(exceptionMessage);
             }
 
             _diagnosticLog.LogDiagnostic("Data read finished.");
