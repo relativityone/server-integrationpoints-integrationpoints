@@ -303,13 +303,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             if (shouldUseRelativitySyncAppIntegration)
             {
-                _logger.LogInformation("Using Sync application to execute the job");
+                _logger.LogInformation("Using Sync application to run the job");
                 _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
                 _logger.LogInformation("Sync job has been submitted");
             }
             else
             {
-                _logger.LogInformation("Using Sync DLL to execute the job");
+                _logger.LogInformation("Using Sync DLL to run the job");
                 CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
                 _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
             }
