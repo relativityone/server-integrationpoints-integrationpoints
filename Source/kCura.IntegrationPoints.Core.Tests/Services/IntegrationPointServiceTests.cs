@@ -491,6 +491,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         }
 
         [Test]
+        public void RetryIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
+        {
+            // Arrange
+            _integrationPoint.HasErrors = true;
+
+            SetupLastRunJobHistory(
+                _fxt.Build<Data.JobHistory>()
+                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
+                    .Create());
+
+            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPointDto.ArtifactId))
+                .Returns(true);
+
+            // Act
+            _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, switchToAppendOverlayMode: false);
+
+            // Assert
+            _relativitySyncAppIntegrationMock.Verify(
+                x => x.SubmitSyncJobAsync(
+                    _WORKSPACE_ID,
+                    It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<int>(),
+                    _USER_ID));
+
+            VerifyJobShouldNotBeCreated();
+        }
+
+        [Test]
         public void RetryIntegrationPoint_ShouldThrowException_WhenIntegrationPointHasNoErrors()
         {
             // Arrange

@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             // Arrange
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             IExtendedJob job = SetupExtendedJob(
                 isRetry: true);
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration.ImportNativeFileCopyMode = copyMode;
 
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             // Arrange
             IExtendedJob job = SetupExtendedJob(isRetry: true);
-            SetupJobHistory(job, jobHistoryOverwrite);
+            SetupJobHistory(jobHistoryOverwrite);
             // Act
 
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             IExtendedJob job = SetupExtendedJob(
                 emailNotifications: emailNotifications);
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -195,13 +195,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             switch (importOverwriteMode)
             {
                 case ImportOverwriteModeEnum.AppendOnly:
-                    SetupJobHistory(job, OverwriteModeNames.AppendOnlyModeName);
+                    SetupJobHistory(OverwriteModeNames.AppendOnlyModeName);
                     break;
                 case ImportOverwriteModeEnum.AppendOverlay:
-                    SetupJobHistory(job, OverwriteModeNames.AppendOverlayModeName);
+                    SetupJobHistory(OverwriteModeNames.AppendOverlayModeName);
                     break;
                 case ImportOverwriteModeEnum.OverlayOnly:
-                    SetupJobHistory(job, OverwriteModeNames.OverlayOnlyModeName);
+                    SetupJobHistory(OverwriteModeNames.OverlayOnlyModeName);
                     break;
             }
             // Act
@@ -227,7 +227,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration.MoveExistingDocuments = moveExistingDocuments;
 
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 importFileCopyMode: copyMode);
 
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -277,7 +277,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _sourceConfiguration = CreateSourceConfiguration();
 
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _sourceConfiguration = CreateSourceConfiguration();
 
             IExtendedJob job = SetupExtendedJob();
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             IExtendedJob job = SetupExtendedJob();
             job.IntegrationPointDto.LogErrors = logErrors;
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -367,7 +367,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             IExtendedJob job = SetupExtendedJob();
             job.IntegrationPointDto.LogErrors = false;
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -383,7 +383,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateImageDestinationConfiguration();
             IExtendedJob job = SetupExtendedJob();
             job.IntegrationPointDto.LogErrors = logErrors;
-            SetupJobHistory(job);
+            SetupJobHistory();
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -401,7 +401,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateImageDestinationConfiguration();
             IExtendedJob job = SetupExtendedJob();
             job.IntegrationPointDto.LogErrors = false;
-            SetupJobHistory(job);
+            SetupJobHistory();
 
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
@@ -409,7 +409,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Assert
             _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
-
 
         private static ExtendedImportSettings CreateNativeDestinationConfiguration()
         {
@@ -510,7 +509,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _serializerFake.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
                 .Returns(new TaskParameters { BatchInstance = It.IsAny<Guid>() });
 
-            _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
+            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(It.IsAny<int>()))
                 .Returns(new Data.JobHistory
                 {
                     JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun
@@ -530,12 +529,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             return extendedJob.Object;
         }
 
-        private void SetupJobHistory(IExtendedJob job, string jobHistoryOverwrite = OverwriteModeNames.AppendOnlyModeName)
+        private void SetupJobHistory(string jobHistoryOverwrite = OverwriteModeNames.AppendOnlyModeName)
         {
             JobHistory jobHistory = new JobHistory { JobType = JobTypeChoices.JobHistoryRetryErrors, Overwrite = jobHistoryOverwrite };
-            _jobHistoryServiceFake
-                .Setup(x => x.GetJobHistory(It.Is<IList<int>>(l => l.Contains(job.JobHistoryId))))
-                .Returns(new List<JobHistory> { jobHistory });
+            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(It.IsAny<int>()))
+                .Returns(jobHistory);
         }
 
         private ISyncOperationsWrapper SetupSyncOperations()
