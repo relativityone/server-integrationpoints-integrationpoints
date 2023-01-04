@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring
         public static readonly string StuckJobMessage = "Integration Points Job Id {1} stuck in Workspace {0}.";
         public static readonly string InvalidJobMessage = "Jobs with invalid status found.";
 
-        public static HealthCheckOperationResult CreateJobFailedMetric(JobHistory jobHistory, long workspaceId)
+        public static HealthCheckOperationResult CreateJobFailedMetric(string jobId, long workspaceId)
         {
-            return new HealthCheckOperationResult($"Integration Points job failed! Job Id {jobHistory.JobID} in Workspace {workspaceId}!");
+            return new HealthCheckOperationResult($"Integration Points job failed! Job Id {jobId} in Workspace {workspaceId}!");
         }
 
         public static HealthCheckOperationResult CreateJobsWithInvalidStatusMetric(IDictionary<int, IList<JobHistory>> jobHistories)
