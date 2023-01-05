@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "datatables.net": "^1.13.1",
     "jquery": "^3.6.3",
     "jquery-ui": "^1.13.2",
     "jstree": "^3.3.12",
