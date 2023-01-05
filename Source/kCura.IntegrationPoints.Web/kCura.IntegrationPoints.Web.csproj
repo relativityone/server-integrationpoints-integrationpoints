@@ -269,7 +269,7 @@
     <Content Include="node_modules\jquery-ui\dist\jquery-ui.min.js" />
     <Content Include="node_modules\datatables.net\js\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
     <Content Include="node_modules\knockout\build\output\knockout-latest.js" />
     <Content Include="node_modules\knockout\build\output\knockout-latest.debug.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
@@ -391,7 +391,7 @@
     <Content Include="node_modules\jqGrid\js\jquery.jqGrid.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />
