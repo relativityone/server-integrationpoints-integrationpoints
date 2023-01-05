@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.Services.Choice;
@@ -18,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
     public class JobStopManager : IJobStopManager
     {
         private readonly TimeSpan _timerInterval = TimeSpan.FromSeconds(0.5);
-        private readonly object _syncRoot = new object();
 
         private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
@@ -33,6 +31,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly CancellationToken _token;
         private readonly Timer _timer;
 
+        private bool _isTerminateInProgress;
+        private bool _isCleanupJobDrainStopInProgress;
         private bool _isDrainStopping;
         private bool _disposed;
 
@@ -86,10 +86,21 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public void CleanUpJobDrainStop()
         {
-            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
-            lock (_syncRoot)
+            if (_isCleanupJobDrainStopInProgress)
             {
+                return;
+            }
+
+            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
+
+            try
+            {
+                _isCleanupJobDrainStopInProgress = true;
                 _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
+            }
+            finally
+            {
+                _isCleanupJobDrainStopInProgress = false;
             }
         }
 
@@ -107,25 +118,32 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         internal void Execute()
         {
-            Stopwatch sw = Stopwatch.StartNew();
-            lock (_syncRoot)
+            if (_isTerminateInProgress)
             {
-                try
-                {
-                    _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
-                    TerminateIfRequested();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error occurred during checking if job had been stopped.");
-                }
+                return;
+            }
+
+            Stopwatch sw = Stopwatch.StartNew();
+            try
+            {
+                _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
+                _isTerminateInProgress = true;
+                TerminateIfRequested();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error occurred during checking if job had been stopped.");
+            }
+            finally
+            {
+                _isTerminateInProgress = false;
             }
 
             sw.Stop();
             long diff = sw.ElapsedMilliseconds - (long)_timerInterval.TotalMilliseconds;
             if (diff > 0)
             {
-                _logger.LogWarning("JobStopManager.Execute exceeded Timer interval by {diff}", diff);
+                _logger.LogWarning("JobStopManager.Execute exceeded Timer interval by {milliseconds} ms", diff);
             }
         }
 
