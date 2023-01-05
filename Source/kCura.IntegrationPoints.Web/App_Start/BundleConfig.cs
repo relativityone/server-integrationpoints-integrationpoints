@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Web
                 "~/node_modules/jquery/dist/jquery.js"
             ));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/Scripts/jquery-ui-{version}.js"));
+            bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include("~/node_modules/jquery-ui/dist/jquery-ui.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                 "~/Scripts/jquery.unobtrusive*",
