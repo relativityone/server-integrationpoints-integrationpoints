@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "jquery": "^3.6.3",
+    "jquery-ui": "^1.13.2",
     "jstree": "^3.3.12",
     "knockout": "^3.5.1",
     "knockout.validation": "^2.0.4",
