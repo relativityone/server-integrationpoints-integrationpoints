@@ -50,6 +50,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance);
 
         /// <summary>
+        /// Retrieves job history Rdo without Documents field
+        /// </summary>
+        /// <param name="artifactId">Artifact ID of the Job History object</param>
+        /// <returns></returns>
+        Data.JobHistory GetRdoWithoutDocuments(int artifactId);
+
+        /// <summary>
         /// Updates job history Rdo
         /// </summary>
         /// <param name="jobHistory">Job history Rdo</param>

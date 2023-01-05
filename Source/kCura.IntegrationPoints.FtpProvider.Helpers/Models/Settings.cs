@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         [DefaultValue(21)]
         public int Port { get; set; }
 
+        public long BatchStartingIndex { get; set; }
+
         public string Filename_Prefix { get; set; } = string.Empty;
 
         public string ValidationMessage { get; set; } = string.Empty;
@@ -22,7 +24,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         public int? Timezone_Offset { get; set; }
 
         public List<FieldEntry> ColumnList { get; set; }
-
 
         /// <summary>
         /// Validates that the host value is correctly formatted
@@ -47,6 +48,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
                 }
             }
         }
+
         public bool ValidateCSVName()
         {
             return !string.IsNullOrWhiteSpace(this.Filename_Prefix);

@@ -44,6 +44,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
             {
                 taskResult.Status = TaskStatusEnum.Success;
                 LogStoppingJob(e);
+
                 // DO NOTHING. Someone attempted to stop the job.
             }
             catch (Exception e)
@@ -61,7 +62,44 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
         }
 
         public event JobPreExecuteEvent RaiseJobPreExecute;
+
         public event JobPostExecuteEvent RaiseJobPostExecute;
+
+        public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
+
+        public virtual long BatchTask(Job job, IEnumerable<T> batchIDs)
+        {
+            long count = 0;
+            long startIndex = 0;
+            var list = new List<T>();
+            foreach (var id in batchIDs)
+            {
+                // TODO: later we will need to generate error entry for every item we bypass
+                if ((id != null) && id is string && (id.ToString() != string.Empty))
+                {
+                    list.Add(id);
+                    count += 1;
+                    DiagnosticLog.LogDiagnostic("In BatchTask - {count}, ID: {id}", count, id);
+                    if (list.Count == BatchSize)
+                    {
+                        CreateBatchJob(job, list, startIndex);
+                        list = new List<T>();
+                        startIndex = count;
+                    }
+                }
+                else
+                {
+                    LogMissingIdError(count);
+                }
+            }
+            if (list.Any())
+            {
+                CreateBatchJob(job, list, startIndex);
+            }
+            return count;
+        }
+
+        public abstract void CreateBatchJob(Job job, List<T> batchIDs, long startingIndex);
 
         protected virtual void OnRaiseJobPreExecute(Job job, TaskResult taskResult)
         {
@@ -80,40 +118,6 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
                 RaiseJobPostExecute(job, taskResult, items);
             }
         }
-
-        public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
-
-        public virtual long BatchTask(Job job, IEnumerable<T> batchIDs)
-        {
-            long count = 0;
-            var list = new List<T>();
-            foreach (var id in batchIDs)
-            {
-                //TODO: later we will need to generate error entry for every item we bypass
-                if ((id != null) && id is string && (id.ToString() != string.Empty))
-                {
-                    list.Add(id);
-                    count += 1;
-                    DiagnosticLog.LogDiagnostic("In BatchTask - {count}, ID: {id}", count, id);
-                    if (list.Count == BatchSize)
-                    {
-                        CreateBatchJob(job, list);
-                        list = new List<T>();
-                    }
-                }
-                else
-                {
-                    LogMissingIdError(count);
-                }
-            }
-            if (list.Any())
-            {
-                CreateBatchJob(job, list);
-            }
-            return count;
-        }
-
-        public abstract void CreateBatchJob(Job job, List<T> batchIDs);
 
         #region Logging
 

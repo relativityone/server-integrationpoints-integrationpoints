@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return;
             }
 
-            await MarkJobAsFailedAsync(job).ConfigureAwait(false);
+            await UpdateFinishedJobAsync(job, JobFailedStateRef(), true).ConfigureAwait(false);
             await AddJobHistoryErrorAsync(job, e).ConfigureAwait(false);
         }
 
@@ -202,6 +202,39 @@ namespace kCura.IntegrationPoints.RelativitySync
             await UpdateFinishedJobAsync(job, status, hasErrors).ConfigureAwait(false);
         }
 
+        public async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, bool hasErrors)
+        {
+            DateTime currentTimeUtc = DateTime.UtcNow;
+            IList<FieldRefValuePair> fieldValues = new[]
+            {
+                new FieldRefValuePair
+                {
+                    Field = JobStatusRef(),
+                    Value = status
+                },
+                new FieldRefValuePair
+                {
+                    Field = EndTimeRef(),
+                    Value = currentTimeUtc
+                }
+            };
+
+            await _relativityObjectManager.UpdateAsync(job.JobHistoryId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
+            await UpdateIntegrationPointLastRuntimeUtcAsync(job, currentTimeUtc).ConfigureAwait(false);
+            await UpdateIntegrationPointHasErrorsAsync(job, hasErrors).ConfigureAwait(false);
+        }
+
+        public async Task AddJobHistoryErrorAsync(IExtendedJob job, Exception e)
+        {
+            ObjectTypeRef objectType = JobHistoryErrorTypeRef();
+            RelativityObjectRef parentObject = JobHistoryRef(job);
+            List<FieldRefValuePair> fieldValues = JobHistoryErrorFields(e);
+
+            await _relativityObjectManager.CreateAsync(
+                    objectType, parentObject, fieldValues, ExecutionIdentity.System)
+                .ConfigureAwait(false);
+        }
+
         private async Task<bool> HasErrorsAsync(IExtendedJob job)
         {
             QueryRequest request = new QueryRequest
@@ -227,33 +260,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             _logger.LogInformation("JobHistorySyncService.HasErrors(): Found {jobHistoryItemsWithErrors} from JobHistory.ItemsWithErrors", jobHistoryItemsWithErrors);
 
             return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
-        }
-
-        private async Task MarkJobAsFailedAsync(IExtendedJob job)
-        {
-            await UpdateFinishedJobAsync(job, JobFailedStateRef(), true).ConfigureAwait(false);
-        }
-
-        private async Task UpdateFinishedJobAsync(IExtendedJob job, ChoiceRef status, bool hasErrors)
-        {
-            DateTime currentTimeUtc = DateTime.UtcNow;
-            IList<FieldRefValuePair> fieldValues = new[]
-            {
-                new FieldRefValuePair
-                {
-                    Field = JobStatusRef(),
-                    Value = status
-                },
-                new FieldRefValuePair
-                {
-                    Field = EndTimeRef(),
-                    Value = currentTimeUtc
-                }
-            };
-
-            await _relativityObjectManager.UpdateAsync(job.JobHistoryId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
-            await UpdateIntegrationPointLastRuntimeUtcAsync(job, currentTimeUtc).ConfigureAwait(false);
-            await UpdateIntegrationPointHasErrorsAsync(job, hasErrors).ConfigureAwait(false);
         }
 
         private async Task UpdateIntegrationPointLastRuntimeUtcAsync(IExtendedJob job, DateTime currentTimeUtc)
@@ -407,16 +413,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             {
                 Guid = JobStatusChoices.JobHistoryErrorJobFailed.Guids[0]
             };
-        }
-
-        private async Task AddJobHistoryErrorAsync(IExtendedJob job, Exception e)
-        {
-
-            ObjectTypeRef objectType = JobHistoryErrorTypeRef();
-            RelativityObjectRef parentObject = JobHistoryRef(job);
-            List<FieldRefValuePair> fieldValues = JobHistoryErrorFields(e);
-
-            await _relativityObjectManager.CreateAsync(objectType, parentObject, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
         }
 
         private static ObjectTypeRef JobHistoryErrorTypeRef()

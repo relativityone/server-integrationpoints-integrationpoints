@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         }
 
         [Test]
-        public void GetRdoWithoutDocuments_Succeeds_Test()
+        public void GetRdoWithoutDocuments_ForBatchInstance_ReturnsRdo()
         {
             // Arrange
             Guid batchInstance = new Guid();
@@ -130,6 +130,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Received(1)
                 .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
                     x.Condition.Contains(batchInstance.ToString())));
+        }
+
+        [Test]
+        public void GetRdoWithoutDocuments_ForArtifactId_ReturnsRdo()
+        {
+            // Arrange
+            int artifactId = 999;
+            var jobHistory = new Data.JobHistory
+            {
+                ArtifactId = 100,
+                Name = "Job Name 1",
+                JobID = "10"
+            };
+
+            _relativityObjectManager
+                .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => !string.IsNullOrEmpty(x.Condition)))
+                .Returns(new List<Data.JobHistory>(1) { jobHistory });
+
+            // Act
+            Data.JobHistory actual = _instance.GetRdoWithoutDocuments(artifactId);
+
+            // Assert
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(actual.ArtifactId, jobHistory.ArtifactId);
+            Assert.AreEqual(actual.Name, jobHistory.Name);
+            Assert.AreEqual(actual.JobID, jobHistory.JobID);
+
+            _relativityObjectManager
+                .Received(1)
+                .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
+                    x.Condition.Contains(artifactId.ToString())));
         }
 
         [Test]

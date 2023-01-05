@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
 
         public class NumberOfColumnsNotEqualToNumberOfDataValuesException : Exception
         {
-            public NumberOfColumnsNotEqualToNumberOfDataValuesException(Int32 lineNumber)
+            public NumberOfColumnsNotEqualToNumberOfDataValuesException(long lineNumber)
                 : base($"The are a different number of data columns than column heading in line number {lineNumber}.")
             { }
             public NumberOfColumnsNotEqualToNumberOfDataValuesException(string message)
