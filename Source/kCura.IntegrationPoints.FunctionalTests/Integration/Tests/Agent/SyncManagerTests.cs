@@ -350,11 +350,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 return base.BatchTask(job, batchIDs);
             }
 
-            public override void CreateBatchJob(Job job, List<string> batchIDs)
+            public override void CreateBatchJob(Job job, List<string> batchIDs, long batchStartingIndex)
             {
                 BeforeCreateBatchJobAction?.Invoke(this);
 
-                base.CreateBatchJob(job, batchIDs);
+                base.CreateBatchJob(job, batchIDs, batchStartingIndex);
             }
         }
     }

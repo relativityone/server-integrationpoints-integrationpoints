@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             List<string> ids = new List<string>() { "id1", "id2" };
 
             // ACT
-            _instance.CreateBatchJob(_job, ids);
+            _instance.CreateBatchJob(_job, ids, -1);
 
             // ASSERT
             _jobManager.Received(1).CreateJobWithTracker(
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .Do(info => { throw new Exception(); });
 
             // ACT & ASSERT
-            Assert.Throws<Exception>(() => _instance.CreateBatchJob(_job, ids));
+            Assert.Throws<Exception>(() => _instance.CreateBatchJob(_job, ids, -1));
             Assert.AreEqual(0, _instance.BatchJobCount);
         }
 

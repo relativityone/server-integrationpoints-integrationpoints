@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Services.Choice;
 
@@ -27,9 +26,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         }
 
         public IScratchTableRepository JobHistoryErrorJobStart { get; }
+
         public IScratchTableRepository JobHistoryErrorJobComplete { get; set; }
+
         public IScratchTableRepository JobHistoryErrorItemStart { get; }
+
         public IScratchTableRepository JobHistoryErrorItemComplete { get; set; }
+
         public IScratchTableRepository JobHistoryErrorItemStartExcluded { get; }
 
         public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, ChoiceRef jobType)

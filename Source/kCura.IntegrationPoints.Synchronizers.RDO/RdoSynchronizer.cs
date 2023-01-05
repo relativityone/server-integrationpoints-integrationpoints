@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -28,8 +29,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
     {
-        protected IImportService ImportService;
-
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IDiagnosticLog _diagnosticLog;
@@ -42,6 +41,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private bool? _disableNativeValidation;
         private HashSet<string> _ignoredList;
         private string _webApiPath;
+
+        protected IImportService ImportService { get; private set; }
 
         public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
         {
@@ -171,16 +172,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             try
             {
                 LogSyncingData();
-
                 InitializeImportJob(fieldMap, options, jobStopManager, diagnosticLog);
 
                 bool rowProcessed = false;
-                if (jobStopManager?.ShouldDrainStop != true)
+                if (jobStopManager?.ShouldDrainStop == true)
                 {
-                    _logger.LogInformation("Data processing loop is starting");
-                    int addedRows = 0;
-                    int skippedRows = 0;
-                    _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
+                    _logger.LogInformation("Skipping import because DrainStop was requested");
+                    return;
+                }
+
+                _logger.LogInformation("Data processing loop is starting");
+                int addedRows = 0;
+                int skippedRows = 0;
+                _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
+                try
+                {
                     foreach (var row in data)
                     {
                         _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
@@ -208,22 +214,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                             ItemError(string.Empty, ex.Message);
                         }
                     }
-
-                    _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
-
-                    if (!jobStopManager?.ShouldDrainStop ?? true)
-                    {
-                        ImportService.PushBatchIfFull(true);
-                        rowProcessed = true;
-                    }
-
-                    WaitUntilTheJobIsDone(rowProcessed);
-                    FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
                 }
-                else
+                catch (MalformedLineException ex)
                 {
-                    _logger.LogInformation("Skipping import because DrainStop was requested");
+                    LogSyncDataError(ex);
+                    ItemError(string.Empty, ex.Message);
                 }
+
+                _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
+
+                if (!jobStopManager?.ShouldDrainStop ?? true)
+                {
+                    ImportService.PushBatchIfFull(true);
+                    rowProcessed = true;
+                }
+
+                WaitUntilTheJobIsDone(rowProcessed);
+                FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
             }
             catch (Exception ex)
             {
@@ -413,7 +420,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
             catch (Exception ex)
             {
-                throw LogAndCreateGetImportSettignsException(ex, fieldMap);
+                throw LogAndCreateGetImportSettingsException(ex, fieldMap);
             }
         }
 
@@ -704,26 +711,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         #region Logging
 
-        private IntegrationPointsException LogAndCreateGetImportSettignsException(Exception exception, IEnumerable<FieldMap> fieldMap)
+        private IntegrationPointsException LogAndCreateGetImportSettingsException(Exception exception, IEnumerable<FieldMap> fieldMap)
         {
-            string message = "Error occured while preparing import settings.";
+            string message = "Error occurred while preparing import settings.";
             IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
-            _logger.LogError("Error occured while preparing import settings\nFields: {@fieldMap}", fieldMapWithoutFieldNames);
+            _logger.LogError("Error occurred while preparing import settings\nFields: {@fieldMap}", fieldMapWithoutFieldNames);
             return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
         private IntegrationPointsException LogAndCreateGetFieldsException(Exception exception)
         {
-            string message = "Error occured while getting fields.";
+            string message = "Error occurred while getting fields.";
             _logger.LogError("Error getting fields.");
             return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
         private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, string options)
         {
-            string message = "Error occured while syncing rdo.";
+            string message = "Error occurred while syncing rdo.";
             IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
-            _logger.LogError("Error occured while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMapWithoutFieldNames);
+            _logger.LogError("Error occurred while syncing rdo. \nOptions: {@options} \nFields: {@fieldMap}", options, fieldMapWithoutFieldNames);
             return new IntegrationPointsException(message, ex) { ShouldAddToErrorsTab = true };
         }
 
