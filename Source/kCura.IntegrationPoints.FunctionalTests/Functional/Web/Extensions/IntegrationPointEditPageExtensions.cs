@@ -6,7 +6,6 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web.Extensions;
 using Relativity.Testing.Framework.Web.Models;
-using static Relativity.Testing.Identification.Feature.DeveloperPlatform.ExtensibilityPoints.EventHandlers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 {
@@ -34,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
                 CopyImages = YesNo.No,
                 CopyNativeFiles = copyNativesMode,
                 PathInformation = RelativityProviderFolderPathInformation.No
-            }).Save.Click().Save.ClickAndGo();
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -62,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
                 CopyImages = YesNo.Yes,
                 ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
                 CopyFilesToRepository = YesNo.Yes
-            }).Save.Click().Save.ClickAndGo();
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -89,7 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             {
                 Overwrite = RelativityProviderOverwrite.AppendOnly,
                 CopyFilesToRepository = copyFilesToRepository,
-            }).Save.Click().Save.ClickAndGo();
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -106,7 +105,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
                 .MapView.Click()
-                .Save.Click().Save.ClickAndGo();
+                .Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
