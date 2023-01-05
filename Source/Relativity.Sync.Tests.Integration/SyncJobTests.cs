@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Toggles.Service;

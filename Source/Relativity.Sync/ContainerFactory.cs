@@ -9,6 +9,7 @@ using Relativity.Sync.DbContext;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Progress;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;

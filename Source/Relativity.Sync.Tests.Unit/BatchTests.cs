@@ -86,6 +86,8 @@ namespace Relativity.Sync.Tests.Unit
             const int metadataBytesTransferred = 1024;
             const int filesBytesTransferred = 5120;
             const int totalBytesTransferred = 6144;
+            const int failedReadDocumentsCount = 7123;
+            const int readDocumentsCount = 8123;
 
             SyncBatchRdo batchRdo = new SyncBatchRdo
             {
@@ -100,7 +102,9 @@ namespace Relativity.Sync.Tests.Unit
                 FilesTransferredBytes = filesBytesTransferred,
                 TotalTransferredBytes = totalBytesTransferred,
                 FailedDocumentsCount = failedDocumentsCount,
-                TransferredDocumentsCount = transferredDocumentsCount
+                TransferredDocumentsCount = transferredDocumentsCount,
+                FailedReadDocumentsCount = failedReadDocumentsCount,
+                ReadDocumentsCount = readDocumentsCount
             };
 
             _fakeRdoManager.Mock.Setup(x => x.GetAsync<SyncBatchRdo>(_WORKSPACE_ID, _ARTIFACT_ID)).ReturnsAsync(batchRdo);
@@ -121,6 +125,8 @@ namespace Relativity.Sync.Tests.Unit
             batch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
             batch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
             batch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
+            batch.FailedReadDocumentsCount.Should().Be(failedReadDocumentsCount);
+            batch.ReadDocumentsCount.Should().Be(readDocumentsCount);
 
             _fakeRdoManager.Mock.Verify(x => x.GetAsync<SyncBatchRdo>(_WORKSPACE_ID, _ARTIFACT_ID));
         }
@@ -278,6 +284,38 @@ namespace Relativity.Sync.Tests.Unit
             batch.TaggedDocumentsCount.Should().Be(taggedDocumentsCount);
 
             _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.TaggedDocumentsCount, taggedDocumentsCount));
+        }
+
+        [Test]
+        public async Task SetFailedReadDocumentsCount_ShouldUpdateFailedReadDocumentsCount()
+        {
+            const int failedReadDocumentsCount = 1234;
+
+            IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+            // ACT
+            await batch.SetFailedReadDocumentsCount(failedReadDocumentsCount).ConfigureAwait(false);
+
+            // ASSERT
+            batch.FailedReadDocumentsCount.Should().Be(failedReadDocumentsCount);
+
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.FailedReadDocumentsCount, failedReadDocumentsCount));
+        }
+
+        [Test]
+        public async Task SetReadDocumentsCount_ShouldUpdateReadDocumentsCount()
+        {
+            const int readDocumentsCount = 4321;
+
+            IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
+
+            // ACT
+            await batch.SetReadDocumentsCount(readDocumentsCount).ConfigureAwait(false);
+
+            // ASSERT
+            batch.ReadDocumentsCount.Should().Be(readDocumentsCount);
+
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.ReadDocumentsCount, readDocumentsCount));
         }
 
         [Test]

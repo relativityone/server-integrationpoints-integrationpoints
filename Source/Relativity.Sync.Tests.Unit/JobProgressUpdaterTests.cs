@@ -10,6 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
 using Relativity.Sync.Utils.Workarounds;
@@ -215,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit
             JobProgressUpdater sut = PrepareSut();
 
             // Act
-            await sut.UpdateJobProgressAsync(completedItems, failedItems);
+            await sut.UpdateJobProgressAsync(new Progress.Progress(0, failedItems, completedItems));
 
             // Assert
             FieldRefValuePair[] expectedFields = new[]

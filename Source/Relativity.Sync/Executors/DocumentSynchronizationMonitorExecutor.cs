@@ -11,6 +11,7 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
@@ -52,7 +53,9 @@ namespace Relativity.Sync.Executors
                     configuration.SourceWorkspaceArtifactId,
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.JobHistoryArtifactId,
-                    configuration.ExportRunId))
+                    configuration.ExportRunId,
+                    configuration.SyncConfigurationArtifactId)
+                           .ConfigureAwait(false))
                 {
                     List<IBatch> batches = (await _batchRepository.GetAllAsync(
                             configuration.SourceWorkspaceArtifactId,

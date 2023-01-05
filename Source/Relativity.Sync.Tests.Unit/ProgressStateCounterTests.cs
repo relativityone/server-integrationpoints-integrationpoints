@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Tests.Unit
 {

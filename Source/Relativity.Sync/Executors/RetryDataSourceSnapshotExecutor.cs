@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors

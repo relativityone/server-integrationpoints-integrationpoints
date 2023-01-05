@@ -3,6 +3,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Tests.Unit
 {

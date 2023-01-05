@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Exceptions;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using ProgressRepositoryStub = Relativity.Sync.Tests.Unit.Stubs.ProgressRepositoryStub;

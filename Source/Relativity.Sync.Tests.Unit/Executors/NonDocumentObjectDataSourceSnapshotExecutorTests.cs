@@ -12,6 +12,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
@@ -52,7 +53,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .Returns(_jobProgressUpdater.Object);
 
             _jobProgressUpdater
-                .Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Setup(x => x.UpdateJobProgressAsync(It.IsAny<Progress.Progress>()))
                 .Returns(Task.CompletedTask);
 
             _snapshotQueryRequestProvider = new Mock<ISnapshotQueryRequestProvider>();
