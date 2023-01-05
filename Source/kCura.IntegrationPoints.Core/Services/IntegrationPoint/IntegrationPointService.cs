@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         }
 
         public IntegrationPointDto Read(int artifactID)
-         {
+        {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
             dto.FieldMappings = GetFieldMap(artifactID);
@@ -299,20 +299,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
-
-            if (shouldUseRelativitySyncAppIntegration)
-            {
-                _logger.LogInformation("Using Sync application to execute the job");
-                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                _logger.LogInformation("Sync job has been submitted");
-            }
-            else
-            {
-                _logger.LogInformation("Using Sync DLL to execute the job");
-                CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
-                _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
-            }
+            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, jobRunId);
         }
 
         public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode)
@@ -346,9 +333,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
-
-            _logger.LogInformation("Retry request was completed successfully and job has been added to Schedule Queue.");
+            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, jobRunId);
         }
 
         public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
@@ -417,6 +402,23 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 AggregateException stopActionException = new AggregateException(exceptions);
                 _logger.LogError(stopActionException, "Errors occurred when stopping Integration Point {integrationPointId}", integrationPointArtifactId);
                 throw stopActionException;
+            }
+        }
+
+        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid jobRunId)
+        {
+            bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
+            if (shouldUseRelativitySyncAppIntegration)
+            {
+                _logger.LogInformation("Using Sync application to run the job");
+                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
+                _logger.LogInformation("Sync retry job has been submitted");
+            }
+            else
+            {
+                _logger.LogInformation("Using Sync DLL to run the job");
+                CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
+                _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
             }
         }
 
@@ -769,7 +771,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 ArtifactId = dto.ArtifactId,
                 Name = dto.Name,
-                OverwriteFields = new ChoiceRef(choice.ArtifactID) {Name = choice.Name},
+                OverwriteFields = new ChoiceRef(choice.ArtifactID) { Name = choice.Name },
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
@@ -780,7 +782,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 LogErrors = dto.LogErrors,
                 HasErrors = dto.HasErrors,
                 EmailNotificationRecipients =
-                    string.Join("; ", (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
+                    string.Join("; ", (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
                 LastRuntimeUTC = dto.LastRun,
                 SecuredConfiguration = dto.SecuredConfiguration,
                 JobHistory = dto.JobHistory?.ToArray(),
