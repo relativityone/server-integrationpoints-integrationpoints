@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Web
             bundles.Add(new ScriptBundle("~/bundles/grid").Include(
                 "~/Scripts/grid/dragon-utils.js",
                 "~/Scripts/i18n/grid.locale-en.js",
-                "~/Scripts/jquery.jqGrid.min.js",
+                "~/node_modules/jqGrid/js/jquery.jqGrid.min.js",
                 "~/Scripts/select2.min.js",
                 "~/Scripts/grid/dragon-grid.js"
             ));
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Web
                 "~/Content/themes/base/datepicker.css",
                 "~/Content/themes/base/progressbar.css",
                 "~/Content/themes/base/theme.css",
-                "~/Content/jquery.jqGrid/ui.jqgrid.css"
+                "~/node_modules/jqGrid/css/ui.jqgrid.css"
             ));
 
             bundles.Add(new StyleBundle("~/Content/fonts/bundleFonts").Include(

@@ -137,7 +137,7 @@
     <Content Include="Content\import.css" />
     <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
-    <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
+    <Content Include="node_modules\jqGrid\css\ui.jqgrid.css" />
     <Content Include="Content\jstree-fluid.css" />
     <Content Include="Content\modals.css" />
     <Content Include="Content\modals.min.css" />
@@ -390,8 +390,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
       <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
     </Content>
-    <Content Include="Scripts\jquery.jqGrid.min.js" />
-    <Content Include="Scripts\jquery.jqGrid.src.js" />
+    <Content Include="node_modules\jqGrid\js\jquery.jqGrid.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
