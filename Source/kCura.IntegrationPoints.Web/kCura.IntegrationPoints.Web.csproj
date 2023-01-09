@@ -392,8 +392,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="node_modules\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js" />
     <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />
     <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\ldap\ldap-edit.js" />
@@ -478,8 +477,6 @@
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />
     <Content Include="Views\Shared\_StepLayout.cshtml" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js.map">
-      <DependentUpon>jquery.validate.unobtrusive.js</DependentUpon>
     </Content>
     <Content Include="Scripts\select2.min.js.map">
       <DependentUpon>select2.js</DependentUpon>
