@@ -477,7 +477,6 @@
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />
     <Content Include="Views\Shared\_StepLayout.cshtml" />
-    </Content>
     <Content Include="Scripts\select2.min.js.map">
       <DependentUpon>select2.js</DependentUpon>
     </Content>
