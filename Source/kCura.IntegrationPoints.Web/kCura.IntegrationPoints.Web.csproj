@@ -449,8 +449,8 @@
     <Content Include="Scripts\Select2-locales\select2_locale_zh-TW.js" />
     <Content Include="Scripts\select2.js" />
     <Content Include="Scripts\select2.min.js" />
-    <Content Include="Scripts\purify.min.js" />
-    <Content Include="Scripts\purify.min.js.map" />
+    <Content Include="node_modules\dompurify\dist\purify.min.js" />
+    <Content Include="node_modules\dompurify\dist\purify.min.js.map" />
     <Content Include="Scripts\es6-shim.js" />
     <Content Include="package.json" />
     <Content Include="package-lock.json" />
