@@ -10,6 +10,7 @@
     "jstree": "^3.3.12",
     "knockout": "^3.5.1",
     "knockout.validation": "^2.0.4",
+    "modernizr": "^3.12.0",
     "moment": "^2.29.4"
   }
 }
