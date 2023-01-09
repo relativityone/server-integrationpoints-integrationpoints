@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             return jobHistory;
         }
 
-        private void UpdateJobHistoryOnError(Job job, ChoiceRef jobHistoryStatus , Exception e)
+        private void UpdateJobHistoryOnError(Job job, ChoiceRef jobHistoryStatus, Exception e)
         {
             LogUpdateJobHistoryOnFailureStart(job, e);
             JobHistory jobHistory = GetJobHistory(job);
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 
             // No updates to IP since the job history error service handles IP updates
-            IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory, job.WorkspaceID));
+            IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory.JobID, job.WorkspaceID));
             healthcheck.Write();
             LogUpdateJobHistoryOnFailureSuccesfulEnd(job);
         }
