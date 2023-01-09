@@ -385,12 +385,8 @@
     <Content Include="Scripts\integration-point\time-utils.js" />
     <Content Include="Scripts\ip-messaging.js" />
     <Content Include="Scripts\jquery-postMessage.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
-      <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
-    </Content>
     <Content Include="node_modules\jqGrid\js\jquery.jqGrid.min.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="node_modules\jquery-ajax-unobtrusive\dist\jquery.unobtrusive-ajax.min.js" />
     <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
     <Content Include="node_modules\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js" />
     <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />

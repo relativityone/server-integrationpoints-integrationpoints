@@ -3,6 +3,7 @@
     "datatables.net": "^1.13.1",
     "jqGrid": "^5.8.0",
     "jquery": "^3.6.3",
+    "jquery-ajax-unobtrusive": "^3.2.6",
     "jquery-ui": "^1.13.2",
     "jquery-validation": "^1.19.5",
     "jquery-validation-unobtrusive": "^4.0.0",
