@@ -405,7 +405,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid jobRunId)
+        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
         {
             bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
             if (shouldUseRelativitySyncAppIntegration)
@@ -417,7 +417,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             else
             {
                 _logger.LogInformation("Using Sync DLL to run the job");
-                CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
+                CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
                 _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
             }
         }

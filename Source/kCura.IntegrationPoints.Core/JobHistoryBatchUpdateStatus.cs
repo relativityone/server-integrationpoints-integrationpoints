@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core
             }
 
             JobHistory jobHistory = GetHistory(job);
-            UpdateJobHistory(jobHistory, JobStatusChoices.JobHistoryProcessing);
+            UpdateJobHistory(jobHistory, JobStatusChoices.JobHistoryProcessing, job.JobId);
         }
 
         public void OnJobComplete(Job job)
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core
                 SendHealthCheck(jobHistory.JobID, job.WorkspaceID);
             }
 
-            UpdateJobHistory(jobHistory, newStatus);
+            UpdateJobHistory(jobHistory, newStatus, job.JobId);
         }
 
         private JobHistory GetHistory(Job job)
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Core
             return jobHistory;
         }
 
-        private void UpdateJobHistory(JobHistory jobHistory, ChoiceRef newStatus)
+        private void UpdateJobHistory(JobHistory jobHistory, ChoiceRef newStatus, long jobId)
         {
             string oldStatusName = null;
             try
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core
                     _JOB_UPDATE_ERROR_MESSAGE_TEMPLATE,
                     oldStatusName,
                     jobHistory.JobStatus?.Name,
-                    jobHistory.JobID,
+                    jobId,
                     jobHistory.ArtifactId);
                 throw;
             }
