@@ -395,6 +395,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />
+    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\ldap\ldap-edit.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
