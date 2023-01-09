@@ -12,6 +12,7 @@
     "knockout": "^3.5.1",
     "knockout.validation": "^2.0.4",
     "modernizr": "^3.12.0",
-    "moment": "^2.29.4"
+    "moment": "^2.29.4",
+    "q": "^1.5.1"
   }
 }
