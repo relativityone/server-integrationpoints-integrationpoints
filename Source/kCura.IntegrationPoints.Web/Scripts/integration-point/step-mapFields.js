@@ -23,14 +23,14 @@ ko.validation.init({
 });
 ko.validation.rules['mustEqualMapped'] = {
 	validator: function (value, params) {
-		return value.length === params().length;
+		return value.length === params.length;
 	},
 	message: 'Some selected items have not been mapped.'
 };
 
 ko.validation.rules['identifierMustMappedWithAnotherIdentifier'] = {
 	validator: function (value, params) {
-		var targetMap = params();
+		var targetMap = params;
 		var isMappedCorrectly = false;
 		$.each(value, function (index, item) {
 			if (item.isIdentifier === true) {
