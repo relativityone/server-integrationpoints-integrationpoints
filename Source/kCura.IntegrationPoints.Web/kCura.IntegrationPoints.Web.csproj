@@ -319,7 +319,7 @@
     <Content Include="Scripts\iframeResizer.min.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\core\utils.js" />
-    <Content Include="Scripts\date.js" />
+    <Content Include="node_modules\datejs-coolite\build\date.js" />
     <Content Include="Scripts\dragon\dragon-core.js" />
     <Content Include="Scripts\dragon\dragon-schedule.js" />
     <Content Include="Scripts\dragon\dragon-utils.js" />
