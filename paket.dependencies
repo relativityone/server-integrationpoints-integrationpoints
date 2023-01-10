@@ -143,7 +143,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.1.500-local
+nuget Relativity.Sync 0.1.6-local
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -157,7 +157,7 @@ strategy: min
 source C:\Users\aleksandra.lopinska\source\repos\_nuget
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.1.500-local
+nuget Relativity.Sync 0.1.6-local
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
