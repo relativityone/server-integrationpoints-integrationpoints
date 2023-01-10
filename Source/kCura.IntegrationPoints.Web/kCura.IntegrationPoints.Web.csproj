@@ -247,7 +247,7 @@
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="node_modules\es5-shim\es5-shim.min.js" />
-    <Content Include="Scripts\es6-shim.min.js" />
+    <Content Include="node_modules\es6-shim\es6-shim.min.js" />
     <Content Include="Scripts\EventHandlers\integration-points-summary-page-view.js" />
     <Content Include="Scripts\Export\export-helpers.js" />
     <Content Include="Scripts\Export\export-provider-file-name-vm.js" />
@@ -449,7 +449,6 @@
     <Content Include="Scripts\select2.min.js" />
     <Content Include="node_modules\dompurify\dist\purify.min.js" />
     <Content Include="node_modules\dompurify\dist\purify.min.js.map" />
-    <Content Include="Scripts\es6-shim.js" />
     <Content Include="package.json" />
     <Content Include="package-lock.json" />
     <Content Include="node_modules\moment\moment.js" />
