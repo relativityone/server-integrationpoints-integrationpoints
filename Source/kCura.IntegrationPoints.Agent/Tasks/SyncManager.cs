@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return new List<string>();
         }
 
-        public override void CreateBatchJob(Job job, List<string> batchIDs)
+        public override void CreateBatchJob(Job job, List<string> batchIDs, long startIndex)
         {
             LogCreateBatchJobStart(job, batchIDs);
 
@@ -182,7 +182,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             TaskParameters taskParameters = new TaskParameters
             {
                 BatchInstance = BatchInstance,
-                BatchParameters = batchIDs
+                BatchParameters = batchIDs,
+                BatchStartingIndex = startIndex
             };
             _jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), BatchInstance.ToString());
             BatchJobCount++;

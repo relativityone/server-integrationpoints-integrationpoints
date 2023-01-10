@@ -81,7 +81,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 throw new NotImplementedException();
             }
 
-            public override void CreateBatchJob(Job job, List<string> batchIDs)
+            public override void CreateBatchJob(Job job, List<string> batchIDs, long batchStartingIndex)
             {
                 BatchCount++;
             }

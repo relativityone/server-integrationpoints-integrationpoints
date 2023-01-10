@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         [Test]
         public void ItShouldReturnExportWorker()
         {
-            _instanceToTest.CreateBatchJob(_job, new List<string>());
+            _instanceToTest.CreateBatchJob(_job, new List<string>(), Arg.Any<long>());
 
             _jobManagerMock.Received().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.ExportWorker, Arg.Any<string>());
         }

@@ -56,6 +56,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return GetRdo(batchInstance, queryOptions);
         }
 
+        public Data.JobHistory GetRdoWithoutDocuments(int artifactId)
+        {
+            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
+                .All()
+                .Except(JobHistoryFieldGuids.Documents);
+
+            return GetRdo(artifactId, queryOptions);
+        }
+
         public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
         {
             _logger.LogInformation("Getting JobHistory for [{jobHistoryArtifactIds}]",
@@ -233,8 +242,33 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
             Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
 
-            _logger.LogInformation("Read JobHistory for BatchInstanceId {batchInstanceId}: JobHistory - {@jobHistoryDetails}",
+            _logger.LogInformation("Read JobHistory for BatchInstanceId: {batchInstanceId}. JobHistory: {@jobHistoryDetails}",
                 batchInstance, jobHistory.Stringify());
+
+            return jobHistory;
+        }
+
+        private Data.JobHistory GetRdo(
+            int artifactId,
+            JobHistoryQueryOptions queryOptions)
+        {
+            var request = new QueryRequest
+            {
+                Condition = $"'Artifact ID' == '{artifactId}'",
+                Fields = MapToFieldRefs(queryOptions?.FieldGuids)
+            };
+
+            IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
+
+            if (jobHistories.Count > 1)
+            {
+                LogMoreThanOneHistoryInstanceWarning(artifactId);
+            }
+
+            Data.JobHistory jobHistory = jobHistories.SingleOrDefault();
+
+            _logger.LogInformation("Read JobHistory Artifact ID: {artifactId}. JobHistory: {@jobHistoryDetails}",
+                artifactId, jobHistory?.Stringify());
 
             return jobHistory;
         }
@@ -266,7 +300,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
         {
-            _logger.LogWarning("More than one job history instance found for {BatchInstance}.", batchInstance.ToString());
+            _logger.LogWarning("More than one job history instance found for BatchInstance: {BatchInstance}", batchInstance.ToString());
+        }
+
+        private void LogMoreThanOneHistoryInstanceWarning(int jobHistoryArtifactId)
+        {
+            _logger.LogWarning("More than one job history instance found for Artifact ID: {ArtifactID}", jobHistoryArtifactId);
         }
 
         private void LogHistoryNotFoundError(IntegrationPointDto integrationPointDto, Exception e)

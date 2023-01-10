@@ -18,12 +18,10 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using NSubstitute;
@@ -35,7 +33,8 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class SyncWorkerTests : TestBase
     {
         private ICaseServiceContext _caseServiceContext;
@@ -92,10 +91,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 integrationPointService,
                 new EmptyDiagnosticLog());
 
-
-            _job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "detail",
-                0, new DateTime(), 1, null, null);
-
+            _job = JobHelper.GetJob(
+                1,
+                null,
+                null,
+                1,
+                1,
+                111,
+                222,
+                TaskType.SyncEntityManagerWorker,
+                new DateTime(),
+                null,
+                "detail",
+                0,
+                new DateTime(),
+                1,
+                null,
+                null);
 
             _integrationPoint = new IntegrationPointDto()
             {
@@ -109,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             SourceProvider sourceProvider = new SourceProvider() { Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
             DestinationProvider destinationProvider = new DestinationProvider() { Identifier = Guid.NewGuid().ToString() };
             _jobHistory = new JobHistory() { ArtifactId = 9876546, BatchInstance = Guid.Empty.ToString() };
-            List<string> recordIds = new List<String>() { "1", "2" };
+            List<string> recordIds = new List<string> { "1", "2" };
             _dataSynchronizer.TotalRowsProcessed.Returns(recordIds.Count);
 
             _taskParams = new TaskParameters()
@@ -122,8 +134,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-            jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance,
-                JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
+            jobHistoryService.CreateRdo(
+                _integrationPoint,
+                _taskParams.BatchInstance,
+                JobTypeChoices.JobHistoryRun,
+                Arg.Any<DateTime>())
+                .Returns(_jobHistory);
 
             jobHistoryService.GetRdo(Guid.Empty).Returns(_jobHistory);
 
@@ -132,11 +148,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             serializer.Deserialize<List<string>>(Arg.Is<string>(_taskParams.BatchParameters.ToString())).Returns(recordIds);
 
-            dataProviderFactory.GetDataProvider(new Guid(sourceProvider.ApplicationIdentifier),
-                new Guid(sourceProvider.Identifier)).Returns(dataSourceProvider);
+            dataProviderFactory.GetDataProvider(
+                new Guid(sourceProvider.ApplicationIdentifier),
+                new Guid(sourceProvider.Identifier))
+                .Returns(dataSourceProvider);
             dataSourceProvider.GetData(Arg.Any<List<FieldEntry>>(), Arg.Any<List<string>>(), new DataSourceProviderConfiguration(_integrationPoint.SourceConfiguration, _integrationPoint.SecuredConfiguration)).Returns(sourceDataReader);
-            appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
-                _integrationPoint.DestinationConfiguration).Returns(_dataSynchronizer);
+            appDomainRdoSynchronizerFactory.CreateSynchronizer(
+                new Guid(destinationProvider.Identifier),
+                _integrationPoint.DestinationConfiguration)
+                .Returns(_dataSynchronizer);
             _jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
             _jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
                 .Returns(associatedJobs);
@@ -187,7 +207,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
-
         }
 
         [Test]
@@ -214,7 +233,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
-
         }
 
         [Test]
@@ -251,7 +269,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager, null);
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.Unstoppable); // mark job as unstoppable while finalizing the job.
             EnsureToUpdateTheStopStateBackToNone();
-
         }
 
         [Test]

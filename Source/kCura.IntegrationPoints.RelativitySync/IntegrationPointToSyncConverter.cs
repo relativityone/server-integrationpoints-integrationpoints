@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -90,18 +89,20 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
             else
             {
-                JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int> { job.JobHistoryId }).FirstOrDefault();
+                JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(job.JobHistoryId);
 
                 if (jobHistory != null)
+                {
                     importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(jobHistory.Overwrite);
+                }
 
                 return importSettings.ImageImport ?
-                    await CreateImageSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false)
-                    : await CreateDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
+                    await CreateImageSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings).ConfigureAwait(false)
+                    : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
             }
         }
 
-        private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
+        private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
             SourceConfiguration sourceConfiguration, ImportSettings importSettings)
         {
             IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
@@ -133,7 +134,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
                         importSettings.CreateSavedSearchForTagging));
-            if (IsRetryingErrors(job.Job))
+
+            if (IsRetryingErrors(jobHistory))
             {
                 RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
                     sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
@@ -149,7 +151,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
+        private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
             SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
         {
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
@@ -177,7 +179,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
                         importSettings.CreateSavedSearchForTagging));
-            if (IsRetryingErrors(job.Job))
+            if (IsRetryingErrors(jobHistory))
             {
                 RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
                     sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
@@ -275,18 +277,8 @@ namespace kCura.IntegrationPoints.RelativitySync
             return new EmailNotificationsOptions(emailsList);
         }
 
-        private bool IsRetryingErrors(Job job)
+        private bool IsRetryingErrors(JobHistory jobHistory)
         {
-            string jobDetails = job?.JobDetails;
-
-            if (string.IsNullOrWhiteSpace(jobDetails))
-            {
-                return false;
-            }
-
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(jobDetails);
-            JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
-
             if (jobHistory == null)
             {
                 // this means that job is scheduled, so it's not retrying errors

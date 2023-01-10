@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;

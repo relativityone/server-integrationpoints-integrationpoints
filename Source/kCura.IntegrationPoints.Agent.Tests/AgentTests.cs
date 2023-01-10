@@ -20,8 +20,8 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -33,6 +33,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
+using Choice = Relativity.Services.Objects.DataContracts.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -198,16 +199,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
             const long expectedJobId = 100;
             const int integrationPointId = 200;
 
-            Mock<ITaskFactoryJobHistoryService> jobHistoryServiceMock = new Mock<ITaskFactoryJobHistoryService>();
+            Mock<IExtendedJob> extendedJob = new Mock<IExtendedJob>();
+            Mock<IJobHistorySyncService> jobHistoryService = new Mock<IJobHistorySyncService>();
 
-            Mock<IIntegrationPointRepository> integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
-            integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
-
-            Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
-            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<IntegrationPointDto>())).Returns(jobHistoryServiceMock.Object);
-
-            RegisterMock(integrationPointRepositoryFake);
-            RegisterMock(jobHistoryServiceFactoryFake);
+            RegisterMock(extendedJob);
+            RegisterMock(jobHistoryService);
 
             TestAgent sut = PrepareSut();
 
@@ -224,7 +220,18 @@ namespace kCura.IntegrationPoints.Agent.Tests
             result.Status.Should().Be(TaskStatusEnum.Fail);
             result.Exceptions.Should().Contain(expectedException);
 
-            jobHistoryServiceMock.Verify(x => x.UpdateJobHistoryOnFailure(It.Is<Job>(y => y.JobId == expectedJobId), expectedException));
+            jobHistoryService.Verify(
+                x => x.UpdateFinishedJobAsync(
+                    extendedJob.Object,
+                    It.Is<Choice>(c => c.Guid == JobStatusChoices.JobHistoryErrorJobFailedGuid),
+                    true),
+                Times.Once);
+
+            jobHistoryService.Verify(
+                x => x.AddJobHistoryErrorAsync(
+                    extendedJob.Object,
+                    expectedException),
+                Times.Once);
         }
 
         private TestAgent PrepareSut()

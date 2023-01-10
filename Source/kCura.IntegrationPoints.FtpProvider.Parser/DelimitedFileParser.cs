@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
+using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.FileIO;
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Parser.Tests")]
@@ -15,25 +17,27 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
     public class DelimitedFileParser : IDataReader, IParser
     {
         internal bool Disposed;
-        internal TextFieldParser Parser;
+        internal IFieldParser Parser;
         internal Stream FileStream;
         internal TextReader TextReader;
 
         internal string FileLocation;
         internal string[] Columns;
         internal string[] CurrentLine;
-        internal int LineNumber = 0;
+        internal int LineNumber;
+        internal long BatchFirstLineNumber;
 
         public int RecordsAffected => LineNumber;
 
         public bool IsClosed => Disposed;
 
-        public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, string fileLocation, ParserOptions parserOptions)
         {
             FileLocation = fileLocation;
+            SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
-                Parser = new TextFieldParser(FileLocation);
+                Parser = fieldParserFactory.Create(FileLocation);
                 SetParserOptions(Parser, parserOptions);
             }
 
@@ -43,12 +47,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
-        public DelimitedFileParser(Stream stream, ParserOptions parserOptions)
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, Stream stream, ParserOptions parserOptions)
         {
             FileStream = stream;
+            SetBatchFirstLineNumber(parserOptions);
             if (SourceExists())
             {
-                Parser = new TextFieldParser(FileStream, Encoding.UTF8, true);
+                Parser = fieldParserFactory.Create(FileStream, Encoding.UTF8, true);
                 SetParserOptions(Parser, parserOptions);
             }
             if (parserOptions.FirstLineContainsColumnNames)
@@ -57,24 +62,18 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             }
         }
 
-        //this one is not tested
-        public DelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
+        // this one is not fully tested
+        public DelimitedFileParser(IFieldParserFactory fieldParserFactory, TextReader reader, ParserOptions parserOptions, List<string> columnList)
         {
             TextReader = reader;
+            SetBatchFirstLineNumber(parserOptions);
+
             if (SourceExists())
             {
-                Parser = new TextFieldParser(TextReader);
+                Parser = fieldParserFactory.Create(TextReader);
                 SetParserOptions(Parser, parserOptions);
             }
             Columns = columnList.ToArray();
-        }
-
-        private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
-        {
-            parser.TextFieldType = parserOptions.TextFieldType;
-            parser.Delimiters = parserOptions.Delimiters;
-            parser.HasFieldsEnclosedInQuotes = parserOptions.HasFieldsEnclosedInQuotes;
-            parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
         }
 
         public bool SourceExists()
@@ -100,7 +99,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                     if (NextResult())
                     {
                         Columns = CurrentLine;
-                        //Make sure headers exist in file
+
+                        // Make sure headers exist in file
                         if (Columns == null || Columns.Length < 1)
                         {
                             throw new Exceptions.NoColumnsException();
@@ -115,32 +115,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                 }
             }
             return retVal;
-        }
-
-        internal void ValidateColumns(IEnumerable<string> columns)
-        {
-            //Validate Blank Columns
-            foreach (string column in columns)
-            {
-                if (string.IsNullOrWhiteSpace(column))
-                {
-                    throw new Exceptions.BlankColumnException();
-                }
-            }
-
-            //Validate Duplicates
-            var destination = new List<string>();
-            foreach (string column in columns)
-            {
-                if (!destination.Contains(column))
-                {
-                    destination.Add(column);
-                }
-                else
-                {
-                    throw new Exceptions.DuplicateColumnsExistException();
-                }
-            }
         }
 
         public IDataReader ParseData()
@@ -160,16 +134,24 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             var retVal = false;
             if (!Parser.EndOfData)
             {
-                LineNumber++;
-                string[] data = Parser.ReadFields();
-                if (data != null)
+                try
                 {
-                    if (Columns != null && data.Length != Columns.Length)
+                    LineNumber++;
+                    string[] data = Parser.ReadFields();
+                    if (data != null)
                     {
-                        throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(LineNumber);
+                        if (Columns != null && data.Length != Columns.Length)
+                        {
+                            throw new Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException(BatchFirstLineNumber + LineNumber);
+                        }
+
+                        CurrentLine = data;
+                        retVal = true;
                     }
-                    CurrentLine = data;
-                    retVal = true;
+                }
+                catch (MalformedLineException ex)
+                {
+                    throw new MalformedLineException($"Exception thrown in Import file line number {BatchFirstLineNumber + LineNumber}", ex);
                 }
             }
             return retVal;
@@ -247,7 +229,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public Type GetFieldType(int i)
         {
-            return (CurrentLine[i]).GetType();
+            return CurrentLine[i].GetType();
         }
 
         public float GetFloat(int i)
@@ -323,6 +305,30 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public object this[int i] => GetValue(i);
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        internal void ValidateColumns(IEnumerable<string> columns)
+        {
+            // Validate Blank Columns
+            List<string> columnsList = columns.ToList();
+            var blankColumns = columnsList.Where(x => string.IsNullOrWhiteSpace(x)).ToList();
+            if (blankColumns != null && blankColumns.Count > 0 )
+            {
+                throw new Exceptions.BlankColumnException();
+            }
+
+            // Validate Duplicates
+            List<string> distinctColumns = columnsList.Distinct().ToList();
+            if (distinctColumns.Count != columnsList.Count)
+            {
+                throw new Exceptions.DuplicateColumnsExistException();
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!Disposed)
@@ -335,11 +341,25 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             Disposed = true;
         }
 
-        public void Dispose()
+        private void SetParserOptions(IFieldParser parser, ParserOptions parserOptions)
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            parser.TextFieldType = parserOptions.TextFieldType;
+            parser.Delimiters = parserOptions.Delimiters;
+            parser.HasFieldsEnclosedInQuotes = parserOptions.HasFieldsEnclosedInQuotes;
+            parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
         }
 
+        private void SetBatchFirstLineNumber(ParserOptions parserOptions)
+        {
+            if (parserOptions.FirstLineNumber > -1)
+            {
+                BatchFirstLineNumber = parserOptions.FirstLineNumber;
+            }
+
+            if (parserOptions.FirstLineContainsColumnNames)
+            {
+                BatchFirstLineNumber++;
+            }
+        }
     }
 }

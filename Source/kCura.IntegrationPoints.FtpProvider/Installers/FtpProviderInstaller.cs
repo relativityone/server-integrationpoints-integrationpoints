@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Installers
             container.Register(Component.For<IConnectorFactory>().ImplementedBy<ConnectorFactory>().LifestyleSingleton().OnlyNewServices());
             container.Register(Component.For<ISettingsManager>().ImplementedBy<SettingsManager>().LifestyleTransient().OnlyNewServices());
             container.Register(Component.For<IParserFactory>().ImplementedBy<ParserFactory>().LifestyleTransient());
+            container.Register(Component.For<IFieldParserFactory>().ImplementedBy<TextFieldParserFactory>().LifestyleTransient());
             container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient());
             container.Register(Component.For<IDataSourceProvider>().ImplementedBy<FtpProvider>().LifestyleTransient().Named(new Guid(Constants.Guids.FtpProviderEventHandler).ToString()));
             container.Register(Component.For<IHostValidator>().ImplementedBy<HostValidator>().LifestyleTransient());
