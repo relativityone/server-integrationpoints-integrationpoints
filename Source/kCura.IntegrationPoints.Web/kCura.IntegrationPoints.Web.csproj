@@ -246,8 +246,7 @@
     </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
-    <Content Include="Scripts\es5-shim.js" />
-    <Content Include="Scripts\es5-shim.min.js" />
+    <Content Include="node_modules\es5-shim\es5-shim.min.js" />
     <Content Include="Scripts\es6-shim.min.js" />
     <Content Include="Scripts\EventHandlers\integration-points-summary-page-view.js" />
     <Content Include="Scripts\Export\export-helpers.js" />

@@ -3,6 +3,7 @@
     "datatables.net": "^1.13.1",
     "datejs-coolite": "^1.0.0",
     "dompurify": "^2.4.3",
+    "es5-shim": "^4.6.7",
     "jqGrid": "^5.8.0",
     "jquery": "^3.6.3",
     "jquery-ajax-unobtrusive": "^3.2.6",
