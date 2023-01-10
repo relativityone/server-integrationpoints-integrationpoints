@@ -37,6 +37,11 @@ namespace Relativity.Sync.Storage
             return Batch.GetAllAsync(_rdoManager, _serviceFactoryForAdmin, workspaceArtifactId, syncConfigurationArtifactId, exportRunId);
         }
 
+        public Task<IEnumerable<IBatch>> GetBatchesWithIdsAsync(int workspaceArtifactId, int syncConfigurationArtifactId, List<int> batchesIds, Guid exportRunId)
+        {
+            return Batch.GetBatchesWithIdsAsync(_rdoManager, _serviceFactoryForAdmin, workspaceArtifactId, syncConfigurationArtifactId, batchesIds, exportRunId);
+        }
+
         public async Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
         {
             using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

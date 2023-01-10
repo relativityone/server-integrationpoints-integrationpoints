@@ -12,13 +12,14 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
     internal class SourceWorkspaceDataReaderCommonTests : SourceWorkspaceDataReaderTestsBase
     {
-        private const char _RECORD_SEPARATOR = (char)30;
+        private const char _RECORD_SEPARATOR = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
         private const int _SINGLE_OBJECT_ARTIFACT_ID = 1;
         private const int _USER_ARTIFACT_ID = 9;
         private const string _USER_FULL_NAME = "Admin, Relativity";

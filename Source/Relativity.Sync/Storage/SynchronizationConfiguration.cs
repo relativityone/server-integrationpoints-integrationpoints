@@ -6,9 +6,6 @@ namespace Relativity.Sync.Storage
 {
     internal sealed class SynchronizationConfiguration : IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, INonDocumentObjectLinkingConfiguration
     {
-        private const int _ASCII_GROUP_SEPARATOR = 29;
-        private const int _ASCII_RECORD_SEPARATOR = 30;
-
         private readonly IConfiguration _cache;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IInstanceSettings _instanceSettings;
@@ -19,10 +16,6 @@ namespace Relativity.Sync.Storage
             _syncJobParameters = syncJobParameters;
             _instanceSettings = instanceSettings;
         }
-
-        public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
-
-        public char NestedValueDelimiter => (char)_ASCII_GROUP_SEPARATOR;
 
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
 

@@ -45,5 +45,10 @@ namespace Relativity.Sync.Storage
         /// Returns batch with lowest starting index higher than given one. Null if no such batch found.
         /// </summary>
         Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId, int startingIndex);
+
+        /// <summary>
+        /// Returns batches with Ids listed in batchesIds.
+        /// </summary>
+        Task<IEnumerable<IBatch>> GetBatchesWithIdsAsync(int workspaceArtifactId, int syncConfigurationArtifactId, List<int> batchesIds, Guid exportRunId);
     }
 }

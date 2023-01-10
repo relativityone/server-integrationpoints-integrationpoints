@@ -57,7 +57,6 @@ namespace Relativity.Sync.Executors.Validation
             using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 const string fieldType = "Field Type";
-                const string longText = "Long Text";
                 QueryRequest queryRequest = new QueryRequest()
                 {
                     ObjectType = new ObjectTypeRef()
@@ -70,15 +69,20 @@ namespace Relativity.Sync.Executors.Validation
                         new FieldRef() { Name = fieldType },
                     }
                 };
-                const int start = 0;
-                const int length = 1;
-                QueryResult queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
+
+                QueryResult queryResult = await objectManager.QueryAsync(
+                        configuration.SourceWorkspaceArtifactId, queryRequest, 0, 1)
+                    .ConfigureAwait(false);
                 if (queryResult.Objects.Count > 0)
                 {
+                    const string longText = "Long Text";
+                    const string fixedLengthText = "Fixed-Length Text";
                     string fieldTypeName = queryResult.Objects.Single()[fieldType].Value.ToString();
-                    if (longText != fieldTypeName)
+                    if (fieldTypeName != longText && fieldTypeName != fixedLengthText)
                     {
-                        result.Add($"Folder Path Source Field has invalid type: '{fieldTypeName}' but expected '{longText}'");
+                        result.Add(
+                            $"Folder Path Source Field has invalid type: '{fieldTypeName}', " +
+                            $"but expected '{longText}' or '{fixedLengthText}'");
                     }
                 }
                 else

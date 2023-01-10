@@ -61,6 +61,8 @@ namespace Relativity.Sync.Tests.System
 
             const int failedDocumentsCount = 2;
             const int transferredDocumentsCount = 3;
+            const int failedReadDocumentsCount = 100;
+            const int readDocumentsCount = 200;
 
             const int failedItemsCount = 8;
             const int transferredItemsCount = 45;
@@ -79,6 +81,8 @@ namespace Relativity.Sync.Tests.System
             await createdBatch.SetMetadataBytesTransferredAsync(metadataBytesTransferred).ConfigureAwait(false);
             await createdBatch.SetFilesBytesTransferredAsync(filesBytesTransferred).ConfigureAwait(false);
             await createdBatch.SetTotalBytesTransferredAsync(totalBytesTransferred).ConfigureAwait(false);
+            await createdBatch.SetFailedReadDocumentsCount(failedReadDocumentsCount).ConfigureAwait(false);
+            await createdBatch.SetReadDocumentsCount(readDocumentsCount).ConfigureAwait(false);
 
             // ASSERT
             IBatch readBatch = await _sut.GetAsync(_workspaceId, createdBatch.ArtifactId).ConfigureAwait(false);
@@ -91,6 +95,8 @@ namespace Relativity.Sync.Tests.System
             readBatch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
             readBatch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
             readBatch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
+            readBatch.FailedReadDocumentsCount.Should().Be(failedReadDocumentsCount);
+            readBatch.ReadDocumentsCount.Should().Be(readDocumentsCount);
         }
 
         [IdentifiedTest("7e5348d7-dee0-4f20-9da7-888a62f7ee1a")]

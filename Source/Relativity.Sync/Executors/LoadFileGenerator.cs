@@ -8,6 +8,7 @@ using Relativity.Import.V1.Models.Sources;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
@@ -17,6 +18,7 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly IFileShareService _fileShareService;
         private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
+        private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
@@ -24,12 +26,14 @@ namespace Relativity.Sync.Executors
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IFileShareService fileShareService,
             IItemLevelErrorHandler itemLevelErrorHandler,
+            IInstanceSettings instanceSettings,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
             _fileShareService = fileShareService;
             _itemLevelErrorHandler = itemLevelErrorHandler;
+            _instanceSettings = instanceSettings;
             _logger = logger;
         }
 
@@ -51,14 +55,19 @@ namespace Relativity.Sync.Executors
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
                     using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                     {
+                        int updateBatchStatusCount = await _instanceSettings.GetImportAPIBatchStatusItemsUpdateCountAsync().ConfigureAwait(false);
                         while (reader.Read())
                         {
                             string line = GetLineContent(reader, settings);
                             writer.WriteLine(line);
+                            if (reader.ItemStatusMonitor.ReadItemsCount % updateBatchStatusCount == 0)
+                            {
+                                await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                            }
                         }
                     }
 
-                    await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                    await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
                     await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
                         .ConfigureAwait(false);
 
@@ -98,7 +107,12 @@ namespace Relativity.Sync.Executors
         {
             return DataSourceSettingsBuilder.Create()
                     .ForLoadFile(batchPath)
-                    .WithDefaultDelimiters()
+                    .WithDelimiters(d => d
+                        .WithColumnDelimiters(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII)
+                        .WithQuoteDelimiter(LoadFileOptions._DEFAULT_QUOTE_DELIMITER_ASCII)
+                        .WithNewLineDelimiter(LoadFileOptions._DEFAULT_NEWLINE_DELIMITER_ASCII)
+                        .WithNestedValueDelimiter(LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII)
+                        .WithMultiValueDelimiter(LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII))
                     .WithoutFirstLineContainingHeaders()
                     .WithEndOfLineForWindows()
                     .WithStartFromBeginning()
@@ -142,9 +156,10 @@ namespace Relativity.Sync.Executors
             return batchFullPath;
         }
 
-        private async Task HandleBatchStatusOnReadFinish(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
+        private async Task HandleBatchStatusAsync(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
         {
-            await batch.SetFailedDocumentsCountAsync(monitor.FailedItemsCount).ConfigureAwait(false);
+            await batch.SetFailedReadDocumentsCount(monitor.FailedItemsCount).ConfigureAwait(false);
+            await batch.SetReadDocumentsCount(monitor.ReadItemsCount).ConfigureAwait(false);
 
             if (token.IsStopRequested)
             {

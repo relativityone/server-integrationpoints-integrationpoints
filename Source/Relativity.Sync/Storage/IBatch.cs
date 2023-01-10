@@ -31,6 +31,10 @@ namespace Relativity.Sync.Storage
 
         long TotalBytesTransferred { get; }
 
+        int FailedReadDocumentsCount { get; }
+
+        int ReadDocumentsCount { get; }
+
         int TaggedDocumentsCount { get; }
 
         bool IsFinished { get; }
@@ -54,5 +58,9 @@ namespace Relativity.Sync.Storage
         Task SetTaggedDocumentsCountAsync(int taggedDocumentsCount);
 
         Task SetStartingIndexAsync(int newStartIndex);
+
+        Task SetFailedReadDocumentsCount(int failedReadDocumentsCount);
+
+        Task SetReadDocumentsCount(int readDocumentsCount);
     }
 }

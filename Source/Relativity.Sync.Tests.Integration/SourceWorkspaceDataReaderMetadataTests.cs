@@ -12,14 +12,13 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Integration.Helpers;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
     internal sealed class SourceWorkspaceDataReaderMetadataTests : SourceWorkspaceDataReaderTestsBase
     {
-        private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
-
         [Test]
         public async Task Read_ShouldReturnLongTextStream_WhenGivenShibboleth()
         {
@@ -97,8 +96,8 @@ namespace Relativity.Sync.Tests.Integration
             object actualValue = _instance.GetValue(columnIndex);
 
             // Assert
-            const char mult = (char)30;
-            const char nest = (char)29;
+            const char mult = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
+            const char nest = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
             string expectedValue = $"Foo{nest}Bar{nest}Baz{mult}Foo{nest}Bat{mult}Bang{mult}";
             actualValue.Should().Be(expectedValue);
         }

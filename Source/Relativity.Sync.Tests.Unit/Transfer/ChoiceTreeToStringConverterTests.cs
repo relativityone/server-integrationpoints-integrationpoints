@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -12,19 +11,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     internal sealed class ChoiceTreeToStringConverterTests
     {
 #pragma warning disable RG2009 // Hardcoded Numeric Value
-        private Mock<IDocumentSynchronizationConfiguration> _config;
         private ChoiceTreeToStringConverter _instance;
-
-        private const char _NESTED_VALUE_DELIMITER = (char)29;
-        private const char _MULTI_VALUE_DELIMITER = (char)30;
 
         [SetUp]
         public void SetUp()
         {
-            _config = new Mock<IDocumentSynchronizationConfiguration>();
-            _config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE_DELIMITER);
-            _config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE_DELIMITER);
-            _instance = new ChoiceTreeToStringConverter(_config.Object);
+            _instance = new ChoiceTreeToStringConverter();
         }
 
         [Test]
@@ -36,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice });
 
             // assert
-            string expected = $"Hot{_MULTI_VALUE_DELIMITER}";
+            string expected = $"Hot{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}";
             Assert.AreEqual(expected, actual);
         }
 
@@ -55,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { root });
 
             // assert
-            string expected = $"Root{_NESTED_VALUE_DELIMITER}Child{_MULTI_VALUE_DELIMITER}";
+            string expected = $"Root{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}Child{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}";
             Assert.AreEqual(expected, actual);
         }
 
@@ -82,9 +74,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             choice2.Children.Add(choice3);
             choice5.Children.Add(choice6);
 
-            string expected = $"1{_NESTED_VALUE_DELIMITER}2{_NESTED_VALUE_DELIMITER}3" +
-                $"{_MULTI_VALUE_DELIMITER}1{_NESTED_VALUE_DELIMITER}4" +
-                $"{_MULTI_VALUE_DELIMITER}5{_NESTED_VALUE_DELIMITER}6{_MULTI_VALUE_DELIMITER}";
+            string expected = $"1{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}2{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}3" +
+                $"{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}1{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}4" +
+                $"{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}5{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}6{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}";
 
             // act
             string actual = _instance.ConvertTreeToString(new List<ChoiceWithChildInfo> { choice1, choice5 });

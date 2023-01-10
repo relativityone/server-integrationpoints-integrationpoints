@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;

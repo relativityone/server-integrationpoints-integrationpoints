@@ -49,13 +49,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sut = new FolderStructureBehaviorValidator(_sourceServiceFactoryForUser.Object, new EmptyLogger());
         }
 
-        [Test]
-        public async Task ValidateAsync_ShouldPAssGoldFlow()
+        [TestCase("Long Text")]
+        [TestCase("Fixed-Length Text")]
+        public async Task ValidateAsync_ShouldPAssGoldFlow(string folderPathFieldType)
         {
             // Arrange
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
-            QueryResult queryResult = BuildQueryResult("Long Text");
+            QueryResult queryResult = BuildQueryResult(folderPathFieldType);
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResult);
 

@@ -2,6 +2,7 @@ using System.Threading;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Progress;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage.RdoGuidsProviders;
 

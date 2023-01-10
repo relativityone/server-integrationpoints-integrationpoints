@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
+using Relativity.Sync.Transfer.ImportAPI;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
@@ -16,13 +16,7 @@ namespace Relativity.Sync.Transfer
     /// </summary>
     internal sealed class MultipleObjectFieldSanitizer : IExportFieldSanitizer
     {
-        private readonly IDocumentSynchronizationConfiguration _configuration;
         private readonly JSONSerializer _serializer = new JSONSerializer();
-
-        public MultipleObjectFieldSanitizer(IDocumentSynchronizationConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
 
         public RelativityDataType SupportedType => RelativityDataType.MultipleObject;
 
@@ -51,7 +45,7 @@ namespace Relativity.Sync.Transfer
                 throw new InvalidExportFieldValueException($"Some values in MultiObject field are null or contain only white-space characters.");
             }
 
-            char multiValueDelimiter = _configuration.MultiValueDelimiter;
+            char multiValueDelimiter = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
             bool ContainsDelimiter(string x) => x.Contains(multiValueDelimiter);
 
             List<string> names = objectValues.Select(x => x.Name).ToList();

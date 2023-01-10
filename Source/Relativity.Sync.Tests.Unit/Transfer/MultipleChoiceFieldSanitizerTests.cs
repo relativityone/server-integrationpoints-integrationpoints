@@ -8,32 +8,25 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
     internal class MultipleChoiceFieldSanitizerTests
     {
-        private Mock<IDocumentSynchronizationConfiguration> _config;
         private Mock<IChoiceCache> _choiceCache;
         private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
         private MultipleChoiceFieldSanitizer _instance;
 
-        private const char _NESTED_VALUE = (char)29;
-        private const char _MULTI_VALUE = (char)30;
-
         [SetUp]
         public void SetUp()
         {
-            _config = new Mock<IDocumentSynchronizationConfiguration>();
-            _config.SetupGet(x => x.NestedValueDelimiter).Returns(_NESTED_VALUE);
-            _config.SetupGet(x => x.MultiValueDelimiter).Returns(_MULTI_VALUE);
             _choiceCache = new Mock<IChoiceCache>();
             _choiceTreeToStringConverter = new Mock<IChoiceTreeToStringConverter>();
-            _instance = new MultipleChoiceFieldSanitizer(_config.Object, _choiceCache.Object, _choiceTreeToStringConverter.Object);
+            _instance = new MultipleChoiceFieldSanitizer(_choiceCache.Object, _choiceTreeToStringConverter.Object);
         }
 
         [Test]
@@ -98,33 +91,33 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private static IEnumerable<TestCaseData> ThrowSyncExceptionWhenNameContainsDelimiterTestCases()
         {
-            yield return new TestCaseData(ChoiceJArrayFromNames($"{_MULTI_VALUE} Sick Choice"))
+            yield return new TestCaseData(ChoiceJArrayFromNames($"{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Sick Choice"))
             {
                 TestName = "MultiValue - Singleton"
             };
-            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", "Awesome Name"))
+            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name", "Awesome Name"))
             {
                 TestName = "MultiValue - Single violating name in larger collection"
             };
-            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_MULTI_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"))
+            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name", $"Awesome{LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII} Name"))
             {
                 TestName = "MultiValue - Many violating names in larger collection"
             };
 
-            yield return new TestCaseData(ChoiceJArrayFromNames($"{_NESTED_VALUE} Sick Choice"))
+            yield return new TestCaseData(ChoiceJArrayFromNames($"{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Sick Choice"))
             {
                 TestName = "NestedValue - Singleton"
             };
-            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", "Awesome Name"))
+            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Name", "Awesome Name"))
             {
                 TestName = "NestedValue - Single violating name in larger collection"
             };
-            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_NESTED_VALUE} Name"))
+            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Name", $"Awesome{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Name"))
             {
                 TestName = "NestedValue - Many violating names in larger collection"
             };
 
-            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{_NESTED_VALUE} Name", $"Awesome{_MULTI_VALUE} Name"))
+            yield return new TestCaseData(ChoiceJArrayFromNames("Okay Name", $"Cool{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Name", $"Awesome{LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII} Name"))
             {
                 TestName = "Combined - Many violating names in larger collection"
             };
@@ -140,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             (await action.Should().ThrowAsync<InvalidExportFieldValueException>().ConfigureAwait(false))
                 .Which.Message.Should().Be("Unable to parse data from Relativity Export API: " +
                                            "The identifiers of the choices contain the character specified as the" +
-                                           " multi-value delimiter ('ASCII 30') or nested value delimiter ('ASCII 29'). " +
+                                           $" multi-value delimiter ('ASCII {(int)LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII}') or nested value delimiter ('ASCII {(int)LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII}'). " +
                                            "Rename choices to not contain delimiters.");
         }
 

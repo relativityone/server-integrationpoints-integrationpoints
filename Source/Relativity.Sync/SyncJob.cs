@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Banzai;
 using Relativity.API;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Progress;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Utils;

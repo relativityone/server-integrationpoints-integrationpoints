@@ -1,21 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Relativity.Sync.Configuration;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Transfer
 {
     internal sealed class ChoiceTreeToStringConverter : IChoiceTreeToStringConverter
     {
-        private readonly char _multiValueDelimiter;
-        private readonly char _nestedValueDelimiter;
-
-        public ChoiceTreeToStringConverter(IDocumentSynchronizationConfiguration config)
-        {
-            _multiValueDelimiter = config.MultiValueDelimiter;
-            _nestedValueDelimiter = config.NestedValueDelimiter;
-        }
-
         public string ConvertTreeToString(IList<ChoiceWithChildInfo> tree)
         {
             var treePaths = new List<StringBuilder>();
@@ -26,7 +17,7 @@ namespace Relativity.Sync.Transfer
                 Traverse(choice, treePaths, path);
             }
 
-            string merged = string.Join(char.ToString(_multiValueDelimiter), treePaths) + char.ToString(_multiValueDelimiter);
+            string merged = string.Join(char.ToString(LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII), treePaths) + char.ToString(LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII);
             return merged;
         }
 
@@ -43,7 +34,7 @@ namespace Relativity.Sync.Transfer
                 foreach (ChoiceWithChildInfo child in choice.Children)
                 {
                     var newPath = new StringBuilder(path.ToString());
-                    newPath.Append(_nestedValueDelimiter);
+                    newPath.Append(LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII);
                     Traverse(child, paths, newPath);
                 }
             }
