@@ -211,11 +211,17 @@
         self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
         self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || null);
 
+        document.getElementById("enable-tagging").checked = self.CreateSavedSearchForTagging() === true;
+
         self.CreateSavedSearchForTagging.subscribe(function (value) {
             if (value == "true") {
+                self.EnableTagging("true");
                 document.getElementById("enable-tagging").checked = true;
             }
             else {
+                self.EnableTagging(null);
+                self.EnableTagging.isModified(true);
+
                 document.getElementById("enable-tagging").checked = false;
                 document.getElementById("disable-tagging").checked = false;
             }
@@ -632,7 +638,8 @@
                 "SourceProductionId": self.SourceProductionId(),
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
-                "FolderArtifactId": self.FolderArtifactId()
+                "FolderArtifactId": self.FolderArtifactId(),
+                "EnableTagging": self.EnableTagging() 
             }
         }
 

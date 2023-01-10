@@ -359,7 +359,8 @@ var IP = IP || {};
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
 					EntityManagerFieldContainsLink: ko.toJS(this.model.EntityManagerFieldContainsLink),
-					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging
+					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging,
+					EnableTagging: ko.toJS(this.model.destination).settings.EnableTagging 
 				};
 				if (this.model.destination.profile) {
 					destination = $.extend(this.model.destination.profile, destination);

@@ -435,10 +435,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.FieldOverlayBehavior = ko.observable(model.FieldOverlayBehavior || 'Use Field Settings');
 
 		self.OverwriteOptions = this.OverwriteOptions;
-		self.FieldOverlayBehavior = this.FieldOverlayBehavior;
-
-		this.EnableTagging = ko.observable(model.EnableTagging || true);
-		self.EnableTagging = this.EnableTagging;
+		self.FieldOverlayBehavior = this.FieldOverlayBehavior;		
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
 		this.SelectedOverwrite.subscribe(function (newValue) {
@@ -1153,8 +1150,7 @@ ko.validation.insertValidationMessage = function (element) {
 				UseDynamicFolderPath: model.UseDynamicFolderPath,
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior: model.FieldOverlayBehavior,
-				FolderPathSourceField: model.FolderPathSourceField,
-				EnableTagging: model.EnableTagging,
+				FolderPathSourceField: model.FolderPathSourceField,				
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -1378,7 +1374,7 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 
-					_destination.EnableTagging = this.model.EnableTagging();
+					_destination.EnableTagging = this.model.EnableTagging;
 
 				}
 
