@@ -4,7 +4,7 @@
 	ko.validation.rules.pattern.message = 'Invalid.';
 	ko.validation.registerExtenders();
 
-	ko.validation.configure({
+	ko.validation.init({
 		insertMessages: false,
 	}, true);
 

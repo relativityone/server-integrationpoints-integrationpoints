@@ -11,7 +11,7 @@
     @Styles.Render("~/Content/styles")
     <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
     @Styles.Render("~/Content/themes/base/css")
-    <link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
+    <link href="~/node_modules/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
     <link href="~/Content/modals.min.css" rel="stylesheet" />
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -21,11 +21,10 @@
         @RenderBody()
     </div>
     @Scripts.Render("~/bundles/jquery")
-    <script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
     <script src="~/Scripts/core/messaging.js"></script>
     <script src="~/Scripts/select2.js"></script>
-    <script src="~/Scripts/q.js"></script>
-    <script src="~/Scripts/date.js"></script>
+    <script src="~/node_modules/q/q.js"></script>
+    <script src="~/node_modules/datejs-coolite/build/date.js"></script>
     @Scripts.Render("~/bundles/jqueryui")
     <script src="~/Scripts/iframeResizer.contentWindow.min.js"></script>
     @Scripts.Render("~/bundles/messaging")
