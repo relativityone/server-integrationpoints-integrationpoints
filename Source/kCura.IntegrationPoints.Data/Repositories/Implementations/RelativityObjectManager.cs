@@ -785,7 +785,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
             catch (Exception ex)
             {
-                HandleObjectManagerException(ex, message: GetQueryErrorMessage(q, GetRdoType(rdo)));
+                HandleObjectManagerException(ex, message: GetQueryErrorMessage(q, GetRdoType(rdo, q)));
                 throw;
             }
         }
@@ -965,7 +965,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             string queryObjectType = $"({q?.ObjectType?.Name}: {q?.ObjectType?.Guid})";
             string fields = ConvertFieldsToStringRepresentation(q);
 
-            return $"Cannot QUERY object of type {rdoType} with ObjectManager (Workspace: {_workspaceArtifactId}). Condition: {queryCondition}, Fields: {fields}, ObjectType: {queryObjectType}";
+            return $"Cannot QUERY object of type '{rdoType}' with ObjectManager (Workspace: {_workspaceArtifactId}). Condition string length: {queryCondition?.Length}, Fields: {fields}, ObjectType: {queryObjectType}";
         }
 
         private string ConvertFieldsToStringRepresentation(QueryRequest queryRequest)
@@ -976,9 +976,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 : string.Empty;
         }
 
-        private string GetRdoType(IBaseRdo rdo)
+        private string GetRdoType(IBaseRdo rdo = null, QueryRequest queryRequest = null)
         {
-            return rdo?.GetType().Name ?? _UNKNOWN_OBJECT_TYPE;
+            return rdo?.GetType().Name ?? queryRequest?.ObjectType?.Name ?? queryRequest?.ObjectType?.Guid?.ToString() ?? _UNKNOWN_OBJECT_TYPE;
         }
     }
 }
