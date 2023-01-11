@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
         {
             // please verify if ImportSettings properties modification doesnt affect serialization for logging (sensitive data, etc.)
             // if it is ok, just update this number
-            const int expectedNumberOfProperties = 66;
+            const int expectedNumberOfProperties = 67;
             int actualNumberOfProperties = typeof(ImportSettings).GetProperties().Length;
 
             Assert.AreEqual(expectedNumberOfProperties, actualNumberOfProperties);
