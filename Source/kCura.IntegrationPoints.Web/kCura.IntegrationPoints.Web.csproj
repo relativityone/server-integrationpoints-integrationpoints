@@ -137,7 +137,7 @@
     <Content Include="Content\import.css" />
     <Content Include="Content\Images\ui-bg_flat_100_666666_40x100.png" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
-    <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
+    <Content Include="node_modules\jqGrid\css\ui.jqgrid.css" />
     <Content Include="Content\jstree-fluid.css" />
     <Content Include="Content\modals.css" />
     <Content Include="Content\modals.min.css" />
@@ -184,8 +184,8 @@
     <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Content\themes\base\jquery-ui.css" />
-    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="node_modules\jquery-ui\dist\themes\base\jquery-ui.css" />
+    <Content Include="node_modules\jquery-ui\dist\themes\base\jquery-ui.min.css" />
     <Content Include="Content\themes\base\menu.css" />
     <Content Include="Content\themes\base\progressbar.css" />
     <Content Include="Content\themes\base\resizable.css" />
@@ -246,9 +246,8 @@
     </Content>
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <Content Include="Scripts\core\messaging.js" />
-    <Content Include="Scripts\es5-shim.js" />
-    <Content Include="Scripts\es5-shim.min.js" />
-    <Content Include="Scripts\es6-shim.min.js" />
+    <Content Include="node_modules\es5-shim\es5-shim.min.js" />
+    <Content Include="node_modules\es6-shim\es6-shim.min.js" />
     <Content Include="Scripts\EventHandlers\integration-points-summary-page-view.js" />
     <Content Include="Scripts\Export\export-helpers.js" />
     <Content Include="Scripts\Export\export-provider-file-name-vm.js" />
@@ -261,20 +260,17 @@
     <Content Include="Scripts\Import\import-preview-options-btn.js" />
     <Content Include="Scripts\integration-point\step-mapFields-type-validator.js" />
     <Content Include="Scripts\integration-point\summary-page-statistics.js" />
-    <Content Include="Scripts\jquery-3.6.3.js" />
-    <Content Include="Scripts\jquery-3.6.3.min.js" />
-    <Content Include="Scripts\jquery-3.6.3.slim.js" />
-    <Content Include="Scripts\jquery-3.6.3.slim.min.js" />
-    <Content Include="Scripts\jquery-migrate-3.0.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.13.2.js" />
-    <Content Include="Scripts\jquery-ui-1.13.2.min.js" />
-    <Content Include="Scripts\jquery.dataTables.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.3.0.js" />
-    <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
+    <Content Include="node_modules\jquery\dist\jquery.js" />
+    <Content Include="node_modules\jquery\dist\jquery.min.js" />
+    <Content Include="node_modules\jquery\dist\jquery.slim.js" />
+    <Content Include="node_modules\jquery\dist\jquery.slim.min.js" />
+    <Content Include="node_modules\jquery-ui\dist\jquery-ui.js" />
+    <Content Include="node_modules\jquery-ui\dist\jquery-ui.min.js" />
+    <Content Include="node_modules\datatables.net\js\jquery.dataTables.min.js" />
     <Content Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\knockout-3.5.1.debug.js" />
-    <Content Include="Scripts\knockout-3.5.1.js" />
+    <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
+    <Content Include="node_modules\knockout\build\output\knockout-latest.js" />
+    <Content Include="node_modules\knockout\build\output\knockout-latest.debug.js" />
     <Content Include="Scripts\modals\create-production-set-modal-vm.js" />
     <Content Include="Scripts\integration-point\tooltip-view-model.js" />
     <Content Include="Scripts\integration-point\profile.js" />
@@ -289,18 +285,7 @@
     <Content Include="Scripts\ldap\ldap-provider-summary-page.js" />
     <Content Include="Scripts\modals\creating-production-set-modal-vm.js" />
     <Content Include="Scripts\modals\export-renamed-fields-vm.js" />
-    <Content Include="Scripts\moment-timezone-utils.js" />
-    <Content Include="Scripts\moment-timezone-with-data-2010-2020.js" />
-    <Content Include="Scripts\moment-timezone-with-data-2010-2020.min.js" />
-    <Content Include="Scripts\moment-timezone-with-data.js" />
-    <Content Include="Scripts\moment-timezone-with-data.min.js" />
-    <Content Include="Scripts\moment-timezone.js" />
-    <Content Include="Scripts\moment-timezone.min.js" />
-    <Content Include="Scripts\moment-with-locales.js" />
-    <Content Include="Scripts\moment-with-locales.min.js" />
-    <Content Include="Scripts\moment.js" />
-    <Content Include="Scripts\moment.min.js" />
-    <Content Include="Scripts\q.js" />
+    <Content Include="node_modules\q\q.js" />
     <Content Include="Scripts\RelativityProvider\relativity-provider-summary-page.js" />
     <None Include="Scripts\jquery-3.6.3.min.map" />
     <None Include="Scripts\jquery-3.6.3.slim.min.map" />
@@ -324,8 +309,7 @@
     <Content Include="Scripts\Import\import-provider-settings-step.js" />
     <Content Include="Scripts\Import\import-setup.js" />
     <Content Include="Scripts\integration-point\step-definition-provider.js" />
-    <Content Include="Scripts\jstree.js" />
-    <Content Include="Scripts\jstree.min.js" />
+    <Content Include="node_modules\jstree\dist\jstree.min.js" />
     <Content Include="Scripts\RelativityProvider\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
@@ -334,7 +318,7 @@
     <Content Include="Scripts\iframeResizer.min.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\core\utils.js" />
-    <Content Include="Scripts\date.js" />
+    <Content Include="node_modules\datejs-coolite\build\date.js" />
     <Content Include="Scripts\dragon\dragon-core.js" />
     <Content Include="Scripts\dragon\dragon-schedule.js" />
     <Content Include="Scripts\dragon\dragon-utils.js" />
@@ -400,26 +384,19 @@
     <Content Include="Scripts\integration-point\time-utils.js" />
     <Content Include="Scripts\ip-messaging.js" />
     <Content Include="Scripts\jquery-postMessage.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
-      <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\jquery.jqGrid.min.js" />
-    <Content Include="Scripts\jquery.jqGrid.src.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
-    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\knockout.validation.debug.js" />
+    <Content Include="node_modules\jqGrid\js\jquery.jqGrid.min.js" />
+    <Content Include="node_modules\jquery-ajax-unobtrusive\dist\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="node_modules\jquery-validation\dist\jquery.validate.min.js" />
+    <Content Include="node_modules\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js" />
+    <Content Include="node_modules\knockout.validation\dist\knockout.validation.js" />
     <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\ldap\ldap-edit.js" />
     <Content Include="Scripts\loading-modal.js" />
-    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="node_modules\modernizr\src\Modernizr.js" />
     <Content Include="Scripts\postal\conduit.js" />
     <Content Include="Scripts\postal\lodash.js" />
     <Content Include="Scripts\postal\postal.min.js" />
     <Content Include="Scripts\postal\postal.js" />
-    <Content Include="Scripts\q.min.js" />
     <Content Include="Scripts\iframeResizer.contentWindow.min.js" />
     <Content Include="Scripts\route.js" />
     <Content Include="Scripts\Select2-locales\select2_locale_ar.js" />
@@ -470,10 +447,11 @@
     <Content Include="Scripts\Select2-locales\select2_locale_zh-TW.js" />
     <Content Include="Scripts\select2.js" />
     <Content Include="Scripts\select2.min.js" />
-    <Content Include="Scripts\purify.min.js" />
-    <Content Include="Scripts\purify.min.js.map" />
-    <Content Include="Scripts\_references.js" />
-    <Content Include="Scripts\es6-shim.js" />
+    <Content Include="node_modules\dompurify\dist\purify.min.js" />
+    <Content Include="node_modules\dompurify\dist\purify.min.js.map" />
+    <Content Include="package.json" />
+    <Content Include="package-lock.json" />
+    <Content Include="node_modules\moment\moment.js" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -491,9 +469,6 @@
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />
     <Content Include="Views\Shared\_StepLayout.cshtml" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js.map">
-      <DependentUpon>jquery.validate.unobtrusive.js</DependentUpon>
-    </Content>
     <Content Include="Scripts\select2.min.js.map">
       <DependentUpon>select2.js</DependentUpon>
     </Content>

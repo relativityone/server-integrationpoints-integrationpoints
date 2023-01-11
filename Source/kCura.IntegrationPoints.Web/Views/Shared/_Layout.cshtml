@@ -25,20 +25,17 @@
         @RenderBody()
     </div>
     @Scripts.Render("~/bundles/jquery")
-    <script src="~/Scripts/jquery-migrate-3.0.1.min.js"></script>
     <script src="~/Scripts/select2.js"></script>
-    <script src="~/Scripts/jstree.min.js"></script>
-    <script src="~/Scripts/q.js"></script>
-    <script src="~/Scripts/date.js"></script>
+    <script src="~/node_modules/jstree/dist/jstree.min.js"></script>
+    <script src="~/node_modules/q/q.js"></script>
+    <script src="~/node_modules/datejs-coolite/build/date.js"></script>
     @Scripts.Render("~/bundles/jqueryui")
     <script src="~/Scripts/core/messaging.js"></script>
     @Scripts.Render("~/bundles/messaging")
     @Scripts.Render("~/bundles/frame-messaging")
     @Scripts.Render("~/bundles/modals")
     <script src="~/Scripts/loading-modal.js"></script>
-    <script src="~/Scripts/moment.js"></script>
-    <script src="~/Scripts/moment-with-locales.js"></script>
-    <script src="~/Scripts/moment-timezone-with-data.js"></script>
+    <script src="~/node_modules/moment/moment.js"></script>
     <script>
         IP.assemblyVersion = "@FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(WindsorFilterProvider)).Location).FileVersion";
     </script>
@@ -50,8 +47,8 @@
     *@
     @if (Regex.IsMatch(Request.UserAgent, @"Trident/7.*rv:11"))
     {
-        <script src="~/Scripts/es5-shim.min.js"></script>
-        <script src="~/Scripts/es6-shim.min.js"></script>
+        <script src="~/node_modules/es5-shim/es5-shim.min.js"></script>
+        <script src="~/node_modules/es6-shim/es6-shim.min.js"></script>
     }
 
     @RenderSection("scripts", required: false)
