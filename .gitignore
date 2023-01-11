@@ -99,5 +99,6 @@ FunctionalTestSettings
 .idea/
 /package-lock.json
 .dccache
+node_modules/
 !Source/kCura.IntegrationPoints.Web/node_modules/knockout/build/output/*
 !Source/kCura.IntegrationPoints.Web/node_modules/postal/lib
