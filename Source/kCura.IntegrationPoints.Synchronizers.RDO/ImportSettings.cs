@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool LoadImportedFullTextFromServer { get; set; }
 
-        public bool EnableTagging { get; set; } // = true;
+        public bool EnableTagging { get; set; } = true;
 
         #endregion "Public Properties"
 

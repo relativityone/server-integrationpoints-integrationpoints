@@ -119,7 +119,7 @@
             this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
         } else {
             if (!viewModel.EnableTagging.IsValid) {
-                IP.frameMessaging().dFrame.IP.message.error.raise("'Enable tagging' field is required");
+                document.getElementById("customRadioButtonErrorMsg").style.display = 'block';                
             }
             viewModel.errors.showAllMessages();
         }
@@ -212,6 +212,7 @@
         self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || null);
 
         document.getElementById("enable-tagging").checked = self.CreateSavedSearchForTagging() === true;
+        document.getElementById("customRadioButtonErrorMsg").style.display = 'none';
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
             if (value == "true") {
@@ -224,6 +225,12 @@
 
                 document.getElementById("enable-tagging").checked = false;
                 document.getElementById("disable-tagging").checked = false;
+            }
+        });
+
+        self.EnableTagging.subscribe(function (value) {
+            if (value != null) {
+                document.getElementById("customRadioButtonErrorMsg").style.display = 'none';                
             }
         });
 
