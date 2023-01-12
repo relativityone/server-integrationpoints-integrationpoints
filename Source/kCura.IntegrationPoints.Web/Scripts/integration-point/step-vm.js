@@ -105,7 +105,15 @@
 
 		var _next = function () {
 			var d = IP.data.deferred().defer();
-
+			let heap = window.heap;
+			let $select2elements =  $('.select2-offscreen').filter(function () {
+				return !this.id.match('s2id_autogen') && this.tagName === 'SELECT';
+			});
+			$select2elements.each( function (i, element) {
+				let optionSelected = element.options[element.selectedIndex];
+				let optiontext = optionSelected.text;
+				heap.track("select-" + element.id, {'value': optiontext});
+			});
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
