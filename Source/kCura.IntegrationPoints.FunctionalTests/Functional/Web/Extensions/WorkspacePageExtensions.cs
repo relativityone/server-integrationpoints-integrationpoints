@@ -10,12 +10,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
         public static T SetTreeItem<T>(this T page, params string[] itemNames)
             where T: WorkspacePage<T>, IHasTreeItems<T>
         {
-            var item = page.TreeItems[0].GetScope();
+            var item = page.GetScope();
             string hierarchy = string.Empty;
 
             foreach (var itemName in itemNames)
             {
-                string xpath = $"{hierarchy}//li[@role='treeitem']/a[.='{itemName}']";
+                string xpath = $"{hierarchy}//a[@role='treeitem'][.='{itemName}']";
                 hierarchy = $"{xpath}/..";
 
                 var textItem = item.FindElement(By.XPath(xpath));

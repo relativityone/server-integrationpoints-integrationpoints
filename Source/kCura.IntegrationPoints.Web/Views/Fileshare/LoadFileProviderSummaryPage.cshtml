@@ -208,11 +208,11 @@
 *@
 @if (Regex.IsMatch(Request.UserAgent, @"Trident/7.*rv:11"))
 {
-	<script src="~/Scripts/es5-shim.min.js"></script>
-	<script src="~/Scripts/es6-shim.min.js"></script>
+	<script src="~/node_modules/es5-shim/es5-shim.min.js"></script>
+	<script src="~/node_modules/es6-shim/es6-shim.min.js"></script>
 }
 
 <script src="~/Scripts/export/export-enums.js"></script>
 <script src="~/Scripts/export/export-helpers.js"></script>
-<script src="~/Scripts/moment.js"></script>
 <script src="~/Scripts/export/export-summary-page.js"></script>
+<script src="~/node_modules/moment/moment.js"></script>

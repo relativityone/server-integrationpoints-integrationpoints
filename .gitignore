@@ -98,3 +98,5 @@ FunctionalTest.runsettings
 FunctionalTestSettings
 .idea/
 /package-lock.json
+.dccache
+node_modules/

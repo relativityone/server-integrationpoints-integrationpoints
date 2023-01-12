@@ -7,7 +7,7 @@
 
 	var viewModel;
 
-	ko.validation.configure({
+	ko.validation.init({
 		registerExtenders: true,
 		messagesOnModified: true,
 		insertMessages: true,
