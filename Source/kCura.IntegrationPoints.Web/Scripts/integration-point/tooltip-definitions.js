@@ -59,8 +59,9 @@ TooltipDefs.RelativityProviderDestinationDetails = [
     },
     {
         name: "Enable Tagging",
-        description: "Documents tagging allows to easily track transferred documents in a destination workspace, via Relativity Source Case and Relativity Source Job fields. " +
-              "However the tagging operation is time and resources consuming, therefore it is advised to turn it off for better Integration Points performance.",
+        description: "Documents tagging allows to easily track transferred documents in a destination workspace, via Relativity Source Case and Relativity Source Job fields." +
+            "However the tagging operation is time and resources consuming, therefore it is advised to turn it off for better Integration Points performance. " +
+            "Please note that Create Saved Search option is based on documents tagging capability, therefore selection that option enables the tagging by default.",
         subsection: []
     }
 ];
