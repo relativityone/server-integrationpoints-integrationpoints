@@ -266,7 +266,7 @@ namespace Relativity.Sync.Executors
 
                                     TaggingExecutionResult taggingResult = configuration.EnableTagging
                                         ? await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false)
-                                        : TaggingExecutionResult.Success();
+                                        : TaggingExecutionResult.Skipped();
 
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
                                     await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);

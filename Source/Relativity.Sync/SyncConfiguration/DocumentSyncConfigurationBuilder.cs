@@ -126,7 +126,7 @@ namespace Relativity.Sync.SyncConfiguration
         {
             if (SyncConfiguration.CreateSavedSearchInDestination && !SyncConfiguration.EnableTagging)
             {
-                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configure when Tagging is disabled");
+                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configured when Tagging is disabled");
             }
         }
 
