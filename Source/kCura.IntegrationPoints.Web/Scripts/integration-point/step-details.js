@@ -6,7 +6,7 @@ var relativityDestinationProviderGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
-ko.validation.configure({
+ko.validation.init({
 	registerExtenders: true,
 	messagesOnModified: true,
 	insertMessages: true,

@@ -21,6 +21,15 @@ Task NugetRestore -Description "Restore the packages needed for this build" {
     exec { dotnet restore $Solution }
 }
 
+Task BuildNodePackagesJS{
+    Set-NodePath
+    $JSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web"
+
+    Invoke-NpmCommand {
+        npx @('npm', 'install')
+    } -workingDirectory $JSDir
+}
+
 Task BuildLiquidFormsJS {   
     Set-NodePath
     $liquidFormsJSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms"
@@ -38,7 +47,7 @@ Task BuildLiquidFormsJS {
     } -workingDirectory $liquidFormsJSDir
 }
 
-Task Compile -Depends NugetRestore,BuildLiquidFormsJS -Description "Compile code for this repo" {
+Task Compile -Depends NugetRestore,BuildNodePackagesJS,BuildLiquidFormsJS -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 

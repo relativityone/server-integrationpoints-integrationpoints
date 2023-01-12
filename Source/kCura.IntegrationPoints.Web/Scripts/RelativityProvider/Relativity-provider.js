@@ -7,17 +7,17 @@
 
     var viewModel;
 
-    ko.validation.configure({
-        registerExtenders: true,
-        messagesOnModified: true,
-        insertMessages: true,
-        parseInputAttributes: true,
-        messageTemplate: null
-    });
-    ko.validation.insertValidationMessage = function (element) {
-        var errorContainer = document.createElement('div');
-        var iconSpan = document.createElement('span');
-        iconSpan.className = 'icon-error legal-hold field-validation-error';
+	ko.validation.init({
+		registerExtenders: true,
+		messagesOnModified: true,
+		insertMessages: true,
+		parseInputAttributes: true,
+		messageTemplate: null
+	});
+	ko.validation.insertValidationMessage = function (element) {
+		var errorContainer = document.createElement('div');
+		var iconSpan = document.createElement('span');
+		iconSpan.className = 'icon-error legal-hold field-validation-error';
 
         errorContainer.appendChild(iconSpan);
 

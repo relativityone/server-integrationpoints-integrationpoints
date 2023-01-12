@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "datatables.net": "^1.13.1",
+    "datejs-coolite": "^1.0.0",
+    "dompurify": "^2.4.3",
+    "es5-shim": "^4.6.7",
+    "es6-shim": "^0.35.7",
+    "jqGrid": "^5.8.0",
+    "jquery": "^3.6.3",
+    "jquery-ajax-unobtrusive": "^3.2.6",
+    "jquery-ui": "^1.13.2",
+    "jquery-validation": "^1.19.5",
+    "jquery-validation-unobtrusive": "^4.0.0",
+    "jstree": "^3.3.12",
+    "knockout": "^3.5.1",
+    "knockout.validation": "^2.0.4",
+    "modernizr": "^3.12.0",
+    "moment": "^2.29.4",
+    "q": "^1.5.1"
+  }
+}
