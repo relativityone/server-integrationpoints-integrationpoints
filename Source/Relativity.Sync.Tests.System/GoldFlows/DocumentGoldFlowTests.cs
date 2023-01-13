@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			// Assert
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);			
-			(await goldFlowTestRun.DocumentsHaveTags(tagValue).ConfigureAwait(false)).Should().BeFalse();
+			(await goldFlowTestRun.DocumentsHaveTagsAsync(tagValue).ConfigureAwait(false)).Should().BeFalse();
 		}
 
 		[IdentifiedTest("215AD6CF-A79A-45A9-AEE2-22C4848F1F8B")]

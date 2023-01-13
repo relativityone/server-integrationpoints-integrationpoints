@@ -118,7 +118,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
             void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds);
 
-            Task<bool> DocumentsHaveTags(string expectedTagValue);
+            Task<bool> DocumentsHaveTagsAsync(string expectedTagValue);
         }
 
         private class GoldFlowTestRun : IGoldFlowTestRun
@@ -245,7 +245,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                 }
             }
 
-            public async Task<bool> DocumentsHaveTags(string expectedTagValue)
+            public async Task<bool> DocumentsHaveTagsAsync(string expectedTagValue)
             {
 				QueryResult result;
 				using (IObjectManager objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
@@ -257,7 +257,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					};
                     try
                     {
-						result = objectManager.QueryAsync(DestinationWorkspaceArtifactId, request, 0, int.MaxValue).GetAwaiter().GetResult();
+						result = await objectManager.QueryAsync(DestinationWorkspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
                     }
                     catch (NotFoundException)
                     {
