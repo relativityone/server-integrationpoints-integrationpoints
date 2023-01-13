@@ -8,6 +8,26 @@ namespace Relativity.Sync.SyncConfiguration.Options
     public class ImageSyncOptions
     {
         /// <summary>
+        /// Creates new instance of <see cref="ImageSyncOptions"/> class.
+        /// </summary>
+        /// <param name="dataSourceType">Data source type.</param>
+        /// <param name="dataSourceId">Data source object Artifact ID.</param>
+        /// <param name="destinationLocationType">Destination location type.</param>
+        /// <param name="destinationLocationId">Destination object Artifact ID.</param>
+        public ImageSyncOptions(
+            DataSourceType dataSourceType,
+            int dataSourceId,
+            DestinationLocationType destinationLocationType,
+            int destinationLocationId)
+        {
+            DataSourceType = dataSourceType;
+            DataSourceId = dataSourceId;
+            DestinationLocationType = destinationLocationType;
+            DestinationLocationId = destinationLocationId;
+            CopyImagesMode = ImportImageFileCopyMode.SetFileLinks;
+        }
+
+        /// <summary>
         /// Determines the destination location type.
         /// </summary>
         public DestinationLocationType DestinationLocationType { get; }
@@ -33,20 +53,8 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public ImportImageFileCopyMode CopyImagesMode { get; set; }
 
         /// <summary>
-        /// Creates new instance of <see cref="ImageSyncOptions"/> class.
+        /// Specifies if transferred images should be tagged
         /// </summary>
-        /// <param name="dataSourceType">Data source type.</param>
-        /// <param name="dataSourceId">Data source object Artifact ID.</param>
-        /// <param name="destinationLocationType">Destination location type.</param>
-        /// <param name="destinationLocationId">Destination object Artifact ID.</param>
-        public ImageSyncOptions(DataSourceType dataSourceType, int dataSourceId,
-            DestinationLocationType destinationLocationType, int destinationLocationId)
-        {
-            DataSourceType = dataSourceType;
-            DataSourceId = dataSourceId;
-            DestinationLocationType = destinationLocationType;
-            DestinationLocationId = destinationLocationId;
-            CopyImagesMode = ImportImageFileCopyMode.SetFileLinks;
-        }
+        public bool EnableTagging { get; set; }
     }
 }

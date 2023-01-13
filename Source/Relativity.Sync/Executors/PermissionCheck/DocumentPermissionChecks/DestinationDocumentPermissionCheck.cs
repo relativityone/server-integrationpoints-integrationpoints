@@ -84,6 +84,13 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
         private async Task<ValidationResult> ValidateUserCanCreateTagsInDestinationWorkspaceAsync(IPermissionsCheckConfiguration configuration)
         {
             ValidationResult validationResult = new ValidationResult();
+
+            if (!configuration.EnableTagging)
+            {
+                Logger.LogInformation("Tagging is disabled. Tags creation permission check in Destination Workspace will be skipped.");
+                return validationResult;
+            }
+
             validationResult.Add(await ValidateUserCanCreateTagInDestinationWorkspaceAsync(configuration, _SOURCE_WORKSPACE_OBJECT_TYPE_NAME).ConfigureAwait(false));
             validationResult.Add(await ValidateUserCanCreateTagInDestinationWorkspaceAsync(configuration, _SOURCE_JOB_OBJECT_TYPE_NAME).ConfigureAwait(false));
             return validationResult;

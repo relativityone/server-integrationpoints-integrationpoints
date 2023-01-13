@@ -6,11 +6,6 @@
     public class CreateSavedSearchOptions
     {
         /// <summary>
-        /// Determines whether to create saved search in destination workspace.
-        /// </summary>
-        public bool CreateSavedSearchInDestination { get; }
-
-        /// <summary>
         /// Creates new instance of <see cref="CreateSavedSearchOptions"/> class.
         /// </summary>
         /// <param name="createSavedSearchInDestination">Determines whether to create saved search in destination workspace.</param>
@@ -18,5 +13,10 @@
         {
             CreateSavedSearchInDestination = createSavedSearchInDestination;
         }
+
+        /// <summary>
+        /// Determines whether to create saved search in destination workspace.
+        /// </summary>
+        public bool CreateSavedSearchInDestination { get; }
     }
 }

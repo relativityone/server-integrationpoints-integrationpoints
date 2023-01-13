@@ -144,7 +144,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
             _fieldManagerFake = new Mock<IFieldManager>();
             _fakeFieldMappings = new Mock<IFieldMappings>();
+
             _configFake = new Mock<IDocumentSynchronizationConfiguration>();
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             _jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
             _jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
             _adlsUploaderFake = new Mock<IAdlsUploader>();
@@ -426,6 +429,34 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configFake.VerifySet(x => x.FileNameColumn = _NATIVE_FILE_FILENAME_DISPLAY_NAME, Times.Never);
             _configFake.VerifySet(x => x.OiFileTypeColumnName = _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME, Times.Never);
             _configFake.VerifySet(x => x.SupportedByViewerColumn = _SUPPORTED_BY_VIEWER_DISPLAY_NAME, Times.Never);
+        }
+
+        [Test]
+        public async Task Execute_ShouldNotRunTagging_WhenTaggingWasDisabled()
+        {
+            // Arrange
+            const int batchesCount = 1;
+
+            SetupBatchRepository(batchesCount);
+
+            SetupImportJob();
+
+            TaggingExecutionResult executionResult = ReturnTaggingCompletedResult();
+
+            _configFake.SetupGet(x => x.EnableTagging).Returns(false);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _documentTaggerFake.Verify(
+                x => x.TagObjectsAsync(
+                    It.IsAny<Sync.Executors.IImportJob>(),
+                    It.IsAny<ISynchronizationConfiguration>(),
+                    It.IsAny<CompositeCancellationToken>()),
+                Times.Never);
+
+            result.Status.Should().Be(ExecutionStatus.Completed);
         }
 
         [Test]

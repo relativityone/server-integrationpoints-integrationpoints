@@ -11,9 +11,14 @@ namespace Relativity.Sync.SyncConfiguration
     {
         private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-        internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager)
+        internal ImageSyncConfigurationBuilder(
+                ISyncContext syncContext,
+                ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+                IFieldsMappingBuilder fieldsMappingBuilder,
+                ISerializer serializer,
+                ImageSyncOptions options,
+                RdoOptions rdoOptions,
+                IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -26,6 +31,8 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
             SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode;
             SyncConfiguration.IncludeOriginalImages = true;
+
+            SyncConfiguration.EnableTagging = options.EnableTagging;
         }
 
         public new IImageSyncConfigurationBuilder CorrelationId(string correlationId)
@@ -80,8 +87,17 @@ namespace Relativity.Sync.SyncConfiguration
         protected override Task ValidateAsync()
         {
             SetFieldsMapping();
+            ValidateSavedSearchCreation();
 
             return Task.CompletedTask;
+        }
+
+        private void ValidateSavedSearchCreation()
+        {
+            if (SyncConfiguration.CreateSavedSearchInDestination && !SyncConfiguration.EnableTagging)
+            {
+                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configured when Tagging is disabled");
+            }
         }
 
         private void SetFieldsMapping()

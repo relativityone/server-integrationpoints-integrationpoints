@@ -319,6 +319,50 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 .BeFalse();
         }
 
+        [Test]
+        public void Validate_ShouldThrowException_WhenDocumentSavedSearchWithoutTaggingIsConfigured()
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
+                .ConfigureRdos(rdoOptions)
+                .ConfigureDocumentSync(new DocumentSyncOptions(1, 1)
+                {
+                    EnableTagging = false
+                })
+                .CreateSavedSearch(new CreateSavedSearchOptions(true));
+
+            // Act
+            Func<Task> action = () => sut.SaveAsync();
+
+            // Assert
+            action.Should().ThrowAsync<InvalidSyncConfigurationException>();
+        }
+
+        [Test]
+        public void Validate_ShouldThrowException_WhenImageSavedSearchWithoutTaggingIsConfigured()
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+
+            IImageSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
+                .ConfigureRdos(rdoOptions)
+                .ConfigureImageSync(
+                    new ImageSyncOptions(
+                        DataSourceType.SavedSearch,
+                        1,
+                        DestinationLocationType.Folder,
+                        2))
+                .CreateSavedSearch(new CreateSavedSearchOptions(true));
+
+            // Act
+            Func<Task> action = () => sut.SaveAsync();
+
+            // Assert
+            action.Should().ThrowAsync<InvalidSyncConfigurationException>();
+        }
+
         private static IEnumerable<TestCaseData> RdoOptionsMembers()
         {
             var properties = typeof(RdoOptions).GetProperties()

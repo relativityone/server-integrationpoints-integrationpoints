@@ -23,6 +23,8 @@ namespace Relativity.Sync.Storage
 
         public int DestinationWorkspaceTagArtifactId => _cache.GetFieldValue<int>(x => x.DestinationWorkspaceTagArtifactId);
 
+        public bool EnableTagging => _cache.GetFieldValue(x => x.EnableTagging);
+
         public Guid ExportRunId
         {
             get

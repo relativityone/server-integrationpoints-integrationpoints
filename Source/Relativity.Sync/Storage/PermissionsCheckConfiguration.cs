@@ -45,6 +45,8 @@ namespace Relativity.Sync.Storage
 
         public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
 
+        public bool EnableTagging => _cache.GetFieldValue(x => x.EnableTagging);
+
         private async Task<int> GetSourceProviderArtifactIdAsync()
         {
             using (var objectManager = await _sourceServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

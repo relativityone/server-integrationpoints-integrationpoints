@@ -118,6 +118,9 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DestinationWorkspaceTagArtifactId { get; set; }
 
+        [RdoField(SyncRdoGuids.EnableTaggingGuid, RdoFieldType.YesNo)]
+        public bool EnableTagging { get; set; }
+
         // JobHistory configuration
         [RdoField(SyncRdoGuids.JobHistoryTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryType { get; set; }

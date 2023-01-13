@@ -18,9 +18,14 @@ namespace Relativity.Sync.SyncConfiguration
 
         private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
-        internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager)
+        internal DocumentSyncConfigurationBuilder(
+                ISyncContext syncContext,
+                ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+                IFieldsMappingBuilder fieldsMappingBuilder,
+                ISerializer serializer,
+                DocumentSyncOptions options,
+                RdoOptions rdoOptions,
+                IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -33,6 +38,8 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
             SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
             SyncConfiguration.NativesBehavior = options.CopyNativesMode;
+
+            SyncConfiguration.EnableTagging = options.EnableTagging;
         }
 
         public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
@@ -93,6 +100,8 @@ namespace Relativity.Sync.SyncConfiguration
         protected override Task ValidateAsync()
         {
             SetFieldsMapping();
+            ValidateSavedSearchCreation();
+
             return SetDestinationFolderStructureAsync();
         }
 
@@ -113,6 +122,14 @@ namespace Relativity.Sync.SyncConfiguration
                 _fieldsMappingBuilder.FieldsMapping);
         }
 
+        private void ValidateSavedSearchCreation()
+        {
+            if (SyncConfiguration.CreateSavedSearchInDestination && !SyncConfiguration.EnableTagging)
+            {
+                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configured when Tagging is disabled");
+            }
+        }
+
         private async Task SetDestinationFolderStructureAsync()
         {
             if (_destinationFolderStructureOptions == null)
@@ -130,8 +147,9 @@ namespace Relativity.Sync.SyncConfiguration
                 using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
                 {
                     var folderPathField = await fieldManager.ReadAsync(
-                        SyncContext.SourceWorkspaceId,
-                        _destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
+                            SyncContext.SourceWorkspaceId,
+                            _destinationFolderStructureOptions.FolderPathSourceFieldId)
+                        .ConfigureAwait(false);
 
                     if (folderPathField == null)
                     {

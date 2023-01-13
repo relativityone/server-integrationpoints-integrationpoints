@@ -8,7 +8,7 @@ namespace Relativity.Sync.ExecutionConstrains
     {
         public Task<bool> CanExecuteAsync(IDestinationWorkspaceObjectTypesCreationConfiguration configuration, CancellationToken token)
         {
-            return Task.FromResult(true);
+            return Task.FromResult(configuration.EnableTagging);
         }
     }
 }

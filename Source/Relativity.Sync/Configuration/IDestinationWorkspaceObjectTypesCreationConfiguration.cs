@@ -3,5 +3,7 @@
     internal interface IDestinationWorkspaceObjectTypesCreationConfiguration : IConfiguration
     {
         int DestinationWorkspaceArtifactId { get; }
+
+        bool EnableTagging { get; }
     }
 }

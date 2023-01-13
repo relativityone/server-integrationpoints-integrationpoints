@@ -11,14 +11,22 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
     [TestFixture]
     public sealed class DestinationWorkspaceTagsCreationExecutionConstrainsTests
     {
-        [Test]
-        public async Task ItShouldAlwaysReturnTrue()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task CanExecuteAsync_ShouldReturnBasedOnEnableTaggingConfiguration(bool enableTagging)
         {
-            DestinationWorkspaceTagsCreationExecutionConstrains instance = new DestinationWorkspaceTagsCreationExecutionConstrains();
+            // Arrange
+            Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration =
+                new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
+            configuration.SetupGet(x => x.EnableTagging).Returns(enableTagging);
 
-            bool result = await instance.CanExecuteAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+            DestinationWorkspaceTagsCreationExecutionConstrains sut = new DestinationWorkspaceTagsCreationExecutionConstrains();
 
-            result.Should().BeTrue();
+            // Act
+            bool result = await sut.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().Be(enableTagging);
         }
     }
 }
