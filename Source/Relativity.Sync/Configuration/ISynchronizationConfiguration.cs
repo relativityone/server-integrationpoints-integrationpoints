@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface ISynchronizationConfiguration : IConfiguration
+    internal interface ISynchronizationConfiguration : IConfiguration
 	{
 		bool ImageImport { get; }
 

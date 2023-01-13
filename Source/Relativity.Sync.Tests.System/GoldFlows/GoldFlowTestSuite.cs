@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -24,7 +25,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 {
     internal class GoldFlowTestSuite
     {
-        private readonly TestEnvironment _environment;
+		private static readonly Guid SourceCaseTagObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+		private readonly TestEnvironment _environment;
 
         public User User { get; }
 
@@ -115,6 +117,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames);
 
             void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds);
+
+            Task<bool> DocumentsHaveTags(string expectedTagValue);
         }
 
         private class GoldFlowTestRun : IGoldFlowTestRun
@@ -240,6 +244,29 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     }
                 }
             }
+
+            public async Task<bool> DocumentsHaveTags(string expectedTagValue)
+            {
+				QueryResult result;
+				using (IObjectManager objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
+				{
+					QueryRequest request = new QueryRequest()
+					{
+						ObjectType = new ObjectTypeRef { Guid = SourceCaseTagObjectTypeGuid },
+						IncludeNameInQueryResult = true
+					};
+                    try
+                    {
+						result = objectManager.QueryAsync(DestinationWorkspaceArtifactId, request, 0, int.MaxValue).GetAwaiter().GetResult();
+                    }
+                    catch (NotFoundException)
+                    {
+                        return false;
+                    }					 
+				}
+
+                return result.Objects.Any(x => x.Name == expectedTagValue);
+			}
         }
     }
 }
