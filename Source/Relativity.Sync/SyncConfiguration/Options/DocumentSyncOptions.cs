@@ -8,6 +8,17 @@ namespace Relativity.Sync.SyncConfiguration.Options
     public class DocumentSyncOptions
     {
         /// <summary>
+        /// Creates new instance of <see cref="DocumentSyncOptions"/> class.
+        /// </summary>
+        /// <param name="savedSearchId">Saved search Artifact ID.</param>
+        /// <param name="destinationFolderId">Destination folder Artifact ID.</param>
+        public DocumentSyncOptions(int savedSearchId, int destinationFolderId)
+        {
+            SavedSearchId = savedSearchId;
+            DestinationFolderId = destinationFolderId;
+        }
+
+        /// <summary>
         /// Gets saved search Artifact ID.
         /// </summary>
         public int SavedSearchId { get; }
@@ -23,14 +34,8 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public ImportNativeFileCopyMode CopyNativesMode { get; set; }
 
         /// <summary>
-        /// Creates new instance of <see cref="DocumentSyncOptions"/> class.
+        /// Specifies if transferred documents should be tagged
         /// </summary>
-        /// <param name="savedSearchId">Saved search Artifact ID.</param>
-        /// <param name="destinationFolderId">Destination folder Artifact ID.</param>
-        public DocumentSyncOptions(int savedSearchId, int destinationFolderId)
-        {
-            SavedSearchId = savedSearchId;
-            DestinationFolderId = destinationFolderId;
-        }
+        public bool EnableTagging { get; set; }
     }
 }

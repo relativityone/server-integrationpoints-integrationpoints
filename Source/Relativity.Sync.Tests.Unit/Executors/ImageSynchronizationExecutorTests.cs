@@ -131,7 +131,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
             _fieldManagerFake = new Mock<IFieldManager>();
             _fakeFieldMappings = new Mock<IFieldMappings>();
+
             _configFake = new Mock<IImageSynchronizationConfiguration>();
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             _documentTaggerFake = new Mock<IDocumentTagger>();
             _documentTaggerFake
                 .Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
@@ -353,6 +356,34 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             _configFake.VerifySet(x => x.ImageFilePathSourceFieldName = _IMAGE_FILE_LOCATION_DISPLAY_NAME, Times.Once);
             _configFake.VerifySet(x => x.FileNameColumn = _IMAGE_FILE_NAME_DISPLAY_NAME, Times.Once);
+        }
+
+        [Test]
+        public async Task Execute_ShouldNotRunTagging_WhenTaggingWasDisabled()
+        {
+            // Arrange
+            const int batchesCount = 1;
+
+            SetupBatchRepository(batchesCount);
+
+            SetupImportJob();
+
+            TaggingExecutionResult executionResult = ReturnTaggingCompletedResultAsync();
+
+            _configFake.SetupGet(x => x.EnableTagging).Returns(false);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _documentTaggerFake.Verify(
+                x => x.TagObjectsAsync(
+                    It.IsAny<Sync.Executors.IImportJob>(),
+                    It.IsAny<ISynchronizationConfiguration>(),
+                    It.IsAny<CompositeCancellationToken>()),
+                Times.Never);
+
+            result.Status.Should().Be(ExecutionStatus.Completed);
         }
 
         [Test]

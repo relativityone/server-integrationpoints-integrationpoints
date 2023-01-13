@@ -400,6 +400,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 ImageFileCopyMode = configurationStub.ImportImageFileCopyMode,
                 ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? string.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
                 LogItemLevelErrors = configurationStub.LogItemLevelErrors,
+                EnableTagging = configurationStub.EnableTagging,
 
                 // Drain-Stop
                 SyncStatisticsId = configurationStub.SyncStatisticsId,

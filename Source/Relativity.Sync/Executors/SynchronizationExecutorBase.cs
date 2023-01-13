@@ -264,7 +264,10 @@ namespace Relativity.Sync.Executors
                                     fmsBatches = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
                                     await PerformFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
-                                    TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
+                                    TaggingExecutionResult taggingResult = configuration.EnableTagging
+                                        ? await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false)
+                                        : TaggingExecutionResult.Skipped();
+
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
                                     await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
                                     batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;

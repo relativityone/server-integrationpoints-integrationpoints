@@ -40,6 +40,8 @@ namespace Relativity.Sync.Tests.Common
 
         public int DataSourceArtifactId { get; set; }
 
+        public bool EnableTagging { get; set; } = true;
+
         public IList<FieldMap> GetFieldMappings() => _fieldMappings;
 
         public void SetFieldMappings(IList<FieldMap> fieldMappings)

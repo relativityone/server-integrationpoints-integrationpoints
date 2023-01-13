@@ -23,6 +23,12 @@ namespace Relativity.Sync
         public static new TaggingExecutionResult Success()
             => new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, null);
 
+        /// <summary>
+        /// Creates a <see cref="TaggingExecutionResult"/> for a transfer where tagging is disabled by user.
+        /// </summary>
+        public static new TaggingExecutionResult Skipped()
+            => new TaggingExecutionResult(ExecutionStatus.Skipped, string.Empty, null);
+
         public static TaggingExecutionResult Compose(params TaggingExecutionResult[] executionResults)
         {
             var composedResult = TaggingExecutionResult.Success();
