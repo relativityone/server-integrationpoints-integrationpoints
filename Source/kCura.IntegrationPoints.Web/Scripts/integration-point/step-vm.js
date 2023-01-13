@@ -91,6 +91,7 @@
 	$(function () {
 		var vm = new viewModel();
 		var step = 0;
+		var validStepNo = 0;
 		var model = {};
 		var artifactID = 0;
 		IP.data.ajax({
@@ -105,18 +106,13 @@
 
 		var _next = function () {
 			var d = IP.data.deferred().defer();
-			let heap = window.heap;
 			let $select2elements =  $('.select2-offscreen').filter(function () {
-				return !this.id.match('s2id_autogen') && this.tagName === 'SELECT';
-			});
-			$select2elements.each( function (i, element) {
-				let optionSelected = element.options[element.selectedIndex];
-				let optiontext = optionSelected.text;
-				heap.track("select-" + element.id, {'value': optiontext});
-			});
+					return !this.id.match('s2id_autogen') && this.tagName === 'SELECT';
+				});
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
+				validStepNo = ++validStepNo;
 				model = result;
 				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);
@@ -127,6 +123,15 @@
 				}
 				IP.message.error.raise(err);
 				d.reject(err);
+			}).done(function () {
+				let heap = window.heap;
+				let heapEventParameters = {};
+				heapEventParameters ['stepIndex'] = validStepNo;
+				$select2elements.each( function (i, element) {
+					let optiontext = element.options[element.selectedIndex].text;
+					heapEventParameters["select-" + element.id] = optiontext;
+				});
+				heap.track('NextStepEvent', heapEventParameters);
 			});
 			return d.promise;
 		};
@@ -246,6 +251,7 @@
 			vm.currentStep().back().then(function (result) {
 				$.extend(model, result);
 				step = vm.goToStep(--step, model);
+				validStepNo = --validStepNo;
 				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);
 			});
