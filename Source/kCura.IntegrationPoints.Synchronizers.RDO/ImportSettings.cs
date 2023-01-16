@@ -1,21 +1,21 @@
-﻿using kCura.IntegrationPoints.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public class ImportSettings
     {
-        private int _destinationArtifactTypeId;
-
         public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
         public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
         public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
+
+        private int _destinationArtifactTypeId;
 
         public ImportSettings()
         {
@@ -43,25 +43,40 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         public string BulkLoadFileFieldDelimiter { get; set; }
+
         public int CaseArtifactId { get; set; }
+
         public int? FederatedInstanceArtifactId { get; set; }
+
         public string FederatedInstanceCredentials { get; set; }
+
         public bool CopyFilesToDocumentRepository { get; set; }
+
         public bool EntityManagerFieldContainsLink { get; set; }
+
         public int DestinationFolderArtifactId { get; set; }
+
         public bool DisableControlNumberCompatibilityMode { get; set; }
+
         public bool? DisableExtractedTextEncodingCheck { get; set; }
+
         public bool DisableExtractedTextFileLocationValidation { get; set; }
+
         public bool? DisableNativeLocationValidation { get; set; }
+
         public bool? DisableNativeValidation { get; set; }
+
         public string DestinationProviderType { get; set; }
+
         public bool DisableUserSecurityCheck { get; set; }
+
         public string ErrorFilePath { get; set; } = string.Empty;
 
         [JsonIgnore]
         public Encoding ExtractedTextEncoding => string.IsNullOrWhiteSpace(ExtractedTextFileEncoding) ? Encoding.Default : Encoding.GetEncoding(ExtractedTextFileEncoding);
 
         public bool ExtractedTextFieldContainsFilePath { get; set; }
+
         public string ExtractedTextFileEncoding { get; set; }
 
         /// <summary>
@@ -74,14 +89,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public string FieldOverlayBehavior { get; set; }
 
         public string FileNameColumn { get; set; }
+
         public string FileSizeColumn { get; set; }
+
         public bool FileSizeMapped { get; set; }
+
         public string FolderPathSourceFieldName { get; set; }
+
         public bool UseDynamicFolderPath { get; set; }
+
         public int IdentityFieldId { get; set; }
+
         public ImportAuditLevelEnum ImportAuditLevel { get; set; }
 
         public Guid CorrelationId { get; set; }
+
         public long? JobID { get; set; }
 
         /// <summary>
@@ -112,18 +134,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
+
         public string LongTextColumnThatContainsPathToFullText { get; set; }
+
         public int MaximumErrorCount { get; set; }
+
         public char MultiValueDelimiter { get; set; }
+
         public string NativeFilePathSourceFieldName { get; set; }
+
         public char NestedValueDelimiter { get; set; }
+
         public IList<int> ObjectFieldIdListContainsArtifactId { get; set; }
+
         public string OIFileIdColumnName { get; set; }
+
         public bool OIFileIdMapped { get; set; }
+
         public string OIFileTypeColumnName { get; set; }
+
         public string SupportedByViewerColumn { get; set; }
+
         public int OnBehalfOfUserId { get; set; }
+
         public string ParentObjectIdSourceFieldName { get; set; }
+
         public string Provider { get; set; }
 
         public string RelativityPassword { get; set; }
@@ -139,18 +174,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public string WebServiceURL { get; set; }
 
         public bool AutoNumberImages { get; set; }
+
         public bool ProductionImport { get; set; }
+
         public bool ImageImport { get; set; }
+
         public string IdentifierField { get; set; }
+
         public string DestinationIdentifierField { get; set; }
 
         /// <summary>
         /// In Overlay mode it allows to switch Yes/No if import API should move documents between folders when use folder path information
         /// </summary>
         public bool MoveExistingDocuments { get; set; }
-        
+
         public string ProductionPrecedence { get; set; }
+
         public bool IncludeOriginalImages { get; set; }
+
         public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
 
         public int ProductionArtifactId { get; set; }
@@ -159,26 +200,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool LoadImportedFullTextFromServer { get; set; }
 
+        public bool EnableTagging { get; set; } = true;
+
         #endregion "Public Properties"
 
         #region "Internal Properties"
 
         [JsonIgnore]
-        internal NativeFileCopyModeEnum NativeFileCopyMode => (NativeFileCopyModeEnum) ImportNativeFileCopyMode;
+        internal NativeFileCopyModeEnum NativeFileCopyMode => (NativeFileCopyModeEnum)ImportNativeFileCopyMode;
 
         [JsonIgnore]
-        internal EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior OverlayBehavior => (EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior) ImportOverlayBehavior;
+        internal EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior OverlayBehavior => (EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)ImportOverlayBehavior;
 
         [JsonIgnore]
         internal OverwriteModeEnum OverwriteMode
         {
-            get { return (OverwriteModeEnum) ImportOverwriteMode; }
+            get { return (OverwriteModeEnum)ImportOverwriteMode; }
 
-            set { ImportOverwriteMode = (ImportOverwriteModeEnum) value; }
+            set { ImportOverwriteMode = (ImportOverwriteModeEnum)value; }
         }
 
         [JsonIgnore]
-        internal EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel AuditLevel => (EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel) ImportAuditLevel;
+        internal EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel AuditLevel => (EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)ImportAuditLevel;
 
         [JsonIgnore]
         public bool MoveDocumentsInAnyOverlayMode => OverwriteMode != OverwriteModeEnum.Append &&
