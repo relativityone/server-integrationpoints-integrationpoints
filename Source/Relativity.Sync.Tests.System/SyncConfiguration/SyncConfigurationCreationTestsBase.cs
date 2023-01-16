@@ -102,7 +102,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
                 ImageImport = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.ImageImportGuid)),
                 IncludeOriginalImages = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.IncludeOriginalImagesGuid)),
                 ProductionImagePrecedence = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ProductionImagePrecedenceGuid)),
-                ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImageFileCopyModeGuid)).GetEnumFromDescription<ImportImageFileCopyMode>()
+                ImageFileCopyMode = ReadSyncConfigurationValue<string>(configuration, new Guid(SyncRdoGuids.ImageFileCopyModeGuid)).GetEnumFromDescription<ImportImageFileCopyMode>(),
+                EnableTagging = ReadSyncConfigurationValue<bool>(configuration, new Guid(SyncRdoGuids.EnableTaggingGuid))
             };
         }
     }
