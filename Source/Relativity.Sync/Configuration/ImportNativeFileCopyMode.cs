@@ -24,6 +24,6 @@ namespace Relativity.Sync.Configuration
         /// Links only.
         /// </summary>
         [Description("Link")]
-        SetFileLinks = NativeFileCopyModeEnum.SetFileLinks
+        SetFileLinks = NativeFileCopyModeEnum.SetFileLinks,
     }
 }

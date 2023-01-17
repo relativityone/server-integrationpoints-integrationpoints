@@ -120,6 +120,7 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<FmsClient>().As<IFmsClient>();
             builder.RegisterType<FmsRunner>().As<IFmsRunner>();
             builder.RegisterType<LoadFileGenerator>().As<ILoadFileGenerator>();
+            builder.RegisterType<LoadFilePathService>().As<ILoadFilePathService>();
             builder.RegisterType<ItemLevelErrorHandler>().As<IItemLevelErrorHandler>();
 
             RegisterNonDocumentFlowComponents(builder);
