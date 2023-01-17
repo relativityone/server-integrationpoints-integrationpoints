@@ -1,10 +1,10 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -40,7 +40,11 @@ namespace Relativity.Sync.Executors
                 {
                     _logger.LogInformation("Removing job directory for ExportRunId: {exportRunId}", configuration.ExportRunId);
                     string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId);
-                    DirectoryHelper.DeleteDirectory(jobDirectoryPath);
+                    if (jobDirectoryPath != null && Directory.Exists(jobDirectoryPath))
+                    {
+                        Directory.Delete(jobDirectoryPath, true);
+                    }
+
                     _logger.LogInformation("Job directory {jobDirectory} successfully removed", jobDirectoryPath);
                 }
 
