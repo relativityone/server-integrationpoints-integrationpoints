@@ -210,6 +210,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             // Arrange
             SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
             expectedSyncConfiguration.CreateSavedSearchInDestination = true;
+            expectedSyncConfiguration.EnableTagging = true;
 
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
@@ -217,6 +218,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ImageSyncOptions options = new ImageSyncOptions(
                 DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
+            options.EnableTagging = true;
 
             // Act
             int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, ServicesMgr, new EmptyLogger())
