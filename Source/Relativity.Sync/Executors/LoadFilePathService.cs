@@ -24,7 +24,7 @@ namespace Relativity.Sync.Executors
 
             if (!Directory.Exists(fileSharePath))
             {
-                throw new DirectoryNotFoundException($"Unable to generate job folder path. Directory: {fileSharePath} does not exist!");
+                throw new DirectoryNotFoundException($"Workspace fileshare directory: {fileSharePath} does not exist!");
             }
 
             string jobDirectoryPath = Path.Combine(fileSharePath, "Sync", exportRunId.ToString());
