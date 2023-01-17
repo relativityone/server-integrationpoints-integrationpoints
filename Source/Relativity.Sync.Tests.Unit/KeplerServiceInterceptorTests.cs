@@ -387,7 +387,7 @@ namespace Relativity.Sync.Tests.Unit
             IInterceptor[] interceptors = (IInterceptor[])interceptorsField.GetValue(stub);
             IInterceptor interceptor = interceptors.Single();
             const string fieldName = "_secondsBetweenHttpRetriesBase";
-            global::System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetAllFields().SingleOrDefault(x => x.Name == fieldName);
+            global::System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             if (millisecondsBetweenHttpRetriesBaseField == null)
             {
                 Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
@@ -408,6 +408,7 @@ namespace Relativity.Sync.Tests.Unit
             yield return new ServiceException("Failed to determine route");
             yield return new ServiceException("Create Failed");
             yield return new ServiceException("An unexpected server error occurred: Bad Gateway - An invalid response was received from the upstream server");
+            yield return new ConflictException("Create Ancestry Failed...");
             yield return new TimeoutException();
             yield return new Exception("Socket exception", new SocketException());
         }
