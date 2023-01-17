@@ -5,7 +5,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {
@@ -13,13 +12,11 @@ namespace Relativity.Sync.Storage
     {
         private readonly IRdoManager _rdoManager;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        private readonly IDateTime _dateTime;
 
-        public BatchRepository(IRdoManager rdoManager, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime)
+        public BatchRepository(IRdoManager rdoManager, ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
         {
             _rdoManager = rdoManager;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _dateTime = dateTime;
         }
 
         public Task<IBatch> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId, int totalDocumentsCount, int startingIndex)

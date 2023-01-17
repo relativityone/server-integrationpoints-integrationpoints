@@ -46,7 +46,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFieldMappings> _fakeFieldMappings;
         private Mock<IJobStatisticsContainer> _jobStatisticsContainerFake;
         private Mock<IImportJobFactory> _importJobFactoryFake;
-        private Mock<IJobCleanupConfiguration> _jobCleanupConfigurationMock;
         private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactoryStub;
         private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryStub;
         private Mock<IJobProgressHandler> _jobProgressHandlerFake;
@@ -119,7 +118,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(TaggingExecutionResult.Success);
             _jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
-            _jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
             _automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
             _jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
             _stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
@@ -175,7 +173,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _fieldManagerFake.Object,
                 _fakeFieldMappings.Object,
                 _jobStatisticsContainerFake.Object,
-                _jobCleanupConfigurationMock.Object,
                 _automatedWorkflowTriggerConfigurationFake.Object,
                 _stopwatchFactoryFake.Object,
                 _syncMetricsMock.Object,
@@ -278,10 +275,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.CorrelationId = _CORRELATION_ID);
 
-            _jobCleanupConfigurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
-
             _userContextConfigurationStub.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
             _configFake.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
+            _configFake.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
 
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -455,36 +451,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             result.Message.Should().Be("Unexpected exception occurred while executing synchronization.");
             result.Exception.Should().BeOfType<InvalidOperationException>();
             result.Status.Should().Be(ExecutionStatus.Failed);
-        }
-
-        [Test]
-        public async Task Execute_ShouldSetExecutionResultForJobCleanupConfiguration_WhenCompletedSuccessfully()
-        {
-            // Arrange
-            const int numberOfBatches = 1;
-            SetupBatchRepository(numberOfBatches);
-            _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
-
-            // Act
-            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-            // Assert
-            _jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
-        }
-
-        [Test]
-        public async Task Execute_ShouldSetExecutionResultForJobCleanupConfiguration_WhenFailed()
-        {
-            // arrange
-            const int numberOfBatches = 1;
-            SetupBatchRepository(numberOfBatches);
-            _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
-
-            // Act
-            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-            // Assert
-            _jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
         }
 
         [Test]
