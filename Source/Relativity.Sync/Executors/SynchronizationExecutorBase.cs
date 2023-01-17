@@ -23,7 +23,6 @@ namespace Relativity.Sync.Executors
         private readonly IFieldMappings _fieldMappings;
         private readonly IBatchRepository _batchRepository;
         private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
-        private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
         private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
         private readonly Func<IStopwatch> _stopwatchFactory;
         private readonly IUserContextConfiguration _userContextConfiguration;
@@ -36,7 +35,6 @@ namespace Relativity.Sync.Executors
             IFieldManager fieldManager,
             IFieldMappings fieldMappings,
             IJobStatisticsContainer jobStatisticsContainer,
-            IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
@@ -50,7 +48,6 @@ namespace Relativity.Sync.Executors
             _jobProgressHandlerFactory = jobProgressHandlerFactory;
             _recordType = recordType;
             _fieldMappings = fieldMappings;
-            _jobCleanupConfiguration = jobCleanupConfiguration;
             _automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
             _stopwatchFactory = stopwatchFactory;
             _userContextConfiguration = userContextConfiguration;
@@ -126,7 +123,6 @@ namespace Relativity.Sync.Executors
 
             ExecutionResult importAndTagResult = await ExecuteSynchronizationAsync(configuration, token).ConfigureAwait(false);
 
-            _jobCleanupConfiguration.SynchronizationExecutionResult = importAndTagResult;
             _automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = importAndTagResult;
             return importAndTagResult;
         }
@@ -139,9 +135,9 @@ namespace Relativity.Sync.Executors
 
         protected abstract Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token);
 
-        protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
+        private void ReportBatchMetrics(int batchId, int savedSearchId, int sourceWorkspaceId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            SyncMetrics.Send(GetBatchPerformanceMetric(batchId, savedSearchId, batchProcessResult, importApiTimer));
+            SyncMetrics.Send(GetBatchPerformanceMetric(batchId, savedSearchId, sourceWorkspaceId, batchProcessResult, importApiTimer));
             ChildReportBatchMetrics(batchId, batchProcessResult, batchTime, importApiTimer);
         }
 
@@ -187,13 +183,13 @@ namespace Relativity.Sync.Executors
             return specialField.DestinationFieldName;
         }
 
-        private IMetric GetBatchPerformanceMetric(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan importApiTimer)
+        private IMetric GetBatchPerformanceMetric(int batchId, int savedSearchId, int sourceWorkspaceId, BatchProcessResult batchProcessResult, TimeSpan importApiTimer)
         {
             var metric = new BatchEndPerformanceMetric
             {
                 Elapsed = (long)importApiTimer.TotalSeconds,
                 JobID = batchId,
-                WorkspaceID = _jobCleanupConfiguration.SourceWorkspaceArtifactId,
+                WorkspaceID = sourceWorkspaceId,
                 RecordNumber = batchProcessResult.TotalRecordsTransferred,
                 JobSizeGB = UnitsConverter.BytesToGigabytes(batchProcessResult.BytesTransferred),
                 JobSizeGB_Metadata = UnitsConverter.BytesToGigabytes(batchProcessResult.MetadataBytesTransferred),
@@ -278,7 +274,7 @@ namespace Relativity.Sync.Executors
                                     }
 
                                     batchTimer.Stop();
-                                    ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
+                                    ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, configuration.SourceWorkspaceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
 
                                     ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId, batchProcessingResult.ExecutionResult, taggingResult);
                                     if (failureResult != null)

@@ -16,24 +16,24 @@ namespace Relativity.Sync.Executors
     {
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
-        private readonly IFileShareService _fileShareService;
         private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
         private readonly IInstanceSettings _instanceSettings;
+        private readonly ILoadFilePathService _pathService;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
-            IFileShareService fileShareService,
             IItemLevelErrorHandler itemLevelErrorHandler,
             IInstanceSettings instanceSettings,
+            ILoadFilePathService pathService,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
-            _fileShareService = fileShareService;
             _itemLevelErrorHandler = itemLevelErrorHandler;
             _instanceSettings = instanceSettings;
+            _pathService = pathService;
             _logger = logger;
         }
 
@@ -126,25 +126,14 @@ namespace Relativity.Sync.Executors
             string batchFullPath;
             try
             {
-                int workspaceId = _configuration.DestinationWorkspaceArtifactId;
-
-                string fileSharePath = await _fileShareService.GetWorkspaceFileShareLocationAsync(workspaceId)
-                    .ConfigureAwait(false);
-
-                if (!Directory.Exists(fileSharePath))
+                string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync(_configuration.DestinationWorkspaceArtifactId, batch.ExportRunId);
+                string batchDirectory = Path.Combine(jobDirectoryPath, batch.BatchGuid.ToString());
+                if (!Directory.Exists(batchDirectory))
                 {
-                    throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {fileSharePath} does not exist!");
+                    Directory.CreateDirectory(batchDirectory);
                 }
 
-                string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
-                string fullDirectory = Path.Combine(fileSharePath, batchPartialDirectory);
-                if (!Directory.Exists(fullDirectory))
-                {
-                    Directory.CreateDirectory(fullDirectory);
-                }
-
-                string fileName = $"{batch.BatchGuid}.dat";
-                batchFullPath = Path.Combine(fullDirectory, fileName);
+                batchFullPath = Path.Combine(batchDirectory, $"{batch.BatchGuid}.dat");
             }
             catch (Exception ex)
             {

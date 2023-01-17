@@ -17,13 +17,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
     public class LoadFileGeneratorTests
     {
         private const string _BATCH_GUID = "00000000-2222-4444-0000-888888888888";
-        private const string _EXPORT_RUN_ID = "11111111-6666-2222-7777-333333333333";
         private const int _DESTINATION_WORKSPACE_ID = -1000001;
         private const int _SOURCE_WORKSPACE_ID = -1000000;
         private const int _CONFIGURATION_ID = -12678;
+        private readonly Guid _EXPORT_RUN_ID = new Guid("11111111-6666-2222-7777-333333333333");
 
         private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
-        private Mock<IFileShareService> _fileshareServiceMock;
+        private Mock<ILoadFilePathService> _loadFilePathServiceMock;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public void SetUp()
         {
             _configurationMock = new Mock<IBatchDataSourcePreparationConfiguration>();
-            _fileshareServiceMock = new Mock<IFileShareService>();
+            _loadFilePathServiceMock = new Mock<ILoadFilePathService>();
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.SyncConfigurationArtifactId).Returns(_CONFIGURATION_ID);
 
             _batchMock.Setup(x => x.BatchGuid).Returns(new Guid(_BATCH_GUID));
-            _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
+            _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID.ToString()));
 
             _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, _token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
             _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
@@ -68,9 +68,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sut = new LoadFileGenerator(
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
-                _fileshareServiceMock.Object,
                 _itemLevelErrorHandlerMock.Object,
                 _instanceSettingsMock.Object,
+                _loadFilePathServiceMock.Object,
                 _loggerMock.Object);
         }
 
@@ -93,8 +93,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(_workspacePath);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
@@ -110,8 +110,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             string expectedBatchPath = PrepareFakeLoadFilePath();
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(_workspacePath);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
@@ -128,16 +128,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             _serverPath = "randomTestPath";
             string rootDirectory = $@"{_serverPath}\EDDS{_DESTINATION_WORKSPACE_ID}";
-            string expectedErrorMessage = $"Unable to create load file path. Directory: {rootDirectory} does not exist!";
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(rootDirectory);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .Throws<DirectoryNotFoundException>();
 
             // Act
             Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
-            function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
+            function.Should().Throw<DirectoryNotFoundException>();
         }
 
         [Test]
@@ -151,8 +150,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             PrepareFakeLoadFilePath();
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(_workspacePath);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             _dataReaderMock.Setup(x => x.Read()).Callback(() =>
             {
@@ -175,8 +174,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(_workspacePath);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
             bool readResult = true;
             _dataReaderMock.Setup(x => x.Read())
                 .Returns(() => readResult).Callback(() => readResult = false);
@@ -200,8 +199,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
-                .ReturnsAsync(_workspacePath);
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
             bool readResult = true;
             _dataReaderMock.Setup(x => x.Read())
                 .Returns(() => readResult).Callback(() => readResult = false);

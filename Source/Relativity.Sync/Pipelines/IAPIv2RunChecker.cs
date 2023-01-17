@@ -8,6 +8,7 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.LibraryApplication;
 using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Pipelines
             {
                 bool result = _toggles.IsEnabled<EnableIAPIv2Toggle>()
                                                 && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
-                                                && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+                                                && _configuration.NativeBehavior.IsIn(ImportNativeFileCopyMode.SetFileLinks, ImportNativeFileCopyMode.DoNotImportNativeFiles)
                                                 && !_configuration.IsRetried
                                                 && !_configuration.IsDrainStopped
                                                 && !_configuration.ImageImport
