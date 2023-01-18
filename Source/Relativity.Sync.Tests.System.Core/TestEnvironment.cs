@@ -208,7 +208,7 @@ namespace Relativity.Sync.Tests.System.Core
             await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
         }
 
-        public void InstallLegalHoldToWorkspaceAsync(int workspaceArtifactId)
+        public void InstallLegalHoldToWorkspace(int workspaceArtifactId)
         {
             Guid legalHoldGuid = new Guid("98f31698-90a0-4ead-87e3-dac723fed2a6");
             InstallApplicationFromLibraryToWorkspace(workspaceArtifactId, legalHoldGuid);
