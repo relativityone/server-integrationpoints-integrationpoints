@@ -535,7 +535,11 @@
         }
 
         this.EnableTagging.extend({
-            required: true
+            required: {
+                onlyIf: function () {
+                    return !self.IsNonDocumentObjectFlow();
+                }
+            }
         });
 
         this.TargetFolder.extend({

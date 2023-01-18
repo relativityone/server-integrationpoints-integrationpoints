@@ -1374,7 +1374,13 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 
-					_destination.EnableTagging = this.model.EnableTagging;
+                    // we need to add some default value before saving 'EnableTagging' setting to DB 
+                    if (this.model.EnableTagging == null) {
+                        _destination.EnableTagging = "true";
+                    }
+                    else {
+                        _destination.EnableTagging = this.model.EnableTagging;
+                    }
 
 				}
 
