@@ -38,12 +38,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
         }
 
-        public abstract IntegrationPointViewPage CreateIntegrationPointViewPage();
-
         public virtual void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
         {
-            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
+            integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
         }
+
+        public void ImportDocuments()
+        {
+            RelativityFacade.Instance.
+                ImportDocumentsFromCsv(
+                    TestsImplementationTestFixture.Workspace,
+                    LoadFilesGenerator.GetOrCreateNativesLoadFile());
+        }
+
+        public abstract IntegrationPointViewPage CreateIntegrationPointViewPage();
 
         public abstract void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage);
 
@@ -104,10 +112,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private void OnSetUpFixture()
         {
-            RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-            TestsImplementationTestFixture.LoginAsStandardUser();
-            IntegrationPointName = $"Sync - Source {Guid.NewGuid()}";
             DestinationWorkspace = CreateDestinationWorkspace();
+
+            TestsImplementationTestFixture.LoginAsStandardUser();
+
+            IntegrationPointName = $"Sync - Source {Guid.NewGuid()}";
         }
 
         private bool FieldTagMatchesExpectedValue(RelativityObject doc, string fieldName, string expectedTagValue)

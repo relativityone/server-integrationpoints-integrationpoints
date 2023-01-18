@@ -18,36 +18,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SavedSearchNativesSyncTestsImplementation : SyncTestsImplementationTemplate
     {
-        private int _keywordSearchDocumentsCount = 5;
-        private KeywordSearch _keywordSearch;
+        private const int _EXPECTED_SAVED_SEARCH_DOCUMENTS_COUNT = 5;
+
+        private readonly string _savedSearchName;
 
         public SavedSearchNativesSyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : base(testsImplementationTestFixture)
         {
+            _savedSearchName = CreateSavedSearch();
         }
 
         public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
-            _keywordSearch = new KeywordSearch
-            {
-                Name = IntegrationPointName,
-                SearchCriteria = new CriteriaCollection
-                {
-                    Conditions = new List<BaseCriteria>
-                    {
-                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291") },
-                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491") }
-                    }
-                }
-            };
-
-            RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(TestsImplementationTestFixture.Workspace.ArtifactID, _keywordSearch);
-
             IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
                 IntegrationPointName,
                 DestinationWorkspace,
-                _keywordSearch.Name,
+                _savedSearchName,
                 RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             return integrationPointViewPage;
@@ -71,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(IntegrationPointName);
             integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
             integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Natives");
-            integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {_keywordSearch.Name}");
+            integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {_savedSearchName}");
             integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
             integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
             integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Document);
@@ -106,13 +93,33 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(IntegrationPointName);
             int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(DestinationWorkspace.ArtifactID).Length;
 
-            transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(_keywordSearchDocumentsCount);
+            transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(_EXPECTED_SAVED_SEARCH_DOCUMENTS_COUNT);
 
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
 
             BillingFlagAssertion.AssertFiles(DestinationWorkspace.ArtifactID, expectBillable: true);
+        }
+
+        private string CreateSavedSearch()
+        {
+            var keywordSearch = new KeywordSearch
+            {
+                Name = IntegrationPointName,
+                SearchCriteria = new CriteriaCollection
+                {
+                    Conditions = new List<BaseCriteria>
+                    {
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291") },
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491") }
+                    }
+                }
+            };
+
+            RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(TestsImplementationTestFixture.Workspace.ArtifactID, keywordSearch);
+
+            return keywordSearch.Name;
         }
     }
 }

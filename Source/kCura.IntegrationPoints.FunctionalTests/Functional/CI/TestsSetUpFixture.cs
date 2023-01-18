@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Data.SqlClient;
+using System.IO;
+using System.Threading.Tasks;
 using Atata;
+using kCura.IntegrationPoints.Common.Toggles;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Common.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
@@ -8,6 +11,7 @@ using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -19,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
 
         [OneTimeSetUp]
-        public void OneTimeSetup()
+        public async Task OneTimeSetup()
         {
             RelativityFacade.Instance.RelyOn<CoreComponent>();
             RelativityFacade.Instance.RelyOn<ApiComponent>();
@@ -30,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             Workspace workspace = RequireTemplateWorkspace();
             int workspaceId = workspace.ArtifactID;
 
-            ConfigureRelativityInstanceUrl();
+            await ConfigureTestingEnvironmentAsync().ConfigureAwait(false);
 
             InstallIntegrationPointsToWorkspace(workspaceId);
 
@@ -39,6 +43,42 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             InstallDataTransferLegacy();
 
             workspace.InstallLegalHold();
+        }
+
+        private async Task ConfigureTestingEnvironmentAsync()
+        {
+            ConfigureRelativityInstanceUrl();
+
+            await SetTogglesAsync().ConfigureAwait(false);
+
+            await ConfigureHeapAsync().ConfigureAwait(false);
+        }
+
+        private async Task ConfigureHeapAsync()
+        {
+            using (SqlConnection connection = SqlHelper.CreateEddsConnectionFromAppConfig())
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand command = new SqlCommand("pr_SetToggle", connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+
+                command.Parameters.Add(new SqlParameter("Name", "Relativity.Core.Toggle.EnableClickTracking"));
+                command.Parameters.Add(new SqlParameter("IsEnabled", 1));
+
+                command.ExecuteNonQuery();
+            }
+
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+                .Require(new Testing.Framework.Models.InstanceSetting
+                {
+                    Name = "HeapEnvironmentId",
+                    Section = "kCura.EDDS.Web",
+                    Value = "1655229047",
+                    ValueType = InstanceSettingValueType.Text
+                });
         }
 
         [OneTimeTearDown]
@@ -66,6 +106,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
                     "RelativityInstanceURL",
                     "Relativity.Core",
                     "https://localhost/Relativity");
+        }
+
+        private async Task SetTogglesAsync()
+        {
+            IToggleProvider toggleProvider = SqlToggleProvider.Create();
+            await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
         }
 
         private static void InstallIntegrationPointsToWorkspace(int workspaceId)
@@ -110,12 +156,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
                 .Require(new Testing.Framework.Models.InstanceSetting
-            {
-                Name = "DevelopmentMode",
-                Section = "kCura.ARM",
-                Value = "True",
-                ValueType = InstanceSettingValueType.TrueFalse
-            });
+                {
+                    Name = "DevelopmentMode",
+                    Section = "kCura.ARM",
+                    Value = "True",
+                    ValueType = InstanceSettingValueType.TrueFalse
+                });
         }
 
         private static void InstallDataTransferLegacy()
