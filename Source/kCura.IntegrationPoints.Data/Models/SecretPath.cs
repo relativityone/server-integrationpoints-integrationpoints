@@ -5,7 +5,9 @@ namespace kCura.IntegrationPoints.Data.Models
     public class SecretPath
     {
         public int? WorkspaceID { get; }
+
         public int? IntegrationPointID { get; }
+
         public string SecretID { get; }
 
         private SecretPath(
@@ -20,8 +22,8 @@ namespace kCura.IntegrationPoints.Data.Models
         }
 
         public static SecretPath ForIntegrationPointSecret(
-            int workspaceID, 
-            int integrationPointID, 
+            int workspaceID,
+            int integrationPointID,
             string secretID)
         {
             if (string.IsNullOrWhiteSpace(secretID))
@@ -94,7 +96,8 @@ namespace kCura.IntegrationPoints.Data.Models
                 string validationDetails =
                     $"{nameof(WorkspaceID)}: {WorkspaceID}, "
                     + $"{nameof(IntegrationPointID)}: {IntegrationPointID}, "
-                    + $"{nameof(SecretID)}: {SecretID}";
+                    + $"${nameof(SecretID)} is invalid GUID: {secretIdIsNotGuid}";
+
                 ThrowInvalidSecretPathException(validationDetails);
             }
         }
