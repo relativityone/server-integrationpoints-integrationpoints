@@ -7,13 +7,14 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
     internal sealed class FieldMappingValidator : FieldMappingValidatorBase
     {
-        public FieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
-            : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
+        public FieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IFieldManager fieldManager, IAPILog logger)
+            : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, fieldManager, logger)
         {
         }
 

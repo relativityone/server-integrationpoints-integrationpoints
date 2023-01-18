@@ -9,6 +9,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -16,12 +17,18 @@ namespace Relativity.Sync.Executors.Validation
     {
         private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
         private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
+        private readonly IFieldManager _fieldManager;
         protected readonly IAPILog _logger;
 
-        protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
+        protected FieldMappingValidatorBase(
+            ISourceServiceFactoryForUser sourceServiceFactoryForUser,
+            IDestinationServiceFactoryForUser destinationServiceFactoryForUser,
+            IFieldManager fieldManager,
+            IAPILog logger)
         {
             _sourceServiceFactoryForUser = sourceServiceFactoryForUser;
             _destinationServiceFactoryForUser = destinationServiceFactoryForUser;
+            _fieldManager = fieldManager;
             _logger = logger;
         }
 
@@ -40,9 +47,10 @@ namespace Relativity.Sync.Executors.Validation
 
             Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFieldsAsync(configuration, fieldMaps, token);
             Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFieldsAsync(configuration, fieldMaps, token);
+            Task<ValidationMessage> validateFieldTypes = ValidateUnhandledTypesOfMappedFields(token);
 
             ValidationMessage[] fieldMappingValidationMessages =
-                await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask).ConfigureAwait(false);
+                await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask, validateFieldTypes).ConfigureAwait(false);
             allMessages.AddRange(fieldMappingValidationMessages);
 
             ValidationMessage validateFieldOverlayBehavior = ValidateFieldOverlayBehavior(configuration);
@@ -128,6 +136,21 @@ namespace Relativity.Sync.Executors.Validation
             {
                 validationMessage =
                     new ValidationMessage($"Source field(s) mapped may no longer be available or has been renamed. Review the mapping for the following field(s): {string.Join(",", missingFields.Values)}.");
+            }
+
+            return validationMessage;
+        }
+
+        protected async Task<ValidationMessage> ValidateUnhandledTypesOfMappedFields(CancellationToken token)
+        {
+            _logger.LogInformation("Validating mapped fields types");
+
+            ValidationMessage validationMessage = null;
+
+            IList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+            if (mappedFields.Any(x => x.RelativityDataType == RelativityDataType.File))
+            {
+                validationMessage = new ValidationMessage("Some mapped fields have unsupported type: 'File'.");
             }
 
             return validationMessage;
