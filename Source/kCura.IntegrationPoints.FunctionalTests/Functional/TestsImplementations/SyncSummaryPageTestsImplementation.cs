@@ -48,6 +48,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             // Arrange
             _testImplementation = new ProductionImagesSyncTestsImplementation(_testsImplementationTestFixture, YesNo.Yes);
 
+            _testImplementation.ImportDocuments();
+
             // Act
             IntegrationPointViewPage integrationPointViewPage = _testImplementation.CreateIntegrationPointViewPage();
 

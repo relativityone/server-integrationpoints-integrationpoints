@@ -11,7 +11,6 @@ using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web;
-using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -22,6 +21,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
         private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
 
+        private IToggleProviderExtended _toggleProvider;
+
         [OneTimeSetUp]
         public async Task OneTimeSetup()
         {
@@ -30,6 +31,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             RelativityFacade.Instance.RelyOn<WebComponent>();
 
             RelativityFacade.Instance.Resolve<IAccountPoolService>().StandardAccountEmailFormat = STANDARD_ACCOUNT_EMAIL_FORMAT;
+
+            _toggleProvider = SqlToggleProvider.Create();
 
             Workspace workspace = RequireTemplateWorkspace();
             int workspaceId = workspace.ArtifactID;
@@ -47,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
         private async Task ConfigureTestingEnvironmentAsync()
         {
-            ConfigureRelativityInstanceUrl();
+            ConfigureRelativityInstance();
 
             await SetTogglesAsync().ConfigureAwait(false);
 
@@ -99,19 +102,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             return RelativityFacade.Instance.CreateWorkspace(_WORKSPACE_TEMPLATE_NAME);
         }
 
-        private void ConfigureRelativityInstanceUrl()
+        private void ConfigureRelativityInstance()
         {
-            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
-                .UpdateValue(
+            IInstanceSettingsService instanceSettings = RelativityFacade.Instance.Resolve<IInstanceSettingsService>();
+
+            instanceSettings.UpdateValue(
                     "RelativityInstanceURL",
                     "Relativity.Core",
                     "https://localhost/Relativity");
+
+            instanceSettings.UpdateValue(
+                "DeveloperMode",
+                "Relativity.Core",
+                "True");
         }
 
         private async Task SetTogglesAsync()
         {
-            IToggleProvider toggleProvider = SqlToggleProvider.Create();
-            await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+            await _toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+
+            await _toggleProvider.SetAsync("Relativity.Core.Toggle.EnableClickTracking", true);
         }
 
         private static void InstallIntegrationPointsToWorkspace(int workspaceId)
