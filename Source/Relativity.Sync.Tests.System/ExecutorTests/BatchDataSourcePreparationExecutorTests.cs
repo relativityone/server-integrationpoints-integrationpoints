@@ -40,8 +40,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         [SetUp]
         public void SetUp()
         {
-            _sourceWorkspaceName = $"Source-{Guid.NewGuid()}";
-            _destinationWorkspaceName = $"Destination-{Guid.NewGuid()}";
+            _sourceWorkspaceName = "Source-f0acd273-08a7-4b11-a4d3-9b28e5f9c1ae"; //$"Source-{Guid.NewGuid()}";
+            _destinationWorkspaceName = "Destination-d099047a-d98b-4778-a13c-3e0e5ac31e3c"; //$"Destination-{Guid.NewGuid()}";
 
             _workspaceFileSharePath = Path.Combine(Path.GetTempPath(), _sourceWorkspaceName);
 
