@@ -47,7 +47,7 @@ namespace Relativity.Sync.Executors.Validation
 
             Task<ValidationMessage> validateDestinationFieldsTask = ValidateDestinationFieldsAsync(configuration, fieldMaps, token);
             Task<ValidationMessage> validateSourceFieldsTask = ValidateSourceFieldsAsync(configuration, fieldMaps, token);
-            Task<ValidationMessage> validateFieldTypes = ValidateUnhandledTypesOfMappedFields(token);
+            Task<ValidationMessage> validateFieldTypes = ValidateUnsupportedTypesOfMappedFields(token);
 
             ValidationMessage[] fieldMappingValidationMessages =
                 await Task.WhenAll(validateDestinationFieldsTask, validateSourceFieldsTask, validateFieldTypes).ConfigureAwait(false);
@@ -141,7 +141,7 @@ namespace Relativity.Sync.Executors.Validation
             return validationMessage;
         }
 
-        protected async Task<ValidationMessage> ValidateUnhandledTypesOfMappedFields(CancellationToken token)
+        protected async Task<ValidationMessage> ValidateUnsupportedTypesOfMappedFields(CancellationToken token)
         {
             _logger.LogInformation("Validating mapped fields types");
 
@@ -150,7 +150,7 @@ namespace Relativity.Sync.Executors.Validation
             IList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
             if (mappedFields.Any(x => x.RelativityDataType == RelativityDataType.File))
             {
-                validationMessage = new ValidationMessage("Some mapped fields have unsupported type: 'File'.");
+                validationMessage = new ValidationMessage($"Some mapped fields have unsupported type: '{nameof(RelativityDataType.File)}'.");
             }
 
             return validationMessage;
