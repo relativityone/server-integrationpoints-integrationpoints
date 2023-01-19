@@ -26,5 +26,7 @@ namespace Relativity.Sync.Storage
         public int SourceWorkspaceArtifactId => _jobParameters.WorkspaceId;
 
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+
+        public bool EnableTagging => _cache.GetFieldValue(x => x.EnableTagging);
     }
 }
