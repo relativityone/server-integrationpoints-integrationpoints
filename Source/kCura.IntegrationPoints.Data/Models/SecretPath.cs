@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Models
                 string validationDetails =
                     $"{nameof(WorkspaceID)}: {WorkspaceID}, "
                     + $"{nameof(IntegrationPointID)}: {IntegrationPointID}, "
-                    + $"${nameof(SecretID)} is invalid GUID: {secretIdIsNotGuid}";
+                    + $"{nameof(SecretID)} is invalid GUID: {secretIdIsNotGuid}";
 
                 ThrowInvalidSecretPathException(validationDetails);
             }
