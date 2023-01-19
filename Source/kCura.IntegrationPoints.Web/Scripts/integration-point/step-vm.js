@@ -118,6 +118,10 @@
 				IP.messaging.publish('goToStep', step);
 				d.resolve(result);
 			}).fail(function (err) {
+				if (err === undefined) {
+					return;
+				}
+
 				if (err.message) {
 					err = err.message;
 				}
@@ -127,9 +131,13 @@
 				let heap = window.heap;
 				let heapEventParameters = {};
 				heapEventParameters ['stepIndex'] = validStepNo;
-				$select2elements.each( function (i, element) {
-					let optiontext = element.options[element.selectedIndex].text;
-					heapEventParameters["select-" + element.id] = optiontext;
+				$select2elements.each(function (i, element) {
+					try {
+						let optiontext = element.options[element.selectedIndex].text;
+						heapEventParameters["select-" + element.id] = optiontext;
+					} catch (error) {
+						// empty intentionally
+					}
 				});
 				heap.track('NextStepEvent', heapEventParameters);
 			});
