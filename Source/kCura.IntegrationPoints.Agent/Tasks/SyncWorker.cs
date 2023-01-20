@@ -115,9 +115,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 List<string> entryIDs = GetEntryIDs(job);
 
-                ExtendSourceConfigurationWithBatchStartingIndex(job);
-
                 SetJobHistory();
+
+                ExtendSourceConfigurationWithBatchStartingIndex(job);
 
                 ConfigureJobStopManager(job, true);
 
@@ -369,13 +369,33 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ExtendSourceConfigurationWithBatchStartingIndex(Job job)
         {
-            TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            if (taskParameters.BatchStartingIndex != null)
+            try
             {
-                Dictionary<string, object> sourceConfiguration =
-                    Serializer.Deserialize<Dictionary<string, object>>(IntegrationPointDto?.SourceConfiguration);
-                sourceConfiguration.Add(nameof(TaskParameters.BatchStartingIndex), taskParameters.BatchStartingIndex);
-                IntegrationPointDto.SourceConfiguration = Serializer.Serialize(sourceConfiguration);
+                _logger.LogInformation(
+                    "ExtendSourceConfigurationWithBatchStartingIndex - execution start jobId: {jobId}, jobDetails: {jobDetails}",
+                    job?.JobId,
+                    job?.JobDetails);
+
+                TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
+                if (taskParameters.BatchStartingIndex != null)
+                {
+                    _logger.LogInformation(
+                        "ExtendSourceConfigurationWithBatchStartingIndex - attempt to add batchStartingIndex: {batchStartingIndex} to sourceConfiguration: {sourceConfiguration}",
+                        taskParameters?.BatchStartingIndex, IntegrationPointDto?.SourceConfiguration);
+
+                    Dictionary<string, object> sourceConfiguration = Serializer.Deserialize<Dictionary<string, object>>(IntegrationPointDto?.SourceConfiguration);
+
+                    _logger.LogInformation(
+                        "ExtendSourceConfigurationWithBatchStartingIndex - sourceConfiguration dictionary size: {}",
+                        sourceConfiguration?.Count);
+
+                    sourceConfiguration.Add(nameof(TaskParameters.BatchStartingIndex), taskParameters.BatchStartingIndex);
+                    IntegrationPointDto.SourceConfiguration = Serializer.Serialize(sourceConfiguration);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("ExtendSourceConfigurationWithBatchStartingIndex - execution failed", ex);
             }
         }
 
