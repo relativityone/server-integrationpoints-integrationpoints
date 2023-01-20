@@ -52,9 +52,9 @@ namespace Relativity.Sync.Executors.Validation
             ValidationMessage validationMessage = null;
 
             IList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
-            if (mappedFields.Any(x => x.RelativityDataType == RelativityDataType.File))
+            List<string> unsupportedFieldsNames = mappedFields.Where(x => x.RelativityDataType == RelativityDataType.File).Select(x => x.SourceFieldName).ToList();
+            if (unsupportedFieldsNames.Count != 0)
             {
-                List<string> unsupportedFieldsNames = mappedFields.Where(x => x.RelativityDataType == RelativityDataType.File).Select(x => x.SourceFieldName).ToList();
                 validationMessage = new ValidationMessage($"Following fields have unsupported type '{nameof(RelativityDataType.File)}': {string.Join(",", unsupportedFieldsNames)}.");
             }
 
