@@ -46,8 +46,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             _destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 
             await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-            Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
-            Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
+            Task installLegalHoldToSourceWorkspaceTask = Task.Run(() => Environment.InstallLegalHoldToWorkspace(_sourceWorkspace.ArtifactID));
+            Task installLegalHoldToDestinationWorkspaceTask = Task.Run(() => Environment.InstallLegalHoldToWorkspace(_destinationWorkspace.ArtifactID));
             await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
 
             _sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
