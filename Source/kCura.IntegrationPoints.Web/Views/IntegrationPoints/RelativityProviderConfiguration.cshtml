@@ -114,6 +114,24 @@
 						</div>
 					</td>
 				</tr>
+				<tr>
+					<td style="width: 48%;">
+						<div class="field-row" data-bind="visible: !IsNonDocumentObjectFlow()">
+							<div class="field-label required">Enable Tagging:</div>
+							<div class="field-value">
+								<ul>
+									<li>
+										<label><input id="enable-tagging" type="radio" value="true" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">Yes</label>
+									</li>
+									<li>
+										<label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
+									</li>
+								</ul>
+								<div id="customRadioButtonErrorMsg"><span class="icon-error legal-hold field-validation-error">This field is required.</span></div>
+							</div>							
+						</div>
+					</td>
+				</tr>
 			</table>
 		</div>
 	</div>

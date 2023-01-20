@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Data.SqlClient;
+using System.IO;
+using System.Threading.Tasks;
 using Atata;
+using kCura.IntegrationPoints.Common.Toggles;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Common.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
@@ -18,8 +21,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
         private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
 
+        private IToggleProviderExtended _toggleProvider;
+
         [OneTimeSetUp]
-        public void OneTimeSetup()
+        public async Task OneTimeSetup()
         {
             RelativityFacade.Instance.RelyOn<CoreComponent>();
             RelativityFacade.Instance.RelyOn<ApiComponent>();
@@ -27,10 +32,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             RelativityFacade.Instance.Resolve<IAccountPoolService>().StandardAccountEmailFormat = STANDARD_ACCOUNT_EMAIL_FORMAT;
 
+            _toggleProvider = SqlToggleProvider.Create();
+
             Workspace workspace = RequireTemplateWorkspace();
             int workspaceId = workspace.ArtifactID;
 
-            ConfigureRelativityInstanceUrl();
+            await ConfigureTestingEnvironmentAsync().ConfigureAwait(false);
 
             InstallIntegrationPointsToWorkspace(workspaceId);
 
@@ -39,6 +46,42 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             InstallDataTransferLegacy();
 
             workspace.InstallLegalHold();
+        }
+
+        private async Task ConfigureTestingEnvironmentAsync()
+        {
+            ConfigureRelativityInstance();
+
+            await SetTogglesAsync().ConfigureAwait(false);
+
+            await ConfigureHeapAsync().ConfigureAwait(false);
+        }
+
+        private async Task ConfigureHeapAsync()
+        {
+            using (SqlConnection connection = SqlHelper.CreateEddsConnectionFromAppConfig())
+            {
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand command = new SqlCommand("pr_SetToggle", connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
+
+                command.Parameters.Add(new SqlParameter("Name", "Relativity.Core.Toggle.EnableClickTracking"));
+                command.Parameters.Add(new SqlParameter("IsEnabled", 1));
+
+                command.ExecuteNonQuery();
+            }
+
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+                .Require(new Testing.Framework.Models.InstanceSetting
+                {
+                    Name = "HeapEnvironmentId",
+                    Section = "kCura.EDDS.Web",
+                    Value = "1655229047",
+                    ValueType = InstanceSettingValueType.Text
+                });
         }
 
         [OneTimeTearDown]
@@ -59,13 +102,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             return RelativityFacade.Instance.CreateWorkspace(_WORKSPACE_TEMPLATE_NAME);
         }
 
-        private void ConfigureRelativityInstanceUrl()
+        private void ConfigureRelativityInstance()
         {
-            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
-                .UpdateValue(
+            IInstanceSettingsService instanceSettings = RelativityFacade.Instance.Resolve<IInstanceSettingsService>();
+
+            instanceSettings.UpdateValue(
                     "RelativityInstanceURL",
                     "Relativity.Core",
                     "https://localhost/Relativity");
+
+            instanceSettings.UpdateValue(
+                "DeveloperMode",
+                "Relativity.Core",
+                "True");
+        }
+
+        private async Task SetTogglesAsync()
+        {
+            await _toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+
+            await _toggleProvider.SetAsync("Relativity.Core.Toggle.EnableClickTracking", true);
         }
 
         private static void InstallIntegrationPointsToWorkspace(int workspaceId)
@@ -110,12 +166,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
                 .Require(new Testing.Framework.Models.InstanceSetting
-            {
-                Name = "DevelopmentMode",
-                Section = "kCura.ARM",
-                Value = "True",
-                ValueType = InstanceSettingValueType.TrueFalse
-            });
+                {
+                    Name = "DevelopmentMode",
+                    Section = "kCura.ARM",
+                    Value = "True",
+                    ValueType = InstanceSettingValueType.TrueFalse
+                });
         }
 
         private static void InstallDataTransferLegacy()

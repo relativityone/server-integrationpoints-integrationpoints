@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Models;
 using NUnit.Framework;
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
             );
 
             //assert
-            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretID);
+            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: !Guid.TryParse(secretID, out Guid secretIDGuid));
         }
 
         [Test]
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
             );
 
             //assert
-            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretID);
+            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: false);
         }
 
         [Test]
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
             );
 
             //assert
-            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretID);
+            AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: false);
         }
 
         [Test]
@@ -153,12 +153,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
                 .WithMessage("Invalid secret path. SecretID cannot be null or whitespace.");
         }
 
-        private void AssertInvalidPathExceptionThrown(Action action, int workspaceID, int integrationPointID, string secretID)
+        private void AssertInvalidPathExceptionThrown(Action action, int workspaceID, int integrationPointID, bool secretIdIsInvalidGuid)
         {
             action
                 .ShouldThrow<ArgumentException>()
                 .WithMessage(
-                    $"Invalid secret path. WorkspaceID: {workspaceID}, IntegrationPointID: {integrationPointID}, SecretID: {secretID}");
+                    $"Invalid secret path. WorkspaceID: {workspaceID}, IntegrationPointID: {integrationPointID}, SecretID is invalid GUID: {secretIdIsInvalidGuid}");
         }
 
         private void AssertSecretPath(

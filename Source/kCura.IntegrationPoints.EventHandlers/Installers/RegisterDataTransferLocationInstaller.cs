@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     {
         private IDataTransferLocationService _dataTransferLocationService;
 
-        
         internal IDataTransferLocationService DataTransferLocationService
         {
             get

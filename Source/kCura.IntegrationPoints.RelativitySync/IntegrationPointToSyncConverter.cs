@@ -22,8 +22,8 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
-using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
+using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -116,7 +116,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         DataSourceType.SavedSearch, sourceConfiguration.SavedSearchArtifactId,
                         DestinationLocationType.Folder, importSettings.DestinationFolderArtifactId)
                     {
-                        CopyImagesMode = importSettings.ImportNativeFileCopyMode.ToSyncImageMode()
+                        CopyImagesMode = importSettings.ImportNativeFileCopyMode.ToSyncImageMode(),
+                        EnableTagging = importSettings.EnableTagging
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
@@ -160,7 +161,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         sourceConfiguration.SavedSearchArtifactId,
                         importSettings.DestinationFolderArtifactId)
                     {
-                        CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode()
+                        CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode(),
+                        EnableTagging = importSettings.EnableTagging
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))

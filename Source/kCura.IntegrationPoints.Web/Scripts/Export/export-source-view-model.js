@@ -137,12 +137,18 @@ var ExportSourceViewModel = function (state, savedSearchService) {
 	// productions
 
 	self.ProductionSets = ko.observableArray();
-
-	self.ProductionName = ko.observable(sourceConfiguration.ProductionName);
-
+	
 	self.IsProductionSelected = function () {
 		return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 	};
+
+	self.ProductionName = ko.observable(sourceConfiguration.ProductionName).extend({
+		required: {
+			onlyIf: function () {
+				return self.IsProductionSelected();
+			}
+		}
+	});
 
 	self.ProductionId = ko.observable(sourceConfiguration.ProductionId).extend({
 		required: {
