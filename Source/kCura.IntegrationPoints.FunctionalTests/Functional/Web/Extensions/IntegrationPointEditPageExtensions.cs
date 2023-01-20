@@ -28,12 +28,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
                 .Click().ApplyModel(new RelativityProviderMapFields
-            {
-                Overwrite = RelativityProviderOverwrite.AppendOnly,
-                CopyImages = YesNo.No,
-                CopyNativeFiles = copyNativesMode,
-                PathInformation = RelativityProviderFolderPathInformation.No
-            }).Save.ClickAndGo();
+                {
+                    Overwrite = RelativityProviderOverwrite.AppendOnly,
+                    CopyImages = YesNo.No,
+                    CopyNativeFiles = copyNativesMode,
+                    PathInformation = RelativityProviderFolderPathInformation.No
+                }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -55,13 +55,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
                 .ApplyModel(new RelativityProviderMapFieldsWithImages
-            {
-                Overwrite = RelativityProviderOverwrite.AppendOverlay,
-                MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
-                CopyImages = YesNo.Yes,
-                ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
-                CopyFilesToRepository = YesNo.Yes
-            }).Save.ClickAndGo();
+                {
+                    Overwrite = RelativityProviderOverwrite.AppendOverlay,
+                    MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
+                    CopyImages = YesNo.Yes,
+                    ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
+                    CopyFilesToRepository = YesNo.Yes
+                }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -85,10 +85,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
                 .ApplyModel(new
-            {
-                Overwrite = RelativityProviderOverwrite.AppendOnly,
-                CopyFilesToRepository = copyFilesToRepository,
-            }).Save.ClickAndGo();
+                {
+                    Overwrite = RelativityProviderOverwrite.AppendOnly,
+                    CopyFilesToRepository = copyFilesToRepository,
+                }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -139,11 +139,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
         {
             return integrationPointEditPage
                 .ApplyModel(new IntegrationPointEditRdoExport
-            {
-                Name = integrationPointName,
-                Destination = IntegrationPointDestinations.Relativity,
-                TransferredObject = transferredObject
-            })
+                {
+                    Name = integrationPointName,
+                    Destination = IntegrationPointDestinations.Relativity,
+                    TransferredObject = transferredObject
+                })
             .RelativityProviderNext
             .ClickAndGo();
         }
@@ -170,6 +170,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
             relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
+            relativityProviderConnectToSource.EnableTagging = YesNo.Yes;
 
             relativityProviderConnectToSourcePage.Source.Set(source);
 

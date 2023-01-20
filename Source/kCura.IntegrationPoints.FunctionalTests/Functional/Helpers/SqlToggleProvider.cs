@@ -28,28 +28,24 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             return SetAsync(toggleName, enabled);
         }
 
-        public Task SetAsync(string name, bool enabled)
+        public async Task SetAsync(string name, bool enabled)
         {
             using (SqlConnection connection = _connectionFunc())
             {
-                connection.Open();
+                await connection.OpenAsync().ConfigureAwait(false);
+
+                SqlCommand command = new SqlCommand("pr_SetToggle", connection)
+                {
+                    CommandType = System.Data.CommandType.StoredProcedure
+                };
 
                 int value = enabled ? 1 : 0;
 
-                string sqlStatement =
-                     "BEGIN" +
-                    $"  IF EXISTS (SELECT * FROM [ToggleDefault] WHERE [Name] = '{name}')" +
-                    $"    UPDATE [ToggleDefault] SET [Default] = {value} WHERE [Name] = '{name}'" +
-                     "  ELSE" +
-                    $"    INSERT [ToggleDefault] ([Name], [Default]) VALUES ('{name}', {value})" +
-                     "END";
-
-                SqlCommand command = new SqlCommand(sqlStatement, connection);
+                command.Parameters.Add(new SqlParameter("Name", name));
+                command.Parameters.Add(new SqlParameter("IsEnabled", value));
 
                 command.ExecuteNonQuery();
             }
-
-            return Task.CompletedTask;
         }
 
         #region Not Implemented

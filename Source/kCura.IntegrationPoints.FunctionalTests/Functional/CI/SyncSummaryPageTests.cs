@@ -1,10 +1,6 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Toggles;
-using NUnit.Framework;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers;
+﻿using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
-using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -38,18 +34,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        public async Task Entities_SummaryPageTest()
+        public void Entities_SummaryPageTest()
         {
-            IToggleProvider toggleProvider = SqlToggleProvider.Create();
-            try
-            {
-                await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
-                _testsImplementation.EntitiesPushSummaryPage();
-            }
-            finally
-            {
-                await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(false).ConfigureAwait(false);
-            }
+            _testsImplementation.EntitiesPushSummaryPage();
         }
 
         protected override void OnTearDownFixture()

@@ -1,10 +1,14 @@
-﻿namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
+﻿using Relativity.Testing.Framework.Web.Models;
+
+namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 {
     internal abstract class RelativityProviderConnectToSource
     {
         public string DestinationWorkspace { get; set; }
 
         public RelativityProviderDestinationLocations Location { get; set; }
+
+        public YesNo EnableTagging { get; set; }
     }
 
     // This looks kinda crazy, right? But there is method in this madness...

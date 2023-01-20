@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading;
 using Atata;
-using Relativity.Testing.Framework.Web.Components;
-using Relativity.Testing.Framework.Web.Triggers;
-using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
-using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Controls;
+using Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Interfaces;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
+using Relativity.Testing.Framework.Web.Components;
+using Relativity.Testing.Framework.Web.Models;
+using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -63,6 +64,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindById("select2-chosen-4")]
         [SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
         public Clickable<_> DestinationWorkspaceDropDown { get; private set; }
+
+        [FindByPrecedingDivContent]
+        [SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+        public RadioButtonList<YesNo, _> EnableTagging { get; private set; }
 
         private void WaitForListToLoad()
         {
