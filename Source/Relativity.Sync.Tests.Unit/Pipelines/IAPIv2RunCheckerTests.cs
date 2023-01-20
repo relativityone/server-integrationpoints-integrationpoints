@@ -179,6 +179,19 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
             result.Should().BeFalse();
         }
 
+        [Test]
+        public void ShouldBeUsed_ShouldReturnFalse_IfDocumentTaggingIsEnabled()
+        {
+            // Arrange
+            _runCheckerConfig.SetupGet(x => x.EnableTagging).Returns(true);
+
+            // Act
+            bool result = _sut.ShouldBeUsed();
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
         [TestCase(InstallStatusCode.Canceled)]
         [TestCase(InstallStatusCode.Failed)]
         [TestCase(InstallStatusCode.InProgress)]
