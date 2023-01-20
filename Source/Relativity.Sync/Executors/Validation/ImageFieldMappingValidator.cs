@@ -12,7 +12,7 @@ namespace Relativity.Sync.Executors.Validation
 {
     internal sealed class ImageFieldMappingValidator : FieldMappingValidatorBase
     {
-        public ImageFieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IFieldManager fieldManager, IAPILog logger) : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, fieldManager, logger)
+        public ImageFieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger) : base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
         {
         }
 

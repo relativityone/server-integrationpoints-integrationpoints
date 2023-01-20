@@ -236,9 +236,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         public async Task ValidateAsync_ShouldHandleUnsupportedFieldType()
         {
             // Arrange
-            ValidationMessage expectedMessage = new ValidationMessage($"Some mapped fields have unsupported type: '{nameof(RelativityDataType.File)}'.");
             List<FieldInfoDto> mappedFields = new List<FieldInfoDto>() { new FieldInfoDto(SpecialFieldType.None, "Test", "Test", false, false) { RelativityDataType = RelativityDataType.File } };
             _fieldManagerMock.Setup(x => x.GetMappedFieldsAsync(_cancellationToken)).ReturnsAsync(mappedFields);
+            List<string> unsupportedFieldsNames = mappedFields.Where(x => x.RelativityDataType == RelativityDataType.File).Select(x => x.SourceFieldName).ToList();
+            ValidationMessage expectedMessage = new ValidationMessage($"Following fields have unsupported type '{nameof(RelativityDataType.File)}': {string.Join(",", unsupportedFieldsNames)}.");
 
             // Act
             ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
