@@ -93,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             // Act
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             string expectedBatchPath = PrepareFakeLoadFilePath();
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             // Act
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _serverPath = "randomTestPath";
             string rootDirectory = $@"{_serverPath}\EDDS{_DESTINATION_WORKSPACE_ID}";
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .Throws<DirectoryNotFoundException>();
 
             // Act
@@ -150,7 +150,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             PrepareFakeLoadFilePath();
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
 
             _dataReaderMock.Setup(x => x.Read()).Callback(() =>
@@ -174,7 +174,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
             bool readResult = true;
             _dataReaderMock.Setup(x => x.Read())
@@ -199,7 +199,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareFakeLoadFilePath();
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
+            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
                 .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
             bool readResult = true;
             _dataReaderMock.Setup(x => x.Read())

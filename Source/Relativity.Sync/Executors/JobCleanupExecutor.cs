@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
                 if (_iapi2RunChecker.ShouldBeUsed())
                 {
                     _logger.LogInformation("Removing job directory for ExportRunId: {exportRunId}", configuration.ExportRunId);
-                    string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                    string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync().ConfigureAwait(false);
                     if (jobDirectoryPath != null && Directory.Exists(jobDirectoryPath))
                     {
                         Directory.Delete(jobDirectoryPath, true);

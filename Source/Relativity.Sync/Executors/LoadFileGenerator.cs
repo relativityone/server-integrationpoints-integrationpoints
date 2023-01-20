@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch, CompositeCancellationToken token)
         {
-            string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
+            string batchPath = await _pathService.GenerateBatchLoadFileAsync(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
             await GenerateLoadFileAsync(batch, batchPath, settings, token).ConfigureAwait(false);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
@@ -118,31 +118,6 @@ namespace Relativity.Sync.Executors
                     .WithStartFromBeginning()
                     .WithDefaultEncoding()
                     .WithDefaultCultureInfo();
-        }
-
-        private async Task<string> CreateBatchFullPath(IBatch batch)
-        {
-            _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
-            string batchFullPath;
-            try
-            {
-                string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync(_configuration.DestinationWorkspaceArtifactId, batch.ExportRunId);
-                string batchDirectory = Path.Combine(jobDirectoryPath, batch.BatchGuid.ToString());
-                if (!Directory.Exists(batchDirectory))
-                {
-                    Directory.CreateDirectory(batchDirectory);
-                }
-
-                batchFullPath = Path.Combine(batchDirectory, $"{batch.BatchGuid}.dat");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
-                throw;
-            }
-
-            _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchFullPath);
-            return batchFullPath;
         }
 
         private async Task HandleBatchStatusAsync(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
