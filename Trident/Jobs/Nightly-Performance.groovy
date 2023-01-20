@@ -2,8 +2,7 @@
 
 jobWithSut {
     slackChannel = "ci-sync"
-    sutTemplate = "aio-whitesedge-latest"
-	//relativityBranch = "develop"
+    sutTemplate = "aio-zarzaparrilla-latest"
     jobScript = "Trident/Scripts/nightly-performance.ps1"
     cron = "0 3 * * *"
 }
