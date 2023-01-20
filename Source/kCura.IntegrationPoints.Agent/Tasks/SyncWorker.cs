@@ -386,7 +386,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     Dictionary<string, object> sourceConfiguration = Serializer.Deserialize<Dictionary<string, object>>(IntegrationPointDto?.SourceConfiguration);
 
                     _logger.LogInformation(
-                        "ExtendSourceConfigurationWithBatchStartingIndex - sourceConfiguration dictionary size: {}",
+                        "ExtendSourceConfigurationWithBatchStartingIndex - sourceConfiguration dictionary size: {sourceConfigurationSize}",
                         sourceConfiguration?.Count);
 
                     sourceConfiguration.Add(nameof(TaskParameters.BatchStartingIndex), taskParameters.BatchStartingIndex);
