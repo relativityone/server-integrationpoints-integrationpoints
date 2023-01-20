@@ -15,7 +15,6 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.Attributes;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation

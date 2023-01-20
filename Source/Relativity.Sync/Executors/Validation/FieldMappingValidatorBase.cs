@@ -9,7 +9,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
