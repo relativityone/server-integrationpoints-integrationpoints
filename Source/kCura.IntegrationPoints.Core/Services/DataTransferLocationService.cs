@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Services
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to create directory: {path}", path);
-                    throw new IOException($"Failed to create directory: {path}");
+                    throw new IOException($"Failed to create directory: {path}", ex);
                 }
             }
         }
