@@ -18,7 +18,10 @@ namespace Relativity.Sync.Executors.Validation
         private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
         protected readonly IAPILog _logger;
 
-        protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
+        protected FieldMappingValidatorBase(
+            ISourceServiceFactoryForUser sourceServiceFactoryForUser,
+            IDestinationServiceFactoryForUser destinationServiceFactoryForUser,
+            IAPILog logger)
         {
             _sourceServiceFactoryForUser = sourceServiceFactoryForUser;
             _destinationServiceFactoryForUser = destinationServiceFactoryForUser;

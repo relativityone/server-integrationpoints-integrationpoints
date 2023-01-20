@@ -15,6 +15,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.Attributes;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
@@ -27,6 +28,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private Mock<IObjectManager> _objectManager;
 
         private Mock<IValidationConfiguration> _validationConfiguration;
+
+        private Mock<IFieldManager> _fieldManagerMock;
 
         private JSONSerializer _jsonSerializer;
         private List<FieldMap> _fieldMappings;
@@ -79,12 +82,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         {
             _cancellationToken = CancellationToken.None;
 
-            var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-            var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            Mock<IDestinationServiceFactoryForUser> destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+            Mock<ISourceServiceFactoryForUser> sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            _fieldManagerMock = new Mock<IFieldManager>();
             _objectManager = new Mock<IObjectManager>();
 
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
             sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+            _fieldManagerMock.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<FieldInfoDto>());
 
             _validationConfiguration = new Mock<IValidationConfiguration>();
             _validationConfiguration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_DEST_WORKSPACE_ARTIFACT_ID).Verifiable();
@@ -98,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _fieldMappings.Select(x => x.SourceField));
             SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _fieldMappings.Select(x => x.DestinationField));
 
-            _sut = new FieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
+            _sut = new FieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, _fieldManagerMock.Object, new EmptyLogger());
         }
 
         [Test]
@@ -225,6 +230,24 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             // Assert
             actualResult.Should().Throw<InvalidOperationException>();
+        }
+
+        [Test]
+        public async Task ValidateAsync_ShouldHandleUnsupportedFieldType()
+        {
+            // Arrange
+            List<FieldInfoDto> mappedFields = new List<FieldInfoDto>() { new FieldInfoDto(SpecialFieldType.None, "Test", "Test", false, false) { RelativityDataType = RelativityDataType.File } };
+            _fieldManagerMock.Setup(x => x.GetMappedFieldsAsync(_cancellationToken)).ReturnsAsync(mappedFields);
+            List<string> unsupportedFieldsNames = mappedFields.Where(x => x.RelativityDataType == RelativityDataType.File).Select(x => x.SourceFieldName).ToList();
+            ValidationMessage expectedMessage = new ValidationMessage($"Following fields have unsupported type '{nameof(RelativityDataType.File)}': {string.Join(",", unsupportedFieldsNames)}.");
+
+            // Act
+            ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+
+            // Assert
+            actualResult.IsValid.Should().BeFalse();
+            actualResult.Messages.Should().HaveCount(1);
+            actualResult.Messages.Single().Should().Be(expectedMessage);
         }
 
         [TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
