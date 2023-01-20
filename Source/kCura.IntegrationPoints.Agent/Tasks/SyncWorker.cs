@@ -395,7 +395,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
             catch (Exception ex)
             {
-                _logger.LogError("ExtendSourceConfigurationWithBatchStartingIndex - execution failed", ex);
+                _logger.LogError(ex, "ExtendSourceConfigurationWithBatchStartingIndex - execution failed");
             }
         }
 
