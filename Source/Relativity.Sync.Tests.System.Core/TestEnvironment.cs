@@ -19,20 +19,27 @@ using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 using FieldRef = Relativity.Services.Field.FieldRef;
 
 namespace Relativity.Sync.Tests.System.Core
 {
     public sealed class TestEnvironment : IDisposable
     {
-        private int _templateWorkspaceArtifactId = -1;
         private const string _RELATIVITY_SYNC_TEST_HELPER_RAP = "Relativity_Sync_Test_Helper.xml";
         private const string _CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP = "Custom_Relativity_Sync_Test_Helper.xml";
+
         private readonly List<WorkspaceRef> _workspaces = new List<WorkspaceRef>();
         private readonly SemaphoreSlim _templateWorkspaceSemaphore = new SemaphoreSlim(1);
         private readonly ServiceFactory _serviceFactory;
+
+        private int _templateWorkspaceArtifactId = -1;
+
         private static readonly Guid _HELPER_APP_GUID = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
         private static readonly Guid _CUSTOM_HELPER_APP_GUID = new Guid("fdd69e45-880a-40bb-aae1-784271974d49");
+        private static readonly Guid _IMPORT_APP_GUID = new Guid("21F65FDC-3016-4F2B-9698-DE151A6186A2");
 
         public TestEnvironment()
         {
@@ -55,6 +62,8 @@ namespace Relativity.Sync.Tests.System.Core
                 {
                     throw new InvalidOperationException("Workspace creation failed. WorkspaceManager kepler service returned null");
                 }
+
+                InstallApplicationFromLibraryToWorkspace(newWorkspace.ArtifactID, _IMPORT_APP_GUID);
 
                 _workspaces.Add(newWorkspace);
                 return newWorkspace;
@@ -111,24 +120,6 @@ namespace Relativity.Sync.Tests.System.Core
             }
         }
 
-        private async Task<int> GetTemplateWorkspaceArtifactIdAsync(string templateWorkspaceName)
-        {
-            try
-            {
-                await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
-                if (_templateWorkspaceArtifactId == -1)
-                {
-                    _templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByNameAsync(templateWorkspaceName).ConfigureAwait(false);
-                }
-
-                return _templateWorkspaceArtifactId;
-            }
-            finally
-            {
-                _templateWorkspaceSemaphore.Release();
-            }
-        }
-
         public async Task<int> GetWorkspaceArtifactIdByNameAsync(string workspaceName)
         {
             using (var objectManager = _serviceFactory.CreateProxy<IObjectManager>())
@@ -165,14 +156,14 @@ namespace Relativity.Sync.Tests.System.Core
             var production = new Productions.Services.Production
             {
                 Name = productionName,
-                Details = new ProductionDetails
+                Details = new Productions.Services.ProductionDetails
                 {
                     BrandingFontSize = 10,
                     ScaleBrandingFont = false
                 },
                 Numbering = new DocumentFieldNumbering
                 {
-                    NumberingType = NumberingType.DocumentField,
+                    NumberingType = Productions.Services.NumberingType.DocumentField,
                     NumberingField = new FieldRef
                     {
                         ArtifactID = 1003667,
@@ -203,7 +194,8 @@ namespace Relativity.Sync.Tests.System.Core
         public async Task CreateFieldsInWorkspaceAsync(int workspaceArtifactId)
         {
             await InstallHelperAppIfNeededAsync(_RELATIVITY_SYNC_TEST_HELPER_RAP, _HELPER_APP_GUID).ConfigureAwait(false);
-            await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _HELPER_APP_GUID);
+
+            InstallApplicationFromLibraryToWorkspace(workspaceArtifactId, _HELPER_APP_GUID);
 
             await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
         }
@@ -211,39 +203,40 @@ namespace Relativity.Sync.Tests.System.Core
         public async Task InstallCustomHelperAppAsync(int workspaceArtifactId)
         {
             await InstallHelperAppIfNeededAsync(_CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP, _CUSTOM_HELPER_APP_GUID).ConfigureAwait(false);
-            await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _CUSTOM_HELPER_APP_GUID);
+            InstallApplicationFromLibraryToWorkspace(workspaceArtifactId, _CUSTOM_HELPER_APP_GUID);
 
             await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
         }
 
-        public async Task InstallLegalHoldToWorkspaceAsync(int workspaceArtifactId)
+        public void InstallLegalHoldToWorkspace(int workspaceArtifactId)
         {
             Guid legalHoldGuid = new Guid("98f31698-90a0-4ead-87e3-dac723fed2a6");
-            await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, legalHoldGuid).ConfigureAwait(false);
+            InstallApplicationFromLibraryToWorkspace(workspaceArtifactId, legalHoldGuid);
         }
 
-        private async Task InstallApplicationFromLibraryToWorkspaceAsync(int workspaceArtifactId, Guid appGuid)
+        private async Task<int> GetTemplateWorkspaceArtifactIdAsync(string templateWorkspaceName)
         {
-            using (var applicationInstallManager =
-                _serviceFactory.CreateProxy<Services.Interfaces.LibraryApplication.IApplicationInstallManager>())
+            try
             {
-                var installApplicationRequest = new InstallApplicationRequest
+                await _templateWorkspaceSemaphore.WaitAsync().ConfigureAwait(false);
+                if (_templateWorkspaceArtifactId == -1)
                 {
-                    WorkspaceIDs = new List<int> { workspaceArtifactId }
-                };
-                InstallApplicationResponse install = await applicationInstallManager
-                    .InstallApplicationAsync(-1, appGuid, installApplicationRequest).ConfigureAwait(false);
-                int applicationInstallId = install.Results.First().ApplicationInstallID;
-                InstallStatusCode installStatusCode;
-                do
-                {
-                    await Task.Yield();
-                    GetInstallStatusResponse status = await applicationInstallManager
-                        .GetStatusAsync(-1, appGuid, applicationInstallId).ConfigureAwait(false);
-                    installStatusCode = status.InstallStatus.Code;
+                    _templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByNameAsync(templateWorkspaceName).ConfigureAwait(false);
                 }
-                while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+
+                return _templateWorkspaceArtifactId;
             }
+            finally
+            {
+                _templateWorkspaceSemaphore.Release();
+            }
+        }
+
+        private void InstallApplicationFromLibraryToWorkspace(int workspaceArtifactId, Guid appGuid)
+        {
+            ILibraryApplicationService libraryAppService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+            LibraryApplication importApp = libraryAppService.Get(appGuid);
+            libraryAppService.InstallToWorkspace(workspaceArtifactId, importApp.ArtifactID);
         }
 
         private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)

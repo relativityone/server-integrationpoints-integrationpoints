@@ -15,5 +15,7 @@
         int SourceWorkspaceArtifactId { get; }
 
         int DestinationWorkspaceArtifactId { get; }
+
+        bool EnableTagging { get; }
     }
 }

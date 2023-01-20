@@ -55,9 +55,8 @@ namespace Relativity.Sync.Executors
             {
                 string message = $"There was an error while deleting batches belonging to Sync configuration " +
                     $"ArtifactID: {configuration.SyncConfigurationArtifactId}.";
-                _logger.LogError(ex, message);
-                ExecutionResult result = ExecutionResult.Failure(message, ex);
-                return result;
+                _logger.LogWarning(ex, message);
+                return ExecutionResult.SuccessWithErrors(ex);
             }
         }
     }

@@ -66,6 +66,7 @@ namespace Relativity.Sync.Pipelines
                                                 && !_configuration.IsRetried
                                                 && !_configuration.IsDrainStopped
                                                 && !_configuration.ImageImport
+                                                && !_configuration.EnableTagging
                                                 && await IsImportInstalledInDestinationWorkspaceAsync().ConfigureAwait(false)
                                                 && !await AreLongTextFieldsMappedAsync().ConfigureAwait(false);
                 return result;

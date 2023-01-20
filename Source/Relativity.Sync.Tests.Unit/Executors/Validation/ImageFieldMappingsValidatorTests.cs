@@ -68,8 +68,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         {
             _cancellationToken = CancellationToken.None;
 
-            var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-            var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            Mock<IDestinationServiceFactoryForUser> destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+            Mock<ISourceServiceFactoryForUser> sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             _objectManager = new Mock<IObjectManager>();
 
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);

@@ -96,10 +96,6 @@ namespace Relativity.Sync.Transfer.ImportAPI
         {
             return new AdvancedImportSettings()
             {
-                Native = new AdvancedNativeSettings
-                {
-                    FileType = new FileTypeSettings()
-                },
                 Folder = new AdvancedFolderSettings(),
                 Other = new AdvancedOtherSettings()
             };
@@ -171,6 +167,11 @@ namespace Relativity.Sync.Transfer.ImportAPI
                 }
                 else
                 {
+                    advancedSettings.Native = new AdvancedNativeSettings
+                    {
+                        FileType = new FileTypeSettings()
+                    };
+
                     if (nativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
                     {
                         advancedSettings.Other.Billable = true;
