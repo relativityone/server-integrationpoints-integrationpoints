@@ -1,14 +1,14 @@
 using System;
 using System.IO;
-using SystemInterface.IO;
 using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
-using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.Services.Exceptions;
 using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
+using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services
         private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
         private const string _EDDS_PARENT_FOLDER = "DataTransfer";
         private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
-        
+
         private readonly IHelper _helper;
         private readonly IIntegrationPointTypeService _integrationPointTypeService;
         private readonly IDirectory _directoryService;
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services
             {
                 using (IWorkspaceManager workspaceManager = _helper.GetServicesManager().CreateProxy<IWorkspaceManager>(ExecutionIdentity.System))
                 {
-                    WorkspaceRef workspace = new WorkspaceRef {ArtifactID = workspaceArtifactId};
+                    WorkspaceRef workspace = new WorkspaceRef { ArtifactID = workspaceArtifactId };
 
                     FileShareResourceServer fileShare = workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).GetAwaiter().GetResult();
                     return Path.Combine(fileShare.UNCPath, string.Format(_WORKSPACE_FOLDER_FORMAT, workspaceArtifactId));
@@ -115,7 +115,15 @@ namespace kCura.IntegrationPoints.Core.Services
             {
                 LogMissingDirectoryCreation(path);
 
-                _directoryService.CreateDirectory(path);
+                try
+                {
+                    _directoryService.CreateDirectory(path);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create directory: {path}", path);
+                    throw new IOException($"Failed to create directory: {path}");
+                }
             }
         }
 
