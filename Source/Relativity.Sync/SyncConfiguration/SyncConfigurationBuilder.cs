@@ -78,6 +78,7 @@ namespace Relativity.Sync.SyncConfiguration
             ValidateProperty(options, x => x.JobIdGuid);
             ValidateProperty(options, x => x.StatusGuid);
             ValidateProperty(options, x => x.CompletedItemsCountGuid);
+            ValidateProperty(options, x => x.ReadItemsCountGuid);
             ValidateProperty(options, x => x.TotalItemsCountGuid);
             ValidateProperty(options, x => x.FailedItemsCountGuid);
             ValidateProperty(options, x => x.DestinationWorkspaceInformationGuid);

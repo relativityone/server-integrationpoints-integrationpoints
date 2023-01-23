@@ -161,6 +161,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistory, x => x.JobIdGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.StatusGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.CompletedItemsCountGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.ReadItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.FailedItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.TotalItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.JobHistoryTypeGuid),

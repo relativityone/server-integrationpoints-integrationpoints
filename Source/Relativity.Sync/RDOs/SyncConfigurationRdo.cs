@@ -131,6 +131,9 @@ namespace Relativity.Sync.RDOs
         [RdoField(SyncRdoGuids.JobHistoryCompletedItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryCompletedItemsField { get; set; }
 
+        [RdoField(SyncRdoGuids.JobHistoryReadItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryReadItemsField { get; set; }
+
         [RdoField(SyncRdoGuids.JobHistoryFailedItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryGuidFailedField { get; set; }
 

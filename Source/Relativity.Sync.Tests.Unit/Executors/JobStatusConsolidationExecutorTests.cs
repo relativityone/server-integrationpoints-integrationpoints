@@ -10,6 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
@@ -24,6 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobStatisticsContainer> _jobStatisticsContainerStub;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminStub;
         private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
+        private Mock<IIAPIv2RunChecker> _iapi2RunCheckerStub;
         private List<IBatch> _batches;
 
         private IExecutor<IJobStatusConsolidationConfiguration> _sut;
@@ -53,6 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchRepositoryStub = new Mock<IBatchRepository>();
             _jobStatisticsContainerStub = new Mock<IJobStatisticsContainer>();
             _configurationStub = new Mock<IJobStatusConsolidationConfiguration>();
+            _iapi2RunCheckerStub = new Mock<IIAPIv2RunChecker>();
             _configurationStub.Setup(x => x.ExportRunId).Returns(new Guid("286E0000-479B-4752-B95A-C818A3974495"));
 
             _serviceFactoryForAdminStub = new Mock<ISourceServiceFactoryForAdmin>();
@@ -68,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             SetUpUpdateCall(success: true);
 
-            _sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryForAdminStub.Object);
+            _sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryForAdminStub.Object, _iapi2RunCheckerStub.Object);
         }
 
         [Test]

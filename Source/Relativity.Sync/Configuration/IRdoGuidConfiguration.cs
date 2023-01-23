@@ -19,6 +19,8 @@ namespace Relativity.Sync.Configuration
 
         Guid CompletedItemsFieldGuid { get; }
 
+        Guid ReadItemsFieldGuid { get; }
+
         Guid FailedItemsFieldGuid { get; }
 
         Guid TotalItemsFieldGuid { get; }
