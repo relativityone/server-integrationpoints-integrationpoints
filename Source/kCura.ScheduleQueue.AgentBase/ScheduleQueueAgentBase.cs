@@ -195,11 +195,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 _config = IntegrationPoints.Config.Config.Instance;
             }
 
-            if (_queueJobValidator == null)
-            {
-                _queueJobValidator = new QueueJobValidator(Helper, _config, ScheduleRuleFactory, Logger);
-            }
-
             if (_apm == null)
             {
                 _apm = Client.APMClient;
@@ -213,6 +208,11 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_objectManagerFactory == null)
             {
                 _objectManagerFactory = new RelativityObjectManagerFactory(Helper);
+            }
+
+            if (_queueJobValidator == null)
+            {
+                _queueJobValidator = new QueueJobValidator(_objectManagerFactory, _config, ScheduleRuleFactory, Logger);
             }
 
             _agentStartTime = _dateTime.UtcNow;
