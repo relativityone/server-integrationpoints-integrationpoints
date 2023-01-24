@@ -672,7 +672,12 @@
         }
 
         /********** Tooltips  **********/
-        var destinationTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderDestinationDetails, TooltipDefs.RelativityProviderDestinationDetailsTitle);
+        var destinationDetailsTooltips = TooltipDefs.RelativityProviderDestinationDetails;
+        if (!self.IsTaggingToggleEnabled()) {
+            destinationDetailsTooltips = TooltipDefs.RelativityProviderDestinationDetails.filter(e => e.name !== "Enable Tagging");
+        }
+
+        var destinationTooltipViewModel = new TooltipViewModel(destinationDetailsTooltips, TooltipDefs.RelativityProviderDestinationDetailsTitle);
 
         Picker.create("Tooltip", "tooltipDestinationId", "TooltipView", destinationTooltipViewModel);
 
