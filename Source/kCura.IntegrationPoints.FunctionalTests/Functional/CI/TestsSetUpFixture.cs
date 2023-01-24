@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using Atata;
 using kCura.IntegrationPoints.Common.Toggles;
@@ -54,26 +53,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             await SetTogglesAsync().ConfigureAwait(false);
 
-            await ConfigureHeapAsync().ConfigureAwait(false);
+            ConfigureHeap();
         }
 
-        private async Task ConfigureHeapAsync()
+        private void ConfigureHeap()
         {
-            using (SqlConnection connection = SqlHelper.CreateEddsConnectionFromAppConfig())
-            {
-                await connection.OpenAsync().ConfigureAwait(false);
-
-                SqlCommand command = new SqlCommand("pr_SetToggle", connection)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-
-                command.Parameters.Add(new SqlParameter("Name", "Relativity.Core.Toggle.EnableClickTracking"));
-                command.Parameters.Add(new SqlParameter("IsEnabled", 1));
-
-                command.ExecuteNonQuery();
-            }
-
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
                 .Require(new Testing.Framework.Models.InstanceSetting
                 {
@@ -120,6 +104,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         private async Task SetTogglesAsync()
         {
             await _toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+            await _toggleProvider.SetAsync<EnableTaggingToggle>(true).ConfigureAwait(false);
 
             await _toggleProvider.SetAsync("Relativity.Core.Toggle.EnableClickTracking", true);
         }
