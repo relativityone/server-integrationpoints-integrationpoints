@@ -116,7 +116,7 @@
 				</tr>
 				<tr>
 					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: !IsNonDocumentObjectFlow()">
+						<div class="field-row" data-bind="visible: (!IsNonDocumentObjectFlow() && IsTaggingToggleEnabled())">
 							<div class="field-label required">Enable Tagging:</div>
 							<div class="field-value">
 								<ul>
@@ -142,7 +142,6 @@
 	<script src="~/Scripts/core/data.js"></script>
 	<script src="~/Scripts/core/utils.js"></script>
 	<script src="~/node_modules/knockout/build/output/knockout-latest.js"></script>
-	@* <script src="~/node_modules/knockout.validation/dist/knockout.validation.js"></script> *@
 	<script src="~/Scripts/knockout.validation.js"></script> 
 	<script src="~/node_modules/jstree/dist/jstree.min.js"></script>
 	<script src="~/Scripts/export/location-jstree-selector.js"></script>
