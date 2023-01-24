@@ -53,10 +53,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             await SetTogglesAsync().ConfigureAwait(false);
 
-            await ConfigureHeapAsync().ConfigureAwait(false);
+            ConfigureHeap();
         }
 
-        private async Task ConfigureHeapAsync()
+        private void ConfigureHeap()
         {
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
                 .Require(new Testing.Framework.Models.InstanceSetting
