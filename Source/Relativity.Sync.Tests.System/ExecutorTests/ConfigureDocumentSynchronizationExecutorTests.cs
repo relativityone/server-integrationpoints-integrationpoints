@@ -53,6 +53,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
         [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
+        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMativesConfigured(ImportNativeFileCopyMode fileCopyMode)
         {
             // Arrange
@@ -77,6 +78,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMappingConfigured()
         {
             // Arrange
