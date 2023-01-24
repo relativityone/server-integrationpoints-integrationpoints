@@ -172,6 +172,38 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             return result;
         }
 
+        public async Task<QueryResultSlim> QuerySlimAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+        {
+            Func<LogParameters> getWarningMessageHeader =
+                () => GetWarningMessageHeader<QueryRequest>(
+                    workspaceArtifactID,
+                    rdoArtifactId: _UNKNOWN,
+                    rdoType: request.ObjectType.Name);
+
+            QueryResultSlim result = await _objectManager
+                .QuerySlimAsync(workspaceArtifactID, request, start, length)
+                .ConfigureAwait(false);
+
+            List<FieldValuePair> fieldValuePairs = new List<FieldValuePair>();
+
+            for (int i = 0; i < result.Objects.Count; i++)
+            {
+                var fieldValuePair = new FieldValuePair
+                {
+                    Field = result.Fields[i],
+                    Value = result.Objects[i].Values[0]
+                };
+                fieldValuePairs.Add(fieldValuePair);
+            }
+
+            IEnumerable<FieldValueMap> fieldValues = fieldValuePairs
+                .Select(x => new FieldValueMap(x));
+
+            AnalyzeFields(fieldValues, getWarningMessageHeader);
+
+            return result;
+        }
+
         public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
         {
             return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);

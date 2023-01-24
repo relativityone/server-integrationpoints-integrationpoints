@@ -63,6 +63,16 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                     length));
         }
 
+        public Task<QueryResultSlim> QuerySlimAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+        {
+            return _retryHandler.ExecuteWithRetriesAsync(
+                () => _objectManager.QuerySlimAsync(
+                    workspaceArtifactID,
+                    request,
+                    start,
+                    length));
+        }
+
         public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
         {
             return _retryHandler.ExecuteWithRetriesAsync(
