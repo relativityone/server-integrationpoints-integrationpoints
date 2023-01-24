@@ -73,6 +73,21 @@
         promise.then(function (result) {
             IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
         });
+		
+		var getEnableTaggingToggleValue = function () {
+			var enableTaggingToggleValue = IP.data.ajax({
+				url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle'),
+				type: 'get'
+			}).fail(function (error) {
+				console.log(error);
+			});
+			return enableTaggingToggleValue;
+		}
+
+		var promise = getEnableTaggingToggleValue();
+		promise.then(function (result) {
+			IP.data.params['EnableTaggingToggleValue'] = result;
+		});
 
 		IP.unsavedChangesHandler = new UnsavedChangesHandler();
 		IP.unsavedChangesHandler.register();

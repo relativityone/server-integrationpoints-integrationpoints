@@ -179,6 +179,10 @@
         self.IsNonDocumentObjectFlow = ko.observable();
         self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
+        var isTaggingToggleEnabled = window.parent.IP.data.params['EnableTaggingToggleValue'];
+        self.IsTaggingToggleEnabled = ko.observable();
+        self.IsTaggingToggleEnabled(isTaggingToggleEnabled);
+
         self.workspaces = ko.observableArray(state.workspaces);
         self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
         self.DestinationFolder = ko.observable(state.DestinationFolder);
@@ -209,12 +213,25 @@
         });
 
         self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
-        self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || null);
 
-        document.getElementById("enable-tagging").checked = self.CreateSavedSearchForTagging() === true;
+        var isTaggingEnabledDefault = "false";
+        if (!self.IsTaggingToggleEnabled()) {
+            isTaggingEnabledDefault = "true";
+        }
+        self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || isTaggingEnabledDefault);
+
+        document.getElementById("enable-tagging").checked = self.CreateSavedSearchForTagging() === true || !self.IsTaggingToggleEnabled();
+
+
         document.getElementById("customRadioButtonErrorMsg").style.display = 'none';
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
+            if (!self.IsTaggingToggleEnabled()) {
+                self.EnableTagging("true");
+                document.getElementById("enable-tagging").checked = true;
+                return;
+            }
+
             if (value == "true") {
                 self.EnableTagging("true");
                 document.getElementById("enable-tagging").checked = true;

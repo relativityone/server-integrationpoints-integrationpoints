@@ -6,7 +6,7 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-    public class ToggleAPIController: ApiController
+    public class ToggleAPIController : ApiController
     {
         private readonly IToggleProvider _toggleProvider;
 
@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 return Request.CreateResponse(HttpStatusCode.OK, false);//Expected behavior for missing toggle
             }
-            
         }
     }
 }
