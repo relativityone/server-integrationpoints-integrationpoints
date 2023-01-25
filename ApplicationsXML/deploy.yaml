@@ -10,5 +10,5 @@ agents:
         s: 2
         m: 4
         l: 6
-        xl: 6
-        xxl: 6
+        xl: 12
+        xxl: 24
