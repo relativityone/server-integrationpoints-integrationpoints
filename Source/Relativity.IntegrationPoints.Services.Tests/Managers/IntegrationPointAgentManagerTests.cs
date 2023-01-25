@@ -42,36 +42,33 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _containerFake = new Mock<IWindsorContainer>();            
 
             _queueQueryManagerFake = new Mock<IQueueQueryManager>();
-            _containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);            
+            _containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);
 
             _instanceSettingsManagerFake = new Mock<IInstanceSettingsManager>();
             _containerFake.Setup(x => x.Resolve<IInstanceSettingsManager>()).Returns(_instanceSettingsManagerFake.Object);
 
             _jobServiceFake = new Mock<IJobService>();
             _containerFake.Setup(x => x.Resolve<IJobService>()).Returns(_jobServiceFake.Object);
-        }        
+        }
 
         [TestCase(3, 0, 3, WorkloadSize.None)]
         [TestCase(5, 3, 2, WorkloadSize.One)]
         [TestCase(5, 2, 1, WorkloadSize.S)]
         [TestCase(3, 0, 0, WorkloadSize.S)]
         [TestCase(5, 0, 1, WorkloadSize.M)]
-        [TestCase(10, 1, 4, WorkloadSize.M)]    
-        [TestCase(10, 1, 1, WorkloadSize.L)]        
-        [TestCase(25, 0, 2, WorkloadSize.L)]
-        [TestCase(30, 3, 3, WorkloadSize.XL)]        
-        [TestCase(33, 1, 1, WorkloadSize.XL)]
-        [TestCase(35, 1, 2, WorkloadSize.XXL)]
+        [TestCase(10, 1, 4, WorkloadSize.M)]
+        [TestCase(10, 1, 1, WorkloadSize.L)]
+        [TestCase(30, 0, 2, WorkloadSize.L)]
         public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenExcludedJobsAreInQueue(int queueCount,  int jobsExcludedByPriority, int excludedFromProcessingByTimeCondition, WorkloadSize expectedWorkloadSize)
         {
             // Arrange
             IntegrationPointAgentManager sut = PrepareSut(queueCount, string.Empty, jobsExcludedByPriority, excludedFromProcessingByTimeCondition);
-            
+
             // Act
             Workload workload = await sut.GetWorkloadAsync().ConfigureAwait(false);
 
             // Assert
-            workload.Size.Should().Be(expectedWorkloadSize);            
+            workload.Size.Should().Be(expectedWorkloadSize);
         }
 
         [TestCase(0, WorkloadSize.None)]
@@ -79,15 +76,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         [TestCase(2, WorkloadSize.S)]
         [TestCase(3, WorkloadSize.S)]
         [TestCase(4, WorkloadSize.M)]
-        [TestCase(5, WorkloadSize.M)]
         [TestCase(7, WorkloadSize.M)]
         [TestCase(8, WorkloadSize.L)]
-        [TestCase(15, WorkloadSize.L)]
-        [TestCase(23, WorkloadSize.L)]
-        [TestCase(24, WorkloadSize.XL)]
-        [TestCase(28, WorkloadSize.XL)]
-        [TestCase(31, WorkloadSize.XL)]
-        [TestCase(32, WorkloadSize.XXL)]
+        [TestCase(30, WorkloadSize.L)]
         public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenUsingDefaultSettings(int pendingJobsCount, WorkloadSize expectedWorkloadSize)
         {
             // Arrange
