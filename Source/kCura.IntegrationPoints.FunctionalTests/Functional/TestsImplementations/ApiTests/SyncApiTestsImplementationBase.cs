@@ -161,20 +161,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int destinationFolderId = await destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);
             int destinationWorkspaceId = destinationWorkspaceDataService.WorkspaceId;
 
-            IntegrationPointModel i = new IntegrationPointModel();
-
-            i.SourceConfiguration = GetSourceConfiguartion(savedSearchId);
-                i.DestinationConfiguration = GetDestinationConfiguration(destinationWorkspaceDataService.WorkspaceId, destinationFolderId);
-            i.Name = integrationPointName;
-                i.FieldMappings = await _sourceWorkspaceDataService.GetIdentifierMappingAsync(destinationWorkspaceId).ConfigureAwait(false);
-            i.DestinationProvider = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY).ConfigureAwait(false);
-            i.SourceProvider = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY).ConfigureAwait(false);
-            i.Type = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportName).ConfigureAwait(false);
-            i.OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(overwriteMode).ConfigureAwait(false);
-            i.EmailNotificationRecipients = string.Empty;
-            i.ScheduleRule = new ScheduleModel();
-            i.LogErrors = true;
-            return i;
+            return new IntegrationPointModel
+            {
+                SourceConfiguration = GetSourceConfiguartion(savedSearchId),
+                DestinationConfiguration = GetDestinationConfiguration(destinationWorkspaceDataService.WorkspaceId, destinationFolderId),
+                Name = integrationPointName,
+                FieldMappings = await _sourceWorkspaceDataService.GetIdentifierMappingAsync(destinationWorkspaceId).ConfigureAwait(false),
+                DestinationProvider = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY).ConfigureAwait(false),
+                SourceProvider = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY).ConfigureAwait(false),
+                Type = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportName).ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(overwriteMode).ConfigureAwait(false),
+                EmailNotificationRecipients = string.Empty,
+                ScheduleRule = new ScheduleModel(),
+                LogErrors = true
+            };
         }
 
         private RelativityProviderSourceConfiguration GetSourceConfiguartion(int savedSearchId)
