@@ -184,9 +184,14 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 .QuerySlimAsync(workspaceArtifactID, request, start, length)
                 .ConfigureAwait(false);
 
+            if (result.Fields == null)
+            {
+                return result;
+            }
+
             List<FieldValuePair> fieldValuePairs = new List<FieldValuePair>();
 
-            for (int i = 0; i < result.Objects.Count; i++)
+            for (int i = 0; i < result.Fields.Count; i++)
             {
                 var fieldValuePair = new FieldValuePair
                 {
