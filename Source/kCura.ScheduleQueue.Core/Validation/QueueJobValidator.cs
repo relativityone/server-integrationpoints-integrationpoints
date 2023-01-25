@@ -12,7 +12,6 @@ namespace kCura.ScheduleQueue.Core.Validation
         private readonly IAPILog _log;
         private readonly IJobPreValidator[] _validators;
 
-
         public QueueJobValidator(IRelativityObjectManagerFactory relativityObjectManagerFactory, IConfig config, IScheduleRuleFactory scheduleRuleFactory, IAPILog log)
         {
             _log = log.ForContext<QueueJobValidator>();
