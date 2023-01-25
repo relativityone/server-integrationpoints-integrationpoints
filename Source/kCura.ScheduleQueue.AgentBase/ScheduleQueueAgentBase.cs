@@ -545,7 +545,7 @@ namespace kCura.ScheduleQueue.AgentBase
             catch (Exception e)
             {
                 Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-                return PreValidationResult.InvalidJob(e.Message, true, false);
+                return PreValidationResult.InvalidJob(e.Message, false, false);
             }
         }
 
