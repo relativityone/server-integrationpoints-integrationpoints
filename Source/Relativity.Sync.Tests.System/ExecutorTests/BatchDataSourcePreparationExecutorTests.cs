@@ -153,7 +153,11 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
                 .SetupDocumentConfiguration(
-                    IdentifierFieldMap)
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
@@ -201,7 +205,12 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
@@ -241,7 +250,12 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
