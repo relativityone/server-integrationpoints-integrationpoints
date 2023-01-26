@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
         private readonly Guid _EXPORT_RUN_ID = Guid.NewGuid();
         private readonly Dataset _testData = Dataset.NativesAndExtractedText;
 
-
         private WorkspaceRef _workspace;
         private string _workspaceFileSharePath;
 

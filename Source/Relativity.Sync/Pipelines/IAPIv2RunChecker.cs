@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Exceptions;
@@ -67,8 +64,7 @@ namespace Relativity.Sync.Pipelines
                                                 && !_configuration.IsDrainStopped
                                                 && !_configuration.ImageImport
                                                 && !_configuration.EnableTagging
-                                                && await IsImportInstalledInDestinationWorkspaceAsync().ConfigureAwait(false)
-                                                && !await AreLongTextFieldsMappedAsync().ConfigureAwait(false);
+                                                && await IsImportInstalledInDestinationWorkspaceAsync().ConfigureAwait(false);
                 return result;
             }
             catch (Exception ex)
@@ -99,22 +95,6 @@ namespace Relativity.Sync.Pipelines
                 _logger.LogError(ex, "Failed to check if Import application is installed in destination workspace Artifact ID: {destinationWorkspaceArtifactID}", _configuration.DestinationWorkspaceArtifactId);
                 return false;
             }
-        }
-
-        private async Task<bool> AreLongTextFieldsMappedAsync()
-        {
-            IList<FieldMap> mappedFields = _fieldMappings.GetFieldMappings();
-            ICollection<string> fieldNames = mappedFields.Select(x => x.SourceField.DisplayName).ToArray();
-
-            IDictionary<string, RelativityDataType> fieldDataTypes = await _objectFieldTypeRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(
-                _configuration.SourceWorkspaceArtifactId,
-                _configuration.RdoArtifactTypeId,
-                fieldNames,
-                CancellationToken.None)
-             .ConfigureAwait(false);
-
-            bool hasLongTextMapped = fieldDataTypes.Any(x => x.Value == RelativityDataType.LongText);
-            return hasLongTextMapped;
         }
     }
 }
