@@ -52,6 +52,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _retriableStreamBuilderFactory.Setup(f => f.Create(_SOURCE_WORKSPACE_ID, _ITEM_ARTIFACT_ID, _SANITIZING_SOURCE_FIELD_NAME)).Returns(_retriableStreamBuilder.Object);
             _logger = new Mock<IAPILog>();
 
+            _iapiRunCheckerFake = new Mock<IIAPIv2RunChecker>();
+            _iapiRunCheckerFake.Setup(x => x.ShouldBeUsed()).Returns(false);
+
+            _loadFilePathServiceFake = new Mock<ILoadFilePathService>();
+
             _sut = new LongTextFieldSanitizer(
                 _serviceFactoryForUser.Object,
                 _retriableStreamBuilderFactory.Object,
