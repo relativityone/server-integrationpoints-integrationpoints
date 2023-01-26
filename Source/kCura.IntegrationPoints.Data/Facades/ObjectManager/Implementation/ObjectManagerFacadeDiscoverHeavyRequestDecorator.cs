@@ -178,7 +178,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 () => GetWarningMessageHeader<QueryRequest>(
                     workspaceArtifactID,
                     rdoArtifactId: _UNKNOWN,
-                    rdoType: request.ObjectType.Name);
+                    rdoType: request.ObjectType.Name,
+                    isSlim: true);
 
             QueryResultSlim result = await _objectManager
                 .QuerySlimAsync(workspaceArtifactID, request, start, length)
@@ -337,16 +338,18 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         private LogParameters GetWarningMessageHeader<T>(
             int workspaceArtifactId,
             string rdoArtifactId,
-            string rdoType)
+            string rdoType,
+            bool isSlim = false)
         {
-            string operationName = GetOperationNameForRequestType<T>();
+            string operationName = GetOperationNameForRequestType<T>(isSlim);
             return ("Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).",
                 new object[] { operationName, rdoType, rdoArtifactId, workspaceArtifactId });
         }
 
-        private string GetOperationNameForRequestType<T>()
+        private string GetOperationNameForRequestType<T>(bool isSlim)
         {
-            return typeof(T).Name.Replace("Request", string.Empty).ToUpperInvariant();
+            string operationName = typeof(T).Name.Replace("Request", string.Empty).ToUpperInvariant();
+            return isSlim ? $"{operationName}SLIM" : operationName;
         }
     }
 }

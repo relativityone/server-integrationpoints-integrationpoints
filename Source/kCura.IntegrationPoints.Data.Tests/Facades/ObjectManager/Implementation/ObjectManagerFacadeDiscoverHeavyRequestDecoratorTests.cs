@@ -18,7 +18,8 @@ using ReadResult = Relativity.Services.Objects.DataContracts.ReadResult;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ObjectManagerFacadeDiscoverHeavyRequestDecoratorTests
     {
         private Mock<IAPILog> _loggerMock;
@@ -468,6 +469,77 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         }
 
         [Test]
+        [TestCaseSource(nameof(FieldValueExceededByOneTestSource))]
+        [TestCaseSource(nameof(FieldValueExceededAndNotTestSource))]
+        public async Task QuerySlimAsync_ShouldLogWarningOnlyWhenFieldCollectionCountIsExceeded(
+            CollectionFieldValueTestCases fieldValueTestCases)
+        {
+            //arrange
+            const int workspaceId = 101;
+            const string objectTypeName = "Object Exceeded";
+            const string operation = "QUERY SLIM";
+            const string objectId = "[UNKNOWN]";
+            const int start = 0;
+            const int length = 1;
+
+            IEnumerable<CollectionFieldValueTestCase> exceededFieldValues = fieldValueTestCases
+                .FieldValues
+                .Where(x => x.Value.Count > _MAX_COLLECTION_COUNT);
+            IEnumerable<CollectionFieldValueTestCase> notExceededFieldValues = fieldValueTestCases
+                .FieldValues
+                .Where(x => x.Value.Count <= _MAX_COLLECTION_COUNT);
+
+            QueryRequest request = BuildQueryRequest(objectTypeName);
+
+            QueryResultSlim result = BuildQueryResultSlim(fieldValueTestCases.FieldValues);
+            SetupQuerySlimAsyncInObjectManager(result);
+
+            //act
+            QueryResultSlim actualResult = await _sut
+                .QuerySlimAsync(workspaceId, request, start, length)
+                .ConfigureAwait(false);
+
+            //assert
+            result.Should().Be(actualResult);
+            VerifyIfHeavyRequestIsLoggedIn(
+                operation,
+                objectTypeName,
+                objectId,
+                workspaceId,
+                exceededFieldValues);
+            VerifyIfHeavyRequestIsNotLoggedIn(operation, notExceededFieldValues);
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FieldValueAreNullsTestSource))]
+        [TestCaseSource(nameof(FieldValueAreEmptyTestSource))]
+        [TestCaseSource(nameof(FieldValueLowerThanMaxTestSource))]
+        [TestCaseSource(nameof(FieldValueEqualToMaxTestSource))]
+        public async Task QuerySlimAsync_ShouldNotLogWarningForNonHeavyRequest(
+            CollectionFieldValueTestCases fieldValueTestCases)
+        {
+            //arrange
+            const int workspaceId = 101;
+            const string objectTypeName = "Object Not Exceeded";
+            const int start = 0;
+            const int length = 1;
+
+            QueryRequest request = BuildQueryRequest(objectTypeName);
+
+            QueryResultSlim result = BuildQueryResultSlim(fieldValueTestCases.FieldValues);
+            SetupQuerySlimAsyncInObjectManager(result);
+
+            //act
+            QueryResultSlim actualResult = await _sut
+                .QuerySlimAsync(workspaceId, request, start, length)
+                .ConfigureAwait(false);
+
+            //assert
+            result.Should().Be(actualResult);
+            VerifyIfNoneHeavyRequestIsNotLoggedIn();
+        }
+
+        [Test]
         public async Task UpdateAsync_MassUpdate_ShouldReturnDecoratedResult()
         {
             // arrange
@@ -896,6 +968,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
             };
         }
 
+        private QueryResultSlim BuildQueryResultSlim(IEnumerable<CollectionFieldValueTestCase> fieldValueTestCases)
+        {
+            return new QueryResultSlim
+            {
+                Objects = fieldValueTestCases.Select(x => new RelativityObjectSlim
+                {
+                    Values = new List<object> { x.Value }
+                }).ToList(),
+                Fields = fieldValueTestCases.Select(x => new Field
+                {
+                    Name = x.Name
+                }).ToList()
+            };
+        }
+
         private void SetupCreateAsyncInObjectManager(CreateResult result)
         {
             _objectManagerMock.Setup(x => x.CreateAsync(
@@ -923,6 +1010,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         private void SetupQueryAsyncInObjectManager(QueryResult result)
         {
             _objectManagerMock.Setup(x => x.QueryAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<QueryRequest>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ReturnsAsync(result);
+        }
+
+        private void SetupQuerySlimAsyncInObjectManager(QueryResultSlim result)
+        {
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(
                     It.IsAny<int>(),
                     It.IsAny<QueryRequest>(),
                     It.IsAny<int>(),
@@ -970,18 +1067,26 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         {
             string expectedStackTracePart = $"ObjectManagerFacadeDiscoverHeavyRequestDecorator.{CapitilizeFirstLetter(operation)}Async";
 
-            _loggerMock.Verify(x => x.LogWarning(
+            _loggerMock.Verify(
+                x => x.LogWarning(
                     It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
-                    "Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).",
-                    operation, objectTypeName, objectId, workspaceId)
-                , Times.AtLeastOnce);
+                    //It.IsAny<Exception>(),
+                    "Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).", 
+                    operation.Replace(" ", string.Empty),
+                    objectTypeName,
+                    objectId,
+                    workspaceId),
+                Times.AtLeastOnce);
             foreach (var exceededTestCase in exceededTestCases)
             {
-                _loggerMock.Verify(x => x.LogWarning(
+                _loggerMock.Verify(
+                    x => x.LogWarning(
                         It.Is((Exception ex) => ex.StackTrace.Contains(expectedStackTracePart)),
                         "Requested field {fieldName} exceeded max collection count - {count}, when allowed is {maxAllowedCount}",
-                        exceededTestCase.Name, exceededTestCase.Value.Count, _MAX_COLLECTION_COUNT)
-                    , Times.Once);
+                        exceededTestCase.Name,
+                        exceededTestCase.Value.Count,
+                        _MAX_COLLECTION_COUNT),
+                    Times.Once);
             }
         }
 
@@ -1012,6 +1117,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
             });
         }
 
-        private static string CapitilizeFirstLetter(string s) => s[0].ToString().ToUpper() + s.ToLower().Substring(1);
+        private static string CapitilizeFirstLetter(string s)
+        {
+            string[] words = s.Split(' ');
+            string capitalizedWord = string.Empty;
+            foreach (string word in words)
+            {
+                capitalizedWord += word[0].ToString().ToUpper() + word.ToLower().Substring(1);
+            }
+
+            return capitalizedWord;
+        }
     }
 }
