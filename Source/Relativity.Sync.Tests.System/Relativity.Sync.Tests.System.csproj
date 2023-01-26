@@ -123,6 +123,12 @@
         <None Update="Data\NativesAndExtractedText\NATIVES\AZIPPER_0011318.msg">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\long_text_above_100_signs.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\long_text_below_100_signs.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
@@ -146,6 +152,12 @@
         </None>
         <None Update="Data\NativesAndExtractedText\TEXT\AZIPPER_0011318.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\long_text_below_100_signs.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\long_text_above_100_signs.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="Data\NativesAndExtractedText\TEXT\REL0000above.txt">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

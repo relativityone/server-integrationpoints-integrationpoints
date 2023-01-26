@@ -26,6 +26,9 @@ namespace Relativity.Sync.Extensions
                 throw new ArgumentNullException(nameof(path));
             }
 
+            // Append trailing slash at the end
+            relativeTo = Path.Combine(relativeTo, " ").TrimEnd();
+
             Uri fromUri = new Uri(relativeTo);
             Uri toUri = new Uri(path);
 
@@ -51,7 +54,7 @@ namespace Relativity.Sync.Extensions
 
             longTextFile.Directory.Create();
 
-            longTextFile.Create();
+            longTextFile.Create().Dispose();
 
             return longTextFile.FullName;
         }
