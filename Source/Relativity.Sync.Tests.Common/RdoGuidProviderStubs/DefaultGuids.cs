@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
         {
             TypeGuid = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9"),
             CompletedItemsFieldGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c"),
-            ReadItemsFieldGuid = new Guid("2b76010a-9cf8-4276-9d6d-504d026f0b27"),
+            ReadItemsFieldGuid = new Guid("4f95acf4-49f7-4772-8ed4-dc4f5fc1e35f"),
             DestinationWorkspaceInformationGuid = new Guid("20a24c4e-55e8-4fc2-abbe-f75c07fad91b"),
             FailedItemsFieldGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e"),
             TotalItemsFieldGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b"),
