@@ -48,15 +48,13 @@ namespace Relativity.Sync.Extensions
             return relativePath;
         }
 
-        public static string CreateFileWithRecursiveDirectories(string file)
+        public static void CreateFileWithRecursiveDirectories(string file)
         {
             var longTextFile = new FileInfo(file);
 
             longTextFile.Directory.Create();
 
             longTextFile.Create().Dispose();
-
-            return longTextFile.FullName;
         }
     }
 }

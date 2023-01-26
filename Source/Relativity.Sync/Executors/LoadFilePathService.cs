@@ -54,7 +54,7 @@ namespace Relativity.Sync.Executors
             return jobDirectoryPath;
         }
 
-        public async Task<string> GenerateBatchLoadFileAsync(IBatch batch)
+        public async Task<string> GenerateBatchLoadFilePathAsync(IBatch batch)
         {
             _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
             string batchLoadFilePath;
@@ -64,32 +64,28 @@ namespace Relativity.Sync.Executors
 
                 batchLoadFilePath = Path.Combine(jobDirectoryPath, $"{batch.BatchGuid}.dat");
 
-                PathExtensions.CreateFileWithRecursiveDirectories(batchLoadFilePath);
+                _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchLoadFilePath);
+
+                return batchLoadFilePath;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
                 throw;
             }
-
-            _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchLoadFilePath);
-
-            return batchLoadFilePath;
         }
 
-        public async Task<string> GenerateLongTextFileAsync()
+        public async Task<string> GenerateLongTextFilePathAsync()
         {
             string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
             string longTextFileName = Guid.NewGuid().ToString();
 
-            string longTextPath = Path.Combine(
+            return Path.Combine(
                 jobDirectoryPath,
                 "LongTexts",
                 longTextFileName.Substring(0, _LONG_TEXT_FOLDER_SEGMENT_SIZE),
                 $"{longTextFileName}.txt");
-
-            return PathExtensions.CreateFileWithRecursiveDirectories(longTextPath);
         }
 
         public async Task<string> GetLoadFileRelativeLongTextFilePathAsync(string longTextFilePath)

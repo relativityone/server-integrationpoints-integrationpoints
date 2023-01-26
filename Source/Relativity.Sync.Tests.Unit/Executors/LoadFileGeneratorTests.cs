@@ -7,8 +7,8 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -16,11 +16,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     public class LoadFileGeneratorTests
     {
-        private const string _BATCH_GUID = "00000000-2222-4444-0000-888888888888";
         private const int _DESTINATION_WORKSPACE_ID = -1000001;
         private const int _SOURCE_WORKSPACE_ID = -1000000;
         private const int _CONFIGURATION_ID = -12678;
-        private readonly Guid _EXPORT_RUN_ID = new Guid("11111111-6666-2222-7777-333333333333");
+        private readonly Guid _EXPORT_RUN_ID = Guid.NewGuid();
+        private readonly Guid _BATCH_GUID = Guid.NewGuid();
+
+        private BatchStub _batchMock;
 
         private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
         private Mock<ILoadFilePathService> _loadFilePathServiceMock;
@@ -28,7 +30,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
-        private Mock<IBatch> _batchMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IAPILog> _loggerMock;
         private CompositeCancellationTokenStub _token;
@@ -38,16 +39,22 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         private LoadFileGenerator _sut;
 
+        private string SyncJobPath => Path.Combine(_workspacePath, "Sync", _EXPORT_RUN_ID.ToString());
+
+        private string BatchLoadFilePath => Path.Combine(SyncJobPath, _BATCH_GUID.ToString(), $"{_BATCH_GUID}.dat");
+
         [SetUp]
         public void SetUp()
         {
+            PrepareBatchLoadFilePath();
+
             _configurationMock = new Mock<IBatchDataSourcePreparationConfiguration>();
             _loadFilePathServiceMock = new Mock<ILoadFilePathService>();
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
             _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
-            _batchMock = new Mock<IBatch>();
+            _batchMock = new BatchStub();
             _instanceSettingsMock = new Mock<IInstanceSettings>();
             _loggerMock = new Mock<IAPILog>();
             _token = new CompositeCancellationTokenStub();
@@ -57,10 +64,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
             _configurationMock.Setup(x => x.SyncConfigurationArtifactId).Returns(_CONFIGURATION_ID);
 
-            _batchMock.Setup(x => x.BatchGuid).Returns(new Guid(_BATCH_GUID));
-            _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID.ToString()));
+            _batchMock.BatchGuid = _BATCH_GUID;
+            _batchMock.ExportRunId = _EXPORT_RUN_ID;
 
-            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, _token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
+            _loadFilePathServiceMock.Setup(x => x.GenerateBatchLoadFilePathAsync(_batchMock)).ReturnsAsync(BatchLoadFilePath);
+
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock, _token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
             _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
             _instanceSettingsMock.Setup(x => x.GetImportAPIBatchStatusItemsUpdateCountAsync(It.IsAny<int>())).ReturnsAsync(1000);
@@ -79,8 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             if (!string.IsNullOrEmpty(_workspacePath) && Directory.Exists(_workspacePath))
             {
-                var dir = new DirectoryInfo(_workspacePath);
-                dir.Delete(recursive: true);
+                Directory.Delete(_workspacePath, true);
             }
 
             _serverPath = null;
@@ -90,34 +98,23 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task GenerateAsync_ShouldReturnILoadFileWithCorrectId()
         {
-            // Arrange
-            PrepareFakeLoadFilePath();
-
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
-                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
-
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
 
             // Assert
-            result.Should().NotBeNull();
-            result.Id.ToString().Should().Be(_BATCH_GUID);
+            result.Id.Should().Be(_BATCH_GUID);
         }
 
         [Test]
         public async Task GenerateAsync_ShouldReturnCorrectFilePath_WhenRootDirectoryExists()
         {
             // Arrange
-            string expectedBatchPath = PrepareFakeLoadFilePath();
-
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
-                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
+            string expectedBatchPath = BatchLoadFilePath;
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
 
             // Assert
-            result.Should().NotBeNull();
             result.Path.Should().Be(expectedBatchPath);
             result.Settings.Path.Should().Be(expectedBatchPath);
         }
@@ -126,14 +123,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public void GenerateAsync_ShouldReturnError_WhenRootDirectoryDoesNotExist()
         {
             // Arrange
-            _serverPath = "randomTestPath";
-            string rootDirectory = $@"{_serverPath}\EDDS{_DESTINATION_WORKSPACE_ID}";
-
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
+            _loadFilePathServiceMock.Setup(x => x.GenerateBatchLoadFilePathAsync(_batchMock))
                 .Throws<DirectoryNotFoundException>();
 
             // Act
-            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
+            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
 
             // Assert
             function.Should().Throw<DirectoryNotFoundException>();
@@ -148,11 +142,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ItemLevelError testItemLevelError = new ItemLevelError(testItemIdentifier, "testMessage");
             long completedItemTestValue = 12345L;
 
-            PrepareFakeLoadFilePath();
-
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
-                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
-
             _dataReaderMock.Setup(x => x.Read()).Callback(() =>
             {
                 _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
@@ -161,7 +150,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             });
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
 
             // Assert
             _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
@@ -172,10 +161,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task GenerateAsync_ShouldStopProcessing_WhenCancellationTokenIsProvided()
         {
             // Arrange
-            PrepareFakeLoadFilePath();
-
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
-                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
             bool readResult = true;
             _dataReaderMock.Setup(x => x.Read())
                 .Returns(() => readResult).Callback(() => readResult = false);
@@ -184,43 +169,48 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 IsStopRequestedFunc = () => true
             };
-            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock, token).ConfigureAwait(false);
 
             // Assert
-            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Cancelled), Times.Exactly(2));
+            _batchMock.Status.Should().Be(BatchStatus.Cancelled);
         }
 
         [Test]
         public async Task GenerateAsync_ShouldPreserveBatchStateAndStopProcessing_WhenDrainStopTokenIsProvided()
         {
             // Arrange
-            PrepareFakeLoadFilePath();
+            const int expectedStartingIndex = 4;
+            int index = 0;
 
-            _loadFilePathServiceMock.Setup(x => x.GetJobDirectoryPathAsync())
-                .ReturnsAsync($@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}");
-            bool readResult = true;
+            Func<bool> drainStopRequestFunc = () => index == expectedStartingIndex;
+
+            Mock<IItemStatusMonitor> monitorMock = new Mock<IItemStatusMonitor>();
+            monitorMock.SetupGet(x => x.ReadItemsCount).Returns(expectedStartingIndex);
+
             _dataReaderMock.Setup(x => x.Read())
-                .Returns(() => readResult).Callback(() => readResult = false);
+                .Returns(() => index != expectedStartingIndex - 1).Callback(() => ++index);
+            _dataReaderMock.SetupGet(x => x.ItemStatusMonitor).Returns(monitorMock.Object);
 
             CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
             {
-                IsDrainStopRequestedFunc = () => true
+                IsDrainStopRequestedFunc = drainStopRequestFunc
             };
-            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock, token).ConfigureAwait(false);
 
             // Assert
-            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Paused), Times.Exactly(2));
-            _batchMock.Verify(x => x.SetStartingIndexAsync(It.IsAny<int>()), Times.Exactly(2));
+            _batchMock.Status.Should().Be(BatchStatus.Paused);
+            _batchMock.StartingIndex.Should().Be(expectedStartingIndex);
+
             _itemLevelErrorHandlerMock.Verify(x => x.HandleRemainingErrorsAsync(), Times.Once);
         }
 
-        private string PrepareFakeLoadFilePath()
+        private void PrepareBatchLoadFilePath()
         {
             _serverPath = Path.GetTempPath();
             _workspacePath = Path.Combine(_serverPath, $@"EDDS{_DESTINATION_WORKSPACE_ID}");
@@ -229,8 +219,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 Directory.CreateDirectory(_workspacePath);
             }
-
-            return $@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}\{_BATCH_GUID}\{_BATCH_GUID}.dat";
         }
     }
 }

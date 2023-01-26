@@ -7,6 +7,7 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer.StreamWrappers;
@@ -75,7 +76,7 @@ namespace Relativity.Sync.Transfer
 
             if (_iapiRunChecker.ShouldBeUsed())
             {
-                string longTextFile = await _filePathService.GenerateLongTextFileAsync().ConfigureAwait(false);
+                string longTextFile = await _filePathService.GenerateLongTextFilePathAsync().ConfigureAwait(false);
 
                 WriteToFile(longTextFile, value);
 
@@ -87,6 +88,8 @@ namespace Relativity.Sync.Transfer
 
         private void WriteToFile(string path, object value)
         {
+            PathExtensions.CreateFileWithRecursiveDirectories(path);
+
             if (value is string)
             {
                 File.WriteAllText(path, (string)value, Encoding.Unicode);

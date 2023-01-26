@@ -7,9 +7,9 @@ namespace Relativity.Sync.Executors
     {
         Task<string> GetJobDirectoryPathAsync();
 
-        Task<string> GenerateBatchLoadFileAsync(IBatch batch);
+        Task<string> GenerateBatchLoadFilePathAsync(IBatch batch);
 
-        Task<string> GenerateLongTextFileAsync();
+        Task<string> GenerateLongTextFilePathAsync();
 
         Task<string> GetLoadFileRelativeLongTextFilePathAsync(string longTextFilePath);
     }
