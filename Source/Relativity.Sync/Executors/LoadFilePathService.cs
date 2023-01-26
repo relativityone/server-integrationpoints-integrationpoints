@@ -44,9 +44,18 @@ namespace Relativity.Sync.Executors
 
             if (string.IsNullOrEmpty(jobDirectoryPath))
             {
-                jobDirectoryPath = await GetJobDirectoryPathInternalAsync(
-                    _configuration.DestinationWorkspaceArtifactId,
-                    _configuration.ExportRunId).ConfigureAwait(false);
+                string fileSharePath = await _fileShareService
+                    .GetWorkspaceFileShareLocationAsync(_configuration.DestinationWorkspaceArtifactId)
+                    .ConfigureAwait(false);
+
+                if (!Directory.Exists(fileSharePath))
+                {
+                    throw new DirectoryNotFoundException($"Workspace fileshare directory: {fileSharePath} does not exist!");
+                }
+
+                jobDirectoryPath = Path.Combine(fileSharePath, "Sync", _configuration.ExportRunId.ToString());
+
+                _logger.LogInformation("Job Directory Path successfully generated: {jobDirectoryPath}", jobDirectoryPath);
 
                 _memoryCache.Add(cacheKey, jobDirectoryPath, _memoryCacheItemPolicy);
             }
@@ -75,16 +84,16 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        public async Task<string> GenerateLongTextFilePathAsync()
+        public async Task<string> GenerateLongTextFilePathAsync(Guid longTextId)
         {
             string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
-            string longTextFileName = Guid.NewGuid().ToString();
+            string longTextFileName = longTextId.ToString();
 
             return Path.Combine(
                 jobDirectoryPath,
                 "LongTexts",
-                longTextFileName.Substring(0, _LONG_TEXT_FOLDER_SEGMENT_SIZE),
+                longTextFileName.Substring(0, _LONG_TEXT_FOLDER_SEGMENT_SIZE).ToLower(),
                 $"{longTextFileName}.txt");
         }
 
@@ -93,24 +102,6 @@ namespace Relativity.Sync.Executors
             string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
             return longTextFilePath.MakeRelativeTo(jobDirectoryPath);
-        }
-
-        private async Task<string> GetJobDirectoryPathInternalAsync(int destinationWorkspaceId, Guid exportRunId)
-        {
-            string fileSharePath = await _fileShareService
-                .GetWorkspaceFileShareLocationAsync(destinationWorkspaceId)
-                .ConfigureAwait(false);
-
-            if (!Directory.Exists(fileSharePath))
-            {
-                throw new DirectoryNotFoundException($"Workspace fileshare directory: {fileSharePath} does not exist!");
-            }
-
-            string jobDirectoryPath = Path.Combine(fileSharePath, "Sync", exportRunId.ToString());
-
-            _logger.LogInformation("Job Directory Path successfully generated: {jobDirectoryPath}", jobDirectoryPath);
-
-            return jobDirectoryPath;
         }
 
         private string GetCacheKey(int destinationWorkspaceId, Guid exportRunId) => $"{destinationWorkspaceId}:{exportRunId}";

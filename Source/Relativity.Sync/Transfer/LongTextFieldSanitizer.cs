@@ -76,7 +76,8 @@ namespace Relativity.Sync.Transfer
 
             if (_iapiRunChecker.ShouldBeUsed())
             {
-                string longTextFile = await _filePathService.GenerateLongTextFilePathAsync().ConfigureAwait(false);
+                Guid longTextId = Guid.NewGuid();
+                string longTextFile = await _filePathService.GenerateLongTextFilePathAsync(longTextId).ConfigureAwait(false);
 
                 WriteToFile(longTextFile, value);
 

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
@@ -9,7 +10,7 @@ namespace Relativity.Sync.Executors
 
         Task<string> GenerateBatchLoadFilePathAsync(IBatch batch);
 
-        Task<string> GenerateLongTextFilePathAsync();
+        Task<string> GenerateLongTextFilePathAsync(Guid longTextId);
 
         Task<string> GetLoadFileRelativeLongTextFilePathAsync(string longTextFilePath);
     }
