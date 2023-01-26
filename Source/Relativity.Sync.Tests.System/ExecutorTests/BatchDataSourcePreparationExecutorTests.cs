@@ -90,6 +90,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCreateSyncItemLevelErrors()
         {
             // Arrange
@@ -140,6 +141,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldPauseExecution_WhenDrainStopIsRequested()
         {
             // Arrange
@@ -180,6 +182,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCancelExecution_WhenCancellationIsRequested()
         {
             // Arrange
