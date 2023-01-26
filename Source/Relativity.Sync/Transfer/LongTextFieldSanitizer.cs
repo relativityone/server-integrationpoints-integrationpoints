@@ -87,20 +87,20 @@ namespace Relativity.Sync.Transfer
             return value;
         }
 
-        private void WriteToFile(string path, object value)
+        private void WriteToFile(string file, object value)
         {
-            PathExtensions.CreateFileWithRecursiveDirectories(path);
+            PathExtensions.CreateFileWithRecursiveDirectories(file);
 
             if (value is string)
             {
-                File.WriteAllText(path, (string)value, Encoding.Unicode);
+                File.WriteAllText(file, (string)value, Encoding.Unicode);
                 return;
             }
             else if (value is Stream stream)
             {
-                using (Stream file = new FileStream(path, FileMode.OpenOrCreate))
+                using (Stream fileStream = new FileStream(file, FileMode.OpenOrCreate))
                 {
-                    stream.CopyTo(file);
+                    stream.CopyTo(fileStream);
                 }
             }
         }
