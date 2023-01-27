@@ -57,7 +57,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             await PrepareSourceDataEntitiesAsync(_entitiesCount, _sourceEntityArtifactTypeId).ConfigureAwait(false);
         }
 
-        [IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
+        [Test]
+        [TestType.Critical]
         public async Task SyncJob_Should_SyncEntities()
         {
             // Arrange

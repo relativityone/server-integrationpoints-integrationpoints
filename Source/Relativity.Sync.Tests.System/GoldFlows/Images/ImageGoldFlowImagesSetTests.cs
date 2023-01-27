@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Identification;
 
@@ -10,8 +11,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
         {
         }
 
-        [IdentifiedTest("CF51718E-3A58-46A1-82D6-D4F2B32A2FA9")]
+        [Test]
         [TestType.MainFlow]
+        [TestType.Critical]
         public override Task SyncJob_Should_SyncImages()
         {
             return base.SyncJob_Should_SyncImages();
