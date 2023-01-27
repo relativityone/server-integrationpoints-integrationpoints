@@ -84,6 +84,12 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 x => x.QueryAsync(workspaceArtifactID, request, start, length));
         }
 
+        public Task<QueryResultSlim> QuerySlimAsync(int workspaceArtifactID, QueryRequest request, int start, int length)
+        {
+            return ExecuteAsync(
+                x => x.QuerySlimAsync(workspaceArtifactID, request, start, length));
+        }
+
         public Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
         {
             return ExecuteAsync(

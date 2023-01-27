@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -50,6 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             IConfig config = null,
             IAPM apm = null,
             IDbContextFactory dbContextFactory = null,
+            IRelativityObjectManagerFactory relativityObjectManagerFactory = null,
             bool shouldRunOnce = true)
             : base(
                 agent.AgentGuid,
@@ -63,7 +65,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
                 logger,
                 config,
                 apm,
-                dbContextFactory)
+                dbContextFactory,
+                relativityObjectManagerFactory)
         {
             _shouldRunOnce = shouldRunOnce;
             _container = container;
@@ -100,7 +103,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
                 dateTime: container.Resolve<IDateTime>(),
                 config: container.Resolve<IConfig>(),
                 apm: container.Resolve<IAPM>(),
-                dbContextFactory: container.Resolve<IDbContextFactory>());
+                dbContextFactory: container.Resolve<IDbContextFactory>(),
+                relativityObjectManagerFactory: container.Resolve<IRelativityObjectManagerFactory>());
 
             container
                 .Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)
@@ -153,7 +157,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         {
             ToBeRemoved = true;
         }
-        
         #region Verification
 
         public void VerifyJobsWereProcessed(IEnumerable<long> jobs)
