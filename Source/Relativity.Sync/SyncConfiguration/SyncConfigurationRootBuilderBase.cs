@@ -59,6 +59,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryJobIdField = RdoOptions.JobHistory.JobIdGuid;
             SyncConfiguration.JobHistoryStatusField = RdoOptions.JobHistory.StatusGuid;
             SyncConfiguration.JobHistoryCompletedItemsField = RdoOptions.JobHistory.CompletedItemsCountGuid;
+            SyncConfiguration.JobHistoryReadItemsField = RdoOptions.JobHistory.ReadItemsCountGuid;
             SyncConfiguration.JobHistoryDestinationWorkspaceInformationField = RdoOptions.JobHistory.DestinationWorkspaceInformationGuid;
             SyncConfiguration.JobHistoryGuidFailedField = RdoOptions.JobHistory.FailedItemsCountGuid;
             SyncConfiguration.JobHistoryType = RdoOptions.JobHistory.JobHistoryTypeGuid;
