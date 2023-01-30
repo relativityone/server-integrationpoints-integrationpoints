@@ -15,7 +15,6 @@
         <Authors>Relativity ODA LLC</Authors>
         <Company>Relativity ODA LLC</Company>
         <Copyright>© Relativity</Copyright>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageDescription>Relativity Sync</PackageDescription>
         <PackageTags>RelativitySync Relativity.Sync Sync</PackageTags>
         <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
