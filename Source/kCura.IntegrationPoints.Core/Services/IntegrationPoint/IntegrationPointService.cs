@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -132,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                         exception,
                         "Unable to deserialize field mapping for integration point: {integrationPointId}. Mapping value: {fieldMapping}. Operation will be retried.",
                         artifactId,
-                        exception.Value);
+                        exception.Value ?? string.Empty);
                 });
 
             List<FieldMap> ReadFieldMapping()
@@ -142,6 +143,37 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 SanitizeFieldsMapping(fieldMap);
                 return fieldMap;
             }
+        }
+
+        public CalculationState GetCalculationState(int artifactId)
+        {
+            return _retryHandler.Execute<CalculationState, RipSerializationException>(
+                ReadCalculationState,
+                exception =>
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Unable to deserialize calculation state for integration point: {integrationPointId}. State value: {calculationState}. Operation will be retried.",
+                        artifactId,
+                        exception.Value ?? string.Empty);
+                });
+
+
+            CalculationState ReadCalculationState()
+            {
+                string calculationStateString = _integrationPointRepository.GetCalculationStateAsync(artifactId).GetAwaiter().GetResult();
+                return Serializer.Deserialize<CalculationState>(calculationStateString);
+            }
+        }
+
+        public string GetSourceConfiguration(int artifactId)
+        {
+            return _integrationPointRepository.GetSourceConfigurationAsync(artifactId).GetAwaiter().GetResult();
+        }
+
+        public string GetDestinationConfiguration(int artifactId)
+        {
+            return _integrationPointRepository.GetDestinationConfigurationAsync(artifactId).GetAwaiter().GetResult();
         }
 
         public List<IntegrationPointSlimDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
@@ -772,7 +804,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 ArtifactId = dto.ArtifactId,
                 Name = dto.Name,
                 OverwriteFields = new ChoiceRef(choice.ArtifactID) { Name = choice.Name },
-                SourceConfiguration = dto.SourceConfiguration,
+                SourceConfiguration = string.IsNullOrEmpty(dto.SourceConfiguration)
+                    ? Serializer.Serialize(new Dictionary<string, object>())
+                    : dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
                 DestinationConfiguration = dto.DestinationConfiguration,

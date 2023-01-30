@@ -84,6 +84,7 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>().LifestyleTransient());
             container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
             container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>());
+            container.Register(Component.For<IButtonStateBuilder>().ImplementedBy<ButtonStateBuilder>());
 
             container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
             container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
@@ -196,8 +197,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             }).LifestyleSingleton());
 
             container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
-
-            container.Register(Component.For<IServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
             container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());
             container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleSingleton());
 

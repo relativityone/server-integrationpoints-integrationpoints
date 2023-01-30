@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -9,17 +7,16 @@ using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
@@ -31,15 +28,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private const int _WORKSPACE_ID = 100;
         private const int _INTEGRATION_POINT_ID = 200;
 
-        private IIntegrationPointPermissionValidator _permissionValidator;
-        private IIntegrationPointRepository _integrationPointRepository;
+        private IViewErrorsPermissionValidator _permissionValidator;
+        private IIntegrationPointService _integrationPointService;
         private IJobHistoryManager _jobHistoryManager;
         private IPermissionRepository _permissionRepository;
         private IProviderTypeService _providerTypeService;
         private IQueueManager _queueManager;
         private IStateManager _stateManager;
         private IRelativitySyncConstrainsChecker _syncConstrainsChecker;
-        private ICPHelper _helper;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
 
@@ -51,12 +47,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _queueManager = Substitute.For<IQueueManager>();
             _stateManager = Substitute.For<IStateManager>();
             _permissionRepository = Substitute.For<IPermissionRepository>();
-            _permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
-            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _permissionValidator = Substitute.For<IViewErrorsPermissionValidator>();
+            _integrationPointService = Substitute.For<IIntegrationPointService>();
             _syncConstrainsChecker = Substitute.For<IRelativitySyncConstrainsChecker>();
-            _helper = Substitute.For<ICPHelper>();
+
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _repositoryFactory.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepository);
+
             _managerFactory = Substitute.For<IManagerFactory>();
+            _managerFactory.CreateQueueManager().Returns(_queueManager);
+            _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
+            _managerFactory.CreateStateManager().Returns(_stateManager);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true, false)]
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, false, true, false)]
         [TestCase(ExportType.ProductionSet, ProviderType.Relativity, true, true, true, false, false)]
         [TestCase(ExportType.View, ProviderType.Relativity, true, true, true, false, true)]
-        public async Task BuildButtonState_GoldWorkflow(
+        public void BuildButtonState_GoldWorkflow(
             ExportType exportType,
             ProviderType providerType,
             bool hasErrorViewPermission,
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             // Arrange
             SetupIntegrationPoint(providerType, imageImport, hasErrors, exportType);
 
-            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(
+            _permissionValidator.Validate(_WORKSPACE_ID).Returns(
                 hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] { "error" }));
 
             _queueManager.HasJobsExecutingOrInQueue(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(hasJobsExecutingOrInQueue);
@@ -94,10 +95,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasAddProfilePermission);
 
-            ButtonStateBuilder sut = GetSut(false);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(false);
+            ButtonStateBuilder sut = GetSut();
 
             // Act
-            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             _stateManager.Received()
@@ -121,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [TestCase(ProviderType.Relativity, false, true, true, true, SourceConfiguration.ExportType.SavedSearch, true)]
         [TestCase(ProviderType.Relativity, false, true, true, true, SourceConfiguration.ExportType.ProductionSet, false)]
         [TestCase(ProviderType.LoadFile, false, true, true, true, 0, true)]
-        public async Task CreateButtonState_IntegrationPointIsStoppableBasedOnCriteria(
+        public void CreateButtonState_IntegrationPointIsStoppableBasedOnCriteria(
             ProviderType providerType,
             bool hasPendingJobHistory,
             bool hasProcessingJobHistory,
@@ -133,17 +135,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             // Arrange
             SetupIntegrationPoint(providerType, isImageImport: isImageImport, exportType: exportType);
 
-            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(new ValidationResult());
+            _permissionValidator.Validate(_WORKSPACE_ID).Returns(new ValidationResult());
 
             _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
                 .Returns(GetJobHistoryCollection(hasPendingJobHistory, hasProcessingJobHistory));
 
             _queueManager.HasJobsExecuting(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(hasJobsExecuting);
 
-            ButtonStateBuilder sut = GetSut(false);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(false);
+            ButtonStateBuilder sut = GetSut();
 
             // Act
-            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             _stateManager.Received()
@@ -158,34 +161,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>());
         }
 
-        [TestCase(true)]
-        [TestCase(false)]
-        public void CreateButtonStateBuilder_ShouldCreateWithSyncAppValue(bool isSyncAppInUse)
-        {
-            // Arrange
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(isSyncAppInUse);
-
-            // Act
-            ButtonStateBuilder builder = ButtonStateBuilder
-                .CreateButtonStateBuilder(
-                    _helper,
-                    _repositoryFactory,
-                    _managerFactory,
-                    _integrationPointRepository,
-                    _providerTypeService,
-                    _syncConstrainsChecker,
-                    _WORKSPACE_ID,
-                    _INTEGRATION_POINT_ID);
-
-            // Assert
-            builder.IsSyncAppInUse.Should().Be(isSyncAppInUse);
-        }
-
         [TestCase(false, false, false, false)]
         [TestCase(true, false, true, true)]
         [TestCase(false, true, true, true)]
         [TestCase(true, true, true, true)]
-        public async Task CreateButtonStateAsync_ShouldCreateBasedOnJobHistory_WhenSyncAppIsInUse(
+        public void CreateButtonStateAsync_ShouldCreateBasedOnJobHistory_WhenSyncAppIsInUse(
             bool pendingJobHistory,
             bool processingJobHistory,
             bool expectedHasStoppableJobs,
@@ -194,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             // Arrange
             SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch);
 
-            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+            _permissionValidator.Validate(_WORKSPACE_ID)
                 .Returns(new ValidationResult());
 
             _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
@@ -202,10 +182,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            ButtonStateBuilder sut = GetSut(true);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
+            ButtonStateBuilder sut = GetSut();
 
             // Act
-            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             _stateManager.Received()
@@ -227,15 +208,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [TestCase(CalculationStatus.Error, false)]
         [TestCase(CalculationStatus.Completed, false)]
         [TestCase(CalculationStatus.Canceled, false)]
-        public async Task CreateButtonStateAsync_ShouldCreateBasedOnCalculationState(
+        public void CreateButtonStateAsync_ShouldCreateBasedOnCalculationState(
             CalculationStatus status,
             bool expectedInProgressFlagValue)
         {
             // Arrange
-            string calculationState = JsonConvert.SerializeObject(new CalculationState { Status = status });
-            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, calculationState);
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, new CalculationState { Status = status });
 
-            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+            _permissionValidator.Validate(_WORKSPACE_ID)
                 .Returns(new ValidationResult());
 
             _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
@@ -243,10 +223,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            ButtonStateBuilder sut = GetSut(true);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
+            ButtonStateBuilder sut = GetSut();
 
             // Act
-            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             _stateManager.Received()
@@ -261,16 +242,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(expectedInProgressFlagValue));
         }
 
-        [TestCase(null)]
-        [TestCase("")]
-        public async Task CreateButtonStateAsync_ShouldSetInProgressFlagToFalse_WhenCalculationStateIsNullOrEmpty(
-            string serializedCalculationState)
+        [Test]
+        public void CreateButtonStateAsync_ShouldSetInProgressFlagToFalse_WhenCalculationStateIsEmpty()
         {
             // Arrange
             bool expectedInProgressFlagValue = false;
-            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, serializedCalculationState);
+            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch, new CalculationState());
 
-            _permissionValidator.ValidateViewErrors(_WORKSPACE_ID)
+            _permissionValidator.Validate(_WORKSPACE_ID)
                 .Returns(new ValidationResult());
 
             _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
@@ -278,10 +257,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            ButtonStateBuilder sut = GetSut(true);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
+            ButtonStateBuilder sut = GetSut();
 
             // Act
-            await sut.CreateButtonStateAsync(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
+            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             _stateManager.Received()
@@ -296,27 +276,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(expectedInProgressFlagValue));
         }
 
-        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0, string calculationState = null)
+        private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0, CalculationState calculationState = null)
         {
             const int sourceProviderArtifactId = 210;
             const int destinationProviderArtifactId = 220;
 
-            ImportSettings settings = new ImportSettings { ImageImport = isImageImport };
-
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+            IntegrationPointSlimDto integrationPoint = new IntegrationPointSlimDto
             {
                 HasErrors = hasErrors,
                 SourceProvider = sourceProviderArtifactId,
                 DestinationProvider = destinationProviderArtifactId,
-                DestinationConfiguration = JsonConvert.SerializeObject(settings),
-                SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType }),
-                CalculationState = calculationState
             };
 
-            _integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID)
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ID)
                 .Returns(integrationPoint);
+            _integrationPointService.GetSourceConfiguration(integrationPoint.ArtifactId)
+                .Returns(JsonConvert.SerializeObject(new { TypeOfExport = exportType }));
+            _integrationPointService.GetCalculationState(integrationPoint.ArtifactId)
+                .Returns(calculationState);
 
-            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
+            _providerTypeService.GetProviderType(integrationPoint.SourceProvider, integrationPoint.DestinationProvider).Returns(providerType);
         }
 
         private StoppableJobHistoryCollection GetJobHistoryCollection(bool hasPendingJobHistory, bool hasProcessingJobHistory)
@@ -328,17 +307,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             };
         }
 
-        private ButtonStateBuilder GetSut(bool isSyncAppInUse)
+        private ButtonStateBuilder GetSut()
         {
             return new ButtonStateBuilder(
+                new IntegrationPointSerializer(null),
                 _providerTypeService,
-                _queueManager,
-                _jobHistoryManager,
-                _stateManager,
-                _permissionRepository,
+                _repositoryFactory,
+                _integrationPointService,
+                _syncConstrainsChecker,
                 _permissionValidator,
-                _integrationPointRepository,
-                isSyncAppInUse);
+                _managerFactory);
         }
     }
 }
