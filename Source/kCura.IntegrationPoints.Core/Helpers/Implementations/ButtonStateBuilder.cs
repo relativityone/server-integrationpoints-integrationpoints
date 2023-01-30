@@ -90,12 +90,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             string sourceConfigurationString = _integrationPointService.GetSourceConfiguration(integrationPointId);
             Dictionary<string, object> sourceConfiguration = _serializer.Deserialize<Dictionary<string, object>>(sourceConfigurationString ?? string.Empty);
 
-            string keyName = nameof(SourceConfiguration.TypeOfExport);
-            int typeOfExportInt = sourceConfiguration?.TryGetValue(keyName, out object typeOfExport) == true
-                    ? Convert.ToInt32(typeOfExport)
-                    : 0;
-
-            return (SourceConfiguration.ExportType)typeOfExportInt;
+            object typeOfExport = 0;
+            sourceConfiguration?.TryGetValue(nameof(SourceConfiguration.TypeOfExport), out typeOfExport);
+            return (SourceConfiguration.ExportType)Convert.ToInt32(typeOfExport);
         }
 
         private bool HasErrorViewPermissions(int workspaceArtifactId)
