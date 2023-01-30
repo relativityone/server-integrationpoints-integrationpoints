@@ -67,34 +67,27 @@ namespace Relativity.Sync.Executors
         {
             _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
             string batchLoadFilePath;
-            try
-            {
-                string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
-                batchLoadFilePath = Path.Combine(jobDirectoryPath, $"{batch.BatchGuid}.dat");
+            string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
-                _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchLoadFilePath);
+            batchLoadFilePath = Path.Combine(jobDirectoryPath, $"{batch.BatchGuid}.dat");
 
-                return batchLoadFilePath;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
-                throw;
-            }
+            _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchLoadFilePath);
+
+            return batchLoadFilePath;
         }
 
         public async Task<string> GenerateLongTextFilePathAsync(Guid longTextId)
         {
             string jobDirectoryPath = await GetJobDirectoryPathAsync().ConfigureAwait(false);
 
-            string longTextFileName = longTextId.ToString();
+            string longTextFileName = $"{longTextId}.txt";
 
             return Path.Combine(
                 jobDirectoryPath,
                 "LongTexts",
                 longTextFileName.Substring(0, _LONG_TEXT_FOLDER_SEGMENT_SIZE).ToLower(),
-                $"{longTextFileName}.txt");
+                longTextFileName);
         }
 
         public async Task<string> GetLoadFileRelativeLongTextFilePathAsync(string longTextFilePath)

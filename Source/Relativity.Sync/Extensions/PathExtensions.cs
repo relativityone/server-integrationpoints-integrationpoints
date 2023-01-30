@@ -51,10 +51,10 @@ namespace Relativity.Sync.Extensions
         /// <summary>
         /// Creates file with recursive directories
         /// </summary>
-        /// <param name="file">File location</param>
-        public static void CreateFileWithRecursiveDirectories(string file)
+        /// <param name="filePath">File location</param>
+        public static void CreateFileWithRecursiveDirectories(string filePath)
         {
-            var longTextFile = new FileInfo(file);
+            var longTextFile = new FileInfo(filePath);
 
             longTextFile.Directory.Create();
 

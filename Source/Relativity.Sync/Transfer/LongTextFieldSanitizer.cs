@@ -61,7 +61,7 @@ namespace Relativity.Sync.Transfer
             {
                 try
                 {
-                    value = await CreateBigLongTextStreamAsync(
+                    value = await CreateLongTextStreamAsync(
                             workspaceArtifactId,
                             itemIdentifierSourceFieldName,
                             itemIdentifier,
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Transfer
                 }
                 catch (SyncItemLevelErrorException ex)
                 {
-                    throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
+                    throw new SyncItemLevelErrorException($"Reading LongText field '{sanitizingSourceFieldName}' value failed: {ex.Message}", ex);
                 }
             }
 
@@ -103,9 +103,13 @@ namespace Relativity.Sync.Transfer
                     stream.CopyTo(fileStream);
                 }
             }
+            else
+            {
+                throw new SyncItemLevelErrorException($"Unable to write Long-Text value into file due to unsupported type: {value.GetType()}.");
+            }
         }
 
-        private async Task<Stream> CreateBigLongTextStreamAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName)
+        private async Task<Stream> CreateLongTextStreamAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName)
         {
             int itemArtifactId = await GetItemArtifactIdAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier).ConfigureAwait(false);
             if (await IsFieldInUnicodeAsync(workspaceArtifactId, sanitizingSourceFieldName).ConfigureAwait(false))
