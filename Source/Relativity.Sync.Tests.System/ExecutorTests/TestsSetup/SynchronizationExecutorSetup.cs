@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Autofac;
 using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
@@ -103,7 +104,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             int batchSize = 0,
             int totalRecordsCount = 0,
             string folderPathField = "",
-            Guid exportRunId = default)
+            Guid exportRunId = default,
+            Action<ConfigurationStub> configureAction = null)
         {
             int jobHistoryArtifactId = Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"JobHistory.{Guid.NewGuid()}").GetAwaiter().GetResult();
 
@@ -128,6 +130,11 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             Configuration.ImportNativeFileCopyMode = nativeFileCopyMode;
 
             Configuration.SetFieldMappings(fieldMapProvider(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID));
+
+            if (configureAction != null)
+            {
+                configureAction(Configuration);
+            }
 
             return this;
         }
@@ -240,6 +247,16 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             Container = overrideContainerBuilder.Build();
 
             return this;
+        }
+
+        public async Task<IEnumerable<IBatch>> GetExecutedBatchesAsync()
+        {
+            IBatchRepository batchRepository = Container.Resolve<IBatchRepository>();
+            return await batchRepository.GetAllAsync(
+                    Configuration.SourceWorkspaceArtifactId,
+                    Configuration.SyncConfigurationArtifactId,
+                    Configuration.ExportRunId)
+                .ConfigureAwait(false);
         }
 
         private ExecutorTestSetup SetDestinationWorkspaceTagArtifactId()

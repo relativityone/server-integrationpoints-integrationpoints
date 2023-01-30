@@ -6,6 +6,7 @@ using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
@@ -39,13 +40,23 @@ namespace Relativity.Sync.Executors
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch, CompositeCancellationToken token)
         {
-            string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
-            DataSourceSettings settings = CreateSettings(batchPath);
-            await GenerateLoadFileAsync(batch, batchPath, settings, token).ConfigureAwait(false);
-            return new LoadFile(batch.BatchGuid, batchPath, settings);
+            string loadFilePath = await CreateEmptyBatchLoadFileAsync(batch).ConfigureAwait(false);
+
+            DataSourceSettings settings = CreateSettings(loadFilePath);
+            await WriteToLoadFileAsync(batch, loadFilePath, settings, token).ConfigureAwait(false);
+            return new LoadFile(batch.BatchGuid, loadFilePath, settings);
         }
 
-        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
+        private async Task<string> CreateEmptyBatchLoadFileAsync(IBatch batch)
+        {
+            string loadFilePath = await _pathService.GenerateBatchLoadFilePathAsync(batch).ConfigureAwait(false);
+
+            PathExtensions.CreateFileWithRecursiveDirectories(loadFilePath);
+
+            return loadFilePath;
+        }
+
+        private async Task WriteToLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
         {
             using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
             {
@@ -118,31 +129,6 @@ namespace Relativity.Sync.Executors
                     .WithStartFromBeginning()
                     .WithDefaultEncoding()
                     .WithDefaultCultureInfo();
-        }
-
-        private async Task<string> CreateBatchFullPath(IBatch batch)
-        {
-            _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
-            string batchFullPath;
-            try
-            {
-                string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync(_configuration.DestinationWorkspaceArtifactId, batch.ExportRunId);
-                string batchDirectory = Path.Combine(jobDirectoryPath, batch.BatchGuid.ToString());
-                if (!Directory.Exists(batchDirectory))
-                {
-                    Directory.CreateDirectory(batchDirectory);
-                }
-
-                batchFullPath = Path.Combine(batchDirectory, $"{batch.BatchGuid}.dat");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
-                throw;
-            }
-
-            _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchFullPath);
-            return batchFullPath;
         }
 
         private async Task HandleBatchStatusAsync(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)

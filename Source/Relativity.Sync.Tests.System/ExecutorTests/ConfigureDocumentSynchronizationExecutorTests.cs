@@ -53,7 +53,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
         [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
-        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMativesConfigured(ImportNativeFileCopyMode fileCopyMode)
         {
             // Arrange
@@ -64,7 +63,11 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspace, _destinationWorkspace)
                 .SetupDocumentConfiguration(
                     IdentifierFieldMap,
-                    nativeFileCopyMode: fileCopyMode)
+                    nativeFileCopyMode: fileCopyMode,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(toggleProvider: _syncToggleProvider)
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 
@@ -78,7 +81,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMappingConfigured()
         {
             // Arrange
@@ -97,7 +99,11 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspace, _destinationWorkspace)
                 .SetupDocumentConfiguration(
-                    MappedFields)
+                    MappedFields,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(toggleProvider: _syncToggleProvider)
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 

@@ -9,7 +9,9 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.StreamWrappers;
 
@@ -19,19 +21,23 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [Parallelizable(ParallelScope.Self)]
     internal sealed class LongTextFieldSanitizerTests
     {
-        private Mock<IAPILog> _logger;
-        private Mock<IImportStreamBuilder> _streamBuilder;
-        private Mock<IRetriableStreamBuilder> _retriableStreamBuilder;
-        private Mock<IRetriableStreamBuilderFactory> _retriableStreamBuilderFactory;
-        private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
-        private Mock<IObjectManager> _objectManager;
-
         private const int _ITEM_ARTIFACT_ID = 1012323;
         private const int _SOURCE_WORKSPACE_ID = 1014023;
         private const string _IDENTIFIER_FIELD_NAME = "blech";
         private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
         private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
         private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
+
+        private Mock<IAPILog> _logger;
+        private Mock<IImportStreamBuilder> _streamBuilder;
+        private Mock<IRetriableStreamBuilder> _retriableStreamBuilder;
+        private Mock<IRetriableStreamBuilderFactory> _retriableStreamBuilderFactory;
+        private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
+        private Mock<IObjectManager> _objectManager;
+        private Mock<IIAPIv2RunChecker> _iapiRunCheckerFake;
+        private Mock<ILoadFilePathService> _loadFilePathServiceFake;
+
+        private LongTextFieldSanitizer _sut;
 
         [SetUp]
         public void InitializeMocks()
@@ -45,19 +51,26 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _retriableStreamBuilderFactory = new Mock<IRetriableStreamBuilderFactory>();
             _retriableStreamBuilderFactory.Setup(f => f.Create(_SOURCE_WORKSPACE_ID, _ITEM_ARTIFACT_ID, _SANITIZING_SOURCE_FIELD_NAME)).Returns(_retriableStreamBuilder.Object);
             _logger = new Mock<IAPILog>();
+
+            _iapiRunCheckerFake = new Mock<IIAPIv2RunChecker>();
+            _iapiRunCheckerFake.Setup(x => x.ShouldBeUsed()).Returns(false);
+
+            _loadFilePathServiceFake = new Mock<ILoadFilePathService>();
+
+            _sut = new LongTextFieldSanitizer(
+                _serviceFactoryForUser.Object,
+                _retriableStreamBuilderFactory.Object,
+                _streamBuilder.Object,
+                _iapiRunCheckerFake.Object,
+                _loadFilePathServiceFake.Object,
+                _logger.Object);
         }
 
         [Test]
         public void ItShouldSupportLongText()
         {
-            // Arrange
-            var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-
-            // Act
-            RelativityDataType supportedType = instance.SupportedType;
-
-            // Assert
-            supportedType.Should().Be(RelativityDataType.LongText);
+            // Act & Assert
+            _sut.SupportedType.Should().Be(RelativityDataType.LongText);
         }
 
         [TestCase(null)]
@@ -66,11 +79,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [TestCase("#KCURA99DF2F0FEB88420388879F1282A55760")]
         public async Task ItShouldReturnNonShibbolethStringInitialValue(object initialValue)
         {
-            // Arrange
-            var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-
             // Act
-            object result = await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
+            object result = await _sut.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
                 .ConfigureAwait(false);
 
             // Assert
@@ -80,12 +90,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task ItShouldThrowWhenGivenNonStringInitialValue()
         {
-            // Arrange
-            var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-
             // Act
             DateTime initialValue = DateTime.Now;
-            Func<Task> action = () => instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue);
+            Func<Task> action = () => _sut.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue);
 
             // Assert
             (await action.Should().ThrowAsync<ArgumentException>().ConfigureAwait(false))
@@ -103,11 +110,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             QueryResultSlim fieldEncodingResult = WrapValuesInQueryResultSlim(isUnicode);
             SetupFieldEncodingRequest(MatchAll).ReturnsAsync(fieldEncodingResult);
 
-            var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-
             // Act
             const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-            await instance.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
+            await _sut.SanitizeAsync(_SOURCE_WORKSPACE_ID, _IDENTIFIER_FIELD_NAME, _IDENTIFIER_FIELD_VALUE, _SANITIZING_SOURCE_FIELD_NAME, initialValue)
                 .ConfigureAwait(false);
 
             // Assert
@@ -139,11 +144,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .ReturnsAsync(fieldEncodingResult)
                 .Verifiable();
 
-            var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-
             // Act
             const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
-            await instance.SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, initialValue)
+            await _sut.SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, initialValue)
                 .ConfigureAwait(false);
 
             // Assert
