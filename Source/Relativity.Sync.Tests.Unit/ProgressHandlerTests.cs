@@ -198,7 +198,7 @@ namespace Relativity.Sync.Tests.Unit
             // Act
             Parallel.For(0, 2, _ =>
             {
-                 _sut.HandleProgressAsync().GetAwaiter().GetResult();
+                _sut.HandleProgressAsync().GetAwaiter().GetResult();
             });
 
             // Assert
