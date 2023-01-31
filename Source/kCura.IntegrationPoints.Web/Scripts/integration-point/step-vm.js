@@ -6,7 +6,7 @@
 			this.steps.push(step);
 		}
 	};
-
+	
 	var viewModel = function () {
 		this.steps = ko.observableArray(IP.points.steps.steps);
 		this.currentStep = ko.observable();
@@ -27,6 +27,7 @@
 			if (step === 0) {
 				IP.stepDefinitionProvider.init();
 			} else if (step === 1) {
+				model.rdoTypeName = $('#destinationRdo option:selected').text();
 				if (model.destinationProviderGuid === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
 					IP.stepDefinitionProvider.loadOverride([
 						{
@@ -94,6 +95,8 @@
 		var validStepNo = 0;
 		var model = {};
 		var artifactID = 0;
+		var saveRequested = false;
+		var heapData = {};
 		IP.data.ajax({
 			url: IP.utils.generateWebAPIURL(IP.data.params['apiControllerName'], IP.data.params['artifactID']),
 			type: 'Get'
@@ -106,9 +109,10 @@
 
 		var _next = function () {
 			var d = IP.data.deferred().defer();
-			let $select2elements =  $('.select2-offscreen').filter(function () {
-					return !this.id.match('s2id_autogen') && this.tagName === 'SELECT';
-				});
+			if (validStepNo === 0)
+			{
+				heapData["NotificationEmailsAdded"] = $('#notificationEmails').val() !== "";
+			}
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
@@ -128,25 +132,24 @@
 				IP.message.error.raise(err);
 				d.reject(err);
 			}).done(function () {
-				let heap = window.heap;
-				if (heap) {
-					let heapEventParameters = {};
-                    heapEventParameters['stepIndex'] = validStepNo;
-                    $select2elements.each(function (i, element) {
-                        try {
-                            let optiontext = element.options[element.selectedIndex].text;
-                            heapEventParameters["select-" + element.id] = optiontext;
-                        } catch (error) {
-                            // empty intentionally
-                        }
-                    });
-                    heap.track('NextStepEvent', heapEventParameters);
-                }
+				if (validStepNo === 2)
+				{
+					if (IsSyncJob())
+					{
+						heapData["CreateSavedSearch"] = $('#create-saved-search-0:checked').val() === "true";
+					}
+				}
+				if (saveRequested) 
+				{
+					SendHeapMetrics();
+					saveRequested = false;
+				}
 			});
 			return d.promise;
 		};
 
 		var _save = function () {
+			saveRequested = true;
 			if (step === 0) {
 				var d = IP.data.deferred().defer();
 
@@ -161,7 +164,7 @@
 					}
 					IP.message.error.raise(err);
 					d.reject(err);
-				});
+				})
 				return d.promise;
 			} else {
 				return _next();
@@ -266,5 +269,96 @@
 				IP.messaging.publish('goToStep', step);
 			});
 		});
+
+		var SendHeapMetrics = function()
+		{
+			try
+			{
+				let heap = window.heap;
+				if (heap)
+				{
+					let source = GetSourceType();
+					heapData["SourceProvider"] = source;
+					heapData["DestinationProvider"] = model.IPDestinationSettings.Provider;
+					heapData["ImportExport"] = model.isExportType ? "Export" : "Import";
+					heapData["LogErrors"] = model.logErrors;
+					heapData["RdoTypeName"] = model.rdoTypeName;
+					heapData["SelectedProfile"] = model.profile.selectedProfile !== undefined;
+					heapData["EnableTagging"] = model.EnableTagging;
+					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler;
+					if (model.scheduler.enableScheduler)
+					{
+						heapData["Scheduler-Frequency"] = model.scheduler.selectedFrequency;
+						heapData["Scheduler-Time"] = model.scheduler.scheduledTime;
+						
+						let startDate = Date.parse(model.scheduler.startDate);
+						let endDate = Date.parse(model.scheduler.endDate);
+						let scheduleTimePeriod = (endDate - startDate)/1000/3600/24 // days calculation
+						heapData["Scheduler-TimePeriod_days"] = scheduleTimePeriod;
+					}
+
+					if (IsSyncJob())
+					{
+						heapData["SourceFieldsCount"] = $('#source-fields option').length;
+						heapData["MappedSourceFieldsCount"] = $('#selected-source-fields option').length;
+						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
+						heapData["MappedDestinationFieldsCount"] = $('#selected-workspace-fields option').length;
+						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
+						heapData["SyncSourceType"] = sourceConfiguration.ProductionImport ? "Production" : "SavedSearch";
+						heapData["OverwriteMode"] = model.SelectedOverwrite;
+						if (model.SelectedOverwrite !== "Append Only")
+						{
+							heapData["FieldOverlayBehavior"] = model.FieldOverlayBehavior;
+						}
+						heapData["ImageImport"] = $('#exportImages-radio-0:checked').val() === "true"
+						if (heapData["ImageImport"])
+						{
+							heapData["ImagePrecedence"] = $('#image-production-precedence option:selected').text();
+							heapData["CopyFilesToRepository"] = $('#native-file-radio-0:checked').val() === "true";
+							if (heapData["ImagePrecedence"] === "Produced Images")
+							{
+								heapData["IncludeOriginalImagesIfNotProduced"] = $('#image-include-original-images-checkbox:checked').val() !== undefined;
+							}
+						}
+						else
+						{
+							let physicalFilesChecked = $('#native-file-mode-radio-0:checked').val() !== undefined;
+							let copyLinksChecked = $('#native-file-mode-radio-1:checked').val() !== undefined;
+							let importNativeFileCopyMode = physicalFilesChecked ? "Physical files" : copyLinksChecked ? "Links Only" : "No";
+							heapData["ImportNativeFileCopyMode"] = importNativeFileCopyMode.trim();
+							heapData["UseFolderPathInformation"] = $('#folderPathInformationSelect option:selected').text().trim();
+							if (heapData["UseFolderPathInformation"] !== "No" && model.SelectedOverwrite !== "Append Only")
+							{
+								heapData["MoveExistingDocuments"] = $('#move-documents-radio-0:checked').val() === "true";
+							}
+							if (heapData["UseFolderPathInformation"] === "Read From Field" )
+							{
+								heapData["FolderPathInformation"] = $('#folderPath option:selected').text();
+							}
+						}
+					}
+					heap.track("IntegraionPoint-Edit", heapData);
+				}
+			} catch (error)
+			{
+				console.warn(error);
+			}
+		}
+
+		var IsSyncJob = function()
+		{
+			let relativitySourceTypeGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+			return relativitySourceTypeGuid === model.source.selectedType;
+		}
+
+		var GetSourceType = function()
+		{
+			let source = $.grep(model.source.sourceTypes, function(item)
+					{				
+						return item.value === model.source.selectedType;			
+					})[0]
+					.displayName;
+			return source;
+		}
 	});
 })(ko, IP.timeUtil);
