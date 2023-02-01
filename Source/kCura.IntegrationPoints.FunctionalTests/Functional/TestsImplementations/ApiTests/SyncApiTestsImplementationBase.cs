@@ -239,7 +239,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                     Fields = new FieldRef[]
                     {
                         new FieldRef { Name = JobHistoryFields.ItemsTransferred },
-                        new FieldRef { Name = JobHistoryFields.ItemsWithErrors }
+                        new FieldRef { Name = JobHistoryFields.ItemsWithErrors },
+                        new FieldRef { Name = JobHistoryFields.ItemsRead }
                     },
                     Condition = $"'ArtifactId' == '{jobHistoryId}'"
                 };
