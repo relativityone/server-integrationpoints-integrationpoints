@@ -26,6 +26,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -88,7 +89,8 @@ namespace kCura.IntegrationPoints.Agent
             IAPILog logger = null,
             IConfig config = null,
             IAPM apm = null,
-            IDbContextFactory dbContextFactory = null)
+            IDbContextFactory dbContextFactory = null,
+            IRelativityObjectManagerFactory relativityObjectManagerFactory = null)
             : base(
                 agentGuid,
                 kubernetesMode,
@@ -101,7 +103,8 @@ namespace kCura.IntegrationPoints.Agent
                 logger,
                 config,
                 apm,
-                dbContextFactory)
+                dbContextFactory,
+                relativityObjectManagerFactory)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);

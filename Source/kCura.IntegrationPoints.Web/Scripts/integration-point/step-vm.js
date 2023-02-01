@@ -129,17 +129,19 @@
 				d.reject(err);
 			}).done(function () {
 				let heap = window.heap;
-				let heapEventParameters = {};
-				heapEventParameters ['stepIndex'] = validStepNo;
-				$select2elements.each(function (i, element) {
-					try {
-						let optiontext = element.options[element.selectedIndex].text;
-						heapEventParameters["select-" + element.id] = optiontext;
-					} catch (error) {
-						// empty intentionally
-					}
-				});
-				heap.track('NextStepEvent', heapEventParameters);
+				if (heap) {
+					let heapEventParameters = {};
+                    heapEventParameters['stepIndex'] = validStepNo;
+                    $select2elements.each(function (i, element) {
+                        try {
+                            let optiontext = element.options[element.selectedIndex].text;
+                            heapEventParameters["select-" + element.id] = optiontext;
+                        } catch (error) {
+                            // empty intentionally
+                        }
+                    });
+                    heap.track('NextStepEvent', heapEventParameters);
+                }
 			});
 			return d.promise;
 		};

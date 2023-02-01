@@ -4,12 +4,14 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.ScheduleQueue.Core.Tests.Validation
@@ -17,7 +19,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
     [TestFixture, Category("Unit")]
     public class QueueJobValidatorTests
     {
-        private Mock<IObjectManager> _objectManagerMock;
+        private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryMock;
+        private Mock<IRelativityObjectManager> _objectManagerFake;
 
         private const int _TEST_WORKSPACE_ID = 100;
         private const int _TEST_INTEGRATION_POINT_ID = 200;
@@ -115,15 +118,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             await sut.ValidateAsync(job).ConfigureAwait(false);
 
             // Assert
-            _objectManagerMock.Verify(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()),
+            _objectManagerFake.Verify(
+                x => x.QueryAsync(It.IsAny<QueryRequest>(), 0, 1, false, It.IsAny<ExecutionIdentity>()),
                 Times.Never());
         }
 
         private QueueJobValidator GetSut()
         {
-            Mock<IHelper> helper = new Mock<IHelper>();
-            Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
-            _objectManagerMock = new Mock<IObjectManager>();
+            _objectManagerFake = new Mock<IRelativityObjectManager>();
+            _objectManagerFactoryMock = new Mock<IRelativityObjectManagerFactory>();
+            _objectManagerFactoryMock
+                .Setup(x => x.CreateRelativityObjectManager(It.IsAny<int>()))
+                .Returns(_objectManagerFake.Object);
 
             Mock<IConfig> config = new Mock<IConfig>();
 
@@ -133,20 +139,21 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             log.Setup(x => x.ForContext<QueueJobValidator>())
                 .Returns(log.Object);
 
-            helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
-            servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
-                .Returns(_objectManagerMock.Object);
-
-            return new QueueJobValidator(helper.Object, config.Object, scheduleRuleFactory.Object, log.Object);
+            return new QueueJobValidator(_objectManagerFactoryMock.Object, config.Object, scheduleRuleFactory.Object, log.Object);
         }
 
         private void SetUpWorkspaceExists(bool exists)
         {
             int expectedTotalCount = exists ? 1 : 0;
 
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(-1,
-                    It.Is<QueryRequest>(r => r.Condition.Contains(_TEST_WORKSPACE_ID.ToString())), 0, 1))
-                .ReturnsAsync(new QueryResultSlim
+            _objectManagerFake.Setup(x => x.QuerySlimAsync(
+                    It.Is<QueryRequest>(r =>
+                        r.Condition.Contains(_TEST_WORKSPACE_ID.ToString())),
+                    0,
+                    1,
+                    false,
+                    It.IsAny<ExecutionIdentity>()))
+                .ReturnsAsync(new ResultSet<RelativityObjectSlim>
                 {
                     TotalCount = expectedTotalCount
                 })
@@ -159,17 +166,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
                 ? new List<RelativityObject>() { new RelativityObject() }
                 : new List<RelativityObject>();
 
-            _objectManagerMock.Setup(
+            _objectManagerFake.Setup(
                     x => x.QueryAsync(
-                        _TEST_WORKSPACE_ID,
                         It.Is<QueryRequest>(r =>
                             r.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid &&
                             r.Condition.Contains(_TEST_INTEGRATION_POINT_ID.ToString())),
                         0,
-                        1))
-                .ReturnsAsync(new QueryResult()
+                        1,
+                        false,
+                        It.IsAny<ExecutionIdentity>()))
+                .ReturnsAsync(new ResultSet<RelativityObject>
                 {
-                    Objects = expectedObjects,
+                    Items = expectedObjects,
                     TotalCount = expectedObjects.Count
                 })
                 .Verifiable();
@@ -179,9 +187,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
         {
             int expectedTotalCount = exists ? 1 : 0;
 
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(-1,
-                    It.Is<QueryRequest>(r => r.Condition.Contains(_TEST_USER_ID.ToString())), 0, 1))
-                .ReturnsAsync(new QueryResultSlim
+            _objectManagerFake.Setup(
+                    x => x.QuerySlimAsync(
+                    It.Is<QueryRequest>(r => r.Condition.Contains(_TEST_USER_ID.ToString())),
+                    0,
+                    1,
+                    false,
+                    It.IsAny<ExecutionIdentity>()))
+                .ReturnsAsync(new ResultSet<RelativityObjectSlim>
                 {
                     TotalCount = expectedTotalCount
                 })
