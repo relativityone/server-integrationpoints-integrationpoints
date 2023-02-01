@@ -348,7 +348,10 @@
 		var IsSyncJob = function()
 		{
 			let relativitySourceTypeGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
-			return relativitySourceTypeGuid === model.source.selectedType;
+			let relativityDestinationTypeGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+			let isSyncJob = relativitySourceTypeGuid === model.source.selectedType &&
+				model.destinationProviderGuid === relativityDestinationTypeGuid; 
+			return isSyncJob;
 		}
 
 		var GetSourceType = function()
