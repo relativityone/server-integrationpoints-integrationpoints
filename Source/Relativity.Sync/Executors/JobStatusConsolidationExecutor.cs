@@ -18,7 +18,6 @@ namespace Relativity.Sync.Executors
         private readonly IBatchRepository _batchRepository;
         private readonly IJobStatisticsContainer _jobStatisticsContainer;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        private readonly IIAPIv2RunChecker _iapi2RunChecker;
 
         public JobStatusConsolidationExecutor(
             IRdoGuidConfiguration rdoGuidConfiguration,
