@@ -197,7 +197,7 @@ namespace Relativity.Sync.Executors
                     await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
                     break;
                 default:
-                    _logger.LogWarning("Incorrect attempt of changing batch status. Batch {batchGuid} should not be marked as finished because it's current state is {state}", batch.BatchGuid, dataSourceDetails);
+                    _logger.LogWarning("Incorrect attempt of changing batch status. Batch {batchGuid} should not be marked as finished because it's current state is {state}", batch.BatchGuid, dataSourceDetails.State);
                     break;
             }
 
