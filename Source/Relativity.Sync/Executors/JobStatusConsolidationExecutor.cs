@@ -24,14 +24,12 @@ namespace Relativity.Sync.Executors
             IRdoGuidConfiguration rdoGuidConfiguration,
             IBatchRepository batchRepository,
             IJobStatisticsContainer jobStatisticsContainer,
-            ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IIAPIv2RunChecker iapi2RunChecker)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
         {
             _rdoGuidConfiguration = rdoGuidConfiguration;
             _batchRepository = batchRepository;
             _jobStatisticsContainer = jobStatisticsContainer;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _iapi2RunChecker = iapi2RunChecker;
         }
 
         public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CompositeCancellationToken token)
@@ -53,7 +51,7 @@ namespace Relativity.Sync.Executors
                     completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
                     totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
                     failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
-                    readItemsCount = _iapi2RunChecker.ShouldBeUsed() ? batches.Sum(batch => batch.ReadDocumentsCount) : completedItemsCount;
+                    readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
                 }
 
                 updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, readItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
