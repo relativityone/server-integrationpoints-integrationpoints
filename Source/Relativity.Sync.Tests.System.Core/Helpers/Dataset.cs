@@ -79,6 +79,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         public string GetControlNumber(FileInfo file) => _controlNumberGetter(file);
 
         public string GetBegBates(FileInfo file) => _begBatesGetter(file);
+
+        public IEnumerable<string> GetControlNumbers() =>
+            GetFiles(Path.Combine(FolderPath, "TEXT")).Select(x => GetControlNumber(x));
     }
 
     public enum ImportType

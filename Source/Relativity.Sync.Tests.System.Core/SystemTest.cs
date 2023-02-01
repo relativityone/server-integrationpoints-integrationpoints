@@ -88,13 +88,13 @@ namespace Relativity.Sync.Tests.System.Core
                         SourceField = new FieldEntry
                         {
                             DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
-                            FieldIdentifier =  sourceQueryResult.Objects.First().ArtifactID,
+                            FieldIdentifier = sourceQueryResult.Objects.First().ArtifactID,
                             IsIdentifier = true
                         },
                         DestinationField = new FieldEntry
                         {
                             DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
-                            FieldIdentifier =  destinationQueryResult.Objects.First().ArtifactID,
+                            FieldIdentifier = destinationQueryResult.Objects.First().ArtifactID,
                             IsIdentifier = true
                         },
                         FieldMapType = FieldMapType.Identifier
@@ -120,9 +120,13 @@ namespace Relativity.Sync.Tests.System.Core
             return queryRequest;
         }
 
-        protected async Task<IEnumerable<FieldMap>> GetExtractedTextMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId)
+        protected async Task<List<FieldMap>> GetExtractedTextMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId)
         {
-            return await GetFieldsMappingAsync(sourceWorkspaceId, destinationWorkspaceId, new[] { "Extracted Text" }).ConfigureAwait(false);
+            List<FieldMap> indentifierMapping = await GetIdentifierMappingAsync(sourceWorkspaceId, _DOCUMENT_ARTIFACT_TYPE_ID, destinationWorkspaceId);
+
+            List<FieldMap> extractedTextMapping = await GetFieldsMappingAsync(sourceWorkspaceId, destinationWorkspaceId, new[] { "Extracted Text" }).ConfigureAwait(false);
+
+            return indentifierMapping.Concat(extractedTextMapping).ToList();
         }
 
         protected async Task<List<FieldMap>> GetFieldsMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId, string[] fieldNames)

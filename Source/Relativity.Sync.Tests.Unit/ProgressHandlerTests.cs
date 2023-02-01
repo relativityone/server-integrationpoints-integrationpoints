@@ -180,7 +180,7 @@ namespace Relativity.Sync.Tests.Unit
         }
 
         [Test]
-        public void HandleProgressAsync_ShouldRunOnlyOneThreadAtOnce()
+        public async Task HandleProgressAsync_ShouldRunOnlyOneThreadAtOnce()
         {
             // Arrange
             ImportProgress importProgress = _fxt.Create<ImportProgress>();
@@ -189,17 +189,18 @@ namespace Relativity.Sync.Tests.Unit
                 .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(() =>
                 {
-                    Task.Delay(1500).GetAwaiter().GetResult();
+                    Task.Delay(500).GetAwaiter().GetResult();
                     return valueProgress;
                 });
 
             PrepareBatches(importProgress);
 
             // Act
-            Parallel.For(0, 2, _ =>
-            {
-                 _sut.HandleProgressAsync().GetAwaiter().GetResult();
-            });
+            Task progress1 = Task.Run(() => _sut.HandleProgressAsync());
+
+            Task progress2 = Task.Run(() => _sut.HandleProgressAsync());
+
+            await Task.WhenAll(progress1, progress2).ConfigureAwait(false);
 
             // Assert
             _jobProgressUpdaterMock.Verify(

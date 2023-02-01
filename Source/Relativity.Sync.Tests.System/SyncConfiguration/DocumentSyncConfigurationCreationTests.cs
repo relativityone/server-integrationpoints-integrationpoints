@@ -59,14 +59,10 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             // Arrange
             const string extractedTextField = "Extracted Text";
 
-            var identifierFieldsMapping = await GetDocumentIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId)
-                .ConfigureAwait(false);
             var extractedTextFieldsMapping = await GetExtractedTextMappingAsync(SourceWorkspaceId, DestinationWorkspaceId)
                 .ConfigureAwait(false);
 
-            var expectedFieldsMapping = identifierFieldsMapping.Concat(extractedTextFieldsMapping).ToList();
-
-            SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync(expectedFieldsMapping).ConfigureAwait(false);
+            SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync(extractedTextFieldsMapping).ConfigureAwait(false);
 
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);

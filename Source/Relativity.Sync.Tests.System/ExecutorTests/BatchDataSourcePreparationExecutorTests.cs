@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -18,6 +19,7 @@ using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.System.ExecutorTests
 {
@@ -41,6 +43,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         public void SetUp()
         {
             _sourceWorkspaceName = $"Source-{Guid.NewGuid()}";
+
             _destinationWorkspaceName = $"Destination-{Guid.NewGuid()}";
 
             _workspaceFileSharePath = Path.Combine(Path.GetTempPath(), _sourceWorkspaceName);
@@ -87,10 +90,57 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
             // Assert
             result.Status.Should().Be(ExecutionStatus.Completed);
+
+            IBatch batch = (await setup.GetExecutedBatchesAsync().ConfigureAwait(false)).Single();
+
+            var loadFileValues = await ReadCsvAsync(batch, setup.Container).ConfigureAwait(false);
+            loadFileValues.Select(x => x["Control Number"])
+                .Should().BeEquivalentTo(Dataset.NativesAndExtractedText.GetControlNumbers());
         }
 
         [Test]
-        [Ignore("REL-810225")]
+        public async Task ExecuteAsync_ShouldGenerateLoadFileWithExtractedTextPaths()
+        {
+            // Arrange
+            FileShareServiceMock fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
+
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+                => GetExtractedTextMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
+                .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
+                .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
+                .SetupContainer(
+                    b =>
+                    {
+                        b.RegisterInstance<IFileShareService>(fileShareMock);
+                    }, _syncToggleProvider)
+                .PrepareBatches()
+                .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
+
+            IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+
+            // Act
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, CompositeCancellationToken.None);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Completed);
+
+            IBatch batch = (await setup.GetExecutedBatchesAsync().ConfigureAwait(false)).Single();
+
+            var loadFileValues = await ReadCsvAsync(batch, setup.Container).ConfigureAwait(false);
+            loadFileValues.Select(x => x["Extracted Text"])
+                .Should().OnlyContain(x => Path.IsPathRooted(x) == false);
+        }
+
+        [Test]
         public async Task ExecuteAsync_ShouldCreateSyncItemLevelErrors()
         {
             // Arrange
@@ -103,7 +153,11 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
                 .SetupDocumentConfiguration(
-                    IdentifierFieldMap)
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
@@ -141,7 +195,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldPauseExecution_WhenDrainStopIsRequested()
         {
             // Arrange
@@ -152,7 +205,12 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
@@ -182,7 +240,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("REL-810225")]
         public async Task ExecuteAsync_ShouldCancelExecution_WhenCancellationIsRequested()
         {
             // Arrange
@@ -193,7 +250,12 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    configureAction: config =>
+                    {
+                        config.EnableTagging = false;
+                    })
                 .SetupContainer(
                     b =>
                 {
@@ -210,14 +272,40 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
             // Assert
             IBatchRepository batchRepository = setup.Container.Resolve<IBatchRepository>();
-            IEnumerable<IBatch> batches = await batchRepository.GetAllAsync(
-                setup.Configuration.SourceWorkspaceArtifactId,
-                setup.Configuration.SyncConfigurationArtifactId,
-                setup.Configuration.ExportRunId)
-            .ConfigureAwait(false);
+            IEnumerable<IBatch> batches = await setup.GetExecutedBatchesAsync().ConfigureAwait(false);
 
             result.Status.Should().Be(ExecutionStatus.Completed);
             batches.FirstOrDefault().Status.Should().Be(BatchStatus.Cancelled);
+        }
+
+        private async Task<List<Dictionary<string, string>>> ReadCsvAsync(IBatch batch, IContainer container)
+        {
+            ILoadFilePathService filePathService = container.Resolve<ILoadFilePathService>();
+            string batchLoadFile = await filePathService.GenerateBatchLoadFilePathAsync(batch)
+                .ConfigureAwait(false);
+
+            IFieldManager fieldManager = container.Resolve<IFieldManager>();
+
+            var fields = await fieldManager.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+            Dictionary<int, string> fieldIdsNames = fields.ToDictionary(x => x.DocumentFieldIndex, x => x.DestinationFieldName);
+
+            List<Dictionary<string, string>> csvValues = new List<Dictionary<string, string>>();
+
+            string[] lines = File.ReadAllLines(batchLoadFile);
+            foreach (string line in lines)
+            {
+                Dictionary<string, string> csvLineValue = new Dictionary<string, string>();
+                string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    string fieldName = fieldIdsNames[i];
+                    csvLineValue[fieldName] = columns[i];
+                }
+
+                csvValues.Add(csvLineValue);
+            }
+
+            return csvValues;
         }
     }
 }

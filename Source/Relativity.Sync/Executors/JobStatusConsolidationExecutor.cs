@@ -6,6 +6,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 
@@ -18,7 +19,11 @@ namespace Relativity.Sync.Executors
         private readonly IJobStatisticsContainer _jobStatisticsContainer;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-        public JobStatusConsolidationExecutor(IRdoGuidConfiguration rdoGuidConfiguration, IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
+        public JobStatusConsolidationExecutor(
+            IRdoGuidConfiguration rdoGuidConfiguration,
+            IBatchRepository batchRepository,
+            IJobStatisticsContainer jobStatisticsContainer,
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
         {
             _rdoGuidConfiguration = rdoGuidConfiguration;
             _batchRepository = batchRepository;
@@ -34,6 +39,7 @@ namespace Relativity.Sync.Executors
                 int completedItemsCount = 0;
                 int totalItemsCount = 0;
                 int failedItemsCount = 0;
+                int readItemsCount = 0;
                 var exportRunId = configuration.ExportRunId;
                 if (exportRunId.HasValue)
                 {
@@ -44,9 +50,10 @@ namespace Relativity.Sync.Executors
                     completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
                     totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
                     failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
+                    readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
                 }
 
-                updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
+                updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, readItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -80,7 +87,7 @@ namespace Relativity.Sync.Executors
             return message;
         }
 
-        private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int failedItemsCount, int totalItemsCount)
+        private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int readItemsCount, int failedItemsCount, int totalItemsCount)
         {
             using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
@@ -99,6 +106,14 @@ namespace Relativity.Sync.Executors
                                 Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
                             },
                             Value = completedItemsCount
+                        },
+                        new FieldRefValuePair
+                        {
+                            Field = new FieldRef
+                            {
+                                Guid = _rdoGuidConfiguration.JobHistory.ReadItemsFieldGuid
+                            },
+                            Value = readItemsCount
                         },
                         new FieldRefValuePair
                         {

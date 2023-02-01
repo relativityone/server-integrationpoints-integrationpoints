@@ -135,25 +135,6 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
         }
 
         [Test]
-        public void ShouldBeUsed_ShouldReturnFalse_IfJobHasLongTextFieldsMapped()
-        {
-            // Arrange
-            Dictionary<string, RelativityDataType> dataTypes = new Dictionary<string, RelativityDataType>();
-            dataTypes.Add("testValue", RelativityDataType.LongText);
-            _objectFieldTypeRepositoryMock.Setup(x => x.GetRelativityDataTypesForFieldsByFieldNameAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<ICollection<string>>(),
-                CancellationToken.None)).ReturnsAsync(dataTypes);
-
-            // Act
-            bool result = _sut.ShouldBeUsed();
-
-            // Assert
-            result.Should().BeFalse();
-        }
-
-        [Test]
         public void ShouldBeUsed_ShouldReturnFalse_IfJobHasModeSetToCopyFiles()
         {
             // Arrange

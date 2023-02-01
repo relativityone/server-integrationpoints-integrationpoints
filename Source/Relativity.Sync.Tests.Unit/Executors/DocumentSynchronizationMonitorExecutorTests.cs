@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -86,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldAlwaysExplicitlyUpdateProgressOnceTheJobIsFinished()
         {
             // Arrange
-            PrepareTestDataSource();
+            PrepareTestDataSourceForBatch();
 
             PrepareImportDetailsConsecutiveResponse(ImportState.Completed);
 
@@ -101,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldReturnCompletedWithErrorsStatus_WhenAtLeastOneDataSourceHasItemLevelErrors()
         {
             // Arrange
-            PrepareTestDataSource(DataSourceState.CompletedWithItemErrors);
+            PrepareTestDataSourceForBatch(DataSourceState.CompletedWithItemErrors);
 
             PrepareImportDetailsConsecutiveResponse(ImportState.Completed);
 
@@ -118,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldReturnFailedStatus_WhenMonitoringErrorOccurrs()
         {
             // Arrange
-            PrepareTestDataSource(DataSourceState.Inserting);
+            PrepareTestDataSourceForBatch(DataSourceState.Inserting);
 
             _jobControllerMock.Setup(x => x.GetDetailsAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
                 .Throws<InvalidOperationException>();
@@ -135,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldBePaused_OnDrainStop()
         {
             // Arrange
-            PrepareTestDataSource(DataSourceState.Inserting);
+            PrepareTestDataSourceForBatch(DataSourceState.Inserting);
             CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
             {
                 IsDrainStopRequestedFunc = () => true
@@ -155,7 +152,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldCallIAPICancellation_WhenCancelWasRequestedAtMonitoringStage()
         {
             // Arrange
-            PrepareTestDataSource();
+            PrepareTestDataSourceForBatch();
             CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
             {
                 IsStopRequestedFunc = () => true
@@ -178,7 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldNotCallIAPICancellation_WhenCancelWasRequestedBeforeMonitoringStage()
         {
             // Arrange
-            PrepareTestDataSource();
+            PrepareTestDataSourceForBatch();
             CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
             {
                 IsStopRequestedFunc = () => true
@@ -200,7 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ExecuteAsync_ShouldReturnCorrectStatus_WhenImportStateIsKnown(ImportState jobFinalState, ExecutionStatus expectedStatus)
         {
             // Arrange
-            PrepareTestDataSource();
+            PrepareTestDataSourceForBatch();
 
             PrepareImportDetailsConsecutiveResponse(
                 ImportState.Scheduled,
@@ -214,13 +211,35 @@ namespace Relativity.Sync.Tests.Unit.Executors
             result.Status.Should().Be(expectedStatus);
         }
 
-        private void PrepareTestDataSource(
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateBatch_WhenDataSourceIsFinished()
+        {
+            // Arrange
+            ImportProgress dataSourceProgress = _fxt.Create<ImportProgress>();
+
+            IBatch batch = PrepareTestDataSourceForBatch(DataSourceState.CompletedWithItemErrors, dataSourceProgress);
+
+            PrepareImportDetailsConsecutiveResponse(ImportState.Completed);
+
+            PrepareItemLevelErrorHandling();
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
+
+            batch.TransferredItemsCount.Should().Be(dataSourceProgress.ImportedRecords);
+            batch.FailedItemsCount.Should().Be(dataSourceProgress.ErroredRecords);
+        }
+
+        private IBatch PrepareTestDataSourceForBatch(
             DataSourceState dataSourceState = DataSourceState.Completed,
-            BatchStatus batchStatus = BatchStatus.Generated)
+            ImportProgress importProgress = null)
         {
             BatchStub batch = _fxt.Build<BatchStub>()
                 .With(x => x.BatchGuid, () => Guid.NewGuid())
-                .With(x => x.Status, batchStatus)
+                .With(x => x.Status, BatchStatus.Generated)
                 .Create();
 
             _batchRepository.Setup(x => x.GetAllAsync(
@@ -235,6 +254,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _sourceControllerMock.Setup(x => x.GetDetailsAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID, batch.BatchGuid))
                 .ReturnsAsync(ValueResponse<DataSourceDetails>.CreateForSuccess(_EXPORT_RUN_ID, dataSource));
+
+            ImportProgress dataSourceProgress = importProgress ?? _fxt.Create<ImportProgress>();
+
+            _sourceControllerMock.Setup(x => x.GetProgressAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID, batch.BatchGuid))
+                .ReturnsAsync(ValueResponse<ImportProgress>.CreateForSuccess(_EXPORT_RUN_ID, dataSourceProgress));
+
+            return batch;
         }
 
         private void PrepareImportDetailsConsecutiveResponse(

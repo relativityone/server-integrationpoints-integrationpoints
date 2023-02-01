@@ -410,6 +410,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 JobHistoryGuidTotalField = configurationStub.JobHistory.TotalItemsFieldGuid,
                 JobHistoryGuidFailedField = configurationStub.JobHistory.FailedItemsFieldGuid,
                 JobHistoryCompletedItemsField = configurationStub.JobHistory.CompletedItemsFieldGuid,
+                JobHistoryReadItemsField = configurationStub.JobHistory.ReadItemsFieldGuid,
                 JobHistoryDestinationWorkspaceInformationField = configurationStub.JobHistory.DestinationWorkspaceInformationGuid,
 
                 // JobHistoryErrorGuids
