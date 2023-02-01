@@ -59,6 +59,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryJobIdField = RdoOptions.JobHistory.JobIdGuid;
             SyncConfiguration.JobHistoryStatusField = RdoOptions.JobHistory.StatusGuid;
             SyncConfiguration.JobHistoryCompletedItemsField = RdoOptions.JobHistory.CompletedItemsCountGuid;
+            SyncConfiguration.JobHistoryReadItemsField = RdoOptions.JobHistory.ReadItemsCountGuid;
             SyncConfiguration.JobHistoryDestinationWorkspaceInformationField = RdoOptions.JobHistory.DestinationWorkspaceInformationGuid;
             SyncConfiguration.JobHistoryGuidFailedField = RdoOptions.JobHistory.FailedItemsCountGuid;
             SyncConfiguration.JobHistoryType = RdoOptions.JobHistory.JobHistoryTypeGuid;
@@ -161,6 +162,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistory, x => x.JobIdGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.StatusGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.CompletedItemsCountGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.ReadItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.FailedItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.TotalItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.JobHistoryTypeGuid),

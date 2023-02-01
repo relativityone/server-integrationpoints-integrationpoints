@@ -18,6 +18,11 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public Guid CompletedItemsCountGuid { get; set; }
 
         /// <summary>
+        /// Read items count (whole number)
+        /// </summary>
+        public Guid ReadItemsCountGuid { get; set; }
+
+        /// <summary>
         /// Failed items count (whole number)
         /// </summary>
         public Guid FailedItemsCountGuid { get; set; }
@@ -55,13 +60,23 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>
-        public JobHistoryOptions(Guid jobHistoryTypeGuid, Guid jobIdGuid, Guid statusGuid, Guid completedItemsCountGuid, Guid failedItemsCountGuid,
-            Guid totalItemsCountGuid, Guid destinationWorkspaceInformationGuid, Guid startTimeGuid, Guid endTimeGuid)
+        public JobHistoryOptions(
+            Guid jobHistoryTypeGuid,
+            Guid jobIdGuid,
+            Guid statusGuid,
+            Guid completedItemsCountGuid,
+            Guid readItemsCountGuid,
+            Guid failedItemsCountGuid,
+            Guid totalItemsCountGuid,
+            Guid destinationWorkspaceInformationGuid,
+            Guid startTimeGuid,
+            Guid endTimeGuid)
         {
             JobHistoryTypeGuid = jobHistoryTypeGuid;
             JobIdGuid = jobIdGuid;
             StatusGuid = statusGuid;
             CompletedItemsCountGuid = completedItemsCountGuid;
+            ReadItemsCountGuid = readItemsCountGuid;
             FailedItemsCountGuid = failedItemsCountGuid;
             TotalItemsCountGuid = totalItemsCountGuid;
             DestinationWorkspaceInformationGuid = destinationWorkspaceInformationGuid;

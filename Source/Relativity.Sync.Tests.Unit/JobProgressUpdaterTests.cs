@@ -42,6 +42,7 @@ namespace Relativity.Sync.Tests.Unit
 
         private Guid _jobHistoryTypeGuid = new Guid("DF0A4E86-251E-4B21-870D-265C9B00B0F5");
         private Guid _completedItemsFieldGuid = new Guid("EC869E59-933F-44C8-9E9F-5F1C4619B1AA");
+        private Guid _readItemsFieldGuid = new Guid("bd917575-1a47-47c9-8428-c0b1bee42ab0");
         private Guid _failedItemsFieldGuid = new Guid("ABC708E9-4DB9-4B62-B2E9-3EEF0166A695");
         private Guid _totalItemsFieldGuid = new Guid("B54407A6-26F5-48CE-9079-0A99A49C9CF3");
         private Guid _jobIdGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d");
@@ -207,16 +208,18 @@ namespace Relativity.Sync.Tests.Unit
         public async Task UpdateJobProgressAsync_ShouldUpdateCompletedAndFailedRecords()
         {
             // Arrange
+            const int readItems = 444;
             const int completedItems = 555;
             const int failedItems = 666;
 
             _rdoGuidConfiguration.SetupGet(x => x.JobHistory.CompletedItemsFieldGuid).Returns(_completedItemsFieldGuid);
             _rdoGuidConfiguration.SetupGet(x => x.JobHistory.FailedItemsFieldGuid).Returns(_failedItemsFieldGuid);
+            _rdoGuidConfiguration.SetupGet(x => x.JobHistory.ReadItemsFieldGuid).Returns(_readItemsFieldGuid);
 
             JobProgressUpdater sut = PrepareSut();
 
             // Act
-            await sut.UpdateJobProgressAsync(new Progress.Progress(0, failedItems, completedItems));
+            await sut.UpdateJobProgressAsync(new Progress.Progress(readItems, failedItems, completedItems));
 
             // Assert
             FieldRefValuePair[] expectedFields = new[]
@@ -228,6 +231,14 @@ namespace Relativity.Sync.Tests.Unit
                         Guid = _completedItemsFieldGuid
                     },
                     Value = completedItems
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _readItemsFieldGuid
+                    },
+                    Value = readItems
                 },
                 new FieldRefValuePair()
                 {

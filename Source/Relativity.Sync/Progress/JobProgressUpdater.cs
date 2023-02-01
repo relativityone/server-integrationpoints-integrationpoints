@@ -233,6 +233,7 @@ namespace Relativity.Sync.Progress
                     jobHistoryId,
                     GetProgressFieldsValues(
                         progress.TransferredDocumentsCount,
+                        progress.ReadDocumentsCount,
                         progress.FailedReadDocumentsCount))
                 .ConfigureAwait(false);
         }
@@ -269,7 +270,7 @@ namespace Relativity.Sync.Progress
             }
         }
 
-        private IEnumerable<FieldRefValuePair> GetProgressFieldsValues(int completedRecordsCount, int failedRecordsCount)
+        private IEnumerable<FieldRefValuePair> GetProgressFieldsValues(int completedRecordsCount, int readItemsCount, int failedRecordsCount)
         {
             return new[]
             {
@@ -280,6 +281,14 @@ namespace Relativity.Sync.Progress
                         Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
                     },
                     Value = completedRecordsCount
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.ReadItemsFieldGuid
+                    },
+                    Value = readItemsCount
                 },
                 new FieldRefValuePair()
                 {

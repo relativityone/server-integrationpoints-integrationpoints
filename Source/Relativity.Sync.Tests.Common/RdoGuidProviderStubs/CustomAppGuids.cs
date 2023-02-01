@@ -10,6 +10,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
         {
             TypeGuid = new Guid("DF0A4E86-251E-4B21-870D-265C9B00B0F5"),
             CompletedItemsFieldGuid = new Guid("EC869E59-933F-44C8-9E9F-5F1C4619B1AA"),
+            ReadItemsFieldGuid = new Guid("bd917575-1a47-47c9-8428-c0b1bee42ab0"),
             DestinationWorkspaceInformationGuid = new Guid("412677B9-7F13-44CF-9F9E-37A91ECEE420"),
             FailedItemsFieldGuid = new Guid("ABC708E9-4DB9-4B62-B2E9-3EEF0166A695"),
             TotalItemsFieldGuid = new Guid("B54407A6-26F5-48CE-9079-0A99A49C9CF3"),
@@ -68,6 +69,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistory.JobIdGuid,
                 JobHistory.StatusGuid,
                 JobHistory.CompletedItemsFieldGuid,
+                JobHistory.ReadItemsFieldGuid,
                 JobHistory.FailedItemsFieldGuid,
                 JobHistory.TotalItemsFieldGuid,
                 JobHistory.DestinationWorkspaceInformationGuid,

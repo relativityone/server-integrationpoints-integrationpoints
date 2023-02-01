@@ -9,6 +9,8 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
 
         public Guid CompletedItemsFieldGuid { get; set; }
 
+        public Guid ReadItemsFieldGuid { get; set; }
+
         public Guid FailedItemsFieldGuid { get; set; }
 
         public Guid TotalItemsFieldGuid { get; set; }
