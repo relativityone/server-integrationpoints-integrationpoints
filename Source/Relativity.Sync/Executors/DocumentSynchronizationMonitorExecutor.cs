@@ -47,8 +47,6 @@ namespace Relativity.Sync.Executors
         {
             try
             {
-                using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
-                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
                 using (await _progressHandler.AttachAsync(
                     configuration.SourceWorkspaceArtifactId,
                     configuration.DestinationWorkspaceArtifactId,
@@ -76,25 +74,28 @@ namespace Relativity.Sync.Executors
                     ImportState state = ImportState.Unknown;
                     do
                     {
-                        if (token.IsStopRequested)
+                        using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
                         {
-                            await CancelImportJob(configuration, jobController).ConfigureAwait(false);
-                        }
+                            if (token.IsStopRequested)
+                            {
+                                await CancelImportJob(configuration, jobController).ConfigureAwait(false);
+                            }
 
-                        if (token.IsDrainStopRequested)
-                        {
-                            return ExecutionResult.Paused();
-                        }
+                            if (token.IsDrainStopRequested)
+                            {
+                                return ExecutionResult.Paused();
+                            }
 
-                        await Task.Delay(statusCheckDelay).ConfigureAwait(false);
+                            await Task.Delay(statusCheckDelay).ConfigureAwait(false);
 
-                        await HandleDataSourceStatusAsync(batches, sourceController, configuration).ConfigureAwait(false);
+                            await HandleDataSourceStatusAsync(batches, configuration).ConfigureAwait(false);
 
-                        result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
-                        if (result.State != state)
-                        {
-                            state = result.State;
-                            _logger.LogInformation("Import status: {@status}", result);
+                            result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
+                            if (result.State != state)
+                            {
+                                state = result.State;
+                                _logger.LogInformation("Import status: {@status}", result);
+                            }
                         }
                     }
                     while (!result.IsFinished);
@@ -124,24 +125,33 @@ namespace Relativity.Sync.Executors
 
         private async Task HandleDataSourceStatusAsync(
             List<IBatch> batches,
-            IImportSourceController sourceController,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            foreach (IBatch batch in batches.Where(x => !x.IsFinished))
+            using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
             {
-                DataSourceDetails dataSourceDetails = (await sourceController.GetDetailsAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        configuration.ExportRunId,
-                        batch.BatchGuid)
-                    .ConfigureAwait(false))
-                    .Value;
-
-                _logger.LogInformation("Data source details: {@details}", dataSourceDetails);
-
-                if (dataSourceDetails.IsFinished())
+                foreach (IBatch batch in batches.Where(x => !x.IsFinished))
                 {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSourceDetails.State);
-                    await EndBatchAsync(batch, dataSourceDetails.State, configuration).ConfigureAwait(false);
+                    DataSourceDetails dataSourceDetails = (await sourceController.GetDetailsAsync(
+                            configuration.DestinationWorkspaceArtifactId,
+                            configuration.ExportRunId,
+                            batch.BatchGuid)
+                        .ConfigureAwait(false))
+                        .Value;
+
+                    ImportProgress dataSourceProgress = (await sourceController.GetProgressAsync(
+                            configuration.DestinationWorkspaceArtifactId,
+                            configuration.ExportRunId,
+                            batch.BatchGuid)
+                        .ConfigureAwait(false))
+                        .Value;
+
+                    _logger.LogInformation("Data source details: {@details}", dataSourceDetails);
+
+                    if (dataSourceDetails.IsFinished())
+                    {
+                        _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSourceDetails.State);
+                        await EndBatchAsync(batch, dataSourceDetails, dataSourceProgress, configuration).ConfigureAwait(false);
+                    }
                 }
             }
         }
@@ -164,9 +174,9 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private async Task EndBatchAsync(IBatch batch, DataSourceState state, IDocumentSynchronizationMonitorConfiguration configuration)
+        private async Task EndBatchAsync(IBatch batch, DataSourceDetails dataSourceDetails, ImportProgress dataSourceProgress, IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            switch (state)
+            switch (dataSourceDetails.State)
             {
                 case DataSourceState.Completed:
                     await batch.SetStatusAsync(BatchStatus.Completed).ConfigureAwait(false);
@@ -187,9 +197,12 @@ namespace Relativity.Sync.Executors
                     await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
                     break;
                 default:
-                    _logger.LogWarning("Incorrect attempt of changing batch status. Batch {batchGuid} should not be marked as finished because it's current state is {state}", batch.BatchGuid, state);
+                    _logger.LogWarning("Incorrect attempt of changing batch status. Batch {batchGuid} should not be marked as finished because it's current state is {state}", batch.BatchGuid, dataSourceDetails.State);
                     break;
             }
+
+            await batch.SetTransferredItemsCountAsync(dataSourceProgress.ImportedRecords).ConfigureAwait(false);
+            await batch.SetFailedItemsCountAsync(dataSourceProgress.ErroredRecords).ConfigureAwait(false);
         }
 
         private async Task HandleDataSourceErrorsAsync(int workspaceId, Guid importJobId, Guid dataSourceId)
