@@ -1,10 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.Services.Workspace;
 
@@ -14,9 +12,9 @@ namespace kCura.IntegrationPoints.Agent.Logging
     {
         private readonly CreateErrorRdoQuery _createErrorRdoQuery;
 
-        public ErrorService(IHelper helper, ISystemEventLoggingService systemEventLoggingService)
+        public ErrorService(IHelper helper)
         {
-            _createErrorRdoQuery = new CreateErrorRdoQuery(helper.GetServicesManager(), systemEventLoggingService, helper.GetLoggerFactory().GetLogger().ForContext<ErrorService>());
+            _createErrorRdoQuery = new CreateErrorRdoQuery(helper.GetServicesManager(), helper.GetLoggerFactory().GetLogger().ForContext<ErrorService>());
         }
 
         public void LogError(Job job, Exception ex, string source)

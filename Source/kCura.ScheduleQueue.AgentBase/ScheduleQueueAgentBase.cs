@@ -461,7 +461,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         }
 
                         Logger.LogInformation(
-                            "Job {jobId} has been processed with status {status}",
+                            "Job {jobId} has been processed with status {status}", // TODO REL-815726
                             nextJob.JobId,
                             jobResult.Status.ToString());
                         FinalizeJobExecution(nextJob, jobResult);

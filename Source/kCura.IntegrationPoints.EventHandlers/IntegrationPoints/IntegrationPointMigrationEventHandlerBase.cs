@@ -1,16 +1,15 @@
-﻿using kCura.EventHandler;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Helpers.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.API;
-using System;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         protected IntegrationPointMigrationEventHandlerBase()
         {
             _errorService = new Lazy<IErrorService>(() =>
-                new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
+                new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), Logger), Logger));
         }
 
         protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)
