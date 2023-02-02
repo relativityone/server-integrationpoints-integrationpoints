@@ -109,19 +109,6 @@
 
 		var _next = function () {
 			var d = IP.data.deferred().defer();
-			if (validStepNo === 0)
-			{
-				heapData["NotificationEmailsAdded"] = $('#notificationEmails').val() !== "";
-				
-			}
-			if (validStepNo === 2)
-			{
-				if (IsSyncJob())
-				{
-					heapData["CreateSavedSearch"] = $('#create-saved-search-0:checked').val() === "true";
-					heapData["DestinationLocation"] = $('#location-0:checked').val() === "true" ? "Location" : "Production Set"
-				}
-			}
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
@@ -287,6 +274,7 @@
 					heapData["RdoTypeName"] = model.rdoTypeName;
 					heapData["SelectedProfile"] = model.profile.selectedProfile !== undefined;
 					heapData["EnableTagging"] = model.EnableTagging;
+					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
 					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler;
 					if (model.scheduler.enableScheduler)
 					{
@@ -301,12 +289,14 @@
 
 					if (IsSyncJob())
 					{
+						heapData["CreateSavedSearch"] = model.CreateSavedSearchForTagging;
 						heapData["SourceFieldsCount"] = $('#source-fields option').length;
 						heapData["MappedSourceFieldsCount"] = $('#selected-source-fields option').length;
 						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
 						heapData["MappedDestinationFieldsCount"] = $('#selected-workspace-fields option').length;
 						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
-						heapData["SyncSourceType"] = sourceConfiguration.ProductionImport ? "Production" : "SavedSearch";
+						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "SavedSearch";
+						heapData["SyncSourceType"] = sourceConfiguration.TypeOfExport == 3 ? "SavedSearch" : sourceConfiguration.TypeOfExport == 2 ? "Production" : "Unknown";
 						heapData["OverwriteMode"] = model.SelectedOverwrite;
 						if (model.SelectedOverwrite !== "Append Only")
 						{
