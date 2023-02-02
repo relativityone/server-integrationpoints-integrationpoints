@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -38,6 +39,8 @@ namespace kCura.IntegrationPoints.Web.Filters
 
         public Task ExecuteExceptionFilterAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {
+            File.WriteAllText("C:/ex.txt", actionExecutedContext.Exception.ToString());
+
             var msgBuilder = new StringBuilder(GetMostSpecificMessage(actionExecutedContext.Exception));
             if (_attribute.IsUserMessage)
             {

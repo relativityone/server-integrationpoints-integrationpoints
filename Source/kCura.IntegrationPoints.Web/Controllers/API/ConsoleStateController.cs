@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IProviderTypeService _providerTypeService;
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
+        private readonly IAPILog _logger;
 
         public ConsoleStateController(
             ICPHelper helper,
@@ -34,26 +36,35 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _integrationPointRepository = integrationPointRepository;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _providerTypeService = providerTypeService;
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<ConsoleStateController>();
         }
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to get ConsoleState")]
         public IHttpActionResult GetConsoleState(int workspaceId, int integrationPointArtifactId)
         {
-            ButtonStateBuilder buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(
-          _helper,
-          _respositoryFactory,
-          _managerFactory,
-          _integrationPointRepository,
-          _providerTypeService,
-          _relativitySyncConstrainsChecker,
-          workspaceId,
-          integrationPointArtifactId);
+            try
+            {
+                ButtonStateBuilder buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(
+                    _helper,
+                    _respositoryFactory,
+                    _managerFactory,
+                    _integrationPointRepository,
+                    _providerTypeService,
+                    _relativitySyncConstrainsChecker,
+                    workspaceId,
+                    integrationPointArtifactId);
 
-            ButtonStateDTO buttonState = buttonStateBuilder
-                .CreateButtonStateAsync(workspaceId, integrationPointArtifactId).GetAwaiter().GetResult();
+                ButtonStateDTO buttonState = buttonStateBuilder
+                    .CreateButtonStateAsync(workspaceId, integrationPointArtifactId).GetAwaiter().GetResult();
 
-            return Ok(buttonState);
+                return Ok(buttonState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get console state");
+                throw;
+            }
         }
     }
 }

@@ -14,7 +14,6 @@ using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers;
@@ -68,9 +67,15 @@ namespace kCura.IntegrationPoints.Web
         public void Application_Error(object sender, EventArgs e)
         {
             Exception exception = Server.GetLastError();
+
+            System.IO.File.AppendAllText("C:/rip_custom_page_error.txt", $"{DateTime.Now} - {exception.ToString()}{Environment.NewLine}{Environment.NewLine}");
+
             ICPHelper helper = ConnectionHelper.Helper();
             IAPILog log = helper.GetLoggerFactory().GetLogger();
-            var errorRdoCreator = new CreateErrorRdoQuery(helper.GetServicesManager(), new SystemEventLoggingService(), log);
+
+            log.LogError(exception, "Exception occurred in Integration Points Custom Page.");
+
+            var errorRdoCreator = new CreateErrorRdoQuery(helper.GetServicesManager(), log);
             var errorService = new CustomPageErrorService(errorRdoCreator, log);
             var errorModel = new ErrorModel(exception)
             {

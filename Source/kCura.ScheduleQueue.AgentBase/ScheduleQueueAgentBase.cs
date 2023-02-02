@@ -461,7 +461,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         }
 
                         Logger.LogInformation(
-                            "Job {jobId} has been processed with status {status}",
+                            "Job {jobId} has been processed with status {status}", // TODO Sync failed but this succeeds!!!
                             nextJob.JobId,
                             jobResult.Status.ToString());
                         FinalizeJobExecution(nextJob, jobResult);

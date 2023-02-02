@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using kCura.IntegrationPoints.Data.Logging;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -16,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
         private Mock<IAPILog> _logger;
         private Mock<IServicesMgr> _servicesMgr;
         private Mock<IErrorManager> _errorManager;
-        private Mock<ISystemEventLoggingService> _systemEventLoggingService;
 
         private Data.Queries.CreateErrorRdoQuery _sut;
 
@@ -26,11 +24,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
             _errorManager = new Mock<IErrorManager>();
             _servicesMgr = new Mock<IServicesMgr>();
             _servicesMgr.Setup(x => x.CreateProxy<IErrorManager>(It.IsAny<ExecutionIdentity>())).Returns(_errorManager.Object);
-            _systemEventLoggingService = new Mock<ISystemEventLoggingService>();
             _logger = new Mock<IAPILog>();
             _logger.Setup(x => x.ForContext<Data.Queries.CreateErrorRdoQuery>()).Returns(_logger.Object);
 
-            _sut = new Data.Queries.CreateErrorRdoQuery(_servicesMgr.Object, _systemEventLoggingService.Object, _logger.Object);
+            _sut = new Data.Queries.CreateErrorRdoQuery(_servicesMgr.Object, _logger.Object);
         }
 
         [Test]
@@ -67,7 +64,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
 
             // Assert
             action.ShouldNotThrow();
-            _systemEventLoggingService.Verify(x => x.WriteErrorEvent(errorDto.Source, "Application", It.IsAny<ServiceException>()));
         }
     }
 }

@@ -26,7 +26,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -390,7 +389,7 @@ namespace kCura.IntegrationPoints.Agent
             return container;
         }
 
-        private ErrorService ErrorService => _errorService ?? (_errorService = new ErrorService(Helper, new SystemEventLoggingService()));
+        private ErrorService ErrorService => _errorService ?? (_errorService = new ErrorService(Helper));
 
         private void LogJobExecutionError(Job job, Exception exception)
         {

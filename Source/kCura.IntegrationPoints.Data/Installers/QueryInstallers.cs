@@ -2,7 +2,6 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.DbContext;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.QueryBuilders;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
@@ -35,7 +34,6 @@ namespace kCura.IntegrationPoints.Data.Installers
                     return new GetApplicationBinaries(dbContext);
                 }).LifestyleTransient());
             container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
-            container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifestyleTransient());
 
             container.Register(Component.For<ISourceProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<SourceProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());
             container.Register(Component.For<IDestinationProviderArtifactIdByGuidQueryBuilder>().ImplementedBy<DestinationProviderArtifactIdByGuidQueryBuilder>().LifestyleSingleton());

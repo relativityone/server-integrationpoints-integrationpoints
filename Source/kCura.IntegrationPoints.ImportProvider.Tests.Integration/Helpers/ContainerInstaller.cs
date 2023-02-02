@@ -3,15 +3,12 @@ using System.Net;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
-using NSubstitute;
-using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser;
@@ -20,6 +17,8 @@ using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
+using NSubstitute;
+using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 
@@ -68,7 +67,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private static void RegisterLoggingClasses(WindsorContainer windsorContainer)
         {
             windsorContainer.Register(Component.For<IAPILog>().Instance(Substitute.For<IAPILog>()).LifestyleSingleton());
-            windsorContainer.Register(Component.For<ISystemEventLoggingService>().Instance(Substitute.For<ISystemEventLoggingService>()));
         }
 
         private static void RegisterSerializer(WindsorContainer windsorContainer)
