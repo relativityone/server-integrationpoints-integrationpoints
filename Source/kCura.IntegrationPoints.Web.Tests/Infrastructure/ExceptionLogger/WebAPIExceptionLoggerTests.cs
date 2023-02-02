@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.ExceptionLogger
         public override void SetUp()
         {
             _errorService = Substitute.For<IErrorService>();
-            _webAPIFilterException = new WebAPIExceptionLogger(_errorService);
+            _webAPIFilterException = new WebAPIExceptionLogger(_errorService, Mock.Of<IAPILog>());
         }
 
         [Test]

@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Web
             ICPHelper helper = ConnectionHelper.Helper();
             IAPILog log = helper.GetLoggerFactory().GetLogger();
 
-            //log.LogError(exception, "Exception occurred in Integration Points Custom Page.");
+            log.LogError(exception, "Exception occurred in Integration Points Custom Page.");
 
             var errorRdoCreator = new CreateErrorRdoQuery(helper.GetServicesManager(), log);
             var errorService = new CustomPageErrorService(errorRdoCreator, log);

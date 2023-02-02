@@ -15,20 +15,21 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
     public class WebAPIExceptionLogger : ExceptionLogger
     {
         private readonly Func<IErrorService> _errorServiceFactory;
+        private readonly Func<IAPILog> _loggerFactory;
 
         /// <summary>
         /// For testing purposes only
         /// </summary>
-        /// <param name="service"></param>
-        /// <param name="systemEventLoggingService"></param>
-        internal WebAPIExceptionLogger(IErrorService service)
+        internal WebAPIExceptionLogger(IErrorService service, IAPILog logger)
         {
             _errorServiceFactory = () => service;
+            _loggerFactory = () => logger;
         }
 
-        public WebAPIExceptionLogger(Func<IErrorService> errorServiceFactory)
+        public WebAPIExceptionLogger(Func<IErrorService> errorServiceFactory, Func<IAPILog> loggerFactory)
         {
             _errorServiceFactory = errorServiceFactory;
+            _loggerFactory = loggerFactory;
         }
 
         public override void Log(ExceptionLoggerContext context)
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
             catch (Exception e)
             {
                 var aggregateException = new AggregateException(e, context.Exception);
-                //_logger.LogError(aggregateException, "Unhandled exception occurred");
+                _loggerFactory().LogError(aggregateException, "Unhandled exception occurred");
             }
         }
 

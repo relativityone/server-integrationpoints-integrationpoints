@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             LogImportSettings(settings);
 
-            const int maxRetryCount = 5;
+            const int maxRetryCount = 7;
 
             RetryPolicy policy = Policy
                 .Handle<Exception>()
