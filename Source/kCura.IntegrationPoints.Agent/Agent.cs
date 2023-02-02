@@ -27,7 +27,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
