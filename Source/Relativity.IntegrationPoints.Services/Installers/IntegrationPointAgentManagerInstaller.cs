@@ -24,6 +24,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
             container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<InstanceSettingsManager>().LifestyleTransient());
             container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));
             container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
+            container.Register(Component.For<IRelativityObjectManagerFactory>().ImplementedBy<RelativityObjectManagerFactory>());
         }
     }
 }

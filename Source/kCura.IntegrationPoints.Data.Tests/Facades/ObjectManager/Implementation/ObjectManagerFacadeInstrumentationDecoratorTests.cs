@@ -16,7 +16,8 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ObjectManagerFacadeInstrumentationDecoratorTests
     {
         private Mock<IObjectManagerFacade> _objectManagerMock;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         private Mock<IExternalServiceInstrumentationStarted> _startedInstrumentationMock;
 
         private ObjectManagerFacadeInstrumentationDecorator _sut;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -60,8 +61,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         {
             return ShouldCallStartedAndFailedForResultWithFailedEventHandlersAsync(
                 ObjectManagerFacadeTestsHelpers.CreateCallWithAnyArgs,
-                (result, statuses) => result.EventHandlerStatuses = statuses
-                );
+                (result, statuses) => result.EventHandlerStatuses = statuses);
         }
 
         [Test]
@@ -69,8 +69,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         {
             return ShouldAggregateFailReasonsFromEventHandlerAsync(
                 ObjectManagerFacadeTestsHelpers.CreateCallWithAnyArgs,
-                (result, statuses) => result.EventHandlerStatuses = statuses
-            );
+                (result, statuses) => result.EventHandlerStatuses = statuses);
         }
 
         [Test]
@@ -126,8 +125,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         {
             return ShouldCallStartedAndFailedForResultWithFailedEventHandlersAsync(
                 ObjectManagerFacadeTestsHelpers.UpdateCallWithAnyArgs,
-                (result, statuses) => result.EventHandlerStatuses = statuses
-            );
+                (result, statuses) => result.EventHandlerStatuses = statuses);
         }
 
         [Test]
@@ -165,8 +163,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
                 {
                     result.Success = false;
                     result.Message = failureReason;
-                }
-            );
+                });
         }
 
         [Test]
@@ -236,6 +233,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         }
 
         [Test]
+        public Task QuerySlimAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
+        {
+            return ShouldCallStartedAndCompletedForSuccessfulCallAsync(ObjectManagerFacadeTestsHelpers.QuerySlimCallWithAnyArgs);
+        }
+
+        [Test]
+        public Task QuerySlimAsync_ShouldCallFailedWhenExceptionIsThrown()
+        {
+            return ShouldCallFailedWhenExceptionIsThrownAsync(ObjectManagerFacadeTestsHelpers.QuerySlimCallWithAnyArgs);
+        }
+
+        [Test]
+        public void QuerySlimAsync_ShouldRethrowExceptions()
+        {
+            ShouldRethrowExceptions(ObjectManagerFacadeTestsHelpers.QuerySlimCallWithAnyArgs);
+        }
+
+        [Test]
+        public void QuerySlimAsync_ShouldWrapServiceNotFoundException()
+        {
+            ShouldWrapServiceNotFoundException(ObjectManagerFacadeTestsHelpers.QuerySlimCallWithAnyArgs);
+        }
+
+        [Test]
         public Task InitializeExportAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
         {
             return ShouldCallStartedAndCompletedForSuccessfulCallAsync(
@@ -263,9 +284,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         [Test]
         public Task RetrieveResultsBlockFromExportAsync_ShouldCallStartedAndCompletedForSuccessfulCall()
         {
-            var result = new RelativityObjectSlim[] {};
+            var result = new RelativityObjectSlim[] { };
             return ShouldCallStartedAndCompletedForSuccessfulCallWithResultAsync(
-                ObjectManagerFacadeTestsHelpers.RetrieveResultsBlockFromExportCallWithAnyArgs, 
+                ObjectManagerFacadeTestsHelpers.RetrieveResultsBlockFromExportCallWithAnyArgs,
                 result);
         }
 
@@ -384,8 +405,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
             var result = new TResult();
             var eventHandlerStatuses = new List<EventHandlerStatus>
             {
-                new EventHandlerStatus {Message = failReason1, Success = false},
-                new EventHandlerStatus {Message = failReason2, Success = false}
+                new EventHandlerStatus { Message = failReason1, Success = false },
+                new EventHandlerStatus { Message = failReason2, Success = false }
             };
             setEventHandlerStatuses(result, eventHandlerStatuses);
 
@@ -400,7 +421,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
 
             // assert
             _startedInstrumentationMock.Verify(x => x.Failed(expectedFailureReason));
-
         }
 
         private async Task ShouldCallFailedWhenExceptionIsThrownAsync<TResult>(Expression<Func<IObjectManagerFacade, Task<TResult>>> methodToTest)

@@ -1,11 +1,11 @@
-﻿using NUnit.Framework;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
-using System;
+﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using Moq;
+using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
