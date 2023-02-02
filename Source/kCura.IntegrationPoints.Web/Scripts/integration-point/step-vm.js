@@ -112,6 +112,15 @@
 			if (validStepNo === 0)
 			{
 				heapData["NotificationEmailsAdded"] = $('#notificationEmails').val() !== "";
+				
+			}
+			if (validStepNo === 2)
+			{
+				if (IsSyncJob())
+				{
+					heapData["CreateSavedSearch"] = $('#create-saved-search-0:checked').val() === "true";
+					heapData["DestinationLocation"] = $('#location-0:checked').val() === "true" ? "Location" : "Production Set"
+				}
 			}
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
@@ -132,13 +141,6 @@
 				IP.message.error.raise(err);
 				d.reject(err);
 			}).done(function () {
-				if (validStepNo === 2)
-				{
-					if (IsSyncJob())
-					{
-						heapData["CreateSavedSearch"] = $('#create-saved-search-0:checked').val() === "true";
-					}
-				}
 				if (saveRequested) 
 				{
 					SendHeapMetrics();
