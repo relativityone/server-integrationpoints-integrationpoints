@@ -68,12 +68,10 @@ namespace kCura.IntegrationPoints.Web
         {
             Exception exception = Server.GetLastError();
 
-            System.IO.File.AppendAllText("C:/rip_custom_page_error.txt", $"{DateTime.Now} - {exception.ToString()}{Environment.NewLine}{Environment.NewLine}");
-
             ICPHelper helper = ConnectionHelper.Helper();
             IAPILog log = helper.GetLoggerFactory().GetLogger();
 
-            log.LogError(exception, "Exception occurred in Integration Points Custom Page.");
+            //log.LogError(exception, "Exception occurred in Integration Points Custom Page.");
 
             var errorRdoCreator = new CreateErrorRdoQuery(helper.GetServicesManager(), log);
             var errorService = new CustomPageErrorService(errorRdoCreator, log);
