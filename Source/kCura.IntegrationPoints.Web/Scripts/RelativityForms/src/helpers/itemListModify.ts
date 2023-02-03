@@ -2,18 +2,13 @@
 
 export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, previousPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
     getListData(convenienceApi, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId).then(res => {
-        let newData = [];
-
-        console.log(res);
+        let newData = [];        
 
         res.Objects.forEach(el => {
             newData.push(convertToJobHistory(el.Values));
         })
 
-        let table = document.getElementById(fieldId.toString());
-
-        console.log(fieldId.toString());
-        console.log(table);
+        let table = document.getElementById(fieldId.toString());        
 
         let currentPage = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
         if (currentPage === previousPage) {
@@ -189,7 +184,11 @@ function GetConditionForTime(field: string, values: Array<string>, operator: str
     }
 }
 
-function convertToJobHistory(el: Object) {
+function convertToJobHistory(el: Object) {   
+
+    // for all job histories created before IAPI 2.0 integration "Items Read" value should be equal to "Items Transferred" value (REL-793694)
+    var itemsReadValue = el[7] === 0 || el[7] === null ? el[8] : el[7];    
+
     let jobHistory = {
         "Job ID": el[0],
         "Start Time (UTC)": el[1],
@@ -198,7 +197,7 @@ function convertToJobHistory(el: Object) {
         "Job Type": el[4],
         "Job Status": el[5],
         "Destination Workspace": el[6],
-        "Items Read": el[7],
+        "Items Read": itemsReadValue,
         "Items Transferred": el[8],
         "Total Items": el[9],
         "Items with Errors": el[10],
