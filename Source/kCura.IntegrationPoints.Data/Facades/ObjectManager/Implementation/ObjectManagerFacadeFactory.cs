@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         {
             _servicesMgr = servicesMgr;
 
-            _decorators = new Func<IObjectManagerFacade, IObjectManagerFacade>[] 
+            _decorators = new Func<IObjectManagerFacade, IObjectManagerFacade>[]
             {
                 (om) => new ObjectManagerFacadeInstrumentationDecorator(om,
                         instrumentationProvider,

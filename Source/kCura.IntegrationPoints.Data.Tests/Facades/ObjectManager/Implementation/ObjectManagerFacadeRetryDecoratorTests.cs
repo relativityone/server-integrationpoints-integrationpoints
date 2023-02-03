@@ -11,7 +11,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementation
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ObjectManagerFacadeRetryDecoratorTests
     {
         private ObjectManagerFacadeRetryDecorator _sut;
@@ -65,6 +66,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         public Task QueryAsync_ShouldReturnResultAndRetryOnFailures()
         {
             return ShouldReturnResultAndRetryOnFailureAsync(ObjectManagerFacadeTestsHelpers.QueryCallWithAnyArgs);
+        }
+
+        [Test]
+        public Task QuerySlimAsync_ShouldReturnResultAndRetryOnFailures()
+        {
+            return ShouldReturnResultAndRetryOnFailureAsync(ObjectManagerFacadeTestsHelpers.QuerySlimCallWithAnyArgs);
         }
 
         [Test]

@@ -132,7 +132,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             sut.Execute();
 
             // Assert
-            sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob);
+            sut.ProcessedJobs.Should().BeEmpty();
+            expectedJob.JobFailed.Should().NotBeNull();
+            expectedJob.JobFailed.ShouldBreakSchedule.Should().BeTrue();
         }
 
         [Test]

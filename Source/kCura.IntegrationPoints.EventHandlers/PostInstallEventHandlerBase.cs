@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -43,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers
             _objectManager = new Lazy<IRelativityObjectManager>(CreateObjectManager);
 
             _errorService = new Lazy<IErrorService>(() =>
-                new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
+                new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), Logger), Logger));
         }
 
         protected virtual IAPILog CreateLogger()
