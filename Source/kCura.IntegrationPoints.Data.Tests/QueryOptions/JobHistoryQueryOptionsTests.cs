@@ -28,7 +28,8 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
             ["FilesSize"] = new Guid("d81817dc-91cb-44c4-b9b7-7c445da64f5a"),
             ["Overwrite"] = new Guid("42d49f5e-b0e7-4632-8d30-1c6ee1d97fa7"),
             ["JobID"] = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d"),
-            ["Name"] = new Guid("07061466-5fab-4581-979c-c801e8207370")
+            ["Name"] = new Guid("07061466-5fab-4581-979c-c801e8207370"),
+            ["ItemsRead"] = new Guid("2b76010a-9cf8-4276-9d6d-504d026f0b27")
         };
 
         [Test]

@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 JobHistoryFieldGuids.JobIDGuid,
                 JobHistoryFieldGuids.JobStatusGuid,
                 JobHistoryFieldGuids.ItemsTransferredGuid,
+                JobHistoryFieldGuids.ItemsReadGuid,
                 JobHistoryFieldGuids.ItemsWithErrorsGuid,
                 JobHistoryFieldGuids.TotalItemsGuid,
                 JobHistoryFieldGuids.DestinationWorkspaceInformationGuid,
