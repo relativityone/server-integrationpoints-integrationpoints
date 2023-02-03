@@ -1,5 +1,6 @@
 ﻿using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -21,7 +22,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
         private readonly IIntegrationPointService _integrationPointService;
 
-        public TaskFactory(IAgentHelper helper,
+        public TaskFactory(
+            IAgentHelper helper,
             ITaskExceptionMediator taskExceptionMediator,
             IJobSynchronizationChecker jobSynchronizationChecker,
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
@@ -59,6 +61,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 switch (taskType)
                 {
                     case TaskType.SyncManager:
+                        if (NewCustomProviderFlowShouldBeUsed(integrationPointDto))
+                        {
+                            return _container.Resolve<ICustomProviderTask>();
+                        }
+
                         return CheckForSynchronizationAndResolve<SyncManager>(job, integrationPointDto, agentBase);
                     case TaskType.SyncWorker:
                         return CheckForSynchronizationAndResolve<SyncWorker>(job, integrationPointDto, agentBase);
@@ -94,6 +101,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             }
         }
 
+        private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
+        {
+            INewCustomProviderFlowCheck newFlowCheck = _container.Resolve<INewCustomProviderFlowCheck>();
+            return newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
+        }
+
         private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
         {
             _jobSynchronizationChecker.CheckForSynchronization(typeof(T), job, integrationPointDto, agentBase);
@@ -103,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private IntegrationPointDto GetIntegrationPoint(Job job)
         {
             LogGetIntegrationPointStart(job);
-            IntegrationPointDto integrationPoint =  _integrationPointService.Read(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
             if (integrationPoint == null)
             {

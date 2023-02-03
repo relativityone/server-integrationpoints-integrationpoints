@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoFixture;
 using Castle.Windsor;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -11,13 +14,12 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.Validation;
+using Moq;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -30,11 +32,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private IAPILog _logger;
         private IJobSynchronizationChecker _jobSynchronizationChecker;
         private ITaskFactoryJobHistoryService _jobHistoryService;
+        private Mock<IWindsorContainer> _containerFake;
         private ITaskFactory _instance;
+
+        private IFixture _fxt;
 
         [SetUp]
         public override void SetUp()
         {
+            _fxt = FixtureFactory.Create();
+
             _logger = Substitute.For<IAPILog>();
             _logger.ForContext<IntegrationPoints.Agent.TaskFactory.TaskFactory>().Returns(_logger);
 
@@ -44,20 +51,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             IAgentHelper helper = Substitute.For<IAgentHelper>();
             helper.GetLoggerFactory().Returns(loggerFactory);
 
-
             IIntegrationPointService integrationPointService = CreateIntegrationPointServiceMock();
             ITaskExceptionMediator taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
-
 
             _jobSynchronizationChecker = Substitute.For<IJobSynchronizationChecker>();
             _jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
-            IWindsorContainer container = Substitute.For<IWindsorContainer>();
+            _containerFake = new Mock<IWindsorContainer>();
 
-            _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(helper, taskExceptionMediator,
-                _jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointService);
+            _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
+                helper,
+                taskExceptionMediator,
+                _jobSynchronizationChecker,
+                jobHistoryServiceFactory,
+                _containerFake.Object,
+                integrationPointService);
         }
 
         [Test]
@@ -172,6 +182,32 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             }
         }
 
+        [Test]
+        public void CreateTask_ShouldCreateNewCustomProviderTask_WhenCriteriaAreMet()
+        {
+            // Arrange
+            var expectedTask = _fxt.Create<CustomProviderTask>();
+
+            Job job = _fxt.Build<Job>()
+                .With(x => x.TaskType, TaskType.SyncManager.ToString())
+                .Create();
+
+            var agentBase = new TestAgentBase(Guid.NewGuid());
+
+            var customProviderCheck = new Mock<INewCustomProviderFlowCheck>();
+            customProviderCheck.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
+                .ReturnsAsync(true);
+
+            _containerFake.Setup(x => x.Resolve<INewCustomProviderFlowCheck>()).Returns(customProviderCheck.Object);
+            _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
+
+            // Act
+            ITask task = _instance.CreateTask(job, agentBase);
+
+            // Assert
+            task.Should().Be(expectedTask);
+        }
+
         private IIntegrationPointService CreateIntegrationPointServiceMock()
         {
             var integrationPoint = new IntegrationPointDto();
@@ -194,7 +230,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             public TestAgentBase(Guid agentGuid, IAgentService agentService = null,
                 IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
-                : base(agentGuid,Substitute.For<IKubernetesMode>(), agentService, jobService, scheduleRuleFactory)
+                : base(agentGuid, Substitute.For<IKubernetesMode>(), agentService, jobService, scheduleRuleFactory)
             {
             }
 
