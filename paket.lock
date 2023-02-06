@@ -154,6 +154,7 @@ NUGET
       NUnit (>= 3.7)
     Owin (1.0)
     Polly (5.9.0)
+    Polly.Contrib.WaitAndRetry (1.1.1)
     Relativity (52.3.29)
     Relativity.API (17.9.0)
     Relativity.AutomatedWorkflows.SDK (1.0.8)

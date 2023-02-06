@@ -72,6 +72,7 @@ nuget Mono.TextTransform 1.0.0
 nuget System.Reactive 4.4.1
 nuget SystemWrapper.Wrappers 0.25.0.186
 nuget Polly 5.9
+nuget Polly.Contrib.WaitAndRetry
 nuget ZetaLongPaths 1.0.0.16
 nuget System.ValueTuple
 nuget iTextSharp 5.5.13.1

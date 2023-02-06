@@ -175,6 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IMonitoringConfig>().ImplementedBy<MonitoringConfig>().LifestyleTransient());
             container.Register(Component.For<IDateTime>().ImplementedBy<DateTimeWrapper>().LifestyleTransient());
             container.Register(Component.For<ITimerFactory>().ImplementedBy<TimerFactory>().LifestyleTransient());
+            container.Register(Component.For<IStopwatch>().ImplementedBy<StopwatchWrapper>().LifestyleTransient());
 
             container.Register(Component.For<IAppDomainMonitoringEnabler>().ImplementedBy<AppDomainMonitoringEnabler>().LifestyleTransient());
             container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<SystemAndApplicationUsageReporter>().LifestyleTransient());
