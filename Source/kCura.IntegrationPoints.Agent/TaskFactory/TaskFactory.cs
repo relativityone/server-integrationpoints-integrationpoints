@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -71,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                         return CheckForSynchronizationAndResolve<SyncWorker>(job, integrationPointDto, agentBase);
                     case TaskType.SyncEntityManagerWorker:
                         return CheckForSynchronizationAndResolve<SyncEntityManagerWorker>(job, integrationPointDto, agentBase);
-                    case TaskType.SendEmailManager: //Left for backwards compatibility after removing SendEmailManager
+                    case TaskType.SendEmailManager: // Left for backwards compatibility after removing SendEmailManager
                     case TaskType.SendEmailWorker:
                         return CheckForSynchronizationAndResolve<SendEmailWorker>(job, integrationPointDto, agentBase);
                     case TaskType.ExportService:
@@ -83,13 +84,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                     case TaskType.ExportWorker:
                         return CheckForSynchronizationAndResolve<ExportWorker>(job, integrationPointDto, agentBase);
                     default:
-                        LogUnknownTaskTypeError(taskType);
-                        return null;
+                        throw UnknownTaskTypeException(taskType);
                 }
             }
             catch (AgentDropJobException e)
             {
-                //we catch this type of exception when an agent explicitly drops a Job, and we bubble up the exception message to the Errors tab.
+                // We catch this type of exception when an agent explicitly drops a Job, and we bubble up the exception message to the Errors tab.
                 LogAgentDropJobException(job, e);
                 throw;
             }
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
         private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
         {
-            INewCustomProviderFlowCheck newFlowCheck = _container.Resolve<INewCustomProviderFlowCheck>();
+            ICustomProviderFlowCheck newFlowCheck = _container.Resolve<ICustomProviderFlowCheck>();
             return newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
         }
 
@@ -129,6 +129,13 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             return integrationPoint;
         }
 
+        private IntegrationPointsException UnknownTaskTypeException(TaskType taskType)
+        {
+            _logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
+
+            return new IntegrationPointsException($"Unable to create task. Unknown task type ({taskType})");
+        }
+
         #region Logging
 
         private void LogContainerNotInitialized(Job job)
@@ -144,11 +151,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private void LogCreateTaskSyncCheck(Job job, TaskType taskType)
         {
             _logger.LogInformation("Creating job specific manger/worker class in task factory. Job: {JobId}, Task Type: {TaskType}", job.JobId, taskType);
-        }
-
-        private void LogUnknownTaskTypeError(TaskType taskType)
-        {
-            _logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
         }
 
         private void LogErrorDuringTaskCreation(Exception exception, string taskType, long jobId)

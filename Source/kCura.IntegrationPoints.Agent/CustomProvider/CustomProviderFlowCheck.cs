@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
@@ -14,14 +15,14 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
-    internal class NewCustomProviderFlowCheck : INewCustomProviderFlowCheck
+    internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {
         private readonly IToggleProvider _toggleProvider;
         private readonly IRelativityObjectManager _objectManager;
         private readonly ISerializer _serializer;
         private readonly IAPILog _log;
 
-        public NewCustomProviderFlowCheck(
+        public CustomProviderFlowCheck(
             IToggleProvider toggleProvider,
             IRelativityObjectManager objectManager,
             ISerializer serializer,
@@ -45,7 +46,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 _log.LogError(ex, "Error occurred during New Custom Provider flow usage checking.");
                 return false;
             }
-
         }
 
         private async Task<bool> IsEntityObjectImportAsync(string configuration)
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 Condition = $"'Artifact Type ID' == {settings.ArtifactTypeId}"
             };
 
-            var results = await _objectManager.QueryAsync(request, ExecutionIdentity.System).ConfigureAwait(false);
+            List<RelativityObject> results = await _objectManager.QueryAsync(request, ExecutionIdentity.System).ConfigureAwait(false);
             if (results.Count == 0)
             {
                 return false;

@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
         private static void ConfigureOtherProviderFlow(IWindsorContainer container)
         {
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
-            container.Register(Component.For<INewCustomProviderFlowCheck>().ImplementedBy<NewCustomProviderFlowCheck>().LifestyleTransient());
+            container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
         }
     }
 }
