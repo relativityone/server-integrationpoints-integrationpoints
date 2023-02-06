@@ -130,7 +130,8 @@
 			}).done(function () {
 				if (saveRequested) 
 				{
-					SendHeapMetrics();
+					let configurationIsValid = TryConfigureHeapMetricsOnLastStep();
+					SendHeapMetrics(configurationIsValid);
 					saveRequested = false;
 				}
 			});
@@ -153,6 +154,9 @@
 					}
 					IP.message.error.raise(err);
 					d.reject(err);
+				}).done(function() {
+					let configurationIsValid = TryConfigureHeapMetricsOnFirstStep();
+					SendHeapMetrics(configurationIsValid);
 				})
 				return d.promise;
 			} else {
@@ -259,12 +263,11 @@
 			});
 		});
 
-		var SendHeapMetrics = function()
+		var TryConfigureHeapMetricsOnLastStep = function()
 		{
 			try
 			{
-				let heap = window.heap;
-				if (heap)
+				if (window.heap)
 				{
 					let source = GetSourceType();
 					heapData["SourceProvider"] = source;
@@ -272,11 +275,11 @@
 					heapData["ImportExport"] = model.isExportType ? "Export" : "Import";
 					heapData["LogErrors"] = model.logErrors;
 					heapData["RdoTypeName"] = model.rdoTypeName;
-					heapData["SelectedProfile"] = model.profile.selectedProfile !== undefined;
+					heapData["IsProfileSelected"] = false;
 					heapData["EnableTagging"] = model.EnableTagging;
 					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
-					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler;
-					if (model.scheduler.enableScheduler)
+					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+					if (heapData["SchedulerIsEnabled"])
 					{
 						heapData["Scheduler-Frequency"] = model.scheduler.selectedFrequency;
 						heapData["Scheduler-Time"] = model.scheduler.scheduledTime;
@@ -295,12 +298,12 @@
 						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
 						heapData["MappedDestinationFieldsCount"] = $('#selected-workspace-fields option').length;
 						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
-						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "SavedSearch";
+						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "Folder";
 						heapData["SyncSourceType"] = sourceConfiguration.TypeOfExport == 3 ? "SavedSearch" : sourceConfiguration.TypeOfExport == 2 ? "Production" : "Unknown";
 						heapData["OverwriteMode"] = model.SelectedOverwrite;
-						if (model.SelectedOverwrite !== "Append Only")
+						if (heapData["OverwriteMode"] !== "Append Only")
 						{
-							heapData["FieldOverlayBehavior"] = model.FieldOverlayBehavior;
+							heapData["MultiSelectOverlay"] = $('#overlay-field-behavior option:selected').text();
 						}
 						heapData["ImageImport"] = $('#exportImages-radio-0:checked').val() === "true"
 						if (heapData["ImageImport"])
@@ -329,11 +332,98 @@
 							}
 						}
 					}
-					heap.track("IntegraionPoint-Edit", heapData);
+					return true;
 				}
 			} catch (error)
 			{
 				console.warn(error);
+			}
+			return false;
+		}
+
+		var TryConfigureHeapMetricsOnFirstStep = function()
+		{
+			try
+			{
+				if (window.heap)
+				{
+					let source = GetSourceType();
+					heapData["SourceProvider"] = source;
+					heapData["DestinationProvider"] = model.IPDestinationSettings.Provider;
+					heapData["ImportExport"] = model.isExportType ? "Export" : "Import";
+					heapData["LogErrors"] = model.logErrors;
+					heapData["RdoTypeName"] = model.rdoTypeName;
+					heapData["IsProfileSelected"] = true;
+					heapData["EnableTagging"] = model.EnableTagging;
+					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
+					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+					if (heapData["SchedulerIsEnabled"])
+					{
+						heapData["Scheduler-Frequency"] = model.scheduler.selectedFrequency;
+						heapData["Scheduler-Time"] = model.scheduler.scheduledTime;
+						
+						let startDate = Date.parse(model.scheduler.startDate);
+						let endDate = Date.parse(model.scheduler.endDate);
+						let scheduleTimePeriod = (endDate - startDate)/1000/3600/24 // days calculation
+						heapData["Scheduler-TimePeriod_days"] = scheduleTimePeriod;
+					}
+
+					if (IsSyncJob())
+					{
+						heapData["CreateSavedSearch"] = model.CreateSavedSearchForTagging;
+
+						let fieldsMapping = model.map;
+						let mappedFieldsCount = fieldsMapping.match(/sourceField/ig || []).length;
+						heapData["MappedSourceFieldsCount"] = mappedFieldsCount;
+						heapData["MappedDestinationFieldsCount"] = mappedFieldsCount;
+						
+						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
+						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "Folder";
+						heapData["SyncSourceType"] = sourceConfiguration.TypeOfExport == 3 ? "SavedSearch" : sourceConfiguration.TypeOfExport == 2 ? "Production" : "Unknown";
+						heapData["OverwriteMode"] = model.SelectedOverwrite;
+						if (heapData["OverwriteMode"] !== "Append Only")
+						{
+							heapData["MultiSelectOverlay"] = model.FieldOverlayBehavior;
+						}
+						heapData["ImageImport"] = model.ImageImport === "true"
+						if (heapData["ImageImport"])
+						{
+							heapData["ImagePrecedence"]  = model.IPDestinationSettings.ProductionPrecedence === 0 ? "Original Images" : "Produced Images"
+							heapData["CopyFilesToRepository"] = model.IPDestinationSettings.importNativeFile === "true";
+							if (heapData["ImagePrecedence"] === "Produced Images")
+							{
+								heapData["IncludeOriginalImagesIfNotProduced"] = model.IPDestinationSettings.IncludeOriginalImages;
+							}
+						}
+						else
+						{
+							let physicalFilesChecked = model.IPDestinationSettings.importNativeFileCopyMode === "Copy files";
+							let copyLinksChecked = model.IPDestinationSettings.importNativeFileCopyMode === "SetFileLinks"
+							let importNativeFileCopyMode = physicalFilesChecked ? "Physical files" : copyLinksChecked ? "Links Only" : "No";
+							heapData["ImportNativeFileCopyMode"] = importNativeFileCopyMode.trim();
+							heapData["UseFolderPathInformation"] = model.IPDestinationSettings.UseDynamicFolderPath === "true" 
+								? "Read From Folder Tree" : model.IPDestinationSettings.UseFolderPathInformation === "true" ?
+								"Read From Field" : "No";
+							if (heapData["UseFolderPathInformation"] !== "No" && model.SelectedOverwrite !== "Append Only")
+							{
+								heapData["MoveExistingDocuments"] = model.IPDestinationSettings.MoveExistingDocuments;
+							}
+						}
+					}
+					return true;
+				}
+			} catch (error)
+			{
+				console.warn(error);
+			}
+			return false;
+		}
+
+		var SendHeapMetrics = function(configurationSetIsValid) 
+		{
+			if (configurationSetIsValid)
+			{
+				window.heap.track("IntegraionPoint-Edit", heapData);
 			}
 		}
 
