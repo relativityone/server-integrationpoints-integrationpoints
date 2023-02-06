@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private IJobSynchronizationChecker _jobSynchronizationChecker;
         private ITaskFactoryJobHistoryService _jobHistoryService;
         private Mock<IWindsorContainer> _containerFake;
+        private Mock<INewCustomProviderFlowCheck> _newCustomProviderCheckFake;
         private ITaskFactory _instance;
 
         private IFixture _fxt;
@@ -59,7 +60,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
+            _newCustomProviderCheckFake = new Mock<INewCustomProviderFlowCheck>();
+            _newCustomProviderCheckFake.Setup(
+                    x => x.ShouldBeUsedAsync(
+                        It.IsAny<IntegrationPointDto>()))
+                .ReturnsAsync(true);
+
             _containerFake = new Mock<IWindsorContainer>();
+            _containerFake.Setup(x => x.Resolve<INewCustomProviderFlowCheck>()).Returns(_newCustomProviderCheckFake.Object);
 
             _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
@@ -194,11 +202,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var agentBase = new TestAgentBase(Guid.NewGuid());
 
-            var customProviderCheck = new Mock<INewCustomProviderFlowCheck>();
-            customProviderCheck.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
+            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
                 .ReturnsAsync(true);
 
-            _containerFake.Setup(x => x.Resolve<INewCustomProviderFlowCheck>()).Returns(customProviderCheck.Object);
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
 
             // Act
