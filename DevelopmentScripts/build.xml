@@ -87,7 +87,8 @@
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.SDK.dll</Assembly>          
           <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>		  
 		  <Assembly>Source\kCura.IntegrationPoints.Data\bin\Dapper.dll</Assembly>
-		  <Assembly>Source\kCura.IntegrationPoints.Data\bin\Dapper.Contrib.dll</Assembly>		   
+		  <Assembly>Source\kCura.IntegrationPoints.Data\bin\Dapper.Contrib.dll</Assembly>
+		  <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Import.Models.SDK.dll</Assembly>		  
         </Assemblies>
         <ResourceFiles>
           <ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>

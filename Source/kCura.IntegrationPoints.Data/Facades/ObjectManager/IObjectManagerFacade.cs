@@ -31,6 +31,12 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
             int start,
             int length);
 
+        Task<QueryResultSlim> QuerySlimAsync(
+            int workspaceArtifactID,
+            QueryRequest request,
+            int start,
+            int length);
+
         Task<IKeplerStream> StreamLongTextAsync(
             int workspaceArtifactID,
             RelativityObjectRef exportObject,

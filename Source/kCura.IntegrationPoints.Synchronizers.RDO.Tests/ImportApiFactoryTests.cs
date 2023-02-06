@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.ImportAPI;
@@ -21,7 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
 
         public ImportApiFactoryTests()
-            : base(null, new Mock<ISystemEventLoggingService>().Object, new Mock<IInstanceSettingsManager>().Object, PrepareLoggerStub())
+            : base(null, new Mock<IInstanceSettingsManager>().Object, PrepareLoggerStub())
         { }
 
         [Test]

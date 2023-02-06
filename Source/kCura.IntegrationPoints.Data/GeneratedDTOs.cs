@@ -724,6 +724,18 @@ namespace kCura.IntegrationPoints.Data
                 SetField<string>(new System.Guid(JobHistoryFieldGuids.Name), value);
             }
         }
+        [DynamicField(JobHistoryFields.ItemsRead, JobHistoryFieldGuids.ItemsRead, FieldTypes.WholeNumber)]
+        public int? ItemsRead
+        {
+            get
+            {
+                return GetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsRead));
+            }
+            set
+            {
+                SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsRead), value);
+            }
+        }
         private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
         public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
         {

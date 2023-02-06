@@ -195,11 +195,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 _config = IntegrationPoints.Config.Config.Instance;
             }
 
-            if (_queueJobValidator == null)
-            {
-                _queueJobValidator = new QueueJobValidator(Helper, _config, ScheduleRuleFactory, Logger);
-            }
-
             if (_apm == null)
             {
                 _apm = Client.APMClient;
@@ -213,6 +208,11 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_objectManagerFactory == null)
             {
                 _objectManagerFactory = new RelativityObjectManagerFactory(Helper);
+            }
+
+            if (_queueJobValidator == null)
+            {
+                _queueJobValidator = new QueueJobValidator(_objectManagerFactory, _config, ScheduleRuleFactory, Logger);
             }
 
             _agentStartTime = _dateTime.UtcNow;
@@ -461,7 +461,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         }
 
                         Logger.LogInformation(
-                            "Job {jobId} has been processed with status {status}",
+                            "Job {jobId} has been processed with status {status}", // TODO REL-815726
                             nextJob.JobId,
                             jobResult.Status.ToString());
                         FinalizeJobExecution(nextJob, jobResult);
@@ -545,7 +545,7 @@ namespace kCura.ScheduleQueue.AgentBase
             catch (Exception e)
             {
                 Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-                return PreValidationResult.Success;
+                return PreValidationResult.InvalidJob(e.Message, false, false);
             }
         }
 

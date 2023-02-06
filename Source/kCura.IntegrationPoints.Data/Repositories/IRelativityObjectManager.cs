@@ -73,6 +73,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
+        Task<List<RelativityObjectSlim>> QuerySlimAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
+        Task<ResultSet<RelativityObjectSlim>> QuerySlimAsync(QueryRequest q, int start, int length, bool noFields = false, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+
         int QueryTotalCount(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
         Task<int> QueryTotalCountAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);

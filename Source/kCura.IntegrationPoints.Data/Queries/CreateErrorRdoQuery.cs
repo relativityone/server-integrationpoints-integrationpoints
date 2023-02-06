@@ -1,5 +1,4 @@
 using System;
-using kCura.IntegrationPoints.Data.Logging;
 using Relativity.API;
 using Relativity.Services.Error;
 
@@ -11,15 +10,12 @@ namespace kCura.IntegrationPoints.Data.Queries
         private const int _MAX_SOURCE_LENGTH = 255;
         private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
 
+        private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
 
-        private readonly IServicesMgr _servicesMgr;
-        private readonly ISystemEventLoggingService _systemEventLoggingService;
-
-        public CreateErrorRdoQuery(IServicesMgr servicesMgr, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
+        public CreateErrorRdoQuery(IServicesMgr servicesMgr, IAPILog logger)
         {
             _servicesMgr = servicesMgr;
-            _systemEventLoggingService = systemEventLoggingService;
             _logger = logger.ForContext<CreateErrorRdoQuery>();
         }
 
@@ -44,7 +40,6 @@ namespace kCura.IntegrationPoints.Data.Queries
             }
             catch (Exception ex)
             {
-                _systemEventLoggingService.WriteErrorEvent(errorDto.Source, "Application", ex);
                 LogErrorMessage(errorDto, ex);
             }
         }

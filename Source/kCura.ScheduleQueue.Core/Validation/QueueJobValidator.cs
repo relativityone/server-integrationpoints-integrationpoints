@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 
@@ -11,14 +12,14 @@ namespace kCura.ScheduleQueue.Core.Validation
         private readonly IAPILog _log;
         private readonly IJobPreValidator[] _validators;
 
-        public QueueJobValidator(IHelper helper, IConfig config, IScheduleRuleFactory scheduleRuleFactory, IAPILog log)
+        public QueueJobValidator(IRelativityObjectManagerFactory relativityObjectManagerFactory, IConfig config, IScheduleRuleFactory scheduleRuleFactory, IAPILog log)
         {
             _log = log.ForContext<QueueJobValidator>();
             _validators = new IJobPreValidator[]
             {
-                new WorkspaceExistsValidator(helper),
-                new IntegrationPointExistsValidator(helper),
-                new UserExistsValidator(helper),
+                new WorkspaceExistsValidator(relativityObjectManagerFactory),
+                new IntegrationPointExistsValidator(relativityObjectManagerFactory),
+                new UserExistsValidator(relativityObjectManagerFactory),
                 new ScheduledJobConsecutiveFailsValidator(config, scheduleRuleFactory)
             };
         }

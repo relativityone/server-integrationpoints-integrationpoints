@@ -5,8 +5,8 @@ using System.Net.Http;
 using System.Web.Http.ExceptionHandling;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
 {
@@ -15,31 +15,29 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
     public class WebAPIExceptionLogger : ExceptionLogger
     {
         private readonly Func<IErrorService> _errorServiceFactory;
-        private readonly ISystemEventLoggingService _systemEventLoggingService;
+        private readonly Func<IAPILog> _loggerFactory;
 
         /// <summary>
         /// For testing purposes only
         /// </summary>
-        /// <param name="service"></param>
-        /// <param name="systemEventLoggingService"></param>
-        internal WebAPIExceptionLogger(IErrorService service, ISystemEventLoggingService systemEventLoggingService)
+        internal WebAPIExceptionLogger(IErrorService service, IAPILog logger)
         {
             _errorServiceFactory = () => service;
-            _systemEventLoggingService = systemEventLoggingService;
+            _loggerFactory = () => logger;
         }
 
-        public WebAPIExceptionLogger(Func<IErrorService> errorServiceFactory)
+        public WebAPIExceptionLogger(Func<IErrorService> errorServiceFactory, Func<IAPILog> loggerFactory)
         {
             _errorServiceFactory = errorServiceFactory;
-            _systemEventLoggingService = new SystemEventLoggingService();
+            _loggerFactory = loggerFactory;
         }
 
         public override void Log(ExceptionLoggerContext context)
         {
             try
             {
-                var workspaceId = RetrieveWorkspaceId(context);
-                var errorModel = CreateErrorModel(context, workspaceId);
+                int workspaceId = RetrieveWorkspaceId(context);
+                ErrorModel errorModel = CreateErrorModel(context, workspaceId);
 
                 IErrorService errorService = _errorServiceFactory();
                 errorService.Log(errorModel);
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
             catch (Exception e)
             {
                 var aggregateException = new AggregateException(e, context.Exception);
-                _systemEventLoggingService.WriteErrorEvent("Integration Points", nameof(WebAPIExceptionLogger), aggregateException);
+                _loggerFactory().LogError(aggregateException, "Unhandled exception occurred");
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Authentication;
-using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -9,6 +8,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Exceptions;
+using Polly;
+using Polly.Retry;
 using Relativity.API;
 using Relativity.DataExchange;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
@@ -17,19 +18,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public class ImportApiFactory : IImportApiFactory
     {
-        private readonly ISystemEventLoggingService _systemEventLoggingService;
         private readonly IInstanceSettingsManager _instanceSettingsManager;
         private readonly IAPILog _logger;
         private readonly IAuthTokenGenerator _authTokenGenerator;
 
         public ImportApiFactory(
             IAuthTokenGenerator authTokenGenerator,
-            ISystemEventLoggingService systemEventLoggingService,
             IInstanceSettingsManager instanceSettingsManager,
             IAPILog logger)
         {
             _authTokenGenerator = authTokenGenerator;
-            _systemEventLoggingService = systemEventLoggingService;
             _instanceSettingsManager = instanceSettingsManager;
             _logger = logger.ForContext<ImportApiFactory>();
         }
@@ -37,18 +35,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public virtual IImportAPI GetImportAPI(ImportSettings settings)
         {
             LogImportSettings(settings);
+
+            const int maxRetryCount = 7;
+
+            RetryPolicy policy = Policy
+                .Handle<Exception>()
+                .WaitAndRetry(retryCount: maxRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, timeSpan, retryCount, context) =>
+                {
+                    _logger.LogWarning(ex, "Failed to create Import API. Retry {retry} of {maxRetryCount}", retryCount, maxRetryCount);
+                });
+
             try
             {
-                IImportAPI importApi = CreateImportAPIForSettings(settings);
-                var concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
-                concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
-                LogImportApiCreated();
-                return importApi;
+                return policy.Execute(() => CreateImportAPI(settings));
             }
             catch (InvalidLoginException ex)
             {
                 LogLoginFailed(ex, settings.WebServiceURL);
-                _systemEventLoggingService.WriteErrorEvent("Relativity Integration Points", "GetImportAPI", ex);
                 var authException = new AuthenticationException(ErrorMessages.Login_Failed, ex);
                 throw new IntegrationPointsException(ErrorMessages.Login_Failed, authException)
                 {
@@ -83,6 +86,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_authTokenGenerator);
             AppSettings.Instance.ImportBatchSize = _instanceSettingsManager.GetIApiBatchSize();
             return ExtendedImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
+        }
+
+        private IImportAPI CreateImportAPI(ImportSettings settings)
+        {
+            IImportAPI importApi = CreateImportAPIForSettings(settings);
+            var concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
+            concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
+            LogImportApiCreated();
+            return importApi;
         }
 
         #region Logging

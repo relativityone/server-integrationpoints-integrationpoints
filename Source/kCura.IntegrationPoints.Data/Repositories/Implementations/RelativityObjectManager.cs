@@ -503,6 +503,69 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 executionIdentity: executionIdentity);
         }
 
+        public Task<List<RelativityObjectSlim>> QuerySlimAsync(QueryRequest q, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        {
+            Func<IObjectManagerFacade, Task<List<RelativityObjectSlim>>> func = async (client) =>
+            {
+                List<RelativityObjectSlim> output = null;
+                int retrievedResults = 0;
+                int totalResults;
+
+                do
+                {
+                    QueryResultSlim partialResult = await client
+                        .QuerySlimAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE)
+                        .ConfigureAwait(false);
+
+                    totalResults = partialResult.TotalCount;
+                    if (output == null)
+                    {
+                        output = new List<RelativityObjectSlim>(totalResults);
+                    }
+
+                    output.AddRange(partialResult.Objects);
+
+                    retrievedResults += partialResult.Objects.Count;
+                }
+                while (retrievedResults < totalResults);
+
+                return output;
+            };
+
+            return SendQueryRequestAsync(
+                func,
+                q,
+                rdo: null,
+                executionIdentity: executionIdentity);
+        }
+
+        public Task<ResultSet<RelativityObjectSlim>> QuerySlimAsync(
+            QueryRequest q,
+            int start,
+            int length,
+            bool noFields = false,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        {
+            Func<IObjectManagerFacade, Task<ResultSet<RelativityObjectSlim>>> func = async (client) =>
+            {
+                QueryResultSlim queryResult = await client.QuerySlimAsync(_workspaceArtifactId, q, start + 1, length)
+                    .ConfigureAwait(false);
+
+                return new ResultSet<RelativityObjectSlim>
+                {
+                    ResultCount = queryResult.ResultCount,
+                    TotalCount = queryResult.TotalCount,
+                    Items = queryResult.Objects
+                };
+            };
+
+            return SendQueryRequestAsync(
+                func,
+                q,
+                rdo: null,
+                executionIdentity: executionIdentity);
+        }
+
         public Stream StreamUnicodeLongText(
             int relativityObjectArtifactId,
             FieldRef longTextFieldRef,

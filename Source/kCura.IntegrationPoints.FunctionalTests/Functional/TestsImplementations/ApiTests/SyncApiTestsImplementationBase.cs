@@ -67,8 +67,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             string integrationPointName = $"{nameof(RunIntegrationPoint)} - {Guid.NewGuid()}";
 
-            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName,
-                    ImportOverwriteModeEnum.AppendOnly, destinationWorkspaceDataService)
+            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(
+                  integrationPointName,
+                  ImportOverwriteModeEnum.AppendOnly,
+                  destinationWorkspaceDataService)
                 .ConfigureAwait(false);
 
             // Act
@@ -83,17 +85,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
-            (int TransferredItems, int ItemsWithErrors) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
+            (int transferredItems, int itemsWithErrors, int itemsRead) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
 
-            ItemsWithErrors.Should().Be(0);
-            TransferredItems.Should().Be(destinationWorkspaceAllDocs.Count);
+            itemsWithErrors.Should().Be(0);
+            transferredItems.Should().Be(destinationWorkspaceAllDocs.Count);
+            itemsRead.Should().Be(destinationWorkspaceAllDocs.Count);
 
             destinationWorkspaceAllDocs.Should().HaveSameCount(sourceWorkspaceAlldocs);
         }
 
         protected async Task RunAndRetryIntegrationPointExecution(Action<Workspace> importAction)
         {
-            //0. Arrange test
+            // 0. Arrange test
             Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", TestsImplementationTestFixture.Workspace.Name);
             _destinationWorkspaces.Add(destinationWorkspace);
 
@@ -103,7 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             string integrationPointName = $"{nameof(RunAndRetryIntegrationPointExecution)} - {Guid.NewGuid()}";
 
-            //1. Job first run:
+            // 1. Job first run:
 
             // Arrange
 
@@ -125,11 +128,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
                 expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
 
-            (int RunTransferredItems, int RunItemsWithErrors) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
+            (int runTransferredItems, int runItemsWithErrors, int itemsRead) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
 
-            RunItemsWithErrors.Should().Be(expectedItemErrorsToRetry);
+            runItemsWithErrors.Should().Be(expectedItemErrorsToRetry);
 
-            //2. Job retry:
+            // 2. Job retry:
 
             // Act
             int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID, true);
@@ -138,10 +141,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             await _ripApi.WaitForJobToFinishAsync(retryJobHistoryId, _sourceWorkspace.ArtifactID,
                 expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
 
-            (int RetryTransferredItems, int RetryItemsWithErrors) = await GetTransferredItemsFromJobHistory(retryJobHistoryId).ConfigureAwait(false);
+            (int retryTransferredItems, int retryItemsWithErrors, int itemsReadOnRetry) = await GetTransferredItemsFromJobHistory(retryJobHistoryId).ConfigureAwait(false);
 
-            RetryItemsWithErrors.Should().Be(0);
-            RetryTransferredItems.Should().Be(expectedItemErrorsToRetry);
+            retryItemsWithErrors.Should().Be(0);
+            retryTransferredItems.Should().Be(expectedItemErrorsToRetry);
         }
 
         protected int CreateSavedSearch(int workspaceId)
@@ -216,13 +219,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             }
         }
 
-        private async Task<(int TransferredItems, int ItemsWithErrors)> GetTransferredItemsFromJobHistory(int jobHistoryId)
+        private async Task<(int TransferredItems, int ItemsWithErrors, int ItemsRead)> GetTransferredItemsFromJobHistory(int jobHistoryId)
         {
             RelativityObject jobHistoryDetails = await GetJobHistoryById(jobHistoryId);
             int transferredItems = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsTransferred).FirstOrDefault().Value;
             int itemsWithError = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsWithErrors).FirstOrDefault().Value;
+            int itemsRead = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsRead).FirstOrDefault().Value;
 
-            return (transferredItems, itemsWithError);
+            return (transferredItems, itemsWithError, itemsRead);
         }
 
         private async Task<RelativityObject> GetJobHistoryById(int jobHistoryId)
@@ -235,7 +239,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                     Fields = new FieldRef[]
                     {
                         new FieldRef { Name = JobHistoryFields.ItemsTransferred },
-                        new FieldRef { Name = JobHistoryFields.ItemsWithErrors }
+                        new FieldRef { Name = JobHistoryFields.ItemsWithErrors },
+                        new FieldRef { Name = JobHistoryFields.ItemsRead }
                     },
                     Condition = $"'ArtifactId' == '{jobHistoryId}'"
                 };
