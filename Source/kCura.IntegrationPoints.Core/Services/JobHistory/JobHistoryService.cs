@@ -140,6 +140,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 JobType = jobType,
                 JobStatus = JobStatusChoices.JobHistoryPending,
                 ItemsTransferred = 0,
+                ItemsRead = 0,
                 ItemsWithErrors = 0,
                 Overwrite = integrationPointDto.SelectedOverwrite,
                 JobID = null

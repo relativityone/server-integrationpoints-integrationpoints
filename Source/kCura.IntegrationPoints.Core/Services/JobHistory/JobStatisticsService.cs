@@ -165,13 +165,16 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             try
             {
                 Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(batchInstance);
-                historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
+                int updatedNumberOfTransferredItems = stats.Imported > 0 ? stats.Imported : 0;
+                historyRdo.ItemsTransferred = updatedNumberOfTransferredItems;
                 historyRdo.ItemsWithErrors = stats.ImportApiErrors;
                 historyRdo.FilesSize = FileSizeUtils.FormatFileSize(totalSize);
+                historyRdo.ItemsRead = updatedNumberOfTransferredItems;
 
                 _diagnosticLog.LogDiagnostic(
-                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
+                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsRead: {itemsRead}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
                     historyRdo.ItemsTransferred,
+                    historyRdo.ItemsRead,
                     historyRdo.ItemsWithErrors,
                     historyRdo.FilesSize);
 
@@ -188,13 +191,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             try
             {
                 Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(_helper.GetBatchInstance(_job));
-                int updatedNumberOfTransferredItems = (historyRdo.ItemsTransferred ?? 0) + transferredItem;
-                historyRdo.ItemsTransferred = Math.Max(0, updatedNumberOfTransferredItems);
+                int updatedNumberOfTransferredItems = Math.Max(0, (historyRdo.ItemsTransferred ?? 0) + transferredItem);
+                historyRdo.ItemsTransferred = updatedNumberOfTransferredItems;
                 historyRdo.ItemsWithErrors += erroredCount;
+                historyRdo.ItemsRead = updatedNumberOfTransferredItems;
 
                 _diagnosticLog.LogDiagnostic(
-                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
+                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsRead: {itemsRead}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
                     historyRdo.ItemsTransferred,
+                    historyRdo.ItemsRead,
                     historyRdo.ItemsWithErrors,
                     historyRdo.FilesSize);
 
