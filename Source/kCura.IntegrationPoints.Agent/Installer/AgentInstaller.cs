@@ -6,6 +6,7 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
+using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -155,6 +156,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .LifestyleTransient());
 
             container.AddEmailSender();
+
+            ConfigureOtherProviderFlow(container);
         }
 
         private static void ConfigureContainer(IWindsorContainer container)
@@ -182,6 +185,12 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<SystemStatisticsReporter>().LifestyleTransient());
 
             container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
+        }
+
+        private static void ConfigureOtherProviderFlow(IWindsorContainer container)
+        {
+            container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
+            container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
         }
     }
 }
