@@ -33,13 +33,6 @@ namespace kCura.IntegrationPoints.Core.Services
             return GetProviderType(sourceProviderGuid, destinationProviderGuid);
         }
 
-        public ProviderType GetProviderType(Data.IntegrationPoint integrationPoint)
-        {
-            return GetProviderType(
-                integrationPoint.SourceProvider.Value,
-                integrationPoint.DestinationProvider.Value);
-        }
-
         private ProviderType GetProviderType(string sourceProviderGuid, string destinationProviderGuid)
         {
             if (sourceProviderGuid.Equals(Constants.IntegrationPoints.SourceProviders.FTP, StringComparison.InvariantCultureIgnoreCase))

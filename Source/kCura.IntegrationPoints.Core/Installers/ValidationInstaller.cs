@@ -18,6 +18,8 @@ namespace kCura.IntegrationPoints.Core.Installers
         {
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 
+            container.Register(Component.For<IViewErrorsPermissionValidator>().ImplementedBy<ViewErrorsPermissionValidator>().LifestyleTransient());
+
             container.Register(Component.For<INonValidCharactersValidator>().ImplementedBy<NonValidCharactersValidator>());
 
             container.Register(Component.For<IValidator>().ImplementedBy<EmailValidator>().LifestyleTransient());
@@ -36,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IPermissionValidator>().ImplementedBy<PermissionValidator>().LifestyleTransient());
             container.Register(Component.For<IPermissionValidator>().ImplementedBy<SavePermissionValidator>().LifestyleTransient());
             container.Register(Component.For<IPermissionValidator>().ImplementedBy<StopJobPermissionValidator>().LifestyleTransient());
-            container.Register(Component.For<IPermissionValidator>().ImplementedBy<ViewErrorsPermissionValidator>().LifestyleTransient());
             container.Register(Component.For<IPermissionValidator>().ImplementedBy<RelativityProviderPermissionValidator>().LifestyleTransient());
             container.Register(Component.For<IPermissionValidator>().ImplementedBy<NativeCopyLinksValidator>().LifestyleTransient());
 

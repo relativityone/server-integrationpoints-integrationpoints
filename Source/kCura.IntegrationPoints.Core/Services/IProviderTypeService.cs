@@ -6,9 +6,6 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         ProviderType GetProviderType(int sourceProviderId, int destinationProviderId);
 
-        ProviderType GetProviderType(Data.IntegrationPoint integrationPoint);
-
         string GetProviderName(int sourceProviderId, int destinationProviderId);
-
     }
 }

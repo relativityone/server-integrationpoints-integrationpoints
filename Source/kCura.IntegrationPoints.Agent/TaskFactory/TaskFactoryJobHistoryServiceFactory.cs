@@ -1,5 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -11,20 +10,20 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
     {
         private readonly IAPILog _logger;
         private readonly ISerializer _serializer;
-        private readonly IServiceFactory _serviceFactory;
+        private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IIntegrationPointService _integrationPointService;
 
         public TaskFactoryJobHistoryServiceFactory(
             IAPILog logger,
             ISerializer serializer,
-            IServiceFactory serviceFactory,
+            IJobHistoryService jobHistoryJobHistoryService,
             IJobHistoryErrorService jobHistoryErrorService,
             IIntegrationPointService integrationPointService)
         {
             _logger = logger;
             _serializer = serializer;
-            _serviceFactory = serviceFactory;
+            _jobHistoryService = jobHistoryJobHistoryService;
             _jobHistoryErrorService = jobHistoryErrorService;
             _integrationPointService = integrationPointService;
         }
@@ -34,9 +33,9 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             return new TaskFactoryJobHistoryService(
                 _logger,
                 _serializer,
-                _serviceFactory,
                 _jobHistoryErrorService,
                 _integrationPointService,
+                _jobHistoryService,
                 integrationPoint);
         }
     }

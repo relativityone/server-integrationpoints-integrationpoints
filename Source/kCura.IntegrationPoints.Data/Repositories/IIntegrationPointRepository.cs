@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID);
 
+        Task<string> GetCalculationStateAsync(int integrationPointArtifactID);
+
         string GetEncryptedSecuredConfiguration(int integrationPointArtifactID);
 
         string GetName(int integrationPointArtifactID);
