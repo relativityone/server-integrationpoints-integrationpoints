@@ -2,12 +2,14 @@
 
 export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, previousPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
     getListData(convenienceApi, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId).then(res => {
-        let newData = [];
+        let newData = [];        
+
         res.Objects.forEach(el => {
             newData.push(convertToJobHistory(el.Values));
         })
 
-        let table = document.getElementById(fieldId.toString());
+        let table = document.getElementById(fieldId.toString());        
+
         let currentPage = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
         if (currentPage === previousPage) {
             if (checkIfArrayDataShouldBeUpdated(table["data"], newData)) {
@@ -35,7 +37,7 @@ async function getListData(convenienceApi: IConvenienceApi, workspaceId: number,
         var payload = {
             request: {
                 objectType: { artifactTypeID: artifactTypeID },
-                fields: [{ Name: "Job ID" }, { Name: "Start Time (UTC)" }, { Name: "Artifact ID" }, { Name: "Name" }, { Name: "Job Type" }, { Name: "Job Status" }, { Name: "Destination Workspace" }, { Name: "Items Transferred" }, { Name: "Total Items" }, { Name: "Items with Errors" }, { Name: "System Created By" }],
+                fields: [{ Name: "Job ID" }, { Name: "Start Time (UTC)" }, { Name: "Artifact ID" }, { Name: "Name" }, { Name: "Job Type" }, { Name: "Job Status" }, { Name: "Destination Workspace" }, { Name: "Items Read" }, { Name: "Items Transferred" }, { Name: "Total Items" }, { Name: "Items with Errors" }, { Name: "System Created By" }],
                 condition: `('${fieldId}' INTERSECTS MULTIOBJECT [${integrationPointId}]) `,
                 sorts: sortsCondition,
                 rowCondition: filterCondition,
@@ -80,7 +82,7 @@ function getFilterParametersIfExists(tableId: number): string {
     }
 
     let stringFilter = ['Job ID', 'Name', 'Destination Workspace', 'System Created By'];
-    let numberFilter = ['Artifact ID', 'Items Transferred', 'Total Items', 'Items with Errors'];
+    let numberFilter = ['Artifact ID', 'Items Read', 'Items Transferred', 'Total Items', 'Items with Errors'];
     let choiceFilter = ['Job Type', 'Job Status'];
 
     let conditions = [];
@@ -182,7 +184,11 @@ function GetConditionForTime(field: string, values: Array<string>, operator: str
     }
 }
 
-function convertToJobHistory(el: Object) {
+function convertToJobHistory(el: Object) {   
+
+    // for all job histories created before IAPI 2.0 integration "Items Read" value should be equal to "Items Transferred" value (REL-793694)
+    var itemsReadValue = el[7] === 0 || el[7] === null ? el[8] : el[7];    
+
     let jobHistory = {
         "Job ID": el[0],
         "Start Time (UTC)": el[1],
@@ -191,11 +197,12 @@ function convertToJobHistory(el: Object) {
         "Job Type": el[4],
         "Job Status": el[5],
         "Destination Workspace": el[6],
-        "Items Transferred": el[7],
-        "Total Items": el[8],
-        "Items with Errors": el[9],
-        "System Created By": el[10],
-        "ArtifactID": el[11]
+        "Items Read": itemsReadValue,
+        "Items Transferred": el[8],
+        "Total Items": el[9],
+        "Items with Errors": el[10],
+        "System Created By": el[11],
+        "ArtifactID": el[12]
     }
     return jobHistory;
 }
