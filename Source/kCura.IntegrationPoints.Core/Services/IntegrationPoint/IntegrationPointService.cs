@@ -4,8 +4,8 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -44,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
+        private readonly IAgentLauncher _agentLauncher;
 
         public IntegrationPointService(
             IHelper helper,
@@ -61,7 +62,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IRelativityObjectManager objectManager,
             ITaskParametersBuilder taskParametersBuilder,
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            IRelativitySyncAppIntegration relativitySyncAppIntegration)
+            IRelativitySyncAppIntegration relativitySyncAppIntegration,
+            IAgentLauncher agentLauncher)
             : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -75,6 +77,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _taskParametersBuilder = taskParametersBuilder;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
+            _agentLauncher = agentLauncher;
 
             _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
@@ -449,8 +452,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             else
             {
                 _logger.LogInformation("Using Sync DLL to run the job");
-                CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
-                _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
+                Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
+                if (job != null)
+                {
+                    _agentLauncher.LaunchAgentAsync().GetAwaiter().GetResult();
+                    _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
+                }
             }
         }
 
@@ -543,7 +550,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void CreateJob(
+        private Job CreateJob(
             IntegrationPointDto integrationPoint,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
@@ -554,6 +561,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _logger.LogInformation("Creating Job for Integration Point {integrationPointId} by user {userId}...",
                 integrationPoint.ArtifactId, userId);
 
+            Job job = null;
             lock (Lock)
             {
                 // If the Relativity provider is selected, we need to create an export task
@@ -563,10 +571,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, batchInstance, integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
-                _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
 
             _logger.LogInformation("Job was successfully created.");
+            return job;
         }
 
         private Data.JobHistory CreateJobHistory(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, bool switchToAppendOverlayMode = false)
