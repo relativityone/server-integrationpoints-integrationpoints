@@ -27,21 +27,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
         private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
 
-        private readonly IServiceFactory _serviceFactory;
-        private readonly ICPHelper _helper;
         private readonly IManagerFactory _managerFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
-        public JobController(
-            IServiceFactory serviceFactory,
-            ICPHelper helper,
-            IManagerFactory managerFactory,
-            IIntegrationPointService integrationPointService,
-            IAPILog log)
+        public JobController(IManagerFactory managerFactory, IIntegrationPointService integrationPointService, IAPILog log)
         {
-            _serviceFactory = serviceFactory;
-            _helper = helper;
             _managerFactory = managerFactory;
             _integrationPointService = integrationPointService;
             _log = log;
@@ -73,7 +64,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 HttpResponseMessage httpResponseMessage = RunInternal(
                     payload.AppId,
                     payload.ArtifactId,
-                    _integrationPointService,
                     ActionType.Run
                 );
 
@@ -93,12 +83,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-            IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
-
             HttpResponseMessage httpResponseMessage = RunInternal(
                 payload.AppId,
                 payload.ArtifactId,
-                integrationPointService,
                 ActionType.Retry,
                 switchToAppendOverlayMode
             );
@@ -114,11 +101,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             string errorMessage = null;
             HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
 
-            IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
-
             try
             {
-                integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
+                _integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
             }
             catch (AggregateException exception)
             {
@@ -148,8 +133,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             return response;
         }
 
-        private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, IIntegrationPointService integrationPointService,
-            ActionType action, bool switchToAppendOverlayMode = false)
+        private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, ActionType action, bool switchToAppendOverlayMode = false)
         {
             string errorMessage = null;
             HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
@@ -158,11 +142,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 int userId = GetUserIdIfExists();
                 if (action == ActionType.Run)
                 {
-                    integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
+                    _integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
                 }
                 else
                 {
-                    integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
+                    _integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
                 }
             }
             catch (AggregateException exception)

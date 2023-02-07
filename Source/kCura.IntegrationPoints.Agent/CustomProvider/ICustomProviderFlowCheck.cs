@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
-    internal interface INewCustomProviderFlowCheck
+    internal interface ICustomProviderFlowCheck
     {
         Task<bool> ShouldBeUsedAsync(IntegrationPointDto integrationPoint);
     }

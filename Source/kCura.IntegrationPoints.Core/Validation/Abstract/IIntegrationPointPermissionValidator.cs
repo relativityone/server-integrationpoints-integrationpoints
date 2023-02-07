@@ -15,8 +15,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
             Guid objectTypeGuid,
             int userId);
 
-        ValidationResult ValidateViewErrors(int workspaceArtifactId);
-
         ValidationResult ValidateStop(
             IntegrationPointDtoBase model,
             SourceProvider sourceProvider,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using Castle.Windsor;
 using FluentAssertions;
@@ -15,6 +16,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
@@ -33,6 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private IJobSynchronizationChecker _jobSynchronizationChecker;
         private ITaskFactoryJobHistoryService _jobHistoryService;
         private Mock<IWindsorContainer> _containerFake;
+        private Mock<ICustomProviderFlowCheck> _newCustomProviderCheckFake;
         private ITaskFactory _instance;
 
         private IFixture _fxt;
@@ -59,7 +62,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
+            _newCustomProviderCheckFake = new Mock<ICustomProviderFlowCheck>();
+            _newCustomProviderCheckFake.Setup(
+                    x => x.ShouldBeUsedAsync(
+                        It.IsAny<IntegrationPointDto>()))
+                .ReturnsAsync(true);
+
             _containerFake = new Mock<IWindsorContainer>();
+            _containerFake.Setup(x => x.Resolve<ICustomProviderFlowCheck>()).Returns(_newCustomProviderCheckFake.Object);
 
             _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
@@ -147,8 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateJobHistoryOnFailure(Arg.Any<Job>(), Arg.Any<ArgumentNullException>());
         }
 
-        [Test]
-        [TestCaseSource(nameof(CreateTask_CaseData))]
+        [TestCaseSource(nameof(CreateTask_CaseDataWithoutNone))]
         public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
         {
             int relatedId = 453245;
@@ -160,33 +169,41 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                 .WithTaskType(taskType)
                 .WithRelatedObjectArtifactId(relatedId)
                 .Build();
-            try
-            {
-                // Act
-                _instance.CreateTask(job, agentBase);
 
-                // Assert
-                if (taskType == TaskType.None)
-                {
-                    _logger.Received().LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
-                }
-                else
-                {
-                    _logger.DidNotReceiveWithAnyArgs().LogError(Arg.Any<string>());
-                }
+            // Act
+            Func<ITask> action = () => _instance.CreateTask(job, agentBase);
 
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
-            }
+            // Assert
+            Assert.DoesNotThrow(() => action());
+
+            _logger.DidNotReceiveWithAnyArgs().LogError(Arg.Any<string>());
+        }
+
+        [Test]
+        public void CreateTask_ShouldThrow_WhenTaskTypeNone()
+        {
+            int relatedId = 453245;
+            int jobId = 342343;
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithTaskType(TaskType.None)
+                .WithRelatedObjectArtifactId(relatedId)
+                .Build();
+
+            // Act
+            Func<ITask> action = () => _instance.CreateTask(job, agentBase);
+
+            // Assert
+            Assert.Throws<IntegrationPointsException>(() => action());
         }
 
         [Test]
         public void CreateTask_ShouldCreateNewCustomProviderTask_WhenCriteriaAreMet()
         {
             // Arrange
-            var expectedTask = _fxt.Create<CustomProviderTask>();
+            CustomProviderTask expectedTask = _fxt.Create<CustomProviderTask>();
 
             Job job = _fxt.Build<Job>()
                 .With(x => x.TaskType, TaskType.SyncManager.ToString())
@@ -194,11 +211,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var agentBase = new TestAgentBase(Guid.NewGuid());
 
-            var customProviderCheck = new Mock<INewCustomProviderFlowCheck>();
-            customProviderCheck.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
+            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
                 .ReturnsAsync(true);
 
-            _containerFake.Setup(x => x.Resolve<INewCustomProviderFlowCheck>()).Returns(customProviderCheck.Object);
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
 
             // Act
@@ -217,9 +232,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             return integrationPointService;
         }
 
-        private static IEnumerable<TestCaseData> CreateTask_CaseData()
+        private static IEnumerable<TestCaseData> CreateTask_CaseDataWithoutNone()
         {
-            foreach (var taskType in Enum.GetValues(typeof(TaskType)))
+            IEnumerable<TaskType> taskTypes = Enum.GetValues(typeof(TaskType)).Cast<TaskType>()
+                .Except(new[] { TaskType.None });
+
+            foreach (var taskType in taskTypes)
             {
                 TestCaseData testCaseData = new TestCaseData(taskType) { TestName = taskType.ToString() };
                 yield return testCaseData;

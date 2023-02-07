@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
     [TestFixture]
     [Category("Unit")]
-    internal class NewCustomProviderFlowCheckTests
+    internal class CustomProviderFlowCheckTests
     {
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<ISerializer> _serializerFake;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private IFixture _fxt;
 
-        private NewCustomProviderFlowCheck _sut;
+        private CustomProviderFlowCheck _sut;
 
         [SetUp]
         public void SetUp()
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             Mock<IAPILog> log = new Mock<IAPILog>();
 
-            _sut = new NewCustomProviderFlowCheck(
+            _sut = new CustomProviderFlowCheck(
                 _toggleProviderFake.Object,
                 _objectManagerFake.Object,
                 _serializerFake.Object,
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupObjectTypeReadFromConfiguration(notEntityGuid);
 
             // Act
-            var result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
 
             // Assert
             result.Should().BeTrue();
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupObjectTypeReadFromConfiguration(It.IsAny<Guid>());
 
             // Act
-            var result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
 
             // Assert
             result.Should().BeFalse();
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupObjectTypeReadFromConfiguration(ObjectTypeGuids.Entity);
 
             // Act
-            var result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
 
             // Assert
             result.Should().BeFalse();
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Throws<Exception>();
 
             // Act
-            var result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
 
             // Assert
             result.Should().BeFalse();

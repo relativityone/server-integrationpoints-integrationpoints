@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.Core.Factories
@@ -59,13 +58,13 @@ namespace kCura.IntegrationPoints.Core.Factories
         /// <param name="contextContainer">Container containing necessary contexts</param>
         /// <returns>A queue manager</returns>
         IQueueManager CreateQueueManager();
-        
+
         /// <summary>
         /// Create State manager.
         /// </summary>
         /// <returns>State manager (for console buttons)</returns>
         IStateManager CreateStateManager();
-        
+
         /// <summary>
         /// Creates an error manager.
         /// </summary>
@@ -117,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Factories
         /// <param name="contextContainer">Container containing necessary contexts</param>
         /// <returns>Instance of Instance Settings Manager</returns>
         IInstanceSettingsManager CreateInstanceSettingsManager();
-        
+
         ITagSavedSearchManager CreateTaggingSavedSearchManager();
 
         ISourceWorkspaceTagCreator CreateSourceWorkspaceTagsCreator(SourceConfiguration sourceConfiguration);

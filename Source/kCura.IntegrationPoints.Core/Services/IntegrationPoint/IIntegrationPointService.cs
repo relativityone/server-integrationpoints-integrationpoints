@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Statistics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -37,6 +38,24 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// <param name="artifactId">Artifact id of the integration point.</param>
         /// <returns>A list of field mappings for the integration point.</returns>
         List<FieldMap> GetFieldMap(int artifactId);
+
+        /// <summary>
+        /// Retrieves the source configuration field value for given integration point.
+        /// </summary>
+        /// <param name="artifactId">Artifact id of the integration point.</param>
+        string GetSourceConfiguration(int artifactId);
+
+        /// <summary>
+        /// Retrieves the destination configuration field value for given integration point.
+        /// </summary>
+        /// <param name="artifactId">Artifact id of the integration point.</param>
+        string GetDestinationConfiguration(int artifactId);
+
+        /// <summary>
+        /// Retrieves the calculation state field value for given integration point.
+        /// </summary>
+        /// <param name="artifactId">Artifact id of the integration point.</param>
+        CalculationState GetCalculationState(int artifactId);
 
         /// <summary>
         /// Gets all integration points with given source and destination provider.
