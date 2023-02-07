@@ -1,156 +1,117 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
     public class ButtonStateBuilder : IButtonStateBuilder
     {
+        private readonly ISerializer _serializer;
         private readonly IProviderTypeService _providerTypeService;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IRelativitySyncConstrainsChecker _syncConstrainsChecker;
+        private readonly IViewErrorsPermissionValidator _viewErrorsPermissionValidator;
         private readonly IJobHistoryManager _jobHistoryManager;
-        private readonly IPermissionRepository _permissionRepository;
         private readonly IQueueManager _queueManager;
         private readonly IStateManager _stateManager;
-        private readonly IIntegrationPointPermissionValidator _permissionValidator;
-
-        public bool IsSyncAppInUse { get; }
 
         public ButtonStateBuilder(
+            ISerializer serializer,
             IProviderTypeService providerTypeService,
-            IQueueManager queueManager,
-            IJobHistoryManager jobHistoryManager,
-            IStateManager stateManager,
-            IPermissionRepository permissionRepository,
-            IIntegrationPointPermissionValidator permissionValidator,
-            IIntegrationPointRepository integrationPointRepository,
-            bool isSyncAppInUse)
-        {
-            _providerTypeService = providerTypeService;
-            _queueManager = queueManager;
-            _jobHistoryManager = jobHistoryManager;
-            _stateManager = stateManager;
-            _permissionRepository = permissionRepository;
-            _permissionValidator = permissionValidator;
-            _integrationPointRepository = integrationPointRepository;
-
-            IsSyncAppInUse = isSyncAppInUse;
-        }
-
-        public static ButtonStateBuilder CreateButtonStateBuilder(
-            ICPHelper helper,
             IRepositoryFactory repositoryFactory,
-            IManagerFactory managerFactory,
-            IIntegrationPointRepository integrationPointRepository,
-            IProviderTypeService providerTypeService,
-            IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            int workspaceId,
-            int integrationPointId)
+            IIntegrationPointService integrationPointService,
+            IRelativitySyncConstrainsChecker syncConstrainsChecker,
+            IViewErrorsPermissionValidator viewErrorsPermissionValidator,
+            IManagerFactory managerFactory)
         {
-            var logger = helper.GetLoggerFactory().GetLogger();
+            _serializer = serializer;
+            _providerTypeService = providerTypeService;
+            _repositoryFactory = repositoryFactory;
+            _integrationPointService = integrationPointService;
+            _syncConstrainsChecker = syncConstrainsChecker;
+            _viewErrorsPermissionValidator = viewErrorsPermissionValidator;
 
-            var queueManager = managerFactory.CreateQueueManager();
-            var jobHistoryManager = managerFactory.CreateJobHistoryManager();
-            var stateManager = managerFactory.CreateStateManager();
-            var permissionValidator = new IntegrationPointPermissionValidator(
-                new[]
-                {
-                    new ViewErrorsPermissionValidator(repositoryFactory)
-                },
-                new IntegrationPointSerializer(logger));
-
-            IPermissionRepository permissionRepository = repositoryFactory.GetPermissionRepository(workspaceId);
-
-            bool isSyncAppInUse = relativitySyncConstrainsChecker
-                .ShouldUseRelativitySyncApp(integrationPointId);
-
-            var buttonStateBuilder = new ButtonStateBuilder(
-                providerTypeService,
-                queueManager,
-                jobHistoryManager,
-                stateManager,
-                permissionRepository,
-                permissionValidator,
-                integrationPointRepository,
-                isSyncAppInUse);
-
-            return buttonStateBuilder;
+            _queueManager = managerFactory.CreateQueueManager();
+            _jobHistoryManager = managerFactory.CreateJobHistoryManager();
+            _stateManager = managerFactory.CreateStateManager();
         }
 
-        public async Task<ButtonStateDTO> CreateButtonStateAsync(int workspaceArtifactId, int integrationPointArtifactId)
+        public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            IntegrationPoint integrationPoint = await _integrationPointRepository.ReadAsync(integrationPointArtifactId).ConfigureAwait(false);
+            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactId);
 
-            ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint);
+            SourceConfiguration.ExportType exportType = GetExportType(integrationPoint.ArtifactId);
 
-            ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(workspaceArtifactId);
+            ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider, integrationPoint.DestinationProvider);
 
-            ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+            bool useSyncApp = _syncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
 
-            bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(
-                ObjectTypeGuids.IntegrationPointProfileGuid,
-                ArtifactPermission.Create);
-
-            bool userCanSaveAsProfile = hasAddProfilePermission && !settings.IsFederatedInstance();
-
-            bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
-            bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-
-            SourceConfiguration.ExportType exportType;
-            try
-            {
-                exportType = (SourceConfiguration.ExportType)JsonConvert
-                    .DeserializeAnonymousType(integrationPoint.SourceConfiguration, new { TypeOfExport = 0 })
-                    .TypeOfExport;
-            }
-            catch (Exception)
-            {
-                exportType = 0;
-            }
+            bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId, useSyncApp);
 
             bool integrationPointIsStoppable = IntegrationPointIsStoppable(
                 providerType,
                 workspaceArtifactId,
                 integrationPointArtifactId,
-                exportType);
+                exportType,
+                useSyncApp);
 
-            bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
-
-            CalculationState calculationState = JsonConvert.DeserializeObject<CalculationState>(integrationPoint.CalculationState ?? string.Empty);
+            CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPoint.ArtifactId);
             bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,
                 providerType,
                 hasJobsExecutingOrInQueue,
-                integrationPointHasErrors,
-                canViewErrors,
+                integrationPoint.HasErrors.GetValueOrDefault(false),
+                HasErrorViewPermissions(workspaceArtifactId),
                 integrationPointIsStoppable,
-                userCanSaveAsProfile,
+                HasProfileAddPermission(workspaceArtifactId),
                 calculationInProgress);
 
             return buttonState;
         }
 
-        private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId)
+        private SourceConfiguration.ExportType GetExportType(int integrationPointId)
         {
-            if (IsSyncAppInUse)
+            string sourceConfigurationString = _integrationPointService.GetSourceConfiguration(integrationPointId);
+            Dictionary<string, object> sourceConfiguration = _serializer.Deserialize<Dictionary<string, object>>(sourceConfigurationString ?? string.Empty);
+
+            object typeOfExport = 0;
+            sourceConfiguration?.TryGetValue(nameof(SourceConfiguration.TypeOfExport), out typeOfExport);
+            return (SourceConfiguration.ExportType)Convert.ToInt32(typeOfExport);
+        }
+
+        private bool HasErrorViewPermissions(int workspaceArtifactId)
+        {
+            ValidationResult jobHistoryErrorViewPermissionCheck = _viewErrorsPermissionValidator.Validate(workspaceArtifactId);
+            return jobHistoryErrorViewPermissionCheck.IsValid;
+        }
+
+        private bool HasProfileAddPermission(int workspaceArtifactId)
+        {
+            IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+            return permissionRepository.UserHasArtifactTypePermission(
+                ObjectTypeGuids.IntegrationPointProfileGuid,
+                ArtifactPermission.Create);
+        }
+
+        private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId, bool useSyncApp)
+        {
+            if (useSyncApp)
             {
                 StoppableJobHistoryCollection stoppableJobs = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
                 return stoppableJobs.HasStoppableJobHistory;
@@ -159,13 +120,11 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
         }
 
-        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType)
+        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType, bool useSyncApp)
         {
             StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-            bool hasExecutingJobs = IsSyncAppInUse
-                ? false
-                : _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
+            bool hasExecutingJobs = !useSyncApp && _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
 
             if (stoppableJobCollection.HasOnlyPendingJobHistory && !hasExecutingJobs)
             {

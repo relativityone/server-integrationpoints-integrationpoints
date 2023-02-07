@@ -159,7 +159,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 ObjectType = objectType,
                 Fields = fieldsGuids,
-                Condition = $"'ArtifactID' == {artifactId}"
+                Condition = $"'ArtifactID' == {artifactId}",
+                MaxCharactersForLongTextValues = 10000,
             };
 
             List<T> result = Query<T>(request, executionIdentity);

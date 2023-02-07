@@ -1,24 +1,21 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
-    public class ViewErrorsPermissionValidator : BasePartsValidator<int>, IPermissionValidator
+    public class ViewErrorsPermissionValidator : IViewErrorsPermissionValidator
     {
         private readonly IRepositoryFactory _repositoryFactory;
+
         public ViewErrorsPermissionValidator(IRepositoryFactory repositoryFactoryFactory)
         {
             _repositoryFactory = repositoryFactoryFactory;
         }
 
-        public override string Key => Constants.IntegrationPoints.Validation.VIEW_ERRORS;
-
-        public override ValidationResult Validate(int workspaceArtifactId)
+        public ValidationResult Validate(int workspaceArtifactId)
         {
             var result = new ValidationResult();
 
@@ -33,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
             {
                 result.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_ERROR_NO_VIEW);
             }
+
             return result;
         }
     }

@@ -1,11 +1,13 @@
 ﻿using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -21,7 +23,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
         private readonly IIntegrationPointService _integrationPointService;
 
-        public TaskFactory(IAgentHelper helper,
+        public TaskFactory(
+            IAgentHelper helper,
             ITaskExceptionMediator taskExceptionMediator,
             IJobSynchronizationChecker jobSynchronizationChecker,
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
@@ -59,12 +62,17 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 switch (taskType)
                 {
                     case TaskType.SyncManager:
+                        if (NewCustomProviderFlowShouldBeUsed(integrationPointDto))
+                        {
+                            return _container.Resolve<ICustomProviderTask>();
+                        }
+
                         return CheckForSynchronizationAndResolve<SyncManager>(job, integrationPointDto, agentBase);
                     case TaskType.SyncWorker:
                         return CheckForSynchronizationAndResolve<SyncWorker>(job, integrationPointDto, agentBase);
                     case TaskType.SyncEntityManagerWorker:
                         return CheckForSynchronizationAndResolve<SyncEntityManagerWorker>(job, integrationPointDto, agentBase);
-                    case TaskType.SendEmailManager: //Left for backwards compatibility after removing SendEmailManager
+                    case TaskType.SendEmailManager: // Left for backwards compatibility after removing SendEmailManager
                     case TaskType.SendEmailWorker:
                         return CheckForSynchronizationAndResolve<SendEmailWorker>(job, integrationPointDto, agentBase);
                     case TaskType.ExportService:
@@ -76,13 +84,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                     case TaskType.ExportWorker:
                         return CheckForSynchronizationAndResolve<ExportWorker>(job, integrationPointDto, agentBase);
                     default:
-                        LogUnknownTaskTypeError(taskType);
-                        return null;
+                        throw UnknownTaskTypeException(taskType);
                 }
             }
             catch (AgentDropJobException e)
             {
-                //we catch this type of exception when an agent explicitly drops a Job, and we bubble up the exception message to the Errors tab.
+                // We catch this type of exception when an agent explicitly drops a Job, and we bubble up the exception message to the Errors tab.
                 LogAgentDropJobException(job, e);
                 throw;
             }
@@ -94,6 +101,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             }
         }
 
+        private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
+        {
+            ICustomProviderFlowCheck newFlowCheck = _container.Resolve<ICustomProviderFlowCheck>();
+            return newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
+        }
+
         private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
         {
             _jobSynchronizationChecker.CheckForSynchronization(typeof(T), job, integrationPointDto, agentBase);
@@ -103,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private IntegrationPointDto GetIntegrationPoint(Job job)
         {
             LogGetIntegrationPointStart(job);
-            IntegrationPointDto integrationPoint =  _integrationPointService.Read(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
             if (integrationPoint == null)
             {
@@ -114,6 +127,13 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
             LogGetIntegrationPointSuccesfullEnd(job, integrationPoint);
             return integrationPoint;
+        }
+
+        private IntegrationPointsException UnknownTaskTypeException(TaskType taskType)
+        {
+            _logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
+
+            return new IntegrationPointsException($"Unable to create task. Unknown task type ({taskType})");
         }
 
         #region Logging
@@ -131,11 +151,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private void LogCreateTaskSyncCheck(Job job, TaskType taskType)
         {
             _logger.LogInformation("Creating job specific manger/worker class in task factory. Job: {JobId}, Task Type: {TaskType}", job.JobId, taskType);
-        }
-
-        private void LogUnknownTaskTypeError(TaskType taskType)
-        {
-            _logger.LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
         }
 
         private void LogErrorDuringTaskCreation(Exception exception, string taskType, long jobId)

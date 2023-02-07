@@ -116,8 +116,10 @@ namespace kCura.ScheduleQueue.Core.Services
             }
             else
             {
-                _log.LogInformation("Deleting job {jobId} from the queue - InvalidJob {invalidJob}, IsScheduled {isScheduledJob}",
-                    job.JobFailed?.ShouldBreakSchedule, nextUtcRunDateTime.HasValue);
+                _log.LogInformation("Deleting job {jobId} from the queue - ShouldBreakSchedule {shouldBreakSchedule}, IsScheduled {isScheduledJob}",
+                    job.JobId,
+                    job.JobFailed?.ShouldBreakSchedule,
+                    nextUtcRunDateTime.HasValue);
 
                 DeleteJob(job.JobId);
             }

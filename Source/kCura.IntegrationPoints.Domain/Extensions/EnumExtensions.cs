@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 
 namespace kCura.IntegrationPoints.Domain.Extensions

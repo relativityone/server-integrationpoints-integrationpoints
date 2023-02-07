@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private IIntegrationPointService _integrationPointService;
         private IManagerFactory _managerFactory;
         private IRelativityAuditRepository _auditRepository;
-        private IServiceFactory _serviceFactory;
         private JobController _instance;
         private JobController.Payload _payload;
 
@@ -56,18 +55,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _auditManager = Substitute.For<IAuditManager>();
             _managerFactory = Substitute.For<IManagerFactory>();
             _auditRepository = Substitute.For<IRelativityAuditRepository>();
-            _serviceFactory = Substitute.For<IServiceFactory>();
 
             _helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
-            _serviceFactory.CreateIntegrationPointService(_helper).Returns(_integrationPointService);
             _managerFactory.CreateAuditManager(_WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
             _auditManager.RelativityAuditRepository.Returns(_auditRepository);
 
             IAPILog log = Substitute.For<IAPILog>();
 
             _instance = new JobController(
-                _serviceFactory,
-                _helper,
                 _managerFactory,
                 _integrationPointService,
                 log)
