@@ -125,23 +125,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         }
 
         [Test]
-        public void TestViewErrorsValidatorGetsCalled()
-        {
-            //arrange
-            var validator = Substitute.For<IPermissionValidator>();
-            validator.Key.Returns(Constants.IntegrationPoints.Validation.VIEW_ERRORS);
-
-            var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
-
-            //act
-            permissionValidator.ValidateViewErrors(1);
-
-            //assert
-            validator.Received(1).Validate(Arg.Any<object>());
-        }
-
-
-        [Test]
         public void TestStopValidatorGetsCalled()
         {
             //arrange

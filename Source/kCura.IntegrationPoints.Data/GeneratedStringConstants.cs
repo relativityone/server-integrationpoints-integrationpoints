@@ -245,6 +245,7 @@ namespace kCura.IntegrationPoints.Data
         public const string Overwrite = @"Overwrite";
         public const string JobID = @"Job ID";
         public const string Name = @"Name";
+        public const string ItemsRead = @"Items Read";
     }
 
     public partial class JobHistoryFieldGuids 
@@ -283,6 +284,8 @@ namespace kCura.IntegrationPoints.Data
         public static readonly Guid  JobIDGuid = Guid.Parse(JobID);
         internal const string Name = @"07061466-5fab-4581-979c-c801e8207370";
         public static readonly Guid  NameGuid = Guid.Parse(Name);
+        internal const string ItemsRead = @"2b76010a-9cf8-4276-9d6d-504d026f0b27";
+        public static readonly Guid ItemsReadGuid = Guid.Parse(ItemsRead);
     }
 
 

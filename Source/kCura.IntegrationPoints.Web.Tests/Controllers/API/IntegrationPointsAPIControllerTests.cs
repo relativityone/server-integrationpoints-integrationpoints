@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
     {
         private Mock<IAPILog> _loggerFake;
         private IntegrationPointsAPIController _sut;
-        private IServiceFactory _serviceFactory;
         private IIntegrationPointService _integrationPointService;
         private IRelativityUrlHelper _relativityUrlHelper;
         private IRdoSynchronizerProvider _rdoSynchronizerProvider;
@@ -49,7 +48,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _relativityUrlHelper = Substitute.For<IRelativityUrlHelper>();
             _integrationPointService = Substitute.For<IIntegrationPointService>();
             _rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
-            _serviceFactory = Substitute.For<IServiceFactory>();
             _cpHelper = Substitute.For<ICPHelper>();
             _svcMgr = Substitute.For<IServicesMgr>();
 
@@ -60,12 +58,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _loggerFake = new Mock<IAPILog>();
 
             _sut = new IntegrationPointsAPIController(
-                _serviceFactory,
                 _relativityUrlHelper,
                 _rdoSynchronizerProvider,
-                _cpHelper,
-                _loggerFake.Object,
-                CamelCaseSerializer)
+                _integrationPointService,
+                CamelCaseSerializer,
+                _loggerFake.Object)
             {
                 Request = new HttpRequestMessage()
             };
@@ -85,8 +82,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _CREDENTIALS
             };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
             _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Returns(model.ArtifactId);
 
@@ -126,9 +121,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             };
             var validationResult = new ValidationResult(false, "That's a damn shame.");
             Exception expectException = new IntegrationPointValidationException(validationResult);
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
-
             _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Throws(expectException);
 
             // Act
@@ -161,8 +153,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 DestinationConfiguration = "",
                 SecuredConfiguration = _CREDENTIALS
             };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
             _integrationPointService.SaveIntegrationPoint(Arg.Is(model)).Returns(model.ArtifactId);
 

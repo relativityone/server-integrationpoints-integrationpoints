@@ -28,18 +28,17 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         public TaskFactoryJobHistoryService(
             IAPILog logger,
             ISerializer serializer,
-            IServiceFactory serviceFactory,
             IJobHistoryErrorService jobHistoryErrorService,
             IIntegrationPointService integrationPointService,
+            IJobHistoryService jobHistoryService,
             IntegrationPointDto integrationPoint)
         {
             _logger = logger.ForContext<TaskFactoryJobHistoryService>();
             _serializer = serializer;
             _jobHistoryErrorService = jobHistoryErrorService;
             _integrationPointService = integrationPointService;
-
+            _jobHistoryService = jobHistoryService;
             _integrationPoint = integrationPoint;
-            _jobHistoryService = serviceFactory.CreateJobHistoryService(_logger);
         }
 
         public void SetJobIdOnJobHistory(Job job)

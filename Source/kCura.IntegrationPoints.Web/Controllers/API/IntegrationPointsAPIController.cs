@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
@@ -17,27 +16,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class IntegrationPointsAPIController : ApiController
     {
-        private readonly IServiceFactory _serviceFactory;
+        private readonly IIntegrationPointService _integrationPointService;
         private readonly IRelativityUrlHelper _urlHelper;
         private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
-        private readonly ICPHelper _cpHelper;
         private readonly IAPILog _logger;
         private readonly ICamelCaseSerializer _serializer;
 
         public IntegrationPointsAPIController(
-            IServiceFactory serviceFactory,
             IRelativityUrlHelper urlHelper,
             Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-            ICPHelper cpHelper,
-            IAPILog logger,
-            ICamelCaseSerializer serializer)
+            IIntegrationPointService integrationPointService,
+            ICamelCaseSerializer serializer,
+            IAPILog logger)
         {
-            _serviceFactory = serviceFactory;
             _urlHelper = urlHelper;
             _provider = provider;
-            _cpHelper = cpHelper;
-            _logger = logger;
+            _integrationPointService = integrationPointService;
             _serializer = serializer;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -58,8 +54,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
                 if (id > 0)
                 {
-                    IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-                    model = integrationPointService.Read(id).ToWebModel(_serializer);
+                    model = _integrationPointService.Read(id).ToWebModel(_serializer);
                 }
 
                 if (model.DestinationProvider == 0)
@@ -92,12 +87,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             LogMappingInfo(mappingHasWarnings, clearAndProceedSelected, mappingType);
 
-            IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-
             int createdId;
             try
             {
-                createdId = integrationPointService.SaveIntegrationPoint(webModel.ToDto(_serializer));
+                createdId = _integrationPointService.SaveIntegrationPoint(webModel.ToDto(_serializer));
             }
             catch (IntegrationPointValidationException ex)
             {
