@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.RelativitySync;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -56,6 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IChoiceQuery> _choiceQueryFake;
         private Mock<IRelativitySyncConstrainsChecker> _relativitySyncConstrainsCheckerFake;
         private Mock<IRelativitySyncAppIntegration> _relativitySyncAppIntegrationMock;
+        private Mock<IAgentLauncher> _agentLauncherMock;
 
         private SourceProvider _sourceProvider;
         private DestinationProvider _destinationProvider;
@@ -90,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.Type, _integrationPointType.ArtifactId)
                 .With(x => x.ScheduleRule, (string)null)
                 .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
-                .With(x => x.FieldMappings, String.Empty)
+                .With(x => x.FieldMappings, string.Empty)
                 .Create();
 
 
@@ -186,6 +188,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             _relativitySyncAppIntegrationMock = _fxt.Freeze<Mock<IRelativitySyncAppIntegration>>();
 
+            _agentLauncherMock = _fxt.Freeze<Mock<IAgentLauncher>>();
+
             _sut = _fxt.Create<IntegrationPointService>();
         }
 
@@ -221,6 +225,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 It.IsAny<Guid>(),
                 It.IsAny<ChoiceRef>(),
                 It.IsAny<DateTime?>()));
+
+            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Once()); 
         }
 
         [Test]
@@ -995,6 +1001,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<long?>(),
                     It.IsAny<long>()),
                 Times.Never());
+
+            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Never());
         }
     }
 }
