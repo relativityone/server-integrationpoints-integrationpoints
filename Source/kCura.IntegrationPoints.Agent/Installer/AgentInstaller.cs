@@ -7,6 +7,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -136,6 +138,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
 
+            container.Register(Component.For<IFileShareService>().ImplementedBy<FileShareService>());
+            container.Register(Component.For<IRecordIdService>().ImplementedBy<RecordIdService>());
+            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>());
             container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>());
             container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>());
 
