@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
@@ -134,6 +135,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .For<IAuthTokenGenerator>()
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
+
+            container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>());
+            container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>());
 
             container.Register(
                 Component
