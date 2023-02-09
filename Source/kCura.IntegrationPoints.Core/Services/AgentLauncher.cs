@@ -11,26 +11,28 @@ namespace kCura.IntegrationPoints.Core.Services
     public class AgentLauncher : IAgentLauncher
     {
         private readonly IServicesMgr _serviceManager;
-        private readonly IAPILog _logger;
         private readonly IToggleProvider _toggleProvider;
+        private readonly IAPILog _logger;
 
-        public AgentLauncher(IServicesMgr serviceManager, IAPILog logger, IToggleProvider toggleProvider)
+        private Guid _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+
+        public AgentLauncher(IServicesMgr serviceManager, IToggleProvider toggleProvider, IAPILog logger)
         {
             _serviceManager = serviceManager;
-            _logger = logger;
             _toggleProvider = toggleProvider;
+            _logger = logger;
         }
 
         public async Task LaunchAgentAsync()
         {
             try
             {
-                if (_toggleProvider.IsEnabled<EnableAgentLaunchOnJobStartToggle>())
+                if (_toggleProvider.IsEnabled<TriggerAgentLaunchOnJobRunToggle>())
                 {
                     using (IAgentStatusManagerService agentService = _serviceManager.CreateProxy<IAgentStatusManagerService>(ExecutionIdentity.System))
                     {
-                        await agentService.StartAgentAsync(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)).ConfigureAwait(false);
-                        _logger.LogInformation("StartAgentAsync was called for agent {guid}", Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+                        await agentService.StartAgentAsync(_agentGuid).ConfigureAwait(false);
+                        _logger.LogInformation("StartAgentAsync was called for agent {guid}", _agentGuid);
                     }
                 }
             }
