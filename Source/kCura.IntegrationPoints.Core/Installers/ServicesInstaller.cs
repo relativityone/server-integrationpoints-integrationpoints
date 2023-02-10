@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>().LifestyleTransient());
             container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
             container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>());
-            container.Register(Component.For<IButtonStateBuilder>().ImplementedBy<ButtonStateBuilder>());
+            container.Register(Component.For<IButtonStateBuilder>().ImplementedBy<ButtonStateBuilder>().LifestyleTransient());
 
             container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
             container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
