@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
         private readonly IAgentLauncher _agentLauncher;
-        private readonly IDateTime _dateTime;
+        private readonly IDateTimeHelper _dateTimeHelper;
 
         public IntegrationPointService(
             IHelper helper,
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
             IRelativitySyncAppIntegration relativitySyncAppIntegration,
             IAgentLauncher agentLauncher,
-            IDateTime dateTime)
+            IDateTimeHelper dateTimeHelper)
             : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
             _agentLauncher = agentLauncher;
-            _dateTime = dateTime;
+            _dateTimeHelper = dateTimeHelper;
 
             _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
@@ -475,7 +475,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void MarkJobAsFailed(int jobHistoryId, int integrationPointId)
         {
-            DateTime endTime = _dateTime.UtcNow;
+            DateTime endTime = _dateTimeHelper.Now();
 
             Data.JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(jobHistoryId);
             jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;

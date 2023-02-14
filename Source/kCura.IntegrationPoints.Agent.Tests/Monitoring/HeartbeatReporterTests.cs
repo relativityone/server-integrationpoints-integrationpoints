@@ -11,7 +11,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
