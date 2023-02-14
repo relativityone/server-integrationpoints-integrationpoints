@@ -122,20 +122,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return integrationPoint.ArtifactId;
         }
 
-        public void UpdateType(int artifactId, int? type)
-        {
-            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
-            {
-                new FieldRefValuePair
-                {
-                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.TypeGuid },
-                    Value = type,
-                },
-            };
-
-            _objectManager.Update(artifactId, fieldValues);
-        }
-
         public void UpdateHasErrors(int artifactId, bool hasErrors)
         {
             List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>

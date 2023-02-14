@@ -22,8 +22,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         int CreateOrUpdate(IntegrationPoint integrationPoint);
 
-        void UpdateType(int artifactId, int? type);
-
         void UpdateHasErrors(int integrationPointArtifactId, bool hasErrors);
 
         void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime);

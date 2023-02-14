@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
         private readonly IAgentLauncher _agentLauncher;
+        private readonly IDateTime _dateTime;
 
         public IntegrationPointService(
             IHelper helper,
@@ -63,7 +65,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ITaskParametersBuilder taskParametersBuilder,
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
             IRelativitySyncAppIntegration relativitySyncAppIntegration,
-            IAgentLauncher agentLauncher)
+            IAgentLauncher agentLauncher,
+            IDateTime dateTime)
             : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -78,6 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
             _agentLauncher = agentLauncher;
+            _dateTime = dateTime;
 
             _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
@@ -446,8 +450,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (shouldUseRelativitySyncAppIntegration)
             {
                 _logger.LogInformation("Using Sync application to run the job");
-                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                _logger.LogInformation("Sync retry job has been submitted");
+                try
+                {
+                    _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
+                    _logger.LogInformation("Sync retry job has been submitted");
+                }
+                catch (SyncJobSendingException ex)
+                {
+                    _logger.LogError(ex, "Failed to send sync job");
+                    MarkJobAsFailed(jobHistory.ArtifactId, integrationPointArtifactId);
+                }
             }
             else
             {
@@ -459,6 +471,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
                 }
             }
+        }
+
+        private void MarkJobAsFailed(int jobHistoryId, int integrationPointId)
+        {
+            DateTime endTime = _dateTime.UtcNow;
+
+            Data.JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(jobHistoryId);
+            jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+            jobHistory.EndTimeUTC = endTime;
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+
+            _integrationPointRepository.UpdateHasErrors(integrationPointId, true);
+            _integrationPointRepository.UpdateLastAndNextRunTime(integrationPointId, endTime, null);
         }
 
         private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
