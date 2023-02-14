@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
-using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -20,6 +19,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IMessageService _messageService;
         private readonly IProviderTypeService _providerTypeService;
         private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IRelativityObjectManager _objectManager;
         private readonly ITaskParametersBuilder _taskParametersBuilder;
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
@@ -77,6 +78,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _messageService = messageService;
             _validationExecutor = validationExecutor;
             _integrationPointRepository = integrationPointRepository;
+            _objectManager = objectManager;
             _taskParametersBuilder = taskParametersBuilder;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
@@ -458,7 +460,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 catch (SyncJobSendingException ex)
                 {
                     _logger.LogError(ex, "Failed to send sync job");
-                    MarkJobAsFailed(jobHistory.ArtifactId, integrationPointArtifactId);
+                    MarkSyncJobAsFailed(jobHistory.ArtifactId, integrationPointArtifactId, ex);
                 }
             }
             else
@@ -473,7 +475,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void MarkJobAsFailed(int jobHistoryId, int integrationPointId)
+        private void MarkSyncJobAsFailed(int jobHistoryId, int integrationPointId, Exception ex)
         {
             DateTime endTime = _dateTimeHelper.Now();
 
@@ -481,6 +483,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
             jobHistory.EndTimeUTC = endTime;
             _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+
+            JobHistoryError jobHistoryError = new JobHistoryError
+            {
+                ParentArtifactId = jobHistoryId,
+                JobHistory = jobHistoryId,
+                Name = Guid.NewGuid().ToString(),
+                ErrorType = ErrorTypeChoices.JobHistoryErrorJob,
+                ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew,
+                SourceUniqueID = string.Empty,
+                Error = ex.Message,
+                StackTrace = ex.FlattenErrorMessagesWithStackTrace(),
+                TimestampUTC = endTime,
+            };
+            _objectManager.Create(jobHistoryError);
 
             _integrationPointRepository.UpdateHasErrors(integrationPointId, true);
             _integrationPointRepository.UpdateLastAndNextRunTime(integrationPointId, endTime, null);
