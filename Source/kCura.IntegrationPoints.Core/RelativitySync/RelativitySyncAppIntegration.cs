@@ -13,7 +13,10 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
         private readonly IIntegrationPointToSyncAppConverter _integrationPointToSyncAppConverter;
         private readonly IAPILog _logger;
 
-        public RelativitySyncAppIntegration(IServicesMgr servicesMgr, IIntegrationPointToSyncAppConverter integrationPointToSyncAppConverter, IAPILog logger)
+        public RelativitySyncAppIntegration(
+            IServicesMgr servicesMgr,
+            IIntegrationPointToSyncAppConverter integrationPointToSyncAppConverter,
+            IAPILog logger)
         {
             _servicesMgr = servicesMgr;
             _integrationPointToSyncAppConverter = integrationPointToSyncAppConverter;
@@ -40,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to submit Sync job");
-                throw;
+                throw new SyncJobSendingException(ex);
             }
         }
 
