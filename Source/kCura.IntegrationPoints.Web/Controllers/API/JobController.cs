@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (Exception exception)
             {
-                _log.LogError(exception, "Error ocurred in Run request: WorkspaceId {workspaceId}, IntegrationPointId {integrationPointId}, Action: {action}",
+                _log.LogError(exception, "Error occurred in Run request: WorkspaceId {workspaceId}, IntegrationPointId {integrationPointId}, Action: {action}",
                     workspaceId, relatedObjectArtifactId, action);
 
                 errorMessage = exception.Message;

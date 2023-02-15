@@ -25,10 +25,10 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             model.actions = [];
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
-                            promise.then(function (result) {
+                            promise.then( async function (result) {
                                 if (!result.ok) {
-
-                                    var message = '["Failed to submit integration point job."]';
+                                    let errorMessage = await result.text();
+                                    var message = `["Failed to submit integration point job.", "${errorMessage}"]`;
                                     createMessageContainer(message, "error", lqMessageContainer, "");
 
                                     // @ts-ignore
