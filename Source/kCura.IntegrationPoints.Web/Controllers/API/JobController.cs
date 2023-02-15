@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models.Validation;
+using kCura.Utility.Extensions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -169,6 +170,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                     workspaceId, relatedObjectArtifactId, action);
 
                 errorMessage = exception.Message;
+
+                if (exception.HasInnerException<Exception>())
+                {
+                    errorMessage = exception.InnerException.Message;
+                }
+
                 httpStatusCode = HttpStatusCode.BadRequest;
             }
 
