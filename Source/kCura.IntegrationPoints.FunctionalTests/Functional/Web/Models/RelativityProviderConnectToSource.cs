@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 
         public RelativityProviderDestinationLocations Location { get; set; }
 
-        public YesNo EnableTagging { get; set; }
+        public YesNo TagDocumentsWithJobName { get; set; }
     }
 
     // This looks kinda crazy, right? But there is method in this madness...

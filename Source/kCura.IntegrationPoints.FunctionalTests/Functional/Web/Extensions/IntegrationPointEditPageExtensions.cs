@@ -170,7 +170,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
             relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
-            relativityProviderConnectToSource.EnableTagging = YesNo.Yes;
+            relativityProviderConnectToSource.TagDocumentsWithJobName = YesNo.Yes;
 
             relativityProviderConnectToSourcePage.Source.Set(source);
 
