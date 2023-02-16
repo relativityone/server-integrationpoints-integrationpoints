@@ -159,7 +159,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             switch (source)
             {
                 case RelativityProviderSources.SavedSearch:
-                    relativityProviderConnectToSource = new RelativityProviderConnectToSavedSearchSource { SavedSearch = savedSearchName };
+                    relativityProviderConnectToSource = new RelativityProviderConnectToSavedSearchSource
+                    {
+                        SavedSearch = savedSearchName,
+                        TagDocumentsWithJobName = YesNo.Yes,
+                    };
                     break;
                 case RelativityProviderSources.Production:
                     relativityProviderConnectToSource = new RelativityProviderConnectToProductionSource { ProductionSet = productionSetName };
@@ -170,8 +174,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
             relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
-            relativityProviderConnectToSource.EnableTagging = YesNo.Yes;
-
             relativityProviderConnectToSourcePage.Source.Set(source);
 
             Thread.Sleep(TimeSpan.FromSeconds(2));
