@@ -227,6 +227,7 @@ function prepareFieldsForRelativityExportSecondColumn(destinationConfiguration: 
     }
 
     fieldsForRelativityExportSecondColumn.push("Create Saved Search");
+    fieldsForRelativityExportSecondColumn.push("Tag Documents");
 
     return fieldsForRelativityExportSecondColumn;
 }
