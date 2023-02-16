@@ -1,156 +1,159 @@
-﻿
-@{
-	ViewBag.Title = "Settings";
+﻿@{
+    ViewBag.Title = "Settings";
 }
 <link href="~/Content/themes/default/style.min.css" rel="stylesheet" />
 <link href="~/Content/jstree-fluid.css" rel="stylesheet" />
 <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
 <div id="_main">
-	<div id="relativityProviderConfiguration" style="min-width: 900px;">
-		<div class="card">
-			<span class="label">Source</span>
-			<table style="width: 100%;">
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">Source:</div>
-							<div class="field-value">
-								<select id="sourceSelector" data-bind="options: SourceOptions , optionsText: 'key', optionsValue: 'value', value: TypeOfExport, select2: {}, disable: IsNonDocumentObjectFlow()"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: IsSavedSearchSelected()">
-							<div class="field-label required">Saved Search:</div>
-							<div class="field-value">
-								<input type="hidden" id="savedSearchSelector" data-bind="value: SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
-								<button id="saved-search-selection-button" data-bind="click: OpenSavedSearchPicker" class="actionButtonSmall">...</button>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: IsProductionSelected()">
-							<div class="field-label required">Production Set:</div>
-							<div class="field-value">
-								<select id="sourceProductionSetsSelector" data-bind="options: SourceProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: SourceProductionId, select2searchable: {}"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: IsNonDocumentObjectFlow()">
-							<div class="field-label required">View:</div>
-							<div class="field-value">
-								<input type="hidden" id="viewSelector" data-bind="value: SourceViewId, select2lazySearchableView: {}, optionsUrl: ViewUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'viewId', optionsCaption: 'Select...'" />
-							</div>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div class="card">
-			<span class="label">Destination</span>
-			<img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
-			<table style="width: 100%;">
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row">
-							<div class="field-label required">
-								Destination Workspace:
-							</div>
-							<div class="field-value">
-								<select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, disable : AuthenticationFailed(), optionsCaption: 'Select...', select2searchable: {}"></select>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" id="locationRow" data-bind="visible: !IsNonDocumentObjectFlow()">
-							<div class="field-label required">
-								Location:
-							</div>
-							<div class="field-value select2-double-width">
-								<ul>
-									<li>
-										<label><input id="location-0" type="radio" name="location_radio" value="true" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Folder</label>
-										<div id="location-select" class="select2-container fluid-mock-select filter-container" style="width: 87%;">
-											<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder, enable: LocationFolderChecked() == 'true'" />
-											<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-										</div>
-										<div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden" style="margin-left: 56px;">
-											<div id="browser-tree" tabindex="0"></div>
-										</div>
-									</li>
-									<li>
-										<label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
-										<select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
-										<button id="add-production-set-selection-button" data-bind="click: openCreateProductionSetModal, enable: EnableLocationRadio && LocationFolderChecked() == 'false', visible: ShowProductionAddButton" class="addProductionSet-controlButtons" style="height:24px;width:27px;font-weight: 300">+</button>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: !IsNonDocumentObjectFlow()">
-							<div class="field-label">Create Saved Search:</div>
-							<div class="field-value">
-								<ul>
-									<li>
-										<label><input id="create-saved-search-0" type="radio" name="import_CreateSavedSearch" value="true" data-bind="checked: CreateSavedSearchForTagging">Yes</label>
-									</li>
-									<li>
-										<label><input id="create-saved-search-1" type="radio" name="import_CreateSavedSearch" value="false" data-bind="checked: CreateSavedSearchForTagging">No</label>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td style="width: 48%;">
-						<div class="field-row" data-bind="visible: (!IsNonDocumentObjectFlow() && IsTaggingToggleEnabled())">
-							<div class="field-label required">Enable Tagging:</div>
-							<div class="field-value">
-								<ul>
-									<li>
-										<label><input id="enable-tagging" type="radio" value="true" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">Yes</label>
-									</li>
-									<li>
-										<label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
-									</li>
-								</ul>
-								<div id="customRadioButtonErrorMsg"><span class="icon-error legal-hold field-validation-error">This field is required.</span></div>
-							</div>							
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
+    <div id="relativityProviderConfiguration" style="min-width: 900px;">
+        <div class="card">
+            <span class="label">Source</span>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">Source:</div>
+                            <div class="field-value">
+                                <select id="sourceSelector" data-bind="options: SourceOptions , optionsText: 'key', optionsValue: 'value', value: TypeOfExport, select2: {}, disable: IsNonDocumentObjectFlow()"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" data-bind="visible: IsSavedSearchSelected()">
+                            <div class="field-label required">Saved Search:</div>
+                            <div class="field-value">
+                                <input type="hidden" id="savedSearchSelector" data-bind="value: SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
+                                <button id="saved-search-selection-button" data-bind="click: OpenSavedSearchPicker" class="actionButtonSmall">...</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" data-bind="visible: IsProductionSelected()">
+                            <div class="field-label required">Production Set:</div>
+                            <div class="field-value">
+                                <select id="sourceProductionSetsSelector" data-bind="options: SourceProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: SourceProductionId, select2searchable: {}"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" data-bind="visible: IsNonDocumentObjectFlow()">
+                            <div class="field-label required">View:</div>
+                            <div class="field-value">
+                                <input type="hidden" id="viewSelector" data-bind="value: SourceViewId, select2lazySearchableView: {}, optionsUrl: ViewUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'viewId', optionsCaption: 'Select...'" />
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="card">
+            <span class="label">Destination</span>
+            <img data-bind="click: openRelativityProviderDetailsTooltip" class="tooltip-img" id="contextualHelp" style="padding-left: 5px;" />
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row">
+                            <div class="field-label required">
+                                Destination Workspace:
+                            </div>
+                            <div class="field-value">
+                                <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, disable : AuthenticationFailed(), optionsCaption: 'Select...', select2searchable: {}"></select>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" id="locationRow" data-bind="visible: !IsNonDocumentObjectFlow()">
+                            <div class="field-label required">
+                                Location:
+                            </div>
+                            <div class="field-value select2-double-width">
+                                <ul>
+                                    <li>
+                                        <label><input id="location-0" type="radio" name="location_radio" value="true" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Folder</label>
+                                        <div id="location-select" class="select2-container fluid-mock-select filter-container" style="width: 87%;">
+                                            <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: TargetFolder, enable: LocationFolderChecked() == 'true'" />
+                                            <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                                        </div>
+                                        <div id="jstree-holder-div" class="jstree-holder browse" hidden="hidden" style="margin-left: 56px;">
+                                            <div id="browser-tree" tabindex="0"></div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <label><input id="location-1" type="radio" name="location_radio" value="false" data-bind="checked: LocationFolderChecked, enable: EnableLocationRadio">Production Set</label>
+                                        <select id="productionSetsSelector" data-bind="options: DestinationProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: ProductionArtifactId, enable: EnableLocationRadio && LocationFolderChecked() == 'false',  select2searchable: {}"></select>
+                                        <button id="add-production-set-selection-button" data-bind="click: openCreateProductionSetModal, enable: EnableLocationRadio && LocationFolderChecked() == 'false', visible: ShowProductionAddButton" class="addProductionSet-controlButtons" style="height:24px;width:27px;font-weight: 300">+</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" data-bind="visible: !IsNonDocumentObjectFlow()">
+                            <div class="field-label">Create Saved Search:</div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <label><input id="create-saved-search-0" type="radio" name="import_CreateSavedSearch" value="true" data-bind="checked: CreateSavedSearchForTagging">Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="create-saved-search-1" type="radio" name="import_CreateSavedSearch" value="false" data-bind="checked: CreateSavedSearchForTagging">No</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 48%;">
+                        <div class="field-row" data-bind="visible: (!IsNonDocumentObjectFlow() && IsTaggingToggleEnabled())">
+                            <div class="field-label required">Tag Documents with Job Name:</div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <label><input id="enable-tagging" type="radio" value="true" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
+                                    </li>
+                                </ul>
+                                <div id="customRadioButtonErrorMsg"><span class="icon-error legal-hold field-validation-error">This field is required.</span></div>
+                                <div id="infoMsg">                                    
+                                    <br />&emsp; NOTE: <strong>Tags enable</strong> records to be identified with the job name in the destination workspace. <br />
+                                    &emsp; <strong>Disabling tags</strong> speeds up the job processing.
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>               
+            </table>
+        </div>
+    </div>
 </div>
 
 @section scripts
-{
-	<script src="~/Scripts/core/data.js"></script>
-	<script src="~/Scripts/core/utils.js"></script>
-	<script src="~/node_modules/knockout/build/output/knockout-latest.js"></script>
-	<script src="~/Scripts/knockout.validation.js"></script> 
-	<script src="~/node_modules/jstree/dist/jstree.min.js"></script>
-	<script src="~/Scripts/export/location-jstree-selector.js"></script>
-	<script src="~/Scripts/integration-point/binding.js"></script>
-	<script src="~/Scripts/integration-point/picker.js"></script>
-	<script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
-	<script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
-	<script src="~/Scripts/export/saved-search-service.js"></script>
-	<script src="~/Scripts/export/saved-search-picker.js"></script>
-	<script src="~/Scripts/export/export-enums.js"></script>
-	<script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
+    {
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/node_modules/knockout/build/output/knockout-latest.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
+    <script src="~/node_modules/jstree/dist/jstree.min.js"></script>
+    <script src="~/Scripts/export/location-jstree-selector.js"></script>
+    <script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/integration-point/picker.js"></script>
+    <script src="~/Scripts/integration-point/tooltip-definitions.js"></script>
+    <script src="~/Scripts/integration-point/tooltip-view-model.js"></script>
+    <script src="~/Scripts/export/saved-search-service.js"></script>
+    <script src="~/Scripts/export/saved-search-picker.js"></script>
+    <script src="~/Scripts/export/export-enums.js"></script>
+    <script src="~/Scripts/RelativityProvider/Relativity-provider.js"></script>
 }
