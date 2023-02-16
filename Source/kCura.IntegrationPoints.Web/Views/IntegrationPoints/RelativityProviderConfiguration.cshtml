@@ -115,7 +115,7 @@
                 </tr>
                 <tr>
                     <td style="width: 48%;">
-                        <div class="field-row" data-bind="visible: (!IsNonDocumentObjectFlow() && IsTaggingToggleEnabled())">
+                        <div class="field-row" data-bind="visible: (!IsNonDocumentObjectFlow() && IsTaggingToggleEnabled() && !IsProductionSelected())">
                             <div class="field-label required">Tag Documents with Job Name:</div>
                             <div class="field-value">
                                 <ul>
@@ -125,8 +125,7 @@
                                     <li>
                                         <label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
                                     </li>
-                                </ul>
-                                <div id="customRadioButtonErrorMsg"><span class="icon-error legal-hold field-validation-error">This field is required.</span></div>
+                                </ul>                                
                                 <div id="infoMsg">                                    
                                     <br />&emsp; NOTE: <strong>Tags enable</strong> records to be identified with the job name in the destination workspace. <br />
                                     &emsp; <strong>Disabling tags</strong> speeds up the job processing.
