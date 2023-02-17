@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.DTOs
     internal class FieldValueMap
     {
         public string FieldName { get; }
+
         public object Value { get; }
 
         public FieldValueMap(FieldValuePair fieldValuePair)

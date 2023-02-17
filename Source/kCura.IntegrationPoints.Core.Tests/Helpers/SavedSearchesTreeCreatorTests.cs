@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             // assert
             Assert.That(actual, Is.Not.Null);
-            // root 
+            // root
             Assert.That(actual.Id, Is.EqualTo(expected.Id));
             Assert.That(actual.Text, Is.EqualTo(expected.Text));
             Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count));

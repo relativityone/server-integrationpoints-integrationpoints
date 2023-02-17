@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         private Mock<IExportDataSanitizer> _exportDataSanitizer;
         private RelativityExporterService _instance;
         private IDictionary<string, object> _fieldValues;
-
         private const string _CONTROL_NUMBER = "Control Number";
         private const string _CONTROL_NUMBER_VALUE = "REL01";
         private const string _EMAIL = "Email";
@@ -87,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
             _fieldValues = new Dictionary<string, object>
             {
-                {_CONTROL_NUMBER, _CONTROL_NUMBER_VALUE},
+                {_CONTROL_NUMBER, _CONTROL_NUMBER_VALUE },
                 {_EMAIL, _EMAIL_VALUE}
             };
 
@@ -151,7 +150,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
             // assert
             Assert.IsFalse(hasDataToRetrieve);
         }
-
 
         [Test]
         public void HasDataToRetrieve_ReturnsFalseOnFinishedJob()

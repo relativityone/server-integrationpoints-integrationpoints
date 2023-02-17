@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public T GetRepository<T>(int workspaceId) where T : IRepository
         {
             IExternalServiceSimpleInstrumentation gatewayInstrumentation = _instrumentationProvider.CreateSimple(
-                ExternalServiceTypes.API_FOUNDATION, 
-                nameof(IWorkspaceGateway), 
+                ExternalServiceTypes.API_FOUNDATION,
+                nameof(IWorkspaceGateway),
                 nameof(IWorkspaceGateway.GetWorkspaceContext));
 
             IExternalServiceSimpleInstrumentation contextInstrumentation = _instrumentationProvider.CreateSimple(

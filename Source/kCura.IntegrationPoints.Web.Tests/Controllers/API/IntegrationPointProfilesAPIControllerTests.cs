@@ -36,9 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private Mock<ICryptographyHelper> _cryptographyHelperFake;
         private Mock<IAPILog> _logFake;
         private Mock<IAPMManager> _apmManagerFake;
-
         private IntegrationPointProfilesAPIController _sut;
-
         private const int _WORKSPACE_ID = 23432;
 
         [SetUp]

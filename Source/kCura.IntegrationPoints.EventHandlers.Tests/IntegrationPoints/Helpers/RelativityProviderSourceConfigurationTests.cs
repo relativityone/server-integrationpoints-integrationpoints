@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
     public class RelativityProviderSourceConfigurationTests
     {
         private RelativityProviderSourceConfiguration _sut;
-
         private IEHHelper _helper;
         private IManagerFactory _managerFactory;
         private IWorkspaceManager _workspaceManager;
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private const string _RELATIVITY_THIS_INSTANCE = "This instance";
         private const string _SOURCE_PRODUCTION_NAME = "SourceProductionName";
         private const string _SOURCE_PRODUCTION_ID = "SourceProductionId";
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             _workspaceManager = Substitute.For<IWorkspaceManager>();
             _instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
             _productionManagerMock = Substitute.For<IProductionManager>();
-            
+
             _sut = new RelativityProviderSourceConfiguration(_helper, _productionManagerMock, _managerFactory, _instanceSettingsManager);
         }
 
@@ -66,7 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             // act
             _sut.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
 
-            //assert
+            // assert
             Assert.AreEqual(sourceWorkspaceName, settings[nameof(ExportUsingSavedSearchSettings.SourceWorkspace)]);
             Assert.AreEqual(targetWorkspaceName, settings[nameof(ExportUsingSavedSearchSettings.TargetWorkspace)]);
             Assert.AreEqual(savedSearchName, settings[nameof(ExportUsingSavedSearchSettings.SavedSearch)]);

@@ -30,20 +30,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
             _instance = new QueueManager(_repositoryFactory);
 
-            //verify
+            // verify
             _repositoryFactory.Received().GetQueueRepository();
         }
 
         [Test]
         public void HasJobsExecutingOrInQueue_JobAlreadyExecuting_True()
         {
-            //Arrange
+            // Arrange
             _queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(2);
 
-            //Act
+            // Act
             bool hasJobs = _instance.HasJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
-            //Assert
+            // Assert
             Assert.IsTrue(hasJobs);
             _queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
         }
@@ -51,13 +51,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void HasJobsExecutingOrInQueue_NoJobsExecuting_False()
         {
-            //Arrange
+            // Arrange
             _queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(0);
 
-            //Act
+            // Act
             bool hasJobs = _instance.HasJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
-            //Assert
+            // Assert
             Assert.IsFalse(hasJobs);
             _queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
         }
@@ -65,13 +65,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void HasJobsExecuting_JobAlreadyExecuting_True()
         {
-            //Arrange
+            // Arrange
             _queueRepository.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime).Returns(41);
 
-            //Act
+            // Act
             bool hasJobs = _instance.HasJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
 
-            //Assert
+            // Assert
             Assert.IsTrue(hasJobs);
             _queueRepository.Received(1).GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
         }
@@ -79,13 +79,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void HasJobsExecuting_NoJobsExecuting_False()
         {
-            //Arrange
+            // Arrange
             _queueRepository.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime).Returns(0);
 
-            //Act
+            // Act
             bool hasJobs = _instance.HasJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
 
-            //Assert
+            // Assert
             Assert.IsFalse(hasJobs);
             _queueRepository.Received(1).GetNumberOfJobsExecuting(_workspaceId, _integrationPointId, _jobId, _runTime);
         }

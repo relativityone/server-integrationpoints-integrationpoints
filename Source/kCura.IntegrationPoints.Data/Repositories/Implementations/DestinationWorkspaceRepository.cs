@@ -27,11 +27,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 Condition = $"'{DestinationWorkspaceFields.DestinationWorkspaceArtifactID}' == {targetWorkspaceArtifactId} AND {instanceCondition}",
                 Fields = new List<FieldRef>
                 {
-                    new FieldRef {Name = "ArtifactId"},
-                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName)},
-                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName)},
-                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID)},
-                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID)},
+                    new FieldRef {Name = "ArtifactId" },
+                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceName) },
+                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceName) },
+                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationWorkspaceArtifactID) },
+                    new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.DestinationInstanceArtifactID) },
                     new FieldRef {Guid = new Guid(DestinationWorkspaceFieldGuids.Name)}
                 }
             };
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     {
                         Guid = new Guid(JobHistoryFieldGuids.DestinationWorkspaceInformation)
                     },
-                    Value = new [] { destinationWorkspaceObjectValue }
+                    Value = new[] { destinationWorkspaceObjectValue }
                 }
             };
 

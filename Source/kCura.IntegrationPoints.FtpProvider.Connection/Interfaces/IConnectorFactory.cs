@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        IFtpConnector CreateFtpConnector(String host, Int32 port, String username, String password);
+        IFtpConnector CreateFtpConnector(string host, int port, string username, string password);
 
         /// <summary>
         /// /// Returns SFtp Connector instance
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        IFtpConnector CreateSftpConnector(String host, Int32 port, String username, String password);
+        IFtpConnector CreateSftpConnector(string host, int port, string username, string password);
 
         /// <summary>
         /// Gets appropriate connector based on parameter
@@ -33,6 +33,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        IFtpConnector GetConnector(string protocolName, String host, Int32 port, String username, String password);
+        IFtpConnector GetConnector(string protocolName, string host, int port, string username, string password);
     }
 }

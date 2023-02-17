@@ -29,9 +29,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
         private Mock<IRetryHandler> _retryHandlerMock;
         private Mock<IRetryHandlerFactory> _retryHandlerFactoryMock;
-
         private FileRepository _sut;
-
         private const int _WORKSPACE_ID = 1001000;
         private const string _KEPLER_SERVICE_TYPE = "Kepler";
         private const string _KEPLER_SERVICE_NAME = nameof(ISearchService);
@@ -39,7 +37,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private const string _FILE_NAME_COLUMN = "Filename";
         private const string _LOCATION_COLUMN = "Location";
         private const string _FILE_SIZE_COLUMN = "Size";
-
         private readonly FileResponse[] _testFileResponses =
         {
             new FileResponse
@@ -170,7 +167,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForProductionDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
         {
-            //arrange
+            // arrange
             const int productionID = 1111;
             int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
             _instrumentationSimpleProviderMock
@@ -180,14 +177,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
                 .Returns((Func<DataSet> f, string s) => f.Invoke());
 
-            //act
+            // act
             ILookup<int, ImageFile> result = _sut.GetImagesLocationForProductionDocuments(
                 _WORKSPACE_ID,
                 productionID,
                 documentIDs
             );
 
-            //assert
+            // assert
             VerifyIfInstrumentationHasBeenCalled<DataSet>(
                 operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
             );
@@ -200,17 +197,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForProductionDocuments_ShouldThrowWhenNullPassedAsDocumentIDs()
         {
-            //arrange
+            // arrange
             const int productionID = 1111;
 
-            //act
+            // act
             Action action = () => _sut.GetImagesLocationForProductionDocuments(
                 _WORKSPACE_ID,
                 productionID,
                 documentIDs: null
             );
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
             VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
                 operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
@@ -220,17 +217,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForProductionDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
         {
-            //arrange
+            // arrange
             const int productionID = 1111;
 
-            //act
+            // act
             ILookup<int, ImageFile> result = _sut.GetImagesLocationForProductionDocuments(
                 _WORKSPACE_ID,
                 productionID,
                 documentIDs: new int[] { }
             );
 
-            //assert
+            // assert
             result.SelectMany(x => x).Should().BeEmpty();
             VerifyIfInstrumentationHasNeverBeenCalled<ProductionDocumentImageResponse[]>(
                 operationName: nameof(ISearchService.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync)
@@ -240,7 +237,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForProductionDocuments_ShouldRethrowWhenCallToServiceThrows()
         {
-            //arrange
+            // arrange
             int productionID = 1001;
             int[] documentIDs = { 1001, 2002, 3003 };
             _instrumentationSimpleProviderMock
@@ -250,21 +247,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
                 .Returns((Func<DataSet> f, string s) => f.Invoke());
 
-            //act
+            // act
             Action action = () => _sut.GetImagesLocationForProductionDocuments(
                 _WORKSPACE_ID,
                 productionID,
                 documentIDs
             );
 
-            //assert
+            // assert
             action.ShouldThrow<InvalidOperationException>();
         }
 
         [Test]
         public void GetImagesForDocuments_ShouldReturnResponsesWhenCorrectDocumentIDsPassed()
         {
-            //arrange
+            // arrange
             int[] documentIDs = _testFileResponses.Select(x => x.DocumentArtifactID).ToArray();
             _instrumentationSimpleProviderMock
                 .Setup(x => x.Execute(It.IsAny<Func<DataSet>>()))
@@ -273,13 +270,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
                 .Returns((Func<DataSet> f, string s) => f.Invoke());
 
-            //act
+            // act
             ILookup<int, ImageFile> result = _sut.GetImagesLocationForDocuments(
                 _WORKSPACE_ID,
                 documentIDs
             );
 
-            //assert
+            // assert
             VerifyIfInstrumentationHasBeenCalled<DataSet>(
                 operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
             );
@@ -292,13 +289,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForDocuments_ShouldThrowWhenNullPassedAsDocumentIDs()
         {
-            //act
+            // act
             Action action = () => _sut.GetImagesLocationForDocuments(
                 _WORKSPACE_ID,
                 documentIDs: null
             );
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>().Where(x => x.Message.Contains("documentIDs"));
             VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
                 operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
@@ -308,13 +305,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForDocuments_ShouldReturnEmptyArrayWhenEmptyArrayPassedAsDocumentIDs()
         {
-            //act
+            // act
             ILookup<int, ImageFile> result = _sut.GetImagesLocationForDocuments(
                 _WORKSPACE_ID,
                 documentIDs: new int[] { }
             );
 
-            //assert
+            // assert
             result.SelectMany(x => x).Should().BeEmpty();
             VerifyIfInstrumentationHasNeverBeenCalled<DocumentImageResponse[]>(
                 operationName: nameof(ISearchService.RetrieveImagesForSearchAsync)
@@ -324,19 +321,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetImagesForDocuments_ShouldRethrowWhenCallToServiceThrows()
         {
-            //arrange
+            // arrange
             int[] documentIDs = { 1001, 2002, 3003 };
             _retryHandlerMock
                 .Setup(x => x.ExecuteWithRetries(It.IsAny<Func<DataSet>>(), It.IsAny<string>()))
                 .Throws<InvalidOperationException>();
 
-            //act
+            // act
             Action action = () => _sut.GetImagesLocationForDocuments(
                 _WORKSPACE_ID,
                 documentIDs
             );
 
-            //assert
+            // assert
             action.ShouldThrow<InvalidOperationException>();
         }
 
@@ -418,7 +415,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 documentIDs
             );
 
-            //assert
+            // assert
             action.ShouldThrow<InvalidOperationException>();
         }
 

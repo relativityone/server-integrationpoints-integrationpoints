@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IExportAuditRepository> _exportAuditRepository;
         private Mock<IExternalServiceInstrumentationProvider> _instrumentationProvider;
         private Mock<IExternalServiceSimpleInstrumentation> _instrumentation;
-
         private const int _USER_ID = 9;
 
         [SetUp]
@@ -31,21 +30,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ShouldReturnProperResultWhenCallAuditExportAndInstrumentSuccessfully([Values(true, false)] bool expectedResult)
         {
-            //arrange
+            // arrange
             _exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(),_USER_ID)).Returns(expectedResult);
             var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
             var exportStats = new ExportStatistics();
 
-            //act
+            // act
             bool result = auditRepository.AuditExport(exportStats, _USER_ID);
 
-            //assert
+            // assert
             _exportAuditRepository.Verify(x => x.CreateAuditForExport(exportStats, _USER_ID), Times.Once);
             _instrumentationProvider.Verify(
                 x => x.CreateSimple(
                     "API.Foundation",
                     nameof(IExportAuditRepository),
-                    nameof(IExportAuditRepository.CreateAuditForExport)), 
+                    nameof(IExportAuditRepository.CreateAuditForExport)),
                 Times.Once);
             _instrumentation.Verify(x => x.Execute(It.IsAny<Func<bool>>()), Times.Once);
             expectedResult.Should().Be(result);
@@ -54,15 +53,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ShouldInstrumentSuccessfullyWhenIExportAuditRepositoryFails()
         {
-            //arrange
+            // arrange
             _exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(), _USER_ID)).Throws<Exception>();
             var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
             var exportStats = new ExportStatistics();
 
-            //act
+            // act
             Action action = () => auditRepository.AuditExport(exportStats, _USER_ID);
 
-            //assert
+            // assert
             action.ShouldThrow<Exception>();
             _exportAuditRepository.Verify(x => x.CreateAuditForExport(exportStats, _USER_ID), Times.Once);
             _instrumentationProvider.Verify(
@@ -77,14 +76,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ShouldReturnFalseWhenCallAuditExportWithNullAndInstrumentSuccessfully()
         {
-            //arrange
+            // arrange
             _exportAuditRepository.Setup(x => x.CreateAuditForExport(It.IsAny<ExportStatistics>(), _USER_ID)).Returns(false);
             var auditRepository = new AuditRepository(_exportAuditRepository.Object, _instrumentationProvider.Object);
 
-            //act
+            // act
             bool result = auditRepository.AuditExport(null, _USER_ID);
 
-            //assert
+            // assert
             _exportAuditRepository.Verify(x => x.CreateAuditForExport(null, _USER_ID), Times.Once);
             _instrumentationProvider.Verify(
                 x => x.CreateSimple(

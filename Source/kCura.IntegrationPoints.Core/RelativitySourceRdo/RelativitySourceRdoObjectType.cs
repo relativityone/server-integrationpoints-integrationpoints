@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
     {
         private readonly IRelativityProviderObjectRepository _relativityObjectRepository;
         private readonly IRepositoryFactory _repositoryFactory;
-
         private IObjectTypeRepository _objectTypeRepository;
         private IArtifactGuidRepository _artifactGuidRepository;
         private ITabRepository _tabRepository;

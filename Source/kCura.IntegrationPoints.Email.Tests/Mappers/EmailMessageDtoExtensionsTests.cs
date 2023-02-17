@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Email.Tests.Mappers
 
             // assert
             mailMessageValidation.Match(
-                Succ: mailMessage => ValidateMailMessage(mailMessage, emailMessageDto), 
+                Succ: mailMessage => ValidateMailMessage(mailMessage, emailMessageDto),
                 Fail: errors => Assert.Fail("Should return success because input was valid")
             );
         }

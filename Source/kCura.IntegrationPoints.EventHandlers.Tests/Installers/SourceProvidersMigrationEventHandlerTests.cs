@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
     public class SourceProvidersMigrationEventHandlerTests
     {
         private SubjectUnderTests _sut;
-
         private Mock<IRipProviderInstaller> _providerInstallerMock;
         private Mock<IErrorService> _errorServiceMock;
         private Mock<IAPILog> _loggerMock;
@@ -153,9 +152,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             // act
             Response result = _sut.Execute();
 
-            //assert
+            // assert
             result.Success.Should().BeTrue();
-
 
             VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(providersToInstall.Count);
             VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);
@@ -186,7 +184,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             // act
             Response result = _sut.Execute();
 
-            //assert
+            // assert
             result.Success.Should().BeTrue();
             VerifyCorrectNumberOfProviderWasInstalledUsingProductionManager(1);
             VerifyProviderWasInstalledUsingProductionManager(providerToInstall.Name);

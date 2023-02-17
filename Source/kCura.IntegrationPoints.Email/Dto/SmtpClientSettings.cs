@@ -3,9 +3,13 @@
     internal class SmtpClientSettings
     {
         public string Domain { get; }
+
         public int Port { get; }
+
         public string UserName { get; }
+
         public string Password { get; }
+
         public bool UseSSL { get; }
 
         public SmtpClientSettings(

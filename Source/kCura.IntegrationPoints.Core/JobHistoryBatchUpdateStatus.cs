@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core
     {
         private const string _JOB_HISTORY_NULL = "Failed to retrieve job history. job ID: {0}.";
         private const string _JOB_UPDATE_ERROR_MESSAGE_TEMPLATE = "Failed to update job status. Current status: {0}, target status: {1}, job ID: {2}, job history artifact ID: {3}.";
-
         private readonly IJobStatusUpdater _updater;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobService _jobService;

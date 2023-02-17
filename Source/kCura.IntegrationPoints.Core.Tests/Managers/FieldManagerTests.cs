@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private IRepositoryFactory _repositoryFactory;
         private IFieldQueryRepository _fieldQueryRepository;
         private ArtifactFieldDTO[] _fieldArray;
-
         private const int _WORKSPACE_ID = 100532;
 
         [SetUp]

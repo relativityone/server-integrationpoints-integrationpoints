@@ -12,8 +12,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         IJobStopManager JobStopManager { get; set; }
 
         void SubscribeToBatchReporterEvents(object batchReporter);
+
         void CommitErrors();
+
         void AddError(ChoiceRef errorType, Exception ex);
+
         void AddError(ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace);
     }
 }

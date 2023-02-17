@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
     public class RenameCustodianToEntityInIntegrationPointConfigurationCommandTests
     {
         private RenameCustodianToEntityInIntegrationPointConfigurationCommand _sut;
-
         private Mock<IEHHelper> _helperFake;
         private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
 

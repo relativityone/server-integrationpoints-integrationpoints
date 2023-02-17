@@ -10,8 +10,11 @@ namespace kCura.IntegrationPoints.Web.Attributes
     public class JsonNetResult : ActionResult
     {
         public Encoding ContentEncoding { get; set; }
+
         public string ContentType { get; set; }
+
         public object Data { get; set; }
+
         public int StatusCode { get; set; }
 
         public JsonSerializerSettings SerializerSettings { get; set; }

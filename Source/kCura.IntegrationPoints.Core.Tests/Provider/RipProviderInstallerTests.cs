@@ -31,9 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
         private Mock<IDataProviderFactoryFactory> _dataProviderFactoryFactoryMock;
         private Mock<IAPILog> _loggerFake;
         private Mock<IToggleProvider> _toggleProvider;
-
         private RipProviderInstaller _sut;
-
         private SourceProvider _sourceProviderToCreate;
         private SourceProvider[] _sourceProvidersToCreate;
         private Guid _existingProviderApplicationGuid;

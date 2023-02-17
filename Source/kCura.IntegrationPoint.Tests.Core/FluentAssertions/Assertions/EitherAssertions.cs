@@ -39,8 +39,8 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
                 .ForCondition(Subject.LeftAsEnumerable().Single().Equals(expectedValue))
                 .BecauseOf(because, becauseArgs)
                 .FailWith(
-                    "Expected Either to have left value{0}{reason}, but found {1}", 
-                    expectedValue, 
+                    "Expected Either to have left value{0}{reason}, but found {1}",
+                    expectedValue,
                     Subject.LeftAsEnumerable().Single()
                 );
 

@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
         protected SourceProvider LdapProvider;
 
         protected OtherProvidersTemplate(
-            string workspaceName, 
+            string workspaceName,
             string workspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
             : base(workspaceName, workspaceTemplate)
         {
@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
         private string CreateDefaultLdapSourceConfig()
         {
-
             LDAPSettings defaultLdapSettings = CreateDefaultLdapSettings();
 
             string serializedLdapSettings = JsonConvert.SerializeObject(defaultLdapSettings);

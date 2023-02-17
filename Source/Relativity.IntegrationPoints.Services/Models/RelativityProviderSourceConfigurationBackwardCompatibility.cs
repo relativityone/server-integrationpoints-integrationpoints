@@ -3,13 +3,16 @@
     internal class RelativityProviderSourceConfigurationBackwardCompatibility
     {
         public int SavedSearchArtifactId { get; }
+
         public int SourceWorkspaceArtifactId { get; }
+
         public int TargetWorkspaceArtifactId { get; }
 
         /// <summary>
         ///     This is not used - DestinationFolderArtifactId
         /// </summary>
         public int FolderArtifactId { get; }
+
         public int TypeOfExport { get; }
 
         public RelativityProviderSourceConfigurationBackwardCompatibility(RelativityProviderSourceConfiguration sourceConfiguration,

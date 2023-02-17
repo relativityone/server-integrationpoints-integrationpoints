@@ -17,7 +17,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
     {
         private const int _ARTIFACT_TYPE_ID = 111;
         private Mock<IObjectManager> _objectManagerMock;
-
         private IFieldsRepository _sut;
 
         [SetUp]

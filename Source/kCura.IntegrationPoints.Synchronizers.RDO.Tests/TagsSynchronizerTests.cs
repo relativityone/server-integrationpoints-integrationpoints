@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private IDataTransferContext _data;
         private IDataSynchronizer _dataSynchronizer;
         private IHelper _helper;
-
         private TagsSynchronizer _instance;
 
         public override void SetUp()

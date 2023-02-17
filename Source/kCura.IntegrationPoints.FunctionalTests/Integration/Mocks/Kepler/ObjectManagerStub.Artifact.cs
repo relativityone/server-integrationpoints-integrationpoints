@@ -11,14 +11,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupArtifact()
         {
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == 0 && q.ObjectType.ArtifactID == 0 && q.ObjectType.Guid == null), 
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == 0 && q.ObjectType.ArtifactID == 0 && q.ObjectType.Guid == null),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {
                         WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
                         List<RelativityObject> foundObjects = new List<RelativityObject>();
-                      
+
                         if (IsArtifactIdCondition(request.Condition, out int artifactId))
                         {
                             foundObjects.AddRange(workspace.Artifacts.Where(x => x.ArtifactId == artifactId).Select(x => new RelativityObject

@@ -23,9 +23,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private List<RelativityObject> _allRdoFields;
         private int _artifactTypeIdForAllRdoFields;
         private OrderedDictionary _entityManagerMap;
-
         private const string _LDAP_MAP_FULL_NAME_FIELD_NAME = "CustomFullName";
-
         private readonly IAPILog _logger;
         private readonly IEntityManagerLinksSanitizer _entityManagerLinksSanitizer;
 
@@ -46,10 +44,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
         private string FirstNameSourceFieldId { get; set; }
+
         private string LastNameSourceFieldId { get; set; }
+
         private string ManagerSourceFieldId { get; set; }
+
         private string UniqueIDSourceFieldId { get; set; }
+
         private bool HandleManagerLink { get; set; }
+
         private bool HandleFullNamePopulation { get; set; }
 
         public override IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
@@ -186,7 +189,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     .FirstOrDefault();
             int fullNameFieldId = int.Parse(fullNameField.FieldIdentifier);
 
-
             if (!string.IsNullOrWhiteSpace(FirstNameSourceFieldId)
                 && !string.IsNullOrWhiteSpace(LastNameSourceFieldId)
                 && !importFieldMap.ContainsValue(fullNameFieldId))
@@ -205,17 +207,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             {
                 string firstName = (string)importRow[FirstNameSourceFieldId];
                 string lastName = (string)importRow[LastNameSourceFieldId];
-                string fullName = GenerateFullName(lastName, firstName);                
-            
+                string fullName = GenerateFullName(lastName, firstName);
+
                 if (!string.IsNullOrWhiteSpace(fullName))
                 {
                     importRow.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullName);
                 }
                 else
                 {
-                    string sourceFieldId = importRow[UniqueIDSourceFieldId] as string ?? String.Empty;
+                    string sourceFieldId = importRow[UniqueIDSourceFieldId] as string ?? string.Empty;
                     GenerateImportRowError(sourceFieldId, "Entity is missing firstname and lastname. Record will be skipped.");
-                    //if no Full Name, do not insert record
+                    // if no Full Name, do not insert record
                     importRow = null;
                 }
             }
@@ -236,7 +238,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private string SanitizeString(string sensitiveString)
         {
             int lettersToShow = 2;
-            //because how sensitive can be 4 letters word?
+            // because how sensitive can be 4 letters word?
             if (sensitiveString.Length <= lettersToShow * 2)
             {
                 return sensitiveString;
@@ -289,7 +291,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                                 DisplayName = "CustodianIdentifier",
                                 FieldIdentifier = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First()
                             },
-                        DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = _entityManagerLinksSanitizer.ManagerLinksFieldIdentifier},
+                        DestinationField = new FieldEntry {DisplayName = "ManagerIdentidier", FieldIdentifier = _entityManagerLinksSanitizer.ManagerLinksFieldIdentifier },
                         FieldMapType = FieldMapTypeEnum.Identifier
                     }
                 },

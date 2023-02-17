@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     public class JobStatisticsService : IJobStatisticsService
     {
         private static object _lockToken = new object();
-
         private readonly IMessageService _messageService;
         private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
         private readonly IDiagnosticLog _diagnosticLog;
@@ -27,9 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IJobStatisticsQuery _query;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IAPILog _logger;
-
         private readonly IFileSizesStatisticsService _fileSizeStatisticsService;
-
         private Job _job;
         private int _rowErrors;
 

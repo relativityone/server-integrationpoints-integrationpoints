@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         private int _streamRetryCount;
         private int _timeout = Constants.Timeout;
         private Stream _fileStream;
-
         private readonly SftpClient _sftpClient;
         private readonly string _host;
         private readonly IHostValidator _hostValidator;

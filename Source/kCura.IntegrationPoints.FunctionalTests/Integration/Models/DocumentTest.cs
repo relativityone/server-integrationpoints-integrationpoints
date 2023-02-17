@@ -8,9 +8,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     public class DocumentTest : RdoTestBase
     {
         private const string DOCUMENT_NAME = "Document";
-
         private readonly Dictionary<string, object> _fieldValues;
-        
+
         public override List<Guid> Guids => new List<Guid>();
 
         public bool HasImages { get; set; }

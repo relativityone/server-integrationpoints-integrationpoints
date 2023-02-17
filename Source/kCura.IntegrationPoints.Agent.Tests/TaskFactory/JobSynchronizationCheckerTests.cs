@@ -150,7 +150,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             }
             catch (AgentDropJobException) { }
 
-
             // Assert
             _jobService.Received().GetJobNextUtcRunDateTime(Arg.Is<Job>(x => x.JobId == jobId), Arg.Any<IScheduleRuleFactory>(),
                 Arg.Any<TaskResult>());
@@ -177,7 +176,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                 _sut.CheckForSynchronization(taskType, job, ip, _agentBase);
             }
             catch (AgentDropJobException) { }
-
 
             // Assert
             _jobHistoryService.Received().RemoveJobHistoryFromIntegrationPoint(Arg.Is<Job>(x => x.JobId == jobId));

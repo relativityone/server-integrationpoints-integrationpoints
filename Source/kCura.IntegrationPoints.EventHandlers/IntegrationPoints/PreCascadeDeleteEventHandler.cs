@@ -30,12 +30,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         public override void Rollback()
         {
-            //Do nothing
+            // Do nothing
         }
 
         public override void Commit()
         {
-            //Do nothing
+            // Do nothing
         }
     }
 }

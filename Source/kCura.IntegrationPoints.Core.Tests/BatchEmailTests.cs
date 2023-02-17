@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests
     public class BatchEmailTests : TestBase
     {
         private BatchEmail _sut;
-
         private Mock<ICaseServiceContext> _caseServiceContextMock;
         private Mock<IEmailFormatter> _emailFormatterMock;
         private Mock<IHelper> _helperMock;
@@ -42,7 +41,6 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Mock<IManagerFactory> _managerFactoryMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
         private Mock<IRelativityObjectManagerService> _objectManagerServiceMock;
-
         private static object[] _generateEmailSource =
         {
             new object[] { JobStatusChoices.JobHistoryCompletedWithErrors, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_SUBJECT, Properties.JobStatusMessages.JOB_COMPLETED_WITH_ERRORS_BODY },
@@ -115,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void OnJobComplete_Emails_Test()
         {
-            //ARRANGE
+            // ARRANGE
             string emailAddresses = "adr1@rip.com";
             IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
@@ -138,16 +136,16 @@ namespace kCura.IntegrationPoints.Core.Tests
             _integrationPointServiceMock.Setup(x => x.Read(_INTEGRATION_POINT_ID)).Returns(integrationPoint);
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
-            //ACT
+            // ACT
             _sut.OnJobComplete(job);
-            //ASSERT
+            // ASSERT
             _jobManagerMock.Verify(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker));
         }
 
         [Test]
         public void EmailJobParametersShouldHaveTheSameBatchInstanceAsParentJob()
         {
-            //ARRANGE
+            // ARRANGE
             IntegrationPointDto integrationPoint = new IntegrationPointDto();
             integrationPoint.EmailNotificationRecipients = "email@email.com";
             _integrationPointServiceMock
@@ -162,10 +160,10 @@ namespace kCura.IntegrationPoints.Core.Tests
             parentJob.JobDetails = jobDetails;
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(parentJob, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
-            //ACT
+            // ACT
             _sut.OnJobComplete(parentJob);
 
-            //ASSERT
+            // ASSERT
             _jobManagerMock.Verify(x => x.CreateJob(
                 parentJob,
                 It.Is<TaskParameters>(y => y.BatchInstance == batchInstanceGuid), TaskType.SendEmailWorker)
@@ -175,7 +173,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void EmailJobShouldHaveStopStateResetToNoneAfterCreation()
         {
-            //arrange
+            // arrange
             IntegrationPointDto integrationPoint = new IntegrationPointDto();
             integrationPoint.EmailNotificationRecipients = "xyz@email.com";
             _integrationPointServiceMock
@@ -192,10 +190,10 @@ namespace kCura.IntegrationPoints.Core.Tests
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
 
-            //act
+            // act
             _sut.OnJobComplete(job);
 
-            //assert
+            // assert
             _jobServiceMock.Verify(x => x.UpdateStopState(It.Is<IList<long>>(j => j.Contains(emailJob.JobId)),
                 It.Is<StopState>(s => s == StopState.None)), Times.Once);
         }

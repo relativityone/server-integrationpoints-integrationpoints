@@ -24,17 +24,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _sut = new PausableDataReader(_dataReaderMock.Object, _jobStopManagerMock.Object);
         }
-        
+
         [TestCase(true)]
         [TestCase(false)]
         public void Read_ShouldPassInnerReaderReadResult(bool innerReadResult)
         {
             // Arrange
             _dataReaderMock.Setup(x => x.Read()).Returns(innerReadResult);
-            
+
             // Act
             bool result = _sut.Read();
-            
+
             // Assert
             result.Should().Be(innerReadResult);
         }
@@ -44,20 +44,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             // Arrange
             _dataReaderMock.Setup(x => x.Read()).Returns(true);
-            
+
             _sut.Read(); // one read for IAPI
             _jobStopManagerMock.Setup(x => x.ShouldDrainStop).Returns(true);
-            
+
             // Act && Assert
             _sut.Read().Should().BeFalse();
         }
-        
+
         [Test]
         public void Read_ShouldReadInnerReaderAtLeastOnce_WhenDrainStopIsRequested()
         {
             // Act
             _sut.Read();
-            
+
             // Assert
             _dataReaderMock.Verify(x => x.Read(), Times.Once);
         }

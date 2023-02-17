@@ -7,8 +7,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
     internal class FakeSmtpMessage
     {
         public string FromAddress { get; }
+
         public IEnumerable<string> ToAddresses { get; }
+
         public string Subject { get; }
+
         public string Data { get; }
 
         public FakeSmtpMessage(SmtpMessage message)

@@ -15,10 +15,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private CommonScripts _sut;
         private Mock<IIntegrationPointBaseFieldGuidsConstants> _integrationPointBaseFieldGuidsConstants;
         private Mock<IScriptsHelper> _scriptsHelper;
-
         private const string _INTEGRATION_POINTS_CONTROLLER_NAME = "IntegrationPointsAPI";
         private const string _INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME = "IntegrationPointProfilesAPI";
-
         private readonly List<string> _allScripts = new List<string>(new[]
         {
                 "/Scripts/knockout-3.5.1.js",
@@ -36,7 +34,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 "/Scripts/Export/export-validation.js",
                 "/Scripts/integration-point/save-as-profile-modal-vm.js"
         }).Concat(_signalRScripts).Concat(_eventHandlersScripts).ToList();
-
         private static readonly List<string> _eventHandlersScripts = new List<string>
         {
             "/Scripts/EventHandlers/integration-points-view-destination.js",
@@ -63,26 +60,26 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         [Test]
         public void ItShouldReturnAllScriptsFroIntegrationPointPage()
         {
-            //Arrange
+            // Arrange
             _scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_CONTROLLER_NAME);
 
-            //Act
+            // Act
             IList<string> linkedScripts = _sut.LinkedScripts();
 
-            //Assert
+            // Assert
             linkedScripts.Should().Equal(_allScripts);
         }
 
         [Test]
         public void ItShouldReturnAllScriptsFroIntegrationPointProfilePage()
         {
-            //Arrange
+            // Arrange
             _scriptsHelper.Setup(x => x.GetAPIControllerName()).Returns(_INTEGRATION_POINTS_PROFILE_CONTROLLER_NAME);
 
-            //Act
+            // Act
             IList<string> linkedScripts = _sut.LinkedScripts();
 
-            //Assert
+            // Assert
             linkedScripts.Should().Equal(_allScripts.Except(_signalRScripts));
         }
     }

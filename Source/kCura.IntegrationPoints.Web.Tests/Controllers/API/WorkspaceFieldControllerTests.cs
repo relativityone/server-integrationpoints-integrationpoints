@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
         private ISynchronizerFactory _synchronizerFactoryMock;
         private IDataSynchronizer _dataSynchronizerMock;
-
         private ISerializer _serializer;
         private SynchronizerSettings _synchronizerSettings;
 
@@ -37,7 +36,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private const string _CREDENTIALS = "password";
         private const string _DISPLAY_NAME = "FieldName";
         private const string _IDENTIFIER = "Identifier";
-
         private readonly List<FieldEntry> _fields = new List<FieldEntry>()
         {
             new FieldEntry()
@@ -49,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             }
         };
 
-        #endregion //Fields
+        #endregion // Fields
 
         [SetUp]
         public override void SetUp()

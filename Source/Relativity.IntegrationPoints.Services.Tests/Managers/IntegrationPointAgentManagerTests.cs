@@ -27,7 +27,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         private int _WORKSPACE_ID = 100001;
         private int _RELATED_OBJ_ARTIFACT_ID = 45678;
         private int _JOB_SUBMITTED_BY = 111;
-
         private Mock<ILog> _loggerFake;
         private Mock<IPermissionRepositoryFactory> _permissionsFake;
         private Mock<IWindsorContainer> _containerFake;
@@ -39,7 +38,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             _loggerFake = new Mock<ILog>();
             _permissionsFake = new Mock<IPermissionRepositoryFactory>();
-            _containerFake = new Mock<IWindsorContainer>();            
+            _containerFake = new Mock<IWindsorContainer>();
 
             _queueQueryManagerFake = new Mock<IQueueQueryManager>();
             _containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);

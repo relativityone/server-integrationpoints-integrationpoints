@@ -20,12 +20,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
         public override void Verify(int workspaceId)
         {
             const int expectedDocs = 3;
-            IEnumerable<Document> expectedDocuments = Enumerable.Range(1, expectedDocs).Select(i => 
+            IEnumerable<Document> expectedDocuments = Enumerable.Range(1, expectedDocs).Select(i =>
                 new Document(new Dictionary<string, object>
                 {
-                    {TestConstants.FieldNames.FOLDER_NAME, $"row{i}-v2"},
-                    {TestConstants.FieldNames.CONTROL_NUMBER, i.ToString()},
-                    {TestConstants.FieldNames.GROUP_IDENTIFIER, $"Row-{i}-GroupIdentifier"},
+                    {TestConstants.FieldNames.FOLDER_NAME, $"row{i}-v2" },
+                    {TestConstants.FieldNames.CONTROL_NUMBER, i.ToString() },
+                    {TestConstants.FieldNames.GROUP_IDENTIFIER, $"Row-{i}-GroupIdentifier" },
                 }));
 
             IValidator validator = new LoadFileDocumentsValidator(expectedDocuments, workspaceId)

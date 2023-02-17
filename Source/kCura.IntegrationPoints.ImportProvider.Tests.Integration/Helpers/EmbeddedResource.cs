@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private const string _FIELDMAP_RESOURCE = "FieldMaps";
         private const string _IMPORT_SETTINGS_RESOURCE = "ImportSettings";
         private const string _IMPORTPROVIDER_SETTINGS_RESOURCE = "ImportProviderSettings";
-
         private static ISerializer _serializer = null;
         private static ISerializer Serializer
         {

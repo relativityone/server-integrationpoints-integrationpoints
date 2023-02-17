@@ -26,15 +26,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private IConfig _config;
         private IAPILog _logger;
         private IMessageService _messageService;
-
         private const string _SERVICE_TYPE = "TestService";
         private const string _SERVICE_NAME = "ProviderTests";
         private const string _OPERATION_NAME = "Unit";
-
         private const long _JOB_ID = 45325324531;
         private const int _WORKSPACE_ID = 343;
         private readonly Guid _BATCH_INSTANCE = Guid.NewGuid();
-
         private readonly IJobContextProvider _jobContextProvider = new JobContextProvider();
 
         [SetUp]
@@ -249,7 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             {
                 return false;
             }
-            
+
             bool isValid = true;
             isValid &= castedMessage.CorrelationID == correlationId;
             isValid &= castedMessage.WorkspaceID == workspaceId;

@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             return GetCachedResult(fieldArtifactID).FieldType;
         }
-        
+
         private ViewFieldInfo GetCachedResult(int fieldArtifactID)
         {
             if (ViewFieldsInfoCache.TryGetValue(fieldArtifactID, out var viewFieldInfo))
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
 
             viewFieldInfo = RunQueryForViewFieldInfo(fieldArtifactID);
-            ViewFieldsInfoCache.Add(fieldArtifactID, viewFieldInfo); 
+            ViewFieldsInfoCache.Add(fieldArtifactID, viewFieldInfo);
 
             return viewFieldInfo;
         }
@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public virtual ViewFieldInfo RunQueryForViewFieldInfo(int fieldArtifactID)
         {
             IExternalServiceSimpleInstrumentation instrumentation = _instrumentationProvider.CreateSimple(
-                ExternalServiceTypes.RELATIVITY_DATA, 
-                nameof(IQueryFieldLookup), 
+                ExternalServiceTypes.RELATIVITY_DATA,
+                nameof(IQueryFieldLookup),
                 nameof(IQueryFieldLookup.GetFieldByArtifactID));
             ViewFieldInfo viewFieldInfo = instrumentation.Execute(() => _queryFieldLookup.GetFieldByArtifactID(fieldArtifactID));
             return viewFieldInfo;

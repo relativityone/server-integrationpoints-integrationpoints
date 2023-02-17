@@ -12,7 +12,6 @@ namespace Rip.TestUtilities
     public class FieldMappingBuilder
     {
         private readonly IRepositoryFactory _repositoryFactory;
-
         private IList<FieldEntry> _sourceFields;
         private IList<FieldEntry> _destinationFields;
         private IFieldQueryRepository _sourceWorkspaceFieldQueryRepository;

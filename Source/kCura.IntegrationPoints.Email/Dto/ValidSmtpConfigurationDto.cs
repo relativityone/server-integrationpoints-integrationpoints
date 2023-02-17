@@ -3,6 +3,7 @@
     internal class ValidSmtpConfigurationDto
     {
         public SmtpClientSettings SmtpClientSettings { get; }
+
         public ValidEmailAddress EmailFromAddres { get; }
 
         public ValidSmtpConfigurationDto(SmtpClientSettings smtpClientSettings, ValidEmailAddress emailFromAddres)

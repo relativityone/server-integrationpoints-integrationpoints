@@ -72,8 +72,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             // Non Relativity providers will not have the Native File Path column passed in.
             // We must add it here for them.
             bool? dataSourceContainsNativeFilePath = dataSource.FirstOrDefault()?.Keys.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
-            if (dataSourceContainsNativeFilePath.HasValue 
-                && dataSourceContainsNativeFilePath.Value 
+            if (dataSourceContainsNativeFilePath.HasValue
+                && dataSourceContainsNativeFilePath.Value
                 && !finalDt.Columns.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME))
             {
                 finalDt.Columns.Add(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);

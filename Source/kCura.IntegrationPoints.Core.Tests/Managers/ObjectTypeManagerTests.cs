@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private IObjectTypeManager _testInstance;
         private IRepositoryFactory _repositoryFactory;
         private IObjectTypeRepository _objectTypeRepository;
-
         private const int _WORKSPACE_ID = 100532;
 
         [SetUp]

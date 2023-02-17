@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
         private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
         private readonly ISerializer _serializer;
-
         private static readonly FieldRef SourceConfigurationField = new FieldRef()
         {
             Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid

@@ -241,7 +241,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             {
                 LogMoreThanOneHistoryInstanceWarning(batchInstance);
             }
-            Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
+            Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); // there should only be one!
 
             _logger.LogInformation("Read JobHistory for BatchInstanceId: {batchInstanceId}. JobHistory: {@jobHistoryDetails}",
                 batchInstance, jobHistory.Stringify());

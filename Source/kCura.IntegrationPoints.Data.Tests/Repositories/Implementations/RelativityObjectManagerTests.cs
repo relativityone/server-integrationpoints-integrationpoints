@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IObjectManagerFacadeFactory> _objectManagerFacadeFactoryMock;
         private Mock<IObjectManagerFacade> _objectManagerFacadeMock;
         private RelativityObjectManager _sut;
-
         private const int _WORKSPACE_ARTIFACT_ID = 12345;
         private const int _REL_OBJECT_ARTIFACT_ID = 10;
         private const int _FIELD_ARTIFACT_ID = 789;
@@ -52,18 +51,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         {
             // arrange
             _objectManagerFacadeMock
-                .Setup(x => 
+                .Setup(x =>
                     x.StreamLongTextAsync(
-                        It.IsAny<int>(), 
-                        It.IsAny<RelativityObjectRef>(), 
+                        It.IsAny<int>(),
+                        It.IsAny<RelativityObjectRef>(),
                         It.IsAny<FieldRef>()))
                 .Throws<IntegrationPointsException>();
 
-            //act
-            Action action = () => 
+            // act
+            Action action = () =>
                 _sut.StreamUnicodeLongText(
                     _REL_OBJECT_ARTIFACT_ID,
-                    new FieldRef {ArtifactID = _FIELD_ARTIFACT_ID},
+                    new FieldRef {ArtifactID = _FIELD_ARTIFACT_ID },
                     ExecutionIdentity.System);
 
             // assert
@@ -106,10 +105,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Throws<Exception>();
 
             // act
-            Action action = () => 
+            Action action = () =>
                 _sut.StreamUnicodeLongText(
                     _REL_OBJECT_ARTIFACT_ID,
-                    new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
+                    new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID },
                     ExecutionIdentity.System);
 
             // assert
@@ -157,7 +156,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             // act
             Stream result = _sut.StreamUnicodeLongText(
                     _REL_OBJECT_ARTIFACT_ID,
-                    new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID},
+                    new FieldRef() {ArtifactID = _FIELD_ARTIFACT_ID },
                     ExecutionIdentity.System);
 
             // assert
@@ -213,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             // act
             Func<Task> massDeleteAction = () => _sut.MassDeleteAsync(Enumerable.Empty<int>(), ExecutionIdentity.System);
-            
+
             // assert
             massDeleteAction.ShouldThrow<IntegrationPointsException>()
                 .Which.Should().Be(expectedException);
@@ -610,7 +609,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                     resultsBlockSize - 2 * returnedSize,
                     exportIndexID + 2 * returnedSize))
                 .ReturnsAsync(GetRelativityObjectSlimArrayPart(
-                    expectedResult, 
+                    expectedResult,
                     2 * returnedSize,
                     resultsBlockSize - 2 * returnedSize));
 
@@ -681,7 +680,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             action.ShouldThrow<IntegrationPointsException>();
         }
-
 
         [TestCase(true)]
         [TestCase(false)]

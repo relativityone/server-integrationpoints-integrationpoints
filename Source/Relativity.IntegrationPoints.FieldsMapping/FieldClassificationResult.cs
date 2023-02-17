@@ -7,6 +7,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
         public FieldInfo FieldInfo { get; }
 
         public ClassificationLevel ClassificationLevel { get; set; }
+
         public string ClassificationReason { get; set; }
 
         public FieldClassificationResult(FieldInfo fieldInfo)

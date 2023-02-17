@@ -38,4 +38,3 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
         }
     }
 }
-;

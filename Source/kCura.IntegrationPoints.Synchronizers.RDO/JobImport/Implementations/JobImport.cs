@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         }
 
         public virtual event OnErrorEventHandler OnError;
+
         public virtual event OnMessageEventHandler OnMessage;
 
         protected TJob ImportJob

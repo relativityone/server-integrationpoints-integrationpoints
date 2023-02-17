@@ -58,10 +58,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings, IJobStopManager jobStopManager)
         {
             string fieldIdentifierColumnName = fieldMaps.FirstOrDefault(x => x.SourceField.IsIdentifier)?.SourceField.DisplayName;
-            
+
             LoadFile loadFile = _winEddsLoadFileFactory.GetLoadFile(settings);
 
-            //Add columns to the LoadFile object
+            // Add columns to the LoadFile object
             IFieldParser fieldParser = _fieldParserFactory.GetFieldParser(settings);
             int colIdx = 0;
             foreach (string col in fieldParser.GetFields())

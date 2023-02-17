@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GenerateImportFields_Pass()
         {
-            //ARRANGE
+            // ARRANGE
             int fieldValue1 = 111;
             DateTime fieldValue2 = DateTime.Parse("11/22/2010 11:22:33");
             bool fieldValue3 = true;
@@ -32,30 +32,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             object fieldValue5 = null;
             Dictionary<string, object> sourceFields = new Dictionary<string, object>()
             {
-                {"sourceField1",fieldValue1},
-                {"sourceField2",fieldValue2},
-                {"sourceField3",fieldValue3},
-                {"sourceField4",fieldValue4},
-                {"sourceField5",fieldValue5}
+                { "sourceField1", fieldValue1 },
+                { "sourceField2", fieldValue2 },
+                { "sourceField3", fieldValue3 },
+                { "sourceField4", fieldValue4 },
+                { "sourceField5", fieldValue5 }
             };
 
             Dictionary<string, string> mapping = new Dictionary<string, string>()
             {
-                {"sourceField1","F1"},
-                {"sourceField2","F2"},
-                {"sourceField3","F3"},
-                {"sourceField4","F4"},
-                {"sourceField5","F5"},
-                {"sourceField6","F6"},
-                {"sourceField7","F7"},
+                { "sourceField1", "F1" },
+                { "sourceField2", "F2" },
+                { "sourceField3", "F3" },
+                { "sourceField4", "F4" },
+                { "sourceField5", "F5" },
+                { "sourceField6", "F6" },
+                { "sourceField7", "F7" },
             };
 
             ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
 
-            //ACT
+            // ACT
             Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(5, data.Count);
             Assert.IsTrue(data.Keys.Contains("F1"));
             Assert.IsTrue(data.Keys.Contains("F2"));
@@ -74,38 +74,38 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
         {
-            //ARRANGE
-            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-                {"sourceField2",2},
-                {"sourceField3",3},
-                {"sourceField4",4},
-                {"sourceField5",5}
+            // ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>()
+            {
+                { "sourceField2", 2 },
+                { "sourceField3", 3 },
+                { "sourceField4", 4 },
+                { "sourceField5", 5 }
             };
-            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
-                {1,"F1"},
-                {2,"F2"},
-                {3,"F3"},
-                {4,"F4"},
-                {5,"F5"},
-                {6,"F6"},
-                {7,"F7"},
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()
+            {
+                { 1, "F1" },
+                { 2, "F2" },
+                { 3, "F3" },
+                { 4, "F4" },
+                { 5, "F5" },
+                { 6, "F6" },
+                { 7, "F7" },
             };
 
             ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Dictionary<string, string> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
 
-
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(4, fieldMap.Count);
             Assert.IsTrue(fieldMap.Keys.Contains("sourceField2"));
             Assert.IsTrue(fieldMap.Keys.Contains("sourceField3"));
             Assert.IsTrue(fieldMap.Keys.Contains("sourceField4"));
             Assert.IsTrue(fieldMap.Keys.Contains("sourceField5"));
             fieldMap["sourceField2"].Should().Be("F2");
-            
+
             // Assert.AreEqual(2, fieldMap["sourceField2"].ArtifactID);
             // Assert.AreEqual(3, fieldMap["sourceField3"].ArtifactID);
             // Assert.AreEqual(4, fieldMap["sourceField4"].ArtifactID);
@@ -115,27 +115,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ValidateAllMappedFieldsAreInWorkspace_NoneFieldsMatch()
         {
-            //ARRANGE
-            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-                {"sourceField2",12},
-                {"sourceField3",13},
-                {"sourceField4",14},
-                {"sourceField5",15}
+            // ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>()
+            {
+                { "sourceField2", 12 },
+                { "sourceField3", 13 },
+                { "sourceField4", 14 },
+                { "sourceField5", 15 }
             };
-            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
-                {1,"F1"},
-                {2,"F2"},
-                {3,"F3"},
-                {4,"F4"},
-                {5,"F5"},
-                {6,"F6"},
-                {7,"F7"},
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()
+            {
+                {1, "F1" },
+                {2, "F2" },
+                {3, "F3" },
+                {4, "F4" },
+                {5, "F5" },
+                {6, "F6" },
+                {7, "F7" },
             };
 
             ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
 
             Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 12, 13, 14, 15"));
@@ -144,27 +145,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ValidateAllMappedFieldsAreInWorkspace_OneOutOfAllFieldsMatch()
         {
-            //ARRANGE
-            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-                {"sourceField2",2},
-                {"sourceField3",13},
-                {"sourceField4",14},
-                {"sourceField5",15}
+            // ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>()
+            {
+                { "sourceField2", 2 },
+                { "sourceField3", 13 },
+                { "sourceField4", 14 },
+                { "sourceField5", 15 }
             };
-            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
-                {1,"F1"},
-                {2,"F2"},
-                {3,"F3"},
-                {4,"F4"},
-                {5,"F5"},
-                {6,"F6"},
-                {7,"F7"},
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()
+            {
+                {1, "F1" },
+                {2, "F2" },
+                {3, "F3" },
+                {4, "F4" },
+                {5, "F5" },
+                {6, "F6" },
+                {7, "F7" },
             };
 
             ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
 
             Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
@@ -177,27 +179,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
         {
-            //ARRANGE
+            // ARRANGE
             Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-                {"sourceField1", "ABC"},
-                {"sourceField2", 123},
-                {"sourceField3", DateTime.MaxValue},
-                {"sourceField4", true},
-                {"MyPath", "\\\\Server1\\path1\\file1"}
+                { "sourceField1", "ABC" },
+                { "sourceField2", 123 },
+                { "sourceField3", DateTime.MaxValue },
+                { "sourceField4", true },
+                { "MyPath", "\\\\Server1\\path1\\file1" }
             };
             Dictionary<string, string> mapping = new Dictionary<string, string>()            {
-                {"sourceField1","F1"},
-                {"sourceField2","F2"},
-                {"sourceField4","F4"}
+                { "sourceField1", "F1" },
+                { "sourceField2", "F2" },
+                { "sourceField4", "F4" }
             };
             NativeFileImportService nativeFileImportService = null;
 
             ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
-
 
             Assert.AreEqual(3, result.Count);
             Assert.AreEqual("ABC", result["F1"]);
@@ -208,18 +208,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult()
         {
-            //ARRANGE
-            Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-                {"sourceField1", "ABC"},
-                {"sourceField2", 123},
-                {"sourceField3", DateTime.MaxValue},
-                {"sourceField4", true},
-                {"MyPath", "\\\\Server1\\path1\\file1"}
+            // ARRANGE
+            Dictionary<string, object> fieldMapping = new Dictionary<string, object>()
+            {
+                { "sourceField1", "ABC" },
+                { "sourceField2", 123 },
+                { "sourceField3", DateTime.MaxValue },
+                { "sourceField4", true },
+                { "MyPath", "\\\\Server1\\path1\\file1" }
             };
-            Dictionary<string, string> mapping = new Dictionary<string, string>()            {
-                {"sourceField1","F1"},
-                {"sourceField2","F2"},
-                {"sourceField4","F4"}
+            Dictionary<string, string> mapping = new Dictionary<string, string>()
+            {
+                { "sourceField1", "F1" },
+                { "sourceField2", "F2" },
+                { "sourceField4", "F4" }
             };
             NativeFileImportService nativeFileImportService = new NativeFileImportService()
             {
@@ -228,10 +230,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
-
 
             Assert.AreEqual(3, result.Count);
             Assert.AreEqual("ABC", result["F1"]);
@@ -242,18 +242,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GenerateImportFields_NativeFileImportServiceIsTrue_CorrectResult()
         {
-            //ARRANGE
-            Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-                {"sourceField1", "ABC"},
-                {"sourceField2", 123},
-                {"sourceField3", DateTime.MaxValue},
-                {"sourceField4", true},
-                {"MyPath", "\\\\Server1\\path1\\file1"}
+            // ARRANGE
+            Dictionary<string, object> fieldMapping = new Dictionary<string, object>()
+            {
+                { "sourceField1", "ABC" },
+                { "sourceField2", 123 },
+                { "sourceField3", DateTime.MaxValue },
+                { "sourceField4", true },
+                { "MyPath", "\\\\Server1\\path1\\file1" }
             };
-            Dictionary<string, string> mapping = new Dictionary<string, string>()            {
-                {"sourceField1","F1"},
-                {"sourceField2","F2"},
-                {"sourceField4","F4"}
+            Dictionary<string, string> mapping = new Dictionary<string, string>()
+            {
+                { "sourceField1", "F1" },
+                { "sourceField2", "F2" },
+                { "sourceField4", "F4" }
             };
             NativeFileImportService nativeFileImportService = new NativeFileImportService()
             {
@@ -263,10 +265,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
 
-
-            //ACT
+            // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
-
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual("ABC", result["F1"]);

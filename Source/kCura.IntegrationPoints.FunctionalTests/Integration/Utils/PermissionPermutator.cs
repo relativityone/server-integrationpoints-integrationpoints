@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             {
                 yield return p;
             }
-            
+
             yield return AllPermissionsNotGranted();
         }
 

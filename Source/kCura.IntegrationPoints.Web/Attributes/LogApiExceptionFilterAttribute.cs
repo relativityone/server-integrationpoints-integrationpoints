@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
     public class LogApiExceptionFilterAttribute : Attribute
     {
         public string Message { get; set; }
+
         public bool IsUserMessage { get; set; }
 
         public LogApiExceptionFilterAttribute()

@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         protected override string SuccessMessage => "Source Provider migrated successfully.";
 
         protected override string GetFailureMessage(Exception ex) => "Failed to migrate Source Provider.";
-
         private List<SourceProvider> GetSourceProvidersToInstall()
         {
             List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
@@ -95,7 +94,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
             public SourceProvidersMigration(
                 List<SourceProvider> sourceProvidersToMigrate,
-                IEHHelper helper, 
+                IEHHelper helper,
                 IRipProviderInstaller providerInstaller,
                 int templateWorkspaceId,
                 IAPILog logger,

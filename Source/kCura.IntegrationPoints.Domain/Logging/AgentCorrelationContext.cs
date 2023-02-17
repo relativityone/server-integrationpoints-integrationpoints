@@ -5,8 +5,11 @@ namespace kCura.IntegrationPoints.Domain.Logging
     public class AgentCorrelationContext : BaseCorrelationContext
     {
         public long JobId { get; set; }
+
         public long? RootJobId { get; set; }
+
         public long? IntegrationPointId { get; set; }
+
         public string WorkflowId { get; set; }
 
         public override Dictionary<string, object> ToDictionary()

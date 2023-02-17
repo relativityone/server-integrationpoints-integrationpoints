@@ -17,11 +17,8 @@ namespace kCura.IntegrationPoints.Email.Tests
     {
         private Mock<ISmtpConfigurationProvider> _configurationFactory;
         private Mock<ISmtpClientFactory> _clientFactory;
-
         private EmailSender _sut;
-
         private const string _INVALID_DOMAIN_NAME = "";
-
         private readonly EmailMessageDto _emailMessage =
             new EmailMessageDto("subject", "body", "relativity.admin@kcura.com");
         private readonly EmailMessageDto _emailMessageWithInvalidAddress =
@@ -153,7 +150,6 @@ namespace kCura.IntegrationPoints.Email.Tests
 
         private void SetupSmtpClientFactoryToUseOutboxDirectory(string outboxDirectory)
         {
-
             var smtpClient = new SmtpClient
             {
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,

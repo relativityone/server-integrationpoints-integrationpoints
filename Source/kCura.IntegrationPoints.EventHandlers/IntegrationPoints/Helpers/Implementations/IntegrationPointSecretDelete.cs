@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         {
             string integrationPointSecret = _integrationPointRepository
                 .GetEncryptedSecuredConfiguration(integrationPointId);
-            //Old IntegrationPoints don't contain SecuredConfiguration
+            // Old IntegrationPoints don't contain SecuredConfiguration
             if (!string.IsNullOrWhiteSpace(integrationPointSecret))
             {
                 _secretsRepository.DeleteAllRipSecretsFromIntegrationPointAsync(

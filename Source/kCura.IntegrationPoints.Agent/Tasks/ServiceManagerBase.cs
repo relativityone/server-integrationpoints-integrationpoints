@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         public abstract void Execute(Job job);
 
-        protected virtual void JobHistoryErrorManagerSetup(Job job) { } //No-op for ImportServiceManager, Overridden in ExportServiceManager
+        protected virtual void JobHistoryErrorManagerSetup(Job job) { } // No-op for ImportServiceManager, Overridden in ExportServiceManager
 
         protected void InitializeService(Job job, bool supportsDrainStop)
         {
@@ -265,7 +265,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 LogUpdatingIntegrationPointRuntimesError(job, e);
             }
         }
-
 
         protected void SetJobStateAsUnstoppableIfNeeded(Job job)
         {
@@ -474,7 +473,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             Logger.LogInformation("Loading integration point DTO for job: {JobId}", job.JobId);
         }
-
 
         private void LogUpdateIntegrationPointRuntimesSuccessfulEnd(Job job)
         {

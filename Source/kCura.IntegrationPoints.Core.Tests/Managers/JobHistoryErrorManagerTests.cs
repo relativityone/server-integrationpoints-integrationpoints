@@ -80,13 +80,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RunNow_NoErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -97,14 +97,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RunNow_JobError()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -115,14 +115,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RunNow_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -133,14 +133,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RunNow_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new Collection<int>());
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -151,13 +151,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_ScheduledRun_NoErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -168,14 +168,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_ScheduledRun_JobError()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -186,14 +186,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_ScheduledRun_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -204,14 +204,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_ScheduledRun_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new Collection<int>());
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -222,13 +222,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RetryErrors_NoErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -239,14 +239,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RetryErrors_JobError()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new Collection<int>());
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
@@ -257,14 +257,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RetryErrors_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.Received(1).AddArtifactIdsIntoTempTable(_sampleJobError);
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -275,14 +275,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void StageForUpdatingErrors_RetryErrors_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new Collection<int>());
             _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
-            //Act
+            // Act
             _testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
 
-            //Assert
+            // Assert
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorItemStart.Received(0).AddArtifactIdsIntoTempTable(_sampleItemErrors);
@@ -293,10 +293,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void CreateItemLevelErrorsSavedSearch_GoldFlow()
         {
-            //Act
+            // Act
             _testInstance.CreateItemLevelErrorsSavedSearch(_job, _originalSavedSearchArtifactId);
 
-            //Assert
+            // Assert
             _jobHistoryRepository.Received().GetLastJobHistoryArtifactId(_integrationPointArtifactId);
             _jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_integrationPointArtifactId, _originalSavedSearchArtifactId, 0);
         }
@@ -533,9 +533,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
             _jobHistoryErrorJobStart.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
             _jobHistoryErrorJobComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
-            _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error2, error3})));
+            _jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new[] {error2, error3})));
             _jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(Arg.Any<ICollection<int>>());
-            _jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new [] {error1, error4})));
+            _jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<HashSet<int>>(y => y.SequenceEqual(new[] {error1, error4})));
         }
     }
 }

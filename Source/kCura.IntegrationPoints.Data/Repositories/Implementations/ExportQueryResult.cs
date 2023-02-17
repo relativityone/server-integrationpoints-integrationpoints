@@ -64,7 +64,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-
         /// <inheritdoc />
         public async Task<IEnumerable<RelativityObjectSlim>> GetAllResultsAsync(CancellationToken token = default(CancellationToken))
         {
@@ -76,7 +75,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         /// <inheritdoc />
         public ExportInitializationResults ExportResult => _exportResult;
-
         private async Task<IEnumerable<RelativityObjectSlim>> GetBlockFromExportInternalAsync(
             int resultsBlockSize,
             int startIndex,

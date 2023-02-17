@@ -91,7 +91,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             yield return new Pair(exportFile.ArtifactID.ToString(), string.Empty);
         }
 
-
         private static void SetStartDocumentNumber(ExportSettings exportSettings, ExportFile exportFile)
         {
             exportFile.StartAtDocumentNumber = exportSettings.StartExportAtRecord - 1;

@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
     {
         private const int _ARTIFACT_ID = 757404;
         private const int _WORKSPACE_ID = 498941;
-
         private DeleteIntegrationPointCommand _instance;
         private ICorrespondingJobDelete _correspondingJobDelete;
         private IIntegrationPointSecretDelete _integrationPointSecretDelete;

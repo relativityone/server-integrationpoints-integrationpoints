@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
     public class DataProviderFactoryFactory : IDataProviderFactoryFactory
     {
         private const int _ADMIN_CASE_ID = -1;
-
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IToggleProvider _toggleProvider;

@@ -17,7 +17,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
     public class WorkspaceContextRegistrationTests
     {
         private const int _WORKSPACE_ID = 64531421;
-
         private IWindsorContainer _container;
 
         [SetUp]

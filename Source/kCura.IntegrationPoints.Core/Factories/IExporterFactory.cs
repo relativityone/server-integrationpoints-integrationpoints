@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoints.Core.Factories
     public interface IExporterFactory
     {
         IExporterService BuildExporter(
-            IJobStopManager jobStopManager, 
-            FieldMap[] mappedFields, 
-            string config, 
+            IJobStopManager jobStopManager,
+            FieldMap[] mappedFields,
+            string config,
             int savedSearchArtifactID,
             string userImportApiSettings,
             IDocumentRepository documentRepository,

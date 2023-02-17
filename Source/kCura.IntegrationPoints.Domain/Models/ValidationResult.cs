@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Domain.Models
     {
         private const string _MESSAGE_PREFIX_FAILED = "Integration Point validation failed.";
         private const string _MESSAGE_PREFIX_PASSED = "Integration Point validation passed.";
-
         private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
 
         /// <summary>

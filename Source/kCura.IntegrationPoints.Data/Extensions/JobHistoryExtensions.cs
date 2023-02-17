@@ -7,14 +7,13 @@ namespace kCura.IntegrationPoints.Data.Extensions
     {
         public static string Stringify(this JobHistory jobHistory)
         {
-            if(jobHistory == null)
+            if (jobHistory == null)
             {
                 return string.Empty;
             }
 
             try
             {
-
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("JobistoryDetails:");
                 sb.AppendLine($"ArtifactId: {jobHistory.ArtifactId}");
@@ -24,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Extensions
 
                 return sb.ToString();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return "<stringify_job_history_failed>";
             }

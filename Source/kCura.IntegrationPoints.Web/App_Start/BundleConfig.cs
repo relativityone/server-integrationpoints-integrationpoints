@@ -53,7 +53,6 @@ namespace kCura.IntegrationPoints.Web
                 "~/Scripts/route.js"
                 ));
 
-
             bundles.Add(new ScriptBundle("~/bundles/exportProvider").Include(
                 // common
                 "~/Scripts/export/export-validation.js",
@@ -95,7 +94,6 @@ namespace kCura.IntegrationPoints.Web
                 "~/Scripts/dragon/dragon-schedule.js",
                 "~/Scripts/dragon/dragon-dialogs.js"
             ));
-
 
             bundles.Add(new ScriptBundle("~/bundles/modals")
                 .IncludeDirectory("~/Scripts/modals", "*.js", true));

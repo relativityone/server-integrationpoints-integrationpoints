@@ -29,12 +29,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private const int _VIEW_ID = 564912132;
         private const int _PRODUCTION_ID = 465432;
         private const int _SAVED_SEARCH_ARTIFACT_ID = 987;
-
         private static IEnumerable<IEnumerable<string>> DisplayNamesTestData() => new[]
         {
-            new[] {"DisplayName"},
-            new[] {"a", "b"},
-            new[] {"b", "a", "c"},
+            new[] {"DisplayName" },
+            new[] {"a", "b" },
+            new[] {"b", "a", "c" },
             new[] {"b", "A", "c"}
         };
 
@@ -59,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCaseSource(nameof(DisplayNamesTestData))]
         public void ItShouldGetExportableFields(string[] displayNames)
         {
-            //Arrange
+            // Arrange
             var data = new ExtendedSourceOptions()
             {
                 TransferredArtifactTypeId = _TRANSFERRED_ARTIFACT_TYPE_ID,
@@ -70,21 +69,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _exportFieldsService.GetAllExportableFields(_SOURCE_WORKSPACE_ARTIFACT_ID, _TRANSFERRED_ARTIFACT_TYPE_ID).Returns(expectedFields);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetExportableFields(data);
             IOrderedEnumerable<FieldEntry> actualFields = ExtractFieldEntryFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualFields);
             Assert.AreEqual(expectedFields.Length, actualFields.Count());
             CollectionAssert.AreEqual(expectedOrderedFieldEntries, actualFields);
         }
 
-
         [TestCaseSource(nameof(DisplayNamesTestData))]
         public void ItShouldGetAvailableFieldsForSavedSearch(string[] displayNames)
         {
-            //Arrange
+            // Arrange
             ExtendedSourceOptions extendedSourceOptions = CreateExtendedSourceOptions(ExportSettings.ExportType.SavedSearch);
             FieldEntry[] expectedFields = CreateFieldsEntry(displayNames);
             IOrderedEnumerable<FieldEntry> expectedOrderedFieldEntries = expectedFields.OrderBy(x => x.DisplayName);
@@ -92,11 +90,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _exportFieldsService.GetDefaultViewFields(_SOURCE_WORKSPACE_ARTIFACT_ID, _SAVED_SEARCH_ARTIFACT_ID,
                 _TRANSFERRED_ARTIFACT_TYPE_ID, Arg.Any<bool>()).Returns(expectedFields);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetAvailableFields(extendedSourceOptions);
             IOrderedEnumerable<FieldEntry> actualFields = ExtractFieldEntryFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualFields);
             Assert.AreEqual(expectedFields.Length, actualFields.Count());
             CollectionAssert.AreEqual(expectedOrderedFieldEntries, actualFields);
@@ -105,7 +103,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCaseSource(nameof(DisplayNamesTestData))]
         public void ItShouldGetAvailableFieldsForProductionSet(string[] displayNames)
         {
-            //Arrange
+            // Arrange
             ExtendedSourceOptions extendedSourceOptions = CreateExtendedSourceOptions(ExportSettings.ExportType.ProductionSet);
             FieldEntry[] expectedFields = CreateFieldsEntry(displayNames);
             IOrderedEnumerable<FieldEntry> expectedOrderedFieldEntries = expectedFields.OrderBy(x => x.DisplayName);
@@ -113,21 +111,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _exportFieldsService.GetDefaultViewFields(_SOURCE_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ID,
                 _TRANSFERRED_ARTIFACT_TYPE_ID, Arg.Any<bool>()).Returns(expectedFields);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetAvailableFields(extendedSourceOptions);
             IOrderedEnumerable<FieldEntry> actualFields = ExtractFieldEntryFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualFields);
             Assert.AreEqual(expectedFields.Length, actualFields.Count());
             CollectionAssert.AreEqual(expectedOrderedFieldEntries, actualFields);
         }
 
         [Test, Sequential]
-        public void ItShouldGetAvailableFieldsForViewId([ValueSource(nameof(DisplayNamesTestData))]string[] displayNames, 
+        public void ItShouldGetAvailableFieldsForViewId([ValueSource(nameof(DisplayNamesTestData))]string[] displayNames,
             [ValueSource(nameof(ExportTypesTestData))] ExportSettings.ExportType exportType)
         {
-            //Arrange
+            // Arrange
             ExtendedSourceOptions extendedSourceOptions = CreateExtendedSourceOptions(exportType);
             FieldEntry[] expectedFields = CreateFieldsEntry(displayNames);
             IOrderedEnumerable<FieldEntry> expectedOrderedFieldEntries = expectedFields.OrderBy(x => x.DisplayName);
@@ -135,11 +133,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _exportFieldsService.GetDefaultViewFields(_SOURCE_WORKSPACE_ARTIFACT_ID, _VIEW_ID,
                 _TRANSFERRED_ARTIFACT_TYPE_ID, Arg.Any<bool>()).Returns(expectedFields);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetAvailableFields(extendedSourceOptions);
             IOrderedEnumerable<FieldEntry> actualFields = ExtractFieldEntryFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualFields);
             Assert.AreEqual(expectedFields.Length, actualFields.Count());
             CollectionAssert.AreEqual(expectedOrderedFieldEntries, actualFields);
@@ -148,17 +146,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldThrowWhenGetAvailableFields()
         {
-            //Arrange
+            // Arrange
             var data = new ExtendedSourceOptions()
             {
                 TransferredArtifactTypeId = _TRANSFERRED_ARTIFACT_TYPE_ID,
                 Options = JsonConvert.SerializeObject(new ExportUsingSavedSearchSettings() { SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID })
             };
 
-            //Act
+            // Act
             var exception = Assert.Throws<InvalidEnumArgumentException>(() => _instance.GetAvailableFields(data));
-            
-            //Assert
+
+            // Assert
             Assert.IsNotNull(exception);
             Assert.AreEqual(Constants.INVALID_EXPORT_TYPE_ERROR, exception.Message);
         }
@@ -166,18 +164,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCaseSource(nameof(DisplayNamesTestData))]
         public void ItShouldGetExportableLongTextFields(string[] displayNames)
         {
-            //Arrange
+            // Arrange
             const int artifactTypeId = 97321;
             FieldEntry[] expectedFields = CreateFieldsEntry(displayNames);
             IOrderedEnumerable<FieldEntry> expectedOrderedFieldEntries = expectedFields.OrderBy(x => x.DisplayName);
             _exportFieldsService.GetAllExportableLongTextFields(_SOURCE_WORKSPACE_ARTIFACT_ID, artifactTypeId)
                 .Returns(expectedFields);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetExportableLongTextFields(_SOURCE_WORKSPACE_ARTIFACT_ID, artifactTypeId);
             IOrderedEnumerable<FieldEntry> actualFields = ExtractFieldEntryFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualFields);
             Assert.AreEqual(expectedFields.Length, actualFields.Count());
             CollectionAssert.AreEqual(expectedOrderedFieldEntries, actualFields);

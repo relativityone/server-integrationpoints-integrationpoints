@@ -8,7 +8,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser
         }
 
         public string Input { get; set; }
+
         public int WorkspaceIdSeparatorPos { get; set; }
+
         public int SeparatorsCount { get; set; }
 
         public int WorkspaceId { get; set; }

@@ -13,8 +13,11 @@ namespace kCura.IntegrationPoints.Data.DTO
         }
 
         public SavedSearchQueryRequest SearchRequest { get; }
+
         public int TotalResults { get; }
+
         public List<SavedSearchDTO> SavedSearches { get; }
+
         public bool HasMoreResults => SearchRequest.Page * SearchRequest.PageSize < TotalResults;
     }
 }

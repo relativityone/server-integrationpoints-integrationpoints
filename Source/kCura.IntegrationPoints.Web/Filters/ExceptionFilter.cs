@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Web.Filters
     public class ExceptionFilter : IExceptionFilter
     {
         private const string _CONTACT_ADMIN_MESSAGE_ENDING = " Please check Error tab for more details";
-
         private readonly LogApiExceptionFilterAttribute _attribute;
         private readonly Func<ITextSanitizer> _sanitizerFactory;
         private readonly Func<IAPILog> _loggerFactory;

@@ -12,7 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         [SetUp]
         public void Setup() => _sut = new DocumentManager(Logger, PermissionRepositoryFactory, Container);
 
-
         [Test]
         public void GetPercentagePushedToReviewAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -22,12 +21,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.GetPercentagePushedToReviewAsync(percentagePushedToReviewRequest);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForDocumentManager))]
         public void CreateIntegrationPointFromProfileAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -37,12 +36,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-                
+
                 // Act
                 return _sut.GetPercentagePushedToReviewAsync(percentagePushedToReviewRequest);
             });
         }
-        
+
         [Test]
         public void GetCurrentPromotionStatusAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -52,12 +51,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.GetCurrentPromotionStatusAsync(currentPromotionStatusRequest);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForDocumentManager))]
         public void GetCurrentPromotionStatusAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -67,12 +66,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.GetCurrentPromotionStatusAsync(currentPromotionStatusRequest);
             });
         }
-        
+
         [Test]
         public void GetHistoricalPromotionStatusAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -82,12 +81,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.GetCurrentPromotionStatusAsync(currentPromotionStatusRequest);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForDocumentManager))]
         public void GetHistoricalPromotionStatusAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -97,13 +96,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.GetHistoricalPromotionStatusAsync(createIntegrationPointRequest);
             });
         }
-        
-        
+
       #region Permissions
 
         class PermissionsForDocumentManager : PermissionPermutator

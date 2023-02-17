@@ -39,9 +39,9 @@ namespace kCura.IntegrationPoints.Web.Attributes
                 logger.LogWarning("Request.Properties dictionary does not contain '{key}' key.", _TIMESTAMP_KEY_NAME);
                 return;
             }
-            
+
             GetService<IControllerActionExecutionTimeMetrics>().LogExecutionTime(
-                FormatURL(actionExecutedContext.Request.RequestUri.AbsolutePath), 
+                FormatURL(actionExecutedContext.Request.RequestUri.AbsolutePath),
                 (DateTime)actionExecutedContext.Request.Properties[_TIMESTAMP_KEY_NAME],
                 actionExecutedContext.Request.Method.Method);
         }

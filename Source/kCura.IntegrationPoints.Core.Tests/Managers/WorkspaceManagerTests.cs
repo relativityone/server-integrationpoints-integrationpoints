@@ -45,13 +45,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void It_should_return_workspaces_only_accessible_for_current_user()
         {
-            //ARRANGE
+            // ARRANGE
             WorkspaceManager workspaceManager = new WorkspaceManager(_repositoryFactory);
 
-            //ACT
+            // ACT
             IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserActiveWorkspaces().ToList();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(2, userWorkspaces.Count());
 
             Assert.AreEqual(1, userWorkspaces.Count(x => x.ArtifactId == CurrentUserWorkspaceArtifactId));
@@ -62,13 +62,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void It_should_return_workspaces_only_accessible_for_current_user_except_source_workspace()
         {
-            //ARRANGE
+            // ARRANGE
             WorkspaceManager workspaceManager = new WorkspaceManager(_repositoryFactory);
 
-            //ACT
+            // ACT
             IEnumerable<WorkspaceDTO> userWorkspaces = workspaceManager.GetUserAvailableDestinationWorkspaces(1234).ToList();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(1, userWorkspaces.Count());
             Assert.AreEqual(0, userWorkspaces.Count(x => x.ArtifactId == CurrentUserWorkspaceArtifactId));
         }

@@ -8,7 +8,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class UnlockScheduledJob : ICommand
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly int _agentId;
 
         public UnlockScheduledJob(IQueueDBContext dbContext, int agentId)

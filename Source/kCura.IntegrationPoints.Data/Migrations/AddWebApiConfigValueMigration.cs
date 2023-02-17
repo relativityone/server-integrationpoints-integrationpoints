@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Data.Migrations
     public class AddWebApiConfigValueMigration : IMigration
     {
         private readonly IEddsDBContext _context;
+
         public AddWebApiConfigValueMigration(IEddsDBContext context)
         {
             _context = context;

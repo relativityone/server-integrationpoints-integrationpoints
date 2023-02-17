@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Validation
                 result.Add(validator.Validate(validationModel));
             }
 
-            //workaround for import providers
+            // workaround for import providers
             if (integrationPointType.Identifier.Equals(Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()))
             {
                 IEnumerable<IPermissionValidator> importProviderPermissionValidators = _validatorsMap[Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()];

@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
         protected abstract List<MetricIdentifier> GetMetricIdentifiers();
         protected abstract string ProviderName { get; }
 
-        #endregion //Members to override
+        #endregion // Members to override
 
         #region Methods
 
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
             return internalMetricsCollectionManager.CreateMetricIdentifierAsync(metricIdentifier, false);
         }
 
-        #endregion //Methods
+        #endregion // Methods
 
         #region Logging
 

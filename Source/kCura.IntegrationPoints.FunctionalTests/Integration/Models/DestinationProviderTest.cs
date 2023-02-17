@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public string Name { get; set; }
 
-        public DestinationProviderTest() : base("DestinationProvider") 
+        public DestinationProviderTest() : base("DestinationProvider")
         {
             Name = $"Fake Destination Provider";
             Identifier = Guid.NewGuid().ToString();

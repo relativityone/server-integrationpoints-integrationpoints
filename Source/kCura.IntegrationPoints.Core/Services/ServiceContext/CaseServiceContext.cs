@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
     public class CaseServiceContext : ICaseServiceContext
     {
         private readonly IServiceContextHelper _serviceContextHelper;
-
         private int? _eddsUserId;
         private int? _workspaceUserId;
         private IRelativityObjectManagerService _relativityObjectManagerService;

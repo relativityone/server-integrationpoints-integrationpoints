@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private const string _ERROR_PRODUCTION_SET_NOT_FOUND = "Production Set not found!";
         private const string _SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
         private const string _RELATIVITY_THIS_INSTANCE = "This instance";
-
         private readonly IProductionManager _productionManager;
         private readonly IManagerFactory _managerFactory;
         private readonly IInstanceSettingsManager _instanceSettingsManager;
@@ -212,7 +211,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             try
             {
                 int targetWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.TargetWorkspaceArtifactId));
-
 
                 string productionSetName = GetProductionSetNameById(targetWorkspaceId, productionArtifactId);
 

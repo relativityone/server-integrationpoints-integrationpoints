@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         {
             _repositoryFactory = repositoryFactory;
         }
-        
+
         public Dictionary<int, Guid> GetGuidsForArtifactIds(int workspaceArtifactId, IEnumerable<int> artifactIds)
         {
             IArtifactGuidRepository repository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);

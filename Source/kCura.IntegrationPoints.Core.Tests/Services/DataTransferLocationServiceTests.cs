@@ -18,14 +18,12 @@ using Relativity.Services.Interfaces.Workspace.Models;
 using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 
-
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
     [TestFixture, Category("Unit")]
     public class DataTransferLocationServiceTests : TestBase
     {
         private DataTransferLocationService _sut;
-
         private IHelper _helperMock;
         private IServicesMgr _servicesMgr;
         private IWorkspaceManager _workspaceManager;
@@ -33,13 +31,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private IDirectory _directoryMock;
         private ICryptographyHelper _cryptographyHelperMock;
         private IAPILog _loggerMock;
-
         private const int _WKSP_ID = 1234;
         private const string _RESOURCE_POOL_FILESHARE = @"\\localhost\Fileshare";
         private const string _EXPORT_PROV_TYPE_NAME = "Exp";
         private const string _IMPORT_PROV_TYPE_NAME = "Imp";
         private const string _PARENT_FOLDER = "DataTransfer";
-
         private const string _WKSP_FOLDER = "EDDS1234";
 
         public override void SetUp()
@@ -119,7 +115,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             string path = Path.Combine(_PARENT_FOLDER, _EXPORT_PROV_TYPE_NAME, folderName);
             string physicalPath = Path.Combine(_RESOURCE_POOL_FILESHARE, _WKSP_FOLDER, path);
 
-            
             _directoryMock.Exists(physicalPath).Returns(false);
 
             var returnedPath = _sut.VerifyAndPrepare(_WKSP_ID, path, type);
@@ -165,8 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     Name = _EXPORT_PROV_TYPE_NAME
                 });
 
-
-            // Pass path that is not child of DataTransfer Location 
+            // Pass path that is not child of DataTransfer Location
             string path = $"{_PARENT_FOLDER}\\{_EXPORT_PROV_TYPE_NAME}\\..\\..";
 
             string physicalPath = Path.Combine(_RESOURCE_POOL_FILESHARE, _WKSP_FOLDER, path);

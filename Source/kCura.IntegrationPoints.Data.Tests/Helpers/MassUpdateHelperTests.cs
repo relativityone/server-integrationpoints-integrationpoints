@@ -19,12 +19,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class MassUpdateHelperTests
     {
         private MassUpdateHelper _sut;
-
         private Mock<IConfig> _configMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IRepositoryWithMassUpdate> _massUpdateRepositoryMock;
         private Mock<IScratchTableRepository> _scratchTableRepositoryMock;
-
         private const int _DEFAULT_BATCH_SIZE = 100;
         private const int _DEFAULT_NUMBER_OF_DOCUMENTS = 1000;
 

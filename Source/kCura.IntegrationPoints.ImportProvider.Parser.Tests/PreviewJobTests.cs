@@ -32,10 +32,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
             _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(_arrList);
             _subjectUnderTest.StartRead();
-            //assert that Preview Job is set to complete
+            // assert that Preview Job is set to complete
             Assert.IsTrue(_subjectUnderTest.IsComplete);
 
-            //assert that we have the expected number of headers
+            // assert that we have the expected number of headers
             Assert.AreEqual(_COLUMN_COUNT, _subjectUnderTest.PreviewTable.Header.Count);
         }
 
@@ -43,13 +43,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         public void PreviewJobReturnsCorrectErrorsExceptions()
         {
             MockPreviewTable();
-            //arrange our return value from ReadFile to include two exceptions
+            // arrange our return value from ReadFile to include two exceptions
             _arrList.Add(new Exception("test 1"));
             _arrList.Add(new Exception("test 2"));
             _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(_arrList);
             _subjectUnderTest.StartRead();
 
-            //assert that we have the expected number errors
+            // assert that we have the expected number errors
             Assert.AreEqual(2, _subjectUnderTest.PreviewTable.ErrorRows.Count);
         }
 
@@ -58,13 +58,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         {
             MockPreviewTable();
             MockPreviewTableErrorColumn();
-            
-            //arrange our return value from ReadFile to include an exception column
-            //this returns differently than when the entire row has an exception
+
+            // arrange our return value from ReadFile to include an exception column
+            // this returns differently than when the entire row has an exception
             _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(_arrList);
             _subjectUnderTest.StartRead();
 
-            //assert that we have the expected number errors and data rows
+            // assert that we have the expected number errors and data rows
             Assert.AreEqual(1, _subjectUnderTest.PreviewTable.ErrorRows.Count);
             Assert.AreEqual(2, _subjectUnderTest.PreviewTable.Data.Count);
         }
@@ -74,13 +74,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         {
             MockPreviewTable();
 
-            //arrange our return value from ReadFile to include an value with a script inside it
+            // arrange our return value from ReadFile to include an value with a script inside it
             _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(_arrList);
             _subjectUnderTest.StartRead();
 
-            //assert that we have the expected number of rows
+            // assert that we have the expected number of rows
             Assert.AreEqual(1, _subjectUnderTest.PreviewTable.Data.Count);
-            //Assert that the row and column that contained the Alert script has been safely html encoded
+            // Assert that the row and column that contained the Alert script has been safely html encoded
             string valueWithScript = _subjectUnderTest.PreviewTable.Data[0][1];
             Assert.AreEqual(HttpUtility.HtmlEncode(_ALERT_SCRIPT), valueWithScript);
         }
@@ -88,14 +88,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void PreviewJobReturnsNoData()
         {
-            //Test to make sure that PreviewJob is safely handling a situation where LoadFilePreviewer doesn't find any rows
+            // Test to make sure that PreviewJob is safely handling a situation where LoadFilePreviewer doesn't find any rows
             _subjectUnderTest._loadFilePreviewer.ReadFile(false).ReturnsForAnyArgs(_arrList);
             _subjectUnderTest.StartRead();
 
-            //assert that we have the expected number errors and data rows
+            // assert that we have the expected number errors and data rows
             Assert.AreEqual(1, _subjectUnderTest.PreviewTable.Header.Count);
 
-            //assert that the Read did not fail
+            // assert that the Read did not fail
             Assert.IsFalse(_subjectUnderTest.IsFailed);
         }
 
@@ -112,9 +112,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                     fieldCat = FieldCategory.Identifier;
                 }
                 field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, FieldType.Text, fieldCat, -1, -1, -1, false);
-                field.Value = String.Format("Value{0}",i);
+                field.Value = string.Format("Value{0}",i);
 
-                //Give one of these columns a value that contains a script
+                // Give one of these columns a value that contains a script
                 if (i == 2)
                 {
                     field.Value = _ALERT_SCRIPT;
@@ -137,8 +137,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                     fieldCat = FieldCategory.Identifier;
                 }
                 field = new WinEDDS.Api.ArtifactField(String.Format("Field{0}", i), i, FieldType.Text, fieldCat, -1, -1, -1, false);
-                //insert value with the error keyword that the LoadFilePreviewer will put on columns that contain an error
-                field.Value = String.Format("Error: {0}", i);
+                // insert value with the error keyword that the LoadFilePreviewer will put on columns that contain an error
+                field.Value = string.Format("Error: {0}", i);
                 fieldList.Add(field);
             }
             _arrList.Add(fieldList.ToArray());

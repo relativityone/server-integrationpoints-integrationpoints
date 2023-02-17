@@ -24,9 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private Mock<ISourceDocumentsTagger> _sourceWorkspaceDocumentsTaggerMock;
         private Mock<IAPILog> _loggerMock;
         private SourceConfiguration _sourceConfig;
-
         private SourceObjectBatchUpdateManager _sut;
-
         private const int _JOB_HISTORY_RDO_ID = 12345;
         private const int _DESTINATION_WORKSPACE_INSTANCE_ID = 54321;
         private const int _FEDERATED_INSTANCE_ID = 134648;
@@ -117,13 +115,13 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_ShouldTagDocuments()
         {
-            //Arrange
+            // Arrange
             _sut.OnJobStart(_job);
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             _sourceWorkspaceDocumentsTaggerMock.Verify(
                 x => x.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(_scratchTableRepositoryMock.Object, _DESTINATION_WORKSPACE_INSTANCE_ID, _JOB_HISTORY_RDO_ID),
                 Times.Once);
@@ -132,13 +130,13 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_ShouldDisposeScratchTable()
         {
-            //Arrange
+            // Arrange
             _sut.OnJobStart(_job);
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             _scratchTableRepositoryMock.Verify(
                 x => x.Dispose(),
                 Times.Once);
@@ -147,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_ShouldRethrowTaggingException()
         {
-            //Arrange
+            // Arrange
             _sourceWorkspaceDocumentsTaggerMock
                 .Setup(x => x.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                     _scratchTableRepositoryMock.Object,
@@ -157,17 +155,17 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
             _sut.OnJobStart(_job);
 
-            //Act
+            // Act
             Action onJobCompleteAction = () => _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             onJobCompleteAction.ShouldThrow<IntegrationPointsException>();
         }
 
         [Test]
         public void OnJobComplete_ShouldDisposeScratchTableInCaseOfTaggingException()
         {
-            //Arrange
+            // Arrange
             _sourceWorkspaceDocumentsTaggerMock
                 .Setup(x => x.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                     _scratchTableRepositoryMock.Object,
@@ -177,7 +175,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
             _sut.OnJobStart(_job);
 
-            //Act
+            // Act
             try
             {
                 _sut.OnJobComplete(_job);
@@ -187,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 // ignored
             }
 
-            //Assert
+            // Assert
             _scratchTableRepositoryMock.Verify(
                 x => x.Dispose(),
                 Times.Once);
@@ -196,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_ShouldNotTagDocumentsWhenOnJobStartFailed()
         {
-            //Arrange
+            // Arrange
             _sourceWorkspaceTagsCreatorMock
                 .Setup(x => x.CreateDestinationWorkspaceTag(_DESTINATION_WORKSPACE_ID, _JOB_HISTORY_RDO_ID, _FEDERATED_INSTANCE_ID))
                 .Throws<Exception>();
@@ -210,10 +208,10 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 // ignored
             }
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             _sourceWorkspaceDocumentsTaggerMock.Verify(
                 x => x.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                     It.IsAny<IScratchTableRepository>(),
@@ -225,7 +223,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_ShouldDisposeScratchTableWhenOnJobStartFailed()
         {
-            //Arrange
+            // Arrange
             _sourceWorkspaceTagsCreatorMock
                 .Setup(x => x.CreateDestinationWorkspaceTag(_DESTINATION_WORKSPACE_ID, _JOB_HISTORY_RDO_ID, _FEDERATED_INSTANCE_ID))
                 .Throws<Exception>();
@@ -239,10 +237,10 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 // ignored
             }
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             _scratchTableRepositoryMock.Verify(
                 x => x.Dispose(),
                 Times.Once);
@@ -251,11 +249,11 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void GetScratchTableRepository_AlwaysGivesTheSameObject()
         {
-            //Act
+            // Act
             IScratchTableRepository repository = _sut.ScratchTableRepository;
             IScratchTableRepository repository2 = _sut.ScratchTableRepository;
 
-            //Assert
+            // Assert
             Assert.AreSame(repository, repository2);
         }
 

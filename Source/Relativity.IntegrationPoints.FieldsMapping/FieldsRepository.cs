@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
         public async Task<IEnumerable<FieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIds, int workspaceId)
         {
             artifactIds = artifactIds?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            if(artifactIds == null || !artifactIds.Any())
+            if (artifactIds == null || !artifactIds.Any())
             {
                 return Enumerable.Empty<FieldInfo>();
             }

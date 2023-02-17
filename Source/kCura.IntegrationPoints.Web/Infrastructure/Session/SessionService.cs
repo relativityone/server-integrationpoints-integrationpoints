@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
         public int? WorkspaceUserID => GetValueOrLogError(
             () => _connectionHelper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID
         );
-
         private int? GetValueOrLogError(Func<int> valueGetter, [CallerMemberName] string propertyName = "")
         {
             try

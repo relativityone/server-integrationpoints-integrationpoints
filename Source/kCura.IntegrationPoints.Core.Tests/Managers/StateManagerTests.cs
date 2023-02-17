@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void GetRelativityProviderButtonState_HasErrors_JobsRunning()
         {
-            //Arrange
+            // Arrange
             ExportType exportType = ExportType.SavedSearch;
             bool hasErrors = true;
             bool hasJobsExecutingOrInQueue = true;

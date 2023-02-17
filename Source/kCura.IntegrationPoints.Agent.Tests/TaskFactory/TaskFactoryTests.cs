@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private Mock<IWindsorContainer> _containerFake;
         private Mock<ICustomProviderFlowCheck> _newCustomProviderCheckFake;
         private ITaskFactory _instance;
-
         private IFixture _fxt;
 
         [SetUp]

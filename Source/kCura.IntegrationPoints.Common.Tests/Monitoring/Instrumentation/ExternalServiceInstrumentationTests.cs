@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
         private ExternalServiceInstrumentation _sut;
         private IAPILog _logger;
         private IMessageService _messageService;
-
         private const int _WORKSPACE_ID = 531412;
         private readonly InstrumentationJobContext _jobContext = new InstrumentationJobContext
         (

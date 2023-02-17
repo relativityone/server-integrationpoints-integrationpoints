@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private DateTime _nextScheduledRuntime;
         private DateTime _lastRuntime;
         private IntegrationPointRepository _sut;
-
         private const int _SOURCE_PROVIDER = 2;
         private const int _DESTINATION_PROVIDER = 4;
         private const int _TYPE = 3;

@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
             }
             catch
             {
-                //IGNORE
+                // IGNORE
             }
 
             _logger.Received(1).LogError(Arg.Any<Exception>(), Arg.Any<string>());

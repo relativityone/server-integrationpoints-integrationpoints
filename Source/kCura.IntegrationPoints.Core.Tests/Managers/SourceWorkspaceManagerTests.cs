@@ -15,11 +15,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
     {
         private const int _SOURCE_WORKSPACE_ID = 874817;
         private const int _DESTINATION_WORKSPACE_ID = 282573;
-
         private ISourceWorkspaceRepository _sourceWorkspaceRepository;
         private IWorkspaceRepository _workspaceRepository;
         private IInstanceSettingRepository _instanceSettingRepository;
-
         private SourceWorkspaceManager _instance;
 
         public override void SetUp()

@@ -13,10 +13,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class TagsCreatorTests : TestBase
     {
         private TagsCreator _instance;
-
         private ISourceJobManager _sourceJobManager;
         private ISourceWorkspaceManager _sourceWorkspaceManager;
-
         private IRelativitySourceJobRdoInitializer _sourceJobRdoInitializer;
         private IRelativitySourceWorkspaceRdoInitializer _sourceWorkspaceRdoInitializer;
 

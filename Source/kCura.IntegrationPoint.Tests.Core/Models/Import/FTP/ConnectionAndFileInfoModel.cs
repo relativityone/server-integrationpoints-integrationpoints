@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.FTP
     public class ConnectionAndFileInfoModel
     {
         private readonly SecureString _secureUsername = new SecureString();
-
         private readonly SecureString _securePassword = new SecureString();
 
         public string Host { get; set; }

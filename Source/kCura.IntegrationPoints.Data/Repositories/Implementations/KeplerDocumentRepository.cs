@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             IList<FieldRef> fields = GetFieldsListFromArtifactIDs(artifactFieldIDs);
             QueryRequest request = new QueryRequest
             {
-                ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+                ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document },
                 Fields = fields,
                 Condition = $"'ArtifactId' IN SAVEDSEARCH {searchArtifactID}"
             };
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             IList<FieldRef> fields = GetFieldsListFromArtifactIDs(artifactFieldIDs);
             QueryRequest request = new QueryRequest
             {
-                ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document},
+                ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Document },
                 Fields = fields,
                 Condition = $"(('Production' SUBQUERY ((('Production::ProductionSet' == OBJECT {productionArtifactID})))))"
             };

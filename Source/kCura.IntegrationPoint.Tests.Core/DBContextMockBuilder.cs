@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         {
             IDBContext context = Substitute.For<IDBContext>();
             context.ServerName
-                .Returns(x => 
+                .Returns(x =>
                     baseContext.ServerName
                 );
 

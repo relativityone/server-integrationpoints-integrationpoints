@@ -18,12 +18,10 @@ namespace Rip.TestUtilities
         private const string _APPEND_ONLY = "Append Only";
         private const string _OVERLAY_ONLY = "Overlay Only";
         private const string _APPEND_OVERLAY = "Append/Overlay";
-
         private readonly ISerializer _serializer;
         private readonly IRelativityObjectManager _objectManager;
         private readonly IEnumerable<SourceProvider> _sourceProviders;
         private readonly IEnumerable<DestinationProvider> _destinationProviders;
-
         private int _type;
         private string _name;
         private int _sourceProvider;

@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
     public class ExportUserNotification : IUserMessageNotification, IUserNotification
     {
         public event EventHandler<UserMessageEventArgs> UserFatalMessageEvent;
+
         public event EventHandler<UserMessageEventArgs> UserWarningMessageEvent;
 
         public void Alert(string message)

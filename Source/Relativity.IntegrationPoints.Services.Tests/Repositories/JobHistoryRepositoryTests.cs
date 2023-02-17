@@ -20,7 +20,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private IJobHistoryAccess _jobHistoryAccess;
         private IJobHistorySummaryModelBuilder _summaryModelBuilder;
         private JobHistoryAccessor _jobHistoryAccessor;
-
         private IFederatedInstanceManager _federatedInstanceManager;
         private IWorkspaceManager _workspaceManager;
 
@@ -68,8 +67,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             };
             var workspaces = new List<WorkspaceDTO>
             {
-                new WorkspaceDTO {ArtifactId = 1},
-                new WorkspaceDTO {ArtifactId = 2},
+                new WorkspaceDTO {ArtifactId = 1 },
+                new WorkspaceDTO {ArtifactId = 2 },
                 new WorkspaceDTO {ArtifactId = 3}
             };
 
@@ -80,12 +79,12 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             };
             var queryResult1 = new List<JobHistoryModel>
             {
-                new JobHistoryModel {DestinationWorkspace = localworkspace1, DestinationInstance = localInstance},
+                new JobHistoryModel {DestinationWorkspace = localworkspace1, DestinationInstance = localInstance },
                 new JobHistoryModel {DestinationWorkspace = localworkspace2, DestinationInstance = localInstance}
             };
             var queryResult2 = new List<JobHistoryModel>
             {
-                new JobHistoryModel {DestinationWorkspace = localworkspace2, DestinationInstance = localInstance},
+                new JobHistoryModel {DestinationWorkspace = localworkspace2, DestinationInstance = localInstance },
                 new JobHistoryModel {DestinationWorkspace = localworkspace1, DestinationInstance = localInstance}
             };
             var filteredJobHistories = new List<JobHistoryModel>()
@@ -113,7 +112,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             var expectedWorkspaces = new Dictionary<int, IList<int>>
             {
-                {-1, new List<int> {1, 2, 3}},
+                {-1, new List<int> {1, 2, 3} },
             };
 
             _jobHistoryAccess.Filter(Arg.Do<List<JobHistoryModel>>(x => CollectionAssert.AreEquivalent(x, expectedJobHistories)),

@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
     {
         private readonly IRelativityObjectManager _objectManager;
         private readonly IAPILog _logger;
+
         public string Key => Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE;
 
         public IntegrationPointTypeValidator(IRelativityObjectManager objectManager, IAPILog logger)

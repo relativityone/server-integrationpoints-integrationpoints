@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
             _caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
         }
 
-        //TODO: Refactor loaded scripts and extract common parts
+        // TODO: Refactor loaded scripts and extract common parts
         public ICommonScripts Create(EventHandlerBase eventHandlerBase)
         {
             int sourceProviderId = (int) eventHandlerBase.ActiveArtifact.Fields[_fieldsConstants.SourceProvider].Value.Value;

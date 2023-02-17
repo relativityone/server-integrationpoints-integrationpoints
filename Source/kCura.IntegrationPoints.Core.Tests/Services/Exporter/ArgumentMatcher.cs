@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                 return false;
             }
 
-            if (expected.Columns.Count == 0 
+            if (expected.Columns.Count == 0
                 && actual.Columns.Count == 0)
             {
                 return true;

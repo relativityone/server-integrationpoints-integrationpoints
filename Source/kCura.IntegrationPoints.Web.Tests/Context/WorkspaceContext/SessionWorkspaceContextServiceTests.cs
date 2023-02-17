@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
     {
         private Mock<ISessionService> _sessionServiceMock;
         private Mock<IWorkspaceContext> _nextWorkspaceContextServiceMock;
-
         private SessionWorkspaceContextService _sut;
 
         [SetUp]

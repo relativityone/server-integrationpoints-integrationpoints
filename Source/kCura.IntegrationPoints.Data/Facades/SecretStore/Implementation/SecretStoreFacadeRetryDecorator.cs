@@ -9,17 +9,16 @@ namespace kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation
     {
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
-
         private readonly IRetryHandler _retryHandler;
         private readonly ISecretStoreFacade _secretStore;
 
         public SecretStoreFacadeRetryDecorator(
-            ISecretStoreFacade secretStore, 
+            ISecretStoreFacade secretStore,
             IRetryHandlerFactory retryHandlerFactory)
         {
             _secretStore = secretStore;
             _retryHandler = retryHandlerFactory.Create(
-                _MAX_NUMBER_OF_RETRIES, 
+                _MAX_NUMBER_OF_RETRIES,
                 _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC
             );
         }

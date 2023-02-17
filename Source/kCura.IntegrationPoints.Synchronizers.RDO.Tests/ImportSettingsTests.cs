@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     [TestFixture, Category("Unit")]
     public class ImportSettingsTests : TestBase
     {
-
         [SetUp]
         public override void SetUp()
         {
@@ -19,15 +18,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ImportSettings_SerializeDesirialize()
         {
-            //ARRANGE
+            // ARRANGE
             var serializer = new JSONSerializer();
             var settings = new ImportSettings {ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay};
 
-            //ACT
+            // ACT
             string serializedString = serializer.Serialize(settings);
             serializer.Deserialize<ImportSettings>(serializedString);
 
-            //ASSERT
+            // ASSERT
             Assert.IsFalse(serializedString.Contains("\"AuditLevel\""));
             Assert.IsFalse(serializedString.Contains("\"NativeFileCopyMode\""));
             Assert.IsFalse(serializedString.Contains("\"OverwriteMode\""));

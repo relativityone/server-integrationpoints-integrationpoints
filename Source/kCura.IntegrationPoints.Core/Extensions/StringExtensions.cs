@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Extensions
         /// </summary>
         public static string TrimAll(this string value)
         {
-            if(string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 return value;
             }

@@ -17,8 +17,6 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-
-
     [TestFixture, Category("Unit")]
     public class ExportQueryResultTests
     {
@@ -26,7 +24,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IObjectManagerFacade> _objectManagerFacadeMock;
         private Guid _runID;
         private ExportInitializationResults _exportInitializationResults;
-
         private readonly int _WORKSPACE_ID = 5;
         private ExportQueryResult _sut;
         private Mock<Action<Exception, int, int>> _exceptionHandlerMock;
@@ -202,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                         _WORKSPACE_ID,
                         _runID,
                         It.IsAny<int>(),
-                        It.IsInRange((int)_exportInitializationResults.RecordCount, Int32.MaxValue, Range.Inclusive)), Times.Never);
+                        It.IsInRange((int)_exportInitializationResults.RecordCount, int.MaxValue, Range.Inclusive)), Times.Never);
         }
 
         [Test]
@@ -233,7 +230,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                         _WORKSPACE_ID,
                         _runID,
                         It.IsAny<int>(),
-                        It.IsInRange((int)_exportInitializationResults.RecordCount, Int32.MaxValue, Range.Inclusive)), Times.Never);
+                        It.IsInRange((int)_exportInitializationResults.RecordCount, int.MaxValue, Range.Inclusive)), Times.Never);
         }
 
         private static Func<int, Guid, int, int, Task<RelativityObjectSlim[]>> RetrieveResultsBlockFromExportAsyncMock(int toReturn)
@@ -252,7 +249,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             const int blockSize = 500;
             const int startIndex = 666;
 
-
             _objectManagerFacadeMock
                 .Setup(x =>
                     x.RetrieveResultsBlockFromExportAsync(
@@ -261,7 +257,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                         blockSize,
                         It.IsAny<int>()))
                 .ReturnsAsync(Enumerable.Repeat(new RelativityObjectSlim(), blockSize).ToArray());
-
 
             // Act
             await _sut.GetNextBlockAsync(startIndex, blockSize).ConfigureAwait(false);

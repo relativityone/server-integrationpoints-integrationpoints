@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                             break;
                     }
                 }
-                else //Runs for Run Now or Scheduled jobs
+                else // Runs for Run Now or Scheduled jobs
                 {
                     switch (updateStatusType.ErrorTypes)
                     {

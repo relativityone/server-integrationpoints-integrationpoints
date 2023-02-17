@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
 
-
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class ImportPreviewController : ApiController
@@ -44,9 +43,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             previewTable.Header.Insert(0, "#");
             int rowNumber = 1;
-            foreach(var row in previewTable.Data)
+            foreach (var row in previewTable.Data)
             {
-                //Add a column that simply numbers each row
+                // Add a column that simply numbers each row
                 row.Insert(0, string.Format("{0}",rowNumber++));
             }
 

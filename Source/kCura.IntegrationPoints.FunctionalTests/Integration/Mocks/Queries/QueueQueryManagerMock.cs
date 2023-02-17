@@ -12,7 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
     {
         private readonly RelativityInstanceTest _db;
         private readonly TestContext _context;
-
         private int _scheduleQueueCreateRequestCount;
 
         public QueueQueryManagerMock(RelativityInstanceTest database, TestContext context)

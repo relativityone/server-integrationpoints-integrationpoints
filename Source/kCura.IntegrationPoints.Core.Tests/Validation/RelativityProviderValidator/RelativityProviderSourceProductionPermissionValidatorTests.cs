@@ -36,14 +36,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [Test]
         public void ShouldReturnSuccessfulValidationResultWhenThereIsNoAccessToProduction()
         {
-            //arrange
+            // arrange
             _productionRepository.GetProduction(_workspaceId, _productionId).Returns(new ProductionDTO() { ArtifactID = _productionId.ToString(), DisplayName = "Test Production"});
             RelativityProviderSourceProductionPermissionValidator validator = new RelativityProviderSourceProductionPermissionValidator(_productionRepository, _logger);
 
-            //act
+            // act
             var result = validator.Validate(_workspaceId, _productionId);
 
-            //assert
+            // assert
             _productionRepository.Received(1).GetProduction(_workspaceId, _productionId);
             Assert.True(result.IsValid);
             Assert.False(result.Messages.Any());
@@ -52,15 +52,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [Test]
         public void ShouldReturnFailedValidationResultWhenThereIsNoAccessToProduction()
         {
-            //arrange
+            // arrange
             _productionRepository.GetProduction(_workspaceId, _productionId)
                 .Throws(new Exception("Unable to retrieve production"));
             RelativityProviderSourceProductionPermissionValidator validator = new RelativityProviderSourceProductionPermissionValidator(_productionRepository, _logger);
 
-            //act
+            // act
             var result = validator.Validate(_workspaceId, _productionId);
 
-            //assert
+            // assert
             _productionRepository.Received(1).GetProduction(_workspaceId, _productionId);
 
             Assert.False(result.IsValid);

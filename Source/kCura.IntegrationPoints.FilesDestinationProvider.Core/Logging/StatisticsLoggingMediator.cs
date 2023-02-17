@@ -24,19 +24,25 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly DateTime _startTime;
 
-        #endregion //Fields
+        #endregion // Fields
 
         #region Events
 
         public event BatchCompleted OnBatchComplete;
+
         public event BatchSubmitted OnBatchSubmit;
+
         public event BatchCreated OnBatchCreate;
+
         public event StatusUpdate OnStatusUpdate;
+
         public event JobError OnJobError;
+
         public event RowError OnDocumentError;
+
         public event StatisticsUpdate OnStatisticsUpdate;
 
-        #endregion //Events
+        #endregion // Events
 
         #region Methods
 
@@ -83,7 +89,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
         private void OnStatusMessageChanged(ExportEventArgs exportArgs)
         {
-
             // RDC firse many events even exported items count has not been chnaged. We need to filter it out
             if (CanUpdateJobStatus(exportArgs))
             {
@@ -183,6 +188,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
             OnBatchComplete?.Invoke(startTime, endTime, totalRows, errorRowCount);
         }
 
-        #endregion //Methods
+        #endregion // Methods
     }
 }

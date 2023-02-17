@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     [DataContract]
     public class ScheduleRuleTest
     {
-        //TODO: VALIDATE WHICH PROPERTIES ARE NEEDED
+        // TODO: VALIDATE WHICH PROPERTIES ARE NEEDED
 
         [DataMember]
         public int? DayOfMonth { get; set; }
@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public OccuranceInMonth? OccurenceInMonth { get; set; }
 
         [DataMember]
-        public int? Reoccur { get; set; } 
+        public int? Reoccur { get; set; }
 
         [DataMember]
         public bool? SetLastDayOfMonth { get; set; }

@@ -6,7 +6,7 @@
     public class JobHistoryErrorDTO : BaseDTO
     {
         public const string TableName = "JobHistoryError";
-        
+
         /// <summary>
         /// Choices for Job History Error object
         /// </summary>

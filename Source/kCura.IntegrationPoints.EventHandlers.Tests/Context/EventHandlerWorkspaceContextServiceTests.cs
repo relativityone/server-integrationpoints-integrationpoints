@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
     public class EventHandlerWorkspaceContextServiceTests
     {
         private Mock<IEHHelper> _helperMock;
-
         private EventHandlerWorkspaceContextService _sut;
 
         [SetUp]
@@ -24,16 +23,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
         [Test]
         public void GetWorkspaceID_ShouldReturnWorkspaceIDAndCallHelperOnce()
         {
-            //arrange
+            // arrange
             const int expectedWorkspaceID = 1001;
             _helperMock
                 .Setup(x => x.GetActiveCaseID())
                 .Returns(expectedWorkspaceID);
-            
-            //act
+
+            // act
             int actualWorkspaceID = _sut.GetWorkspaceID();
 
-            //assert
+            // assert
             actualWorkspaceID.Should().Be(actualWorkspaceID);
             _helperMock.Verify(x => x.GetActiveCaseID(), Times.Once);
         }
@@ -41,29 +40,29 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Context
         [Test]
         public void GetWorkspaceID_ShouldThrowWhenHelperThrows()
         {
-            //arrange
+            // arrange
             var sut = new EventHandlerWorkspaceContextService(helper: null);
 
-            //act
+            // act
             Action action = () => sut.GetWorkspaceID();
 
-            //assert
+            // assert
             action.ShouldThrow<NullReferenceException>();
         }
 
         [Test]
         public void GetWorkspaceID_ShouldThrowWhenHelperNotInitialized()
         {
-            //arrange
+            // arrange
             var exception = new Exception("test 123");
             _helperMock
                 .Setup(x => x.GetActiveCaseID())
                 .Throws(exception);
 
-            //act
+            // act
             Action action = () => _sut.GetWorkspaceID();
 
-            //assert
+            // assert
             action.ShouldThrow<Exception>().WithMessage(exception.Message);
         }
     }

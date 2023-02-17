@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 numberOfPendingJobs = queueRepository.GetNumberOfPendingJobs(workspaceArtifactId, integrationPointArtifactId);
             }
         }
-        
+
         private static void VerifyTimeout(double timeWaitedInSeconds, int timeoutInSeconds, string operationName)
         {
             if (timeWaitedInSeconds >= timeoutInSeconds)

@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Helpers
     public class ArtifactsToDelete : IArtifactsToDelete
     {
         private const string _SQL = "SELECT ArtifactID FROM {0}.[{1}]";
-
         private readonly IEHContext _context;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IDbContextFactory _dbContextFactory;

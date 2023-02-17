@@ -23,11 +23,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private SourceFieldsController _instance;
         private HttpConfiguration _configuration;
         private SourceProvider _providerRdo;
-
         private IDataSourceProvider _dataSourceProvider;
         private IDataProviderFactory _factory;
         private IGetSourceProviderRdoByIdentifier _sourceProviderIdentifier;
-
         private FieldEntry _fieldA, _fieldB, _fieldC, _fieldD = null;
         private readonly Guid _dataType = new Guid("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
         private readonly Guid _appIdentifier = new Guid("00000000-0000-0000-0000-000000000000");
@@ -73,7 +71,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             var classificationResults = ((List<ClassifiedFieldDTO>)((System.Net.Http.ObjectContent<List<ClassifiedFieldDTO>>)response.Content).Value);
             var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
-
 
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldIdentifier));
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.Name));

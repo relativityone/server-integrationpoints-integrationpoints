@@ -13,18 +13,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         [SetUp]
         public override void SetUp()
         {
-            
         }
 
         [Test]
         public void GetFeaturePathsValue_Relativity91AndPrior_CorrectValues()
         {
-            //ARRANGE
-            //ACT
+            // ARRANGE
+            // ACT
             MockService mockService = getDefaultMockService();
             mockService.NewRegistryStructure = false;
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("AgentPath", mockService.AgentPath);
             Assert.AreEqual("WebPath", mockService.EddsPath);
             Assert.AreEqual("LibraryPath", mockService.LibraryPath);
@@ -34,28 +33,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         [Test]
         public void GetFeaturePathsValue_Relativity91AndPriorOnDevEnvironment_ExpectedException()
         {
-            //ARRANGE
-            //ACT
+            // ARRANGE
+            // ACT
             MockService mockService = NSubstitute.Substitute.For<MockService>();
             mockService.NewRegistryStructure = false;
             mockService.LibraryPath = null;
             mockService.GetFeaturePathsValueOverride(Arg.Any<string>()).Returns(string.Empty);
 
-            //ASSERT
+            // ASSERT
             Assert.Throws<Exception>(() => { string path = mockService.LibraryPath; }, "Could not retrieve LibraryPath.");
         }
 
         [Test]
         public void GetFeaturePathsValue_Relativity92AndUpRunningOnWebServer_CorrectValues()
         {
-            //ARRANGE
-            //ACT
+            // ARRANGE
+            // ACT
             MockService2 mockService =  new MockService2();
             mockService.NewRegistryStructure = true;
             mockService.BaseInstallDirOverride = "XXX";
             mockService.DirectoryExistOverride = true;
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("XXX\\Agents", mockService.AgentPath);
             Assert.AreEqual("XXX\\EDDS", mockService.EddsPath);
             Assert.AreEqual("XXX\\Library", mockService.LibraryPath);
@@ -65,13 +64,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         [Test]
         public void GetFeaturePathsValue_Relativity92AndUpRunningOnAgent_CorrectValues()
         {
-            //ARRANGE
-            //ACT
+            // ARRANGE
+            // ACT
             MockService2 mockService = new MockService2();
             mockService.NewRegistryStructure = true;
             mockService.BaseInstallDirOverride = "XXX";
 
-            //ASSERT
+            // ASSERT
             mockService.DirectoryExistOverride = true;
             Assert.AreEqual("XXX\\Agents", mockService.AgentPath);
             mockService.DirectoryExistOverride = false;
@@ -120,7 +119,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
     {
         public MockService()
         {
-
         }
 
         public string BaseInstallDirOverride
@@ -160,7 +158,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
     {
         public MockService2()
         {
-
         }
 
         public string BaseInstallDirOverride

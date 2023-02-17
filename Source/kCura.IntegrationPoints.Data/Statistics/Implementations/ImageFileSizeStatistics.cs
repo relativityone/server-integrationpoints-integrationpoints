@@ -18,9 +18,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private const string _FOR_FOLDER_ERROR = "Failed to retrieve total image files size for folder: {folderId} and view: {viewId}.";
         private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total image files count for production set: {productionSetId}.";
         private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total image files size for saved search id: {savedSearchId}.";
-
         private const string _PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX = "ProductionDocumentFile_";
-        
         private readonly IDbContextFactory _dbContextFactory;
 
         public ImageFileSizeStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)

@@ -13,8 +13,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
     [TestFixture, Category("Unit")]
     public class FieldConverterTests
     {
-
-
         [Test]
         public void ConvertToFieldTest()
         {
@@ -42,8 +40,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
             // Assert
             TestFields.ValidateConvertedFieldValues(result, field);
         }
-
-
 
         public static class TestFields
         {
@@ -267,7 +263,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 
                 return false;
             }
-            
+
             private const int _KEYBOARD_SHORTCUT_ID = 1048234;
 
             private const int _KEYBOARD_SHORTCUT_KEY = 14;

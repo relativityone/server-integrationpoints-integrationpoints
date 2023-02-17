@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
     public class MigrateSecretCatalogPathToSecretStorePathCommandTests
     {
         private MigrateSecretCatalogPathToSecretStorePathCommand _sut;
-
         private Mock<IWorkspaceContext> _workspaceContextMock;
         private Mock<IAPILog> _apiLogMock;
         private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
@@ -46,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
                 .Setup(x => x.GetWorkspaceID())
                 .Returns(_WORKSPACE_ID);
             _sut = new MigrateSecretCatalogPathToSecretStorePathCommand(
-                _relativityObjectManagerMock.Object, 
+                _relativityObjectManagerMock.Object,
                 _migrationServiceMock.Object,
                 _workspaceContextMock.Object,
                 _apiLogMock.Object
@@ -56,17 +55,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [Test]
         public void ShouldNotCallMigrateSecretAndLogInformationIfThereIsNoIntegrationPoints()
         {
-            //ARRANGE
+            // ARRANGE
             _integrationPoints = new List<Data.IntegrationPoint>();
             _relativityObjectManagerMock.Setup(x => x.Query<Data.IntegrationPoint>(
                 It.IsAny<QueryRequest>(),
                 ExecutionIdentity.CurrentUser)
             ).Returns(_integrationPoints);
 
-            //ACT
+            // ACT
             _sut.Execute();
 
-            //ASSERT
+            // ASSERT
             VerifyMigrateSecretHasNotBeenCalled();
             VerifyIfLoggerHasBeenCalled();
         }
@@ -74,7 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [Test]
         public void ShouldCallMigrateSecretOnce()
         {
-            //ARRANGE
+            // ARRANGE
             Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint()
             {
                 SecuredConfiguration = _SECURED_CONFIGURATION_DEFAULT,
@@ -82,17 +81,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             };
             _integrationPoints = new List<Data.IntegrationPoint> { integrationPoint };
             _relativityObjectManagerMock.Setup(x => x.Query<Data.IntegrationPoint>(
-                It.IsAny<QueryRequest>(), 
+                It.IsAny<QueryRequest>(),
                 ExecutionIdentity.CurrentUser)
             ).Returns(_integrationPoints);
 
-            //ACT
+            // ACT
             _sut.Execute();
 
-            //ASSERT
+            // ASSERT
             _migrationServiceMock.Verify(x => x.TryMigrateSecret(
                     _WORKSPACE_ID,
-                    _INTEGRATION_POINT_ARTIFACT_ID, 
+                    _INTEGRATION_POINT_ARTIFACT_ID,
                     _SECURED_CONFIGURATION_DEFAULT), Times.Once
             );
         }
@@ -100,19 +99,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [Test]
         public void ShouldCallMigrateSecretOnceForEveryIntegrationPoint()
         {
-            //ARRANGE
+            // ARRANGE
             int[] integrationPointIDs = { 12345, 44123, 121212, 32132 };
             _integrationPoints = CreateListOfIntegrationPointsWithArtifactIDs(integrationPointIDs).ToList();
             _relativityObjectManagerMock
                 .Setup(x => x.Query<Data.IntegrationPoint>(
-                    It.IsAny<QueryRequest>(), 
+                    It.IsAny<QueryRequest>(),
                     ExecutionIdentity.CurrentUser))
                 .Returns(_integrationPoints);
 
-            //ACT
+            // ACT
             _sut.Execute();
 
-            //ASSERT
+            // ASSERT
             foreach (int integrationPointID in integrationPointIDs)
             {
                 VerifyMigrateSecretHasBeenCalledWithProperIntegrationPointID(integrationPointID);
@@ -122,17 +121,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [Test]
         public void ShouldThrowWhenObjectManagerThrows()
         {
-            //ARRANGE
+            // ARRANGE
             _relativityObjectManagerMock
                 .Setup(x => x.Query<Data.IntegrationPoint>(
                     It.IsAny<QueryRequest>(),
                     ExecutionIdentity.CurrentUser))
                 .Throws<Exception>();
 
-            //ACT
+            // ACT
             Action action = () => _sut.Execute();
 
-            //ASSERT
+            // ASSERT
             action.ShouldThrow<Exception>();
             VerifyMigrateSecretHasNotBeenCalled();
         }
@@ -140,7 +139,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [Test]
         public void ShouldThrowWhenMigrationSecretServiceThrows()
         {
-            //ARRANGE
+            // ARRANGE
             Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
             {
                 SecuredConfiguration = _SECURED_CONFIGURATION_DEFAULT,
@@ -158,10 +157,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
                     It.IsAny<string>()))
                 .Throws<Exception>();
 
-            //ACT
+            // ACT
             Action action = () => _sut.Execute();
 
-            //ASSERT
+            // ASSERT
             action.ShouldThrow<Exception>();
         }
 
@@ -169,8 +168,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         {
             _migrationServiceMock.Verify(x => x.TryMigrateSecret(
                     _WORKSPACE_ID,
-                    integrationPointID, 
-                    _SECURED_CONFIGURATION_DEFAULT), 
+                    integrationPointID,
+                    _SECURED_CONFIGURATION_DEFAULT),
                 Times.Once
             );
         }
@@ -179,8 +178,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         {
             _migrationServiceMock.Verify(x => x.TryMigrateSecret(
                     It.IsAny<int>(),
-                    It.IsAny<int>(), 
-                    It.IsAny<string>()), 
+                    It.IsAny<int>(),
+                    It.IsAny<string>()),
                 Times.Never
             );
         }

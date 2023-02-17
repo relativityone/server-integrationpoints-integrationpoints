@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
         private readonly Func<IWebCorrelationContextProvider> _webCorrelationContextProviderFactory;
         private readonly Func<IWorkspaceContext> _workspaceContextFactory;
         private readonly Func<IUserContext> _userContextFactory;
-
         public const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
         public CorrelationIdHandler(

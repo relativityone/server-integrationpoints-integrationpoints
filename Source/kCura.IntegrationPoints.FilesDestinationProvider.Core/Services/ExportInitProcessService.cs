@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
         private readonly IRdoStatistics _rdoStatistics;
         private readonly IDocumentTotalStatistics _documentStatistics;
         private readonly IAPILog _logger;
-        
+
         public ExportInitProcessService(IHelper helper, IDocumentTotalStatistics documentStatistics, IRdoStatistics rdoStatistics)
         {
             _documentStatistics = documentStatistics;
@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
             {
                 docsCount = GetTotalRdoCount(exportSettings, artifactTypeId, _rdoStatistics);
             }
-
 
             long extractedIndex = Math.Min(docsCount, Math.Abs(exportSettings.StartExportAtRecord - 1));
             long retValue = Math.Max(docsCount - extractedIndex, 0);

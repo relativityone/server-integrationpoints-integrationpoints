@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoint.Tests.Core
     public static class DocumentService
     {
         private static ITestHelper _testHelper = null;
-        
         private static readonly string[] AllFields = new[] { "*" };
 
         private static ITestHelper Helper
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             {
                 QueryRequest request = new QueryRequest
                 {
-                    ObjectType    = new ObjectTypeRef {ArtifactTypeID = (int)ArtifactType.Document},
+                    ObjectType    = new ObjectTypeRef {ArtifactTypeID = (int)ArtifactType.Document },
                     Fields = requestedFields.Select(x => new FieldRef {Name = x})
                 };
 

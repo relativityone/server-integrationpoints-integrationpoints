@@ -19,33 +19,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
         {
             string queuedOrRunningJobsSql =
-                $@"SELECT count(*) 
-                FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-                WHERE [WorkspaceID] = @workspaceId 
-                    AND [RelatedObjectArtifactID] = @integrationPointId 
+                $@"SELECT count(*)
+                FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}]
+                WHERE [WorkspaceID] = @workspaceId
+                    AND [RelatedObjectArtifactID] = @integrationPointId
                     AND [ScheduleRuleType] is null";
 
             IEnumerable<SqlParameter> queuedOrRunningJobParameters = new List<SqlParameter>
             {
-                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
-                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
+                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId },
+                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId },
             };
 
-            string scheduledRunningJobsSql = 
-            
-            $@"SELECT count(*) 
-            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-            WHERE [WorkspaceID] = @workspaceId 
-                AND [RelatedObjectArtifactID] = @integrationPointId 
-                AND [ScheduleRuleType] is not null 
+            string scheduledRunningJobsSql =
+
+            $@"SELECT count(*)
+            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}]
+            WHERE [WorkspaceID] = @workspaceId
+                AND [RelatedObjectArtifactID] = @integrationPointId
+                AND [ScheduleRuleType] is not null
                 AND [LockedByAgentID] is not null";
 
             IEnumerable<SqlParameter> scheduledRunningJobParameters = new List<SqlParameter>
             {
-                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
-                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
+                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId },
+                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId },
             };
-            
+
             int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(queuedOrRunningJobsSql, queuedOrRunningJobParameters);
             numberOfJobs += _dbContext.ExecuteSqlStatementAsScalar<int>(scheduledRunningJobsSql, scheduledRunningJobParameters);
 
@@ -56,16 +56,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             string pendingJobsSql =
 
-            $@"SELECT count(*) 
-            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-            WHERE [WorkspaceID] = @workspaceId 
-                AND [RelatedObjectArtifactID] = @integrationPointId             
+            $@"SELECT count(*)
+            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}]
+            WHERE [WorkspaceID] = @workspaceId
+                AND [RelatedObjectArtifactID] = @integrationPointId
                 AND [LockedByAgentID] is null";
 
             IEnumerable<SqlParameter> queuedOrRunningJobParameters = new List<SqlParameter>
             {
-                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
-                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
+                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId },
+                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId },
             };
 
             int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(pendingJobsSql, queuedOrRunningJobParameters);
@@ -73,24 +73,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return numberOfJobs;
         }
 
-
         public int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime)
         {
-            string sql = 
-                
-            $@"SELECT count(*) 
-            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-            WHERE [WorkspaceID] = @workspaceId 
-                AND [RelatedObjectArtifactID] = @integrationPointId 
-                AND [LockedByAgentID] is not null 
-                AND [NextRunTime] <= @dateValue 
+            string sql =
+
+            $@"SELECT count(*)
+            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}]
+            WHERE [WorkspaceID] = @workspaceId
+                AND [RelatedObjectArtifactID] = @integrationPointId
+                AND [LockedByAgentID] is not null
+                AND [NextRunTime] <= @dateValue
                 AND [JobID] != @jobId";
 
             IEnumerable<SqlParameter> parameters = new List<SqlParameter>
             {
-                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
-                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId},
-                new SqlParameter("@dateValue", SqlDbType.DateTime) {Value = runTime},
+                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId },
+                new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId },
+                new SqlParameter("@dateValue", SqlDbType.DateTime) {Value = runTime },
                 new SqlParameter("@jobId", SqlDbType.BigInt) {Value = jobId}
             };
 
@@ -103,15 +102,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             string sql =
 
-            $@"SELECT count(*) 
-            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-            WHERE [WorkspaceID] = @workspaceId 
-                AND [RelatedObjectArtifactID] = @integrationPointId 
+            $@"SELECT count(*)
+            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}]
+            WHERE [WorkspaceID] = @workspaceId
+                AND [RelatedObjectArtifactID] = @integrationPointId
                 AND [LockedByAgentID] is not null";
 
             IEnumerable<SqlParameter> parameters = new List<SqlParameter>
             {
-                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
+                new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId },
                 new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId}
             };
 

@@ -43,7 +43,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private SourceConfiguration _sourceConfiguration;
         private ExtendedImportSettings _destinationConfiguration;
-
         private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;

@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 RipInstanceSettings.RESTRICT_REFERENTIAL_FILE_LINKS_ON_IMPORT,
                 RipInstanceSettings.RELATIVITY_CORE_SECTION,
                 settings => settings.RestrictReferentialFileLinksOnImport);
-            
+
             SetupInstanceSettingInternal(_context.InstanceSettings,
                 RipInstanceSettings.FRIENDLY_INSTANCE_NAME,
                 RipInstanceSettings.RELATIVITY_AUTHENTICATION_SECTION,
@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 RipInstanceSettings.ALLOW_NO_SNAPSHOT_IMPORT,
                 RipInstanceSettings.RELATIVITY_CORE_SECTION,
                 settings => settings.AllowNoSnapshotImport);
-            
+
             SetupInstanceSettingInternal(_context.InstanceSettings,
                 RipInstanceSettings.BLOCKED_HOSTS,
                 RipInstanceSettings.INTEGRATION_POINTS_SECTION,

@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
     {
         private readonly Guid _defaultGuidValue = new Guid("4258D67D-63D4-4902-A48A-B1B19649ABFA");
         private readonly Guid _jobGuidValue = new Guid("0D01AF2F-5AF5-4F4D-820C-90471AD75750");
-
         private IManagerFactory _managerFactory;
         private ICaseServiceContext _caseServiceContext;
         private IJobManager _jobManager;
@@ -144,7 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         [Test]
         public void GetBatchInstance_NoJobDetails_CorrectOutput()
         {
-            //ARRANGE
+            // ARRANGE
             JSONSerializer serializer = Substitute.For<JSONSerializer>();
             IGuidService guidService = Substitute.For<IGuidService>();
             guidService.NewGuid().Returns(_defaultGuidValue);
@@ -166,17 +165,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob(null);
 
-            //ACT
+            // ACT
             Guid returnValue = manager.GetBatchInstance(job);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(_defaultGuidValue, returnValue);
         }
 
         [Test]
         public void GetBatchInstance_GuidInJobDetails_CorrectOutput()
         {
-            //ARRANGE
+            // ARRANGE
             JSONSerializer serializer = Substitute.For<JSONSerializer>();
             IGuidService guidService = Substitute.For<IGuidService>();
             guidService.NewGuid().Returns(_defaultGuidValue);
@@ -198,17 +197,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = _jobGuidValue }));
 
-            //ACT
+            // ACT
             Guid returnValue = manager.GetBatchInstance(job);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(_jobGuidValue, returnValue);
         }
 
         [Test]
         public void GetBatchInstance_BadGuidInJobDetails_CorrectOutput()
         {
-            //ARRANGE
+            // ARRANGE
             JSONSerializer serializer = Substitute.For<JSONSerializer>();
             IGuidService guidService = Substitute.For<IGuidService>();
             guidService.NewGuid().Returns(_defaultGuidValue);
@@ -230,7 +229,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob("BAD_GUID");
 
-            //ACT
+            // ACT
 
             Exception innerException = null;
             try
@@ -242,7 +241,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 innerException = ex;
             }
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("Failed to get Batch Instance.", innerException.Message);
             Assert.IsNotNull(innerException.InnerException);
         }

@@ -21,7 +21,6 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
     {
         private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryMock;
         private Mock<IRelativityObjectManager> _objectManagerFake;
-
         private const int _TEST_WORKSPACE_ID = 100;
         private const int _TEST_INTEGRATION_POINT_ID = 200;
         private const int _TEST_USER_ID = 300;

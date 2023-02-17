@@ -10,8 +10,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupWorkspace()
         {
-            Mock.Setup(x => x.QueryAsync(-1, 
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case), 
+            Mock.Setup(x => x.QueryAsync(-1,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {
@@ -24,9 +24,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         return Task.FromResult(result);
                     }
                 );
-            
-            Mock.Setup(x => x.QuerySlimAsync(-1, 
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case), 
+
+            Mock.Setup(x => x.QuerySlimAsync(-1,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Case),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {

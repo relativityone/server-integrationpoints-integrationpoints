@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             IIntegrationPointProfileService integrationPointProfileService,
             ImportNativeFileCopyModeUpdater importNativeFileCopyModeUpdater)
         {
-
             _integrationPointService = integrationPointService;
             _integrationPointProfileService = integrationPointProfileService;
             _importNativeFileCopyModeUpdater = importNativeFileCopyModeUpdater;

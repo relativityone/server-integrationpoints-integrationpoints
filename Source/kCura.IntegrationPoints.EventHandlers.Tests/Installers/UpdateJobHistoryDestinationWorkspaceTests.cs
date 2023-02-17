@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
     {
         private IJobHistoryService _jobHistoryService;
         private IDestinationParser _destinationParser;
-
         private UpdateJobHistoryDestinationWorkspace _testInstance;
 
         [Test]

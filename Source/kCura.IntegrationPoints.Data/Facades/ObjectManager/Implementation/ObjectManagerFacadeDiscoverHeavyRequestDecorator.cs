@@ -19,10 +19,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
     {
         private const int _MAX_COUNT_OF_COLLECTION_IN_REQUEST = 100000;
         private const string _UNKNOWN = "[UNKNOWN]";
-
         private readonly IObjectManagerFacade _objectManager;
         private readonly IAPILog _logger;
-
         private bool _disposedValue;
 
         /// <summary>

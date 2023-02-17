@@ -107,12 +107,19 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
         private class IntegrationPointDestinationConfiguration
         {
             public int FolderPathSourceField { get; set; }
+
             public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
+
             public bool UseFolderPathInformation { get; set; }
+
             public string FieldOverlayBehavior { get; set; }
+
             public bool UseDynamicFolderPath { get; set; }
+
             public bool ImageImport { get; set; }
+
             public int ArtifactTypeId { get; set; }
+
             public int DestinationArtifactTypeId { get; set; }
         }
 

@@ -22,24 +22,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void TestRetrieveFederatedInstance()
         {
-            //arrange
+            // arrange
             var federatedInstanceArtifactId = 1024;
             var testInstance = new FederatedInstanceManager();
 
-            //act
+            // act
             var federatedInstance = testInstance.RetrieveFederatedInstanceByArtifactId(federatedInstanceArtifactId);
 
-            //assert
+            // assert
             Assert.That(federatedInstance, Is.Null);
         }
 
         [Test]
         public void TestRetrieveAllHasLocalInstance()
         {
-            //arrange
+            // arrange
             var testInstance = new FederatedInstanceManager();
 
-            //act
+            // act
             List<FederatedInstanceDto> federatedInstances = testInstance.RetrieveAll().ToList();
 
             Assert.That(federatedInstances, Is.Not.Null);

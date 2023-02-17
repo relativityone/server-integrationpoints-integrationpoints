@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
             {
                 return null;
             }
-            
+
             if (value is byte[])
             {
                 return ConvertByteArray((byte[])value);

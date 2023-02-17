@@ -13,12 +13,10 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         private bool _disposed;
         private FtpWebRequest _request;
         private FtpWebResponse _ftpClient;
-
         private int _bufferSize = 2048;
         private int _downloadRetryCount;
         private int _streamRetryCount;
         private Stream _stream;
-
         private readonly string _host;
         private readonly int _port;
         private readonly string _password;
@@ -27,7 +25,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         private readonly IAPILog _logger;
 
         public int Timeout { get; set; } = Constants.Timeout;
-        
+
         public FtpConnector(string host, int port, string username, string password, IHostValidator hostValidator, IAPILog logger)
         {
             _host = host.Normalize();

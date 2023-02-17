@@ -109,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             DateTime expectedNextRunTime = new DateTime(startDateTime.Year, startDateTime.Month + 1, 1);
 
-            ScheduleRuleTest rule = ScheduleRuleTest.CreateMonthlyRule(startDateTime, endDateTime, 
+            ScheduleRuleTest rule = ScheduleRuleTest.CreateMonthlyRule(startDateTime, endDateTime,
                 TimeZoneInfo.Utc, dayOfMonth: 1);
             JobTest job = PrepareJob(rule);
 

@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         }
 
         public override event OnErrorEventHandler OnError;
+
         public override event OnMessageEventHandler OnMessage;
 
         protected internal override ImportBulkArtifactJob CreateJob()

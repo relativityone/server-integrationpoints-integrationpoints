@@ -59,10 +59,9 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private void RemoveSourceProviders(IEnumerable<SourceProvider> providersToBeRemoved)
         {
-            //TODO: before deleting SourceProviderRDO, 
-            //TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job
-            //TODO: want to use delete event handler for this case. 
-
+            // TODO: before deleting SourceProviderRDO,
+            // TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job
+            // TODO: want to use delete event handler for this case.
             foreach (SourceProvider sourceProvider in providersToBeRemoved)
             {
                 _sourceProviderRepository.Delete(sourceProvider);

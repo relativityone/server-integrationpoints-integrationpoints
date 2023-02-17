@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private IWorkspaceManager _workspaceManager;
         private IFederatedInstanceManager _federatedInstanceManager;
         private IAPILog _logger;
-
         private JobHistoryService _instance;
         private ISerializer _serializer;
         private IntegrationPointDto _integrationPoint;
@@ -238,13 +237,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         [Test]
         public void DeleteJobHistory_Succeeds()
         {
-            //Arrange
+            // Arrange
             int jobHistoryId = 12345;
 
-            //Act
+            // Act
             _instance.DeleteRdo(jobHistoryId);
 
-            //Assert
+            // Assert
             _relativityObjectManager.Received(1).Delete(jobHistoryId);
         }
 

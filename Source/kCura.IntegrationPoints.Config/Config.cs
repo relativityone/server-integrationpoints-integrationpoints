@@ -17,13 +17,10 @@ namespace kCura.IntegrationPoints.Config
         private const string _MASS_UPDATE_BATCH_SIZE = "MassUpdateBatchSize";
         private const string _LONG_RUNNING_JOBS_TIME_THRESHOLD = "LongRunningJobsTimeThreshold";
         private const int _MASS_UPDATE_BATCH_SIZE_DEFAULT = 10000;
-
         private const string _TRANSIENT_STATE_RIP_JOB_TIMEOUT = "TransientStateJobTimeout";
         private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 30;
-
         private const string _AGENT_MAXIMUM_LIFETIME = "AgentMaximumLifetime";
         private const int _AGENT_MAXIMUM_LIFETIME_DEFAULT_IN_MINUTES = 3 * 60;
-
         private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 
         protected Config()
@@ -93,7 +90,7 @@ namespace kCura.IntegrationPoints.Config
 
         private bool GetMetricsToggle(Metrics metricName)
         {
-            return (GetValue(_RIP_METRICS_CONFIGURATION, Int32.MaxValue) & (int)metricName) > 0;
+            return (GetValue(_RIP_METRICS_CONFIGURATION, int.MaxValue) & (int)metricName) > 0;
         }
 
         private enum Metrics

@@ -21,7 +21,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         private Mock<IExportQueryResult> _exportQueryResultFake;
 
         protected Mock<IEHHelper> EHHelperFake { get; set; }
+
         protected Mock<IRelativityObjectManager> RelativityObjectManagerMock { get;set; }
+
         protected Mock<IObjectManager> ObjectManagerMock { get; set; }
 
         protected abstract List<string> Names { get; }

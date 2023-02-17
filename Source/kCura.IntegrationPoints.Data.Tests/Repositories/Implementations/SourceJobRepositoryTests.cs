@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private IObjectTypeRepository _objectTypeRepository;
         private IFieldRepository _fieldRepository;
         private IRelativityObjectManager _objectManager;
-
         private SourceJobRepository _instance;
 
         public override void SetUp()

@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data
     public abstract class BaseRdo : IBaseRdo
     {
         private RelativityObject _relativityObject;
-        
+
         internal RelativityObject RelativityObject
         {
             get
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Data
 
             return dynamicFieldAttributesDictionary;
         }
-        
+
         public static Guid GetFieldGuid<TRdo, TProperty>(Expression<Func<TRdo, TProperty>> propertySelector)
             where TRdo : BaseRdo
         {
@@ -252,6 +252,7 @@ namespace kCura.IntegrationPoints.Data
                 }
             }
         }
+
         public abstract Dictionary<Guid, DynamicFieldAttribute> FieldMetadata { get; }
     }
 }

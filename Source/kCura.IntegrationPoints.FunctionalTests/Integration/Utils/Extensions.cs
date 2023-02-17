@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             jobHistoryTest.ItemsTransferredHistory.First().Should().Be(from);
             jobHistoryTest.ItemsTransferredHistory.Last().Should().Be(to);
         }
-        
+
         public static void ShouldHaveCorrectItemsWithErrorsUpdateHistory(this JobHistoryTest jobHistoryTest, int from, int to)
         {
             jobHistoryTest.ItemsWithErrorsHistory.First().Should().Be(from);

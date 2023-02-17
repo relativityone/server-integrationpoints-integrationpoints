@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Config
     public abstract class ConfigBase
     {
         protected readonly Lazy<IDictionary> _instanceSettings;
-        
+
         public IInstanceSettingsProvider InstanceSettingsProvider { get; set; }
 
         protected ConfigBase()

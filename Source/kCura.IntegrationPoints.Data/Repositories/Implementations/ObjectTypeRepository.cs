@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private const string _NAME = "Name";
         private const string _DESCRIPTOR_ARTIFACT_TYPE_ID = "DescriptorArtifactTypeID";
         private const string _PARENT_ARTIFACT_TYPE_ID = "ParentArtifactTypeID";
-
         private readonly IAPILog _logger;
         private readonly int _workspaceArtifactId;
         private readonly IRelativityObjectManager _objectManager;
@@ -120,7 +119,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             FieldRef[] fields =
             {
-                new FieldRef {Name = _DESCRIPTOR_ARTIFACT_TYPE_ID},
+                new FieldRef {Name = _DESCRIPTOR_ARTIFACT_TYPE_ID },
                 new FieldRef {Name = _NAME}
             };
             string condition = CreateNameCondition(objectTypeName);

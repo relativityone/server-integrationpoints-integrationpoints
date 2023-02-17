@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private IIntegrationPointRepository _integrationPointRepository;
         private IntegrationPointSecretDelete _integrationPointSecretDelete;
         private ISecretsRepository _secretsRepository;
-
         private const int _INTEGRATION_POINT_ID = 659252;
         private const int _WORKSPACE_ID = 1001;
 
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
             _integrationPointSecretDelete = new IntegrationPointSecretDelete(
                 _WORKSPACE_ID,
-                _secretsRepository, 
+                _secretsRepository,
                 _integrationPointRepository);
         }
 

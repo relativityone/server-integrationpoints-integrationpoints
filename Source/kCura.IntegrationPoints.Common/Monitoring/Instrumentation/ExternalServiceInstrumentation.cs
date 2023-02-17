@@ -9,12 +9,11 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
     public class ExternalServiceInstrumentation : IExternalServiceInstrumentation, IExternalServiceInstrumentationStarted
     {
         private Stopwatch _stopwatch;
-
         private readonly IAPILog _logger;
         private readonly IMessageService _messageService;
         private readonly InstrumentationJobContext _jobContext;
         private readonly InstrumentationServiceCallContext _serviceCallContext;
-        
+
         public ExternalServiceInstrumentation(InstrumentationJobContext jobJobContext, InstrumentationServiceCallContext serviceCallContext, IMessageService messageService, IAPILog logger)
         {
             _jobContext = jobJobContext;
@@ -63,7 +62,6 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
         }
 
         private bool IsStarted => _stopwatch != null;
-
         private long GetElapsedMillisecondsAndRemoveStopwatch()
         {
             _stopwatch.Stop();

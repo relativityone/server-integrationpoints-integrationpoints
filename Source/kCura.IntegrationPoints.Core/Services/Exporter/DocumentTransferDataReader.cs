@@ -20,9 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
     {
         /// used as a flag to store the reference of the current artifacts array.
         private object _readingArtifactIdsReference;
-
         private const string _DUPLICATED_NATIVE_KEY_ERROR_MESSAGE = "Duplicated key found. Check if there is no natives duplicates for a given document";
-
         private readonly Dictionary<int, long> _nativeFileSizes;
         private readonly Dictionary<int, string> _nativeFileLocations;
         private readonly Dictionary<int, string> _nativeFileNames;
@@ -195,7 +193,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             _logger.LogError(exc, template, index, isFieldIdentifierNumeric, retrievedField.ArtifactId, fieldArtifactId, result);
             return exc;
         }
-
 
         private void LoadNativeFilesLocationsAndNames()
         {

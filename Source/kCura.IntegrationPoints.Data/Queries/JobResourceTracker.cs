@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.Data.Queries
     {
         private readonly IQueueQueryManager _queueQueryManager;
         private readonly IJobTrackerQueryManager _jobTrackerQueryManager;
-
         private static readonly object _syncRoot = new object();
 
         public JobResourceTracker(IJobTrackerQueryManager jobTrackerQueryManager, IQueueQueryManager queueQueryManager)

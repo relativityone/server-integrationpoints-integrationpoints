@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Email
         private readonly Lazy<Either<string, ValidSmtpConfigurationDto>> _configuration;
         private readonly IAPILog _logger;
         private readonly ISmtpClientFactory _clientFactory;
-
         private Either<string, ValidSmtpConfigurationDto> Configuration => _configuration.Value;
 
         public EmailSender(

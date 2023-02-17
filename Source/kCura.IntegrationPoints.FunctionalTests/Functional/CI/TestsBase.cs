@@ -17,7 +17,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
     public abstract class TestsBase : UITestFixture, ITestsImplementationTestFixture
     {
         private readonly string _workspaceName;
-
         private readonly int _existingWorkspaceArtifactID = TestConfig.ExistingWorkspaceArtifactId;
 
         protected TestsBase(string workspaceName)

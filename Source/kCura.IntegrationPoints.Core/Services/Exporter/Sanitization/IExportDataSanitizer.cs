@@ -7,11 +7,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
     {
         bool ShouldSanitize(FieldTypeHelper.FieldType fieldType);
         Task<object> SanitizeAsync(
-            int workspaceArtifactID, 
-            string itemIdentifierSourceFieldName, 
-            string itemIdentifier, 
+            int workspaceArtifactID,
+            string itemIdentifierSourceFieldName,
+            string itemIdentifier,
             string fieldName,
-            FieldTypeHelper.FieldType fieldType, 
+            FieldTypeHelper.FieldType fieldType,
             object initialValue);
     }
 }

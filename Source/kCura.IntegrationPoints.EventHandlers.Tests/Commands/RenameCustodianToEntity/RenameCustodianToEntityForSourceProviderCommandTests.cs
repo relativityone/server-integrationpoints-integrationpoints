@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
     public class RenameCustodianToEntityForSourceProviderCommandTests : UpdateConfigurationCommandTestsBase
     {
         private RenameCustodianToEntityForSourceProviderCommand _sut;
-
         private const string _CONFIGURATION_WITHOUT_CUSTODIAN_PROPERTY = "{\"PropertyA\":\"value\"}";
         private const string _CONFIGURATION_WITH_CUSTODIAN_PROPERTY = "{\"PropertyA\":\"value\",\"CustodianManagerFieldContainsLink\":\"v2\"}";
         private const string _CONFIGURATION_WITH_ENTITY_PROPERTY = "{\"PropertyA\":\"value\",\"EntityManagerFieldContainsLink\":\"v2\"}";
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
         {
             // Arrange
             RelativityObjectSlim objectSlim = PrepareObject(null);
-            
+
             SetupRead(objectSlim);
 
             // Act
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.RenameCustodianTo
             // Assert
             ShouldNotBeUpdated();
         }
-
 
         [Test]
         public void Execute_ShouldNotProcess_WhenConfigurationHasNotBeenChanged()

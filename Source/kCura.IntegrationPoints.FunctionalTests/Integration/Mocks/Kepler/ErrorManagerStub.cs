@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     error.ArtifactID = ArtifactProvider.NextId();
                     Relativity.Errors.Add(error);
-                    
+
                     return Task.FromResult(error.ArtifactID);
                 });
         }

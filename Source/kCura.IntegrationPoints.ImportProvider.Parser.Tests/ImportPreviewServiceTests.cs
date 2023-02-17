@@ -61,22 +61,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void CheckProgressDisposesJobIfFailed()
         {
-            //mock ImportJob to return with IsFailed as true
+            // mock ImportJob to return with IsFailed as true
             _previewJob.IsFailed.ReturnsForAnyArgs(true);
             _previewJobFactory.GetPreviewJob(new ImportPreviewSettings()).ReturnsForAnyArgs(_previewJob);
             ImportPreviewService ips = new ImportPreviewService(_previewJobFactory);
 
-            //Create Preview Job
+            // Create Preview Job
             int jobId = ips.CreatePreviewJob(new ImportPreviewSettings());
 
-            //Assert that the ID exists and IsJobComplete will not throw
+            // Assert that the ID exists and IsJobComplete will not throw
             Assert.DoesNotThrow(() => ips.IsJobComplete(jobId));
 
-            //Check for Progress, Assert that IsFailed is false.
-            //becuase this method sees that IsFailed is true it will dispose of the job
+            // Check for Progress, Assert that IsFailed is false.
+            // becuase this method sees that IsFailed is true it will dispose of the job
             Assert.IsTrue(ips.CheckProgress(jobId).IsFailed);
 
-            //Confirm that the job was disposed and no longer exists in dictionary
+            // Confirm that the job was disposed and no longer exists in dictionary
             Assert.Throws<KeyNotFoundException>(() => ips.IsJobComplete(jobId));
         }
     }

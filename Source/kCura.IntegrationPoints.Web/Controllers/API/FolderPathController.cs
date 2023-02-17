@@ -31,12 +31,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             )
         {
             _fieldService = fieldService;
-            _choiceService = choiceService; 
+            _choiceService = choiceService;
             _workspaceIdProvider = workspaceIdProvider;
             _importApiFacade = importApiFacade;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<FolderPathController>();
         }
-        
+
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
         public HttpResponseMessage GetFields()

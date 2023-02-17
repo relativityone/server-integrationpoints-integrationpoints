@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
     internal class ObjectManagerFacade : IObjectManagerFacade
     {
         private bool _isDisposed;
-
         private readonly Lazy<IObjectManager> _objectManager;
 
         public ObjectManagerFacade(Func<IObjectManager> objectManager)
@@ -86,7 +85,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         public Task<QueryResult> QueryAsync(
             int workspaceArtifactID,
             QueryRequest request,
-            int start, 
+            int start,
             int length)
         {
             return _objectManager.Value.QueryAsync(

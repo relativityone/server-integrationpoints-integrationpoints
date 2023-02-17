@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
         public override void SetUp()
         {
-
             _logger = Substitute.For<IAPILog>();
             _helper = Substitute.For<IHelper>();
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();

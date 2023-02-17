@@ -24,11 +24,8 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Mock<IObjectTypeQuery> _objectTypeQuery;
         private Mock<IServicesMgr> _servicesMgr;
         private Mock<IObjectTypeManager> _objectTypeManager;
-
         private RdoFilter _sut;
-
         private const int _USER_ID = 123;
-
         private readonly List<string> _systemRdo = new List<string>
         {
             "History", "Event Handler", "Install Event Handler", "Source Provider", "Integration Point", "Relativity Source Case", "Destination Workspace", "Relativity Source Job"

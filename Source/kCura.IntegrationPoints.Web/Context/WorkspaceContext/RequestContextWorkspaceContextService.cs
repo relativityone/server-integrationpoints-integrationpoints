@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.Web.Context.WorkspaceContext
     internal class RequestContextWorkspaceContextService : IWorkspaceContext
     {
         private const string _WORKSPACE_ID_KEY = "workspaceID";
-
         private readonly HttpRequestBase _httpRequest;
         private readonly IWorkspaceContext _nextWorkspaceContextService;
 

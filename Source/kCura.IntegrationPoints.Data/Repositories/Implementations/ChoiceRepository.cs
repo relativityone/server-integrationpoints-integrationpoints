@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     public class ChoiceRepository : IChoiceRepository
     {
         private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
-
         private readonly IRelativityObjectManager _objectManager;
 
         public ChoiceRepository(IRelativityObjectManager objectManager)
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         }
 
         public async Task<IList<ChoiceWithParentInfoDto>> QueryChoiceWithParentInfoAsync(
-            ICollection<ChoiceDto> choicesToQuery, 
+            ICollection<ChoiceDto> choicesToQuery,
             ICollection<ChoiceDto> allChoices)
         {
             string condition = BuildChoiceArtifactIDCondition(choicesToQuery);
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             };
 
             List<RelativityObject> choiceObjects = await _objectManager.QueryAsync(queryRequest).ConfigureAwait(false);
-            
+
             return choiceObjects.Select(choiceObject => new
                 {
                     choiceObject.ArtifactID,

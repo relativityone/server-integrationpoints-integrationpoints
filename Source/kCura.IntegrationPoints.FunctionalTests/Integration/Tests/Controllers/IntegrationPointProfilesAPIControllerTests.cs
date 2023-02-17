@@ -220,8 +220,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         protected ClaimsPrincipal GetUserClaimsPrincipal() => new ClaimsPrincipal(new[]
-            {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
-
+            { new ClaimsIdentity(new[] { new Claim("rel_uai", User.ArtifactId.ToString())})});
         private IntegrationPointProfilesAPIController PrepareSut(HttpMethod method, string requestUri)
         {
             IntegrationPointProfilesAPIController sut = Container.Resolve<IntegrationPointProfilesAPIController>();

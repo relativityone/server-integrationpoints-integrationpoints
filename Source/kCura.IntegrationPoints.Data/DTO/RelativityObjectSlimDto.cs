@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Data.DTO
         }
 
         public int ArtifactID { get; }
+
         public IDictionary<string, object> FieldValues { get; }
     }
 }

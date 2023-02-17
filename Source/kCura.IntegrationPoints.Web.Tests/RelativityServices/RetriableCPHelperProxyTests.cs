@@ -14,21 +14,21 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
         [Test]
         public void ShouldThrowIfBaseCpHelperOfTypeRetriableCpHelper()
         {
-            //arrange
+            // arrange
             ICPHelper cpHelper = Substitute.For<ICPHelper>();
             RetriableCPHelperProxy baseCpHelper = Substitute.For<RetriableCPHelperProxy>(cpHelper);
 
-            //act
+            // act
             Action act = () => new RetriableCPHelperProxy(baseCpHelper);
 
-            //assert
+            // assert
             act.ShouldThrow<BaseCpHelperCannotBeTypeOfRetriableCpHelperException>();
         }
 
         [Test]
         public void ShouldNotRetryIfGetActiveCaseIdReturnsNotZero()
         {
-            //arrange
+            // arrange
             const int workspaceId = 1019723;
 
             ICPHelper baseCpHelper = Substitute.For<ICPHelper>();
@@ -36,10 +36,10 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
 
             var proxy = new RetriableCPHelperProxy(baseCpHelper);
 
-            //act
+            // act
             int result = proxy.GetActiveCaseID();
 
-            //assert
+            // assert
             result.Should().Be(workspaceId);
             baseCpHelper.Received(1).GetActiveCaseID();
         }
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
         [Test]
         public void ShouldRetryIfFirstGetActiveCaseIdCallReturnsZero()
         {
-            //arrange
+            // arrange
             const int workspaceId = 1019723;
 
             ICPHelper baseCpHelper = Substitute.For<ICPHelper>();
@@ -55,10 +55,10 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
 
             var proxy = new RetriableCPHelperProxy(baseCpHelper);
 
-            //act
+            // act
             int result = proxy.GetActiveCaseID();
 
-            //assert
+            // assert
             result.Should().Be(workspaceId);
             baseCpHelper.Received(2).GetActiveCaseID();
         }
@@ -66,16 +66,16 @@ namespace kCura.IntegrationPoints.Web.Tests.RelativityServices
         [Test]
         public void ShouldRetryNotMoreThanTwoTimesIftGetActiveCaseIdCallsReturnZero()
         {
-            //arrange
+            // arrange
             ICPHelper baseCpHelper = Substitute.For<ICPHelper>();
             baseCpHelper.GetActiveCaseID().Returns(0, 0, 0, 0, 0, 0);
 
             var proxy = new RetriableCPHelperProxy(baseCpHelper);
 
-            //act
+            // act
             int result = proxy.GetActiveCaseID();
 
-            //assert
+            // assert
             result.Should().Be(0);
             baseCpHelper.Received(3).GetActiveCaseID();
         }

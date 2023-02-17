@@ -16,11 +16,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls
     {
         private IDictionary<string, ExternalCallsJobSummaryMessage> _statisticsAggregatedByServiceType;
         private string _currentCorrelationId;
-
         private const string _BUCKET_EXTERNALL_CALL = "IntegrationPoints.Performance.ExternalCall";
         private const string _BUCKET_EXTERNALL_CALL_JOB_SUMMARY = "IntegrationPoints.Performance.ExternalCall.Summary";
         private readonly IAPILog _logger;
-
         private readonly object _lock = new object();
         private readonly Lazy<IMetricsManager> _apmManager;
 

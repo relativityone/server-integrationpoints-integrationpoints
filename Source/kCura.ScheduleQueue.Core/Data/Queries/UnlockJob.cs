@@ -8,7 +8,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class UnlockJob : ICommand
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly long _jobId;
         private readonly StopState _state;
 

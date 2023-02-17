@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         public void SetupKeywordSearchManagerStub()
         {
             Mock.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns((int workspaceArtifactId, int searchArtifactId) => 
+                .Returns((int workspaceArtifactId, int searchArtifactId) =>
                     Task.FromResult(GetKeywordSearch(workspaceArtifactId, searchArtifactId)));
         }
 
@@ -47,6 +47,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             };
 
             return keywordSearch;
-        } 
+        }
     }
 }

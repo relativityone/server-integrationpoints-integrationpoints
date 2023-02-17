@@ -6,7 +6,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
     class FakeIntegrationPointProfileAccessor : FakeIntegrationPointAccessor, IIntegrationPointProfileAccessor
     {
-
         public IntegrationPointModel CreateIntegrationPointProfile(CreateIntegrationPointRequest request)
         {
             return IntegrationPointModel;

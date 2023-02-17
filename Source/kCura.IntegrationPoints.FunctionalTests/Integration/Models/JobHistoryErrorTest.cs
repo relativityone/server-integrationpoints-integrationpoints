@@ -16,7 +16,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int? JobHistory
         {
-            get => GetField(JobHistoryErrorFieldGuids.JobHistoryGuid) as int? 
+            get => GetField(JobHistoryErrorFieldGuids.JobHistoryGuid) as int?
                         ?? (ParentObjectArtifactId == 0 ? null : (int?)ParentObjectArtifactId);
             set => SetField(JobHistoryErrorFieldGuids.JobHistoryGuid, value);
         }

@@ -8,7 +8,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class CheckAllSyncWorkerBatchesAreFinished : IQuery<bool>
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly long _rootJobId;
 
         public CheckAllSyncWorkerBatchesAreFinished(IQueueDBContext dbContext, long rootJobId)

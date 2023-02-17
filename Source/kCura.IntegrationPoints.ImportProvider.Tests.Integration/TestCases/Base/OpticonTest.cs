@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
     public abstract class OpticonTest : TestCaseBase
     {
         protected override string[] DocumentFields { get; set; }
+
         protected string[] ControlNumbers = new string[] { "REL0", "REL3", "REL5" };
         protected string[] ExtractedText = new string[] { "Doc 1 Page 1 ETDoc 1 Page 2 ETDoc 1 Page 3 ET",
             "Doc 2 Page 1 ETDoc 2 Page 2 ET",

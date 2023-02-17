@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         {
             _jobQueue = jobQueue;
         }
-        
+
         public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
         {
             return _jobQueue.Count(x =>

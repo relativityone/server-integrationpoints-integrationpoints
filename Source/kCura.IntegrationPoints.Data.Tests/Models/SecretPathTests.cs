@@ -13,18 +13,18 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
         [Test]
         public void ForIntegrationPointSecret_ShouldReturnSecretPathWhenCorrectSecretIDPassed()
         {
-            //arrange
+            // arrange
             const int integrationPointID = 1001;
             string secretID = "9d26cf1b-3a4e-46fa-a88f-0318f61a796f";
 
-            //act
+            // act
             SecretPath secretPath = SecretPath.ForIntegrationPointSecret(
                 _WORKSPACE_ID,
                 integrationPointID,
                 secretID
             );
 
-            //assert
+            // assert
             AssertSecretPath(
                 secretPath,
                 _WORKSPACE_ID,
@@ -36,16 +36,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
         [Test]
         public void ForAllSecretsInIntegrationPoint_ShouldReturnCorrectSecretPath()
         {
-            //arrange
+            // arrange
             const int integrationPointID = 2002;
 
-            //act
+            // act
             SecretPath secretPath = SecretPath.ForAllSecretsInIntegrationPoint(
                 _WORKSPACE_ID,
                 integrationPointID
             );
 
-            //assert
+            // assert
             AssertSecretPath(
                 secretPath,
                 _WORKSPACE_ID,
@@ -56,10 +56,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
         [Test]
         public void ForAllSecretsInWorkspace_ShouldReturnCorrectSecretPath()
         {
-            //act
+            // act
             SecretPath secretPath = SecretPath.ForAllSecretsInWorkspace(_WORKSPACE_ID);
 
-            //assert
+            // assert
             AssertSecretPath(
                 secretPath,
                 _WORKSPACE_ID
@@ -69,10 +69,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
         [Test]
         public void ForAllSecretsInAllWorkspaces_ShouldReturnCorrectSecretPath()
         {
-            //act
+            // act
             SecretPath secretPath = SecretPath.ForAllSecretsInAllWorkspaces();
 
-            //assert
+            // assert
             AssertSecretPath(secretPath);
         }
 
@@ -85,14 +85,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
             int integrationPointID,
             string secretID)
         {
-            //act
+            // act
             Action action = () => SecretPath.ForIntegrationPointSecret(
                 workspaceID,
                 integrationPointID,
                 secretID
             );
 
-            //assert
+            // assert
             AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: !Guid.TryParse(secretID, out Guid secretIDGuid));
         }
 
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
             int workspaceID,
             int integrationPointID)
         {
-            //act
+            // act
             const string secretID = "360a4f5a-c035-4e9d-9af1-56dddd86b64e";
             Action action = () => SecretPath.ForIntegrationPointSecret(
                 workspaceID,
@@ -111,14 +111,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
                 secretID
             );
 
-            //assert
+            // assert
             AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: false);
         }
 
         [Test]
         public void ForAllSecretsInWorkspace_ShouldThrowWhenNegativeValuePassedAsWorkspaceID()
         {
-            //act
+            // act
             const string secretID = "360a4f5a-c035-4e9d-9af1-56dddd86b64e";
             const int integrationPointID = 2002;
             const int workspaceID = -1;
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
                 secretID
             );
 
-            //assert
+            // assert
             AssertInvalidPathExceptionThrown(action, workspaceID, integrationPointID, secretIdIsInvalidGuid: false);
         }
 
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
         [TestCase("    ")]
         public void ForIntegrationPointSecret_ShouldThrowWhenNullOrWhitespacePassedAsSecretID(string secretID)
         {
-            //act
+            // act
             const int integrationPointID = 2002;
             Action action = () => SecretPath.ForIntegrationPointSecret(
                 _WORKSPACE_ID,
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Models
                 secretID
             );
 
-            //assert
+            // assert
             action
                 .ShouldThrow<ArgumentException>()
                 .WithMessage("Invalid secret path. SecretID cannot be null or whitespace.");

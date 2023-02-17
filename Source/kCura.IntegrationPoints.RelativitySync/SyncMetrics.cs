@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.RelativitySync
         internal const string JOB_RESULT_KEY_NAME = "JobResult";
         internal const string TOTAL_ELAPSED_TIME_MS = "TotalElapsedTimeMs";
         internal const string ALL_STEPS_ELAPSED_TIME_MS = "AllStepsElapsedTimeMs";
-
         private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
         private readonly IAPM _apm;
         private readonly IAPILog _logger;

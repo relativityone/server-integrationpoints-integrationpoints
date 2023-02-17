@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.RelativitySync
         private Guid? _identifier;
         private int? _jobHistoryId;
         private IntegrationPointDto _integrationPoint;
-
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISerializer _serializer;

@@ -15,11 +15,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     public class NativeTotalStatisticsTests : TestBase
     {
         private const int _WORKSPACE_ID = 710262;
-
         private IAPILog _logger;
         private IHelper _helper;
         private IRelativityObjectManager _relativityObjectManager;
-
         private NativeTotalStatistics _instance;
 
         public override void SetUp()

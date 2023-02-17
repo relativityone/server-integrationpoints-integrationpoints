@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
     public class ImportNativeFileCopyModeUpdater
     {
         private readonly IProviderTypeService _providerTypeService;
-
         private static readonly Dictionary<ProviderType, UpdateValues> _updateConditions =
             new Dictionary<ProviderType, UpdateValues>
             {
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                     new UpdateValues(ImportNativeFileCopyModeEnum.CopyFiles, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
                 }
             };
-
         public const string IMPORT_NATIVE_FILE_COPY_MODE_NODE_NAME = "ImportNativeFileCopyMode";
         public const string IMPORT_NATIVE_FILE_NODE_NAME = "ImportNativeFile";
 
@@ -76,7 +74,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             }
             catch (Exception)
             {
-                //Ignore if SourceConfigureation object isn't proper json
+                // Ignore if SourceConfigureation object isn't proper json
             }
             return result;
         }
@@ -89,6 +87,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         private class UpdateValues
         {
             public ImportNativeFileCopyModeEnum ValueIfTrue { get; }
+
             public ImportNativeFileCopyModeEnum ValueIfFalse { get; }
 
             public UpdateValues(ImportNativeFileCopyModeEnum valueIfTrue, ImportNativeFileCopyModeEnum valueIfFalse)

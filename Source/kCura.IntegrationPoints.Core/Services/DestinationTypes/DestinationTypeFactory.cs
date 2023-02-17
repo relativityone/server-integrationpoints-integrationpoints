@@ -11,7 +11,9 @@ namespace kCura.IntegrationPoints.Core.Services.DestinationTypes
     public class DestinationType
     {
         public string Name { get; set; }
+
         public string ID { get; set; }
+
         public int ArtifactID { get; set; }
     }
 
@@ -35,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.DestinationTypes
             {
                 Fields = new List<FieldRef>()
                 {
-                    new FieldRef() {Guid = Guid.Parse(DestinationProviderFieldGuids.Name)},
+                    new FieldRef() {Guid = Guid.Parse(DestinationProviderFieldGuids.Name) },
                     new FieldRef() {Guid = Guid.Parse(Data.DestinationProviderFieldGuids.Identifier)}
                 }
             });

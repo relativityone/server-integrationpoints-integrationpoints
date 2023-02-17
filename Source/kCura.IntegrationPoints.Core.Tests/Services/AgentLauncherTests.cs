@@ -20,9 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IAgentStatusManagerService> _agentStatusManagerServiceMock;
         private Mock<IServicesMgr> _servicesMgrMock;
         private Mock<IAPILog> _logMock;
-
         private Guid _agentGuid;
-
         private AgentLauncher _sut;
 
         public override void SetUp()

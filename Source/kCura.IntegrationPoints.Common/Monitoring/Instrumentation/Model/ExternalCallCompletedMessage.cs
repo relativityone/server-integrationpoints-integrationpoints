@@ -12,36 +12,42 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model
         public string ServiceType
         {
             get { return Get<string>(); }
+
             private set { Set(value); }
         }
 
         public string ServiceName
         {
             get { return Get<string>(); }
+
             private set { Set(value); }
         }
 
         public string OperationName
         {
             get { return Get<string>(); }
+
             private set { Set(value); }
         }
 
         public long Duration
         {
             get { return Get<long>(); }
+
             private set { Set(value); }
         }
 
         public bool HasFailed
         {
             get { return Get<bool>(); }
+
             private set { Set(value); }
         }
 
         public string FailureReason
         {
             get { return Get<string>(); }
+
             private set { Set(value); }
         }
 

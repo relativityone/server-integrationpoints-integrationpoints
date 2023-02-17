@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private ITextSanitizer _htmlSanitizerManagerMock;
         private IWorkspaceManager _workspaceManagerMock;
         private IServicesMgr _servicesMgrMock;
-        
+
         private const int _CURRENT_WORKSPACE_ARTIFACT_ID = 10;
         private const int _DESTINATION_WORKSPACE_1_ARTIFACT_ID = 1;
         private const int _DESTINATION_WORKSPACE_2_ARTIFACT_ID = 2;
@@ -45,7 +45,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private const string _REMOTE_WORKSPACE_2_DISPLAY_NAME = "G vs H - 12";
 
         private const string _CREDENTIALS = "password";
-
         private readonly WorkspaceModel[] _localWorkspaces = new WorkspaceModel[]
         {
             new WorkspaceModel() {Value = _DESTINATION_WORKSPACE_1_ARTIFACT_ID, DisplayName = _DESTINATION_WORKSPACE_1_DISPLAY_NAME },
@@ -70,8 +69,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             new WorkspaceDTO() { ArtifactId = _REMOTE_WORKSPACE_2_ARTIFACT_ID, Name = _REMOTE_WORKSPACE_2_NAME }
         };
 
-
-        #endregion //Fields
+        #endregion // Fields
 
         [SetUp]
         public override void SetUp()

@@ -55,12 +55,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 _proxy = proxy;
                 _serializer = serializer;
             }
-        
+
             public WorkspaceHelper WorkspaceHelper => _workspaceHelper ?? (_workspaceHelper = new WorkspaceHelper(_db,_proxy, _serializer));
-    
+
             public AgentHelper AgentHelper => _agentHelper ?? (_agentHelper = new AgentHelper(_db));
-    
+
             public JobHelper JobHelper => _jobHelper ?? (_jobHelper = new JobHelper(_db));
-        }    
+        }
     }
 }

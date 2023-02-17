@@ -15,11 +15,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public FieldsMappingHelper(WorkspaceTest workspace) : base(workspace)
         {
         }
-    
+
         public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest destinationWorkspace, int artifactTypeId)
         {
             FieldTest sourceIdentifier = Workspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
-            
+
             FieldTest destinationIdentifier = destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
             return new List<FieldMap>
@@ -48,11 +48,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 }
             };
         }
-        
+
         public List<FieldMap> PrepareIdentifierFieldsMappingForImport(string identifierFieldName)
         {
             FieldTest sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
-            
+
             return new List<FieldMap>
             {
                 new FieldMap
@@ -110,7 +110,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 }
             };
         }
-        
+
         public List<FieldMap> PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
         {
             int _artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
@@ -308,6 +308,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
         }
     }
-
 
 }

@@ -40,10 +40,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Installer.Components
         [Test]
         public void ISmtpConfigurationProvider_ShouldBeResolvedAndNotThrow()
         {
-            //arrange
+            // arrange
             RegisterInstallerDependencies(_sut);
 
-            //act & assert
+            // act & assert
             _sut.Should().ResolveWithoutThrowing<ISmtpConfigurationProvider>();
         }
 

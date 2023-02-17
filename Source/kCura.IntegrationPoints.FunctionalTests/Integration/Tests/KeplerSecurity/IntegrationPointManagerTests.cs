@@ -12,8 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
     public class IntegrationPointManagerTests : KeplerSecurityTestBase
     {
         private IntegrationPointManager _sut;
-        private readonly int IntegrationPointPofile = 420; 
-
+        private readonly int IntegrationPointPofile = 420;
 
         [SetUp]
         public void Setup()
@@ -30,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.CreateIntegrationPointAsync(createIntegrationPointRequest);
             });
@@ -45,12 +44,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.CreateIntegrationPointAsync(createIntegrationPointRequest);
             });
         }
-        
+
         [Test]
         public void UpdateIntegrationPointAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -60,7 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.UpdateIntegrationPointAsync(updateRequest);
             });
@@ -75,12 +74,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.UpdateIntegrationPointAsync(updateRequest);
             });
         }
-        
+
         [Test]
         public void CreateIntegrationPointFromProfileAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -101,7 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         }
 
         #region Permissions
-        
+
         class PermissionsForCreateIntegraionPoint : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]
@@ -119,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 }
             };
         }
-        
+
         class PermissionsForUpdateIntegraionPoint : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]

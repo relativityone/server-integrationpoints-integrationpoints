@@ -53,9 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private IDataSynchronizer _synchronizer;
         private IJobHistoryErrorService _jobHistoryErrorService;
         private IImportFileLocationService _importFileLocationService;
-
         private ImportServiceManager _instance;
-
         private Job _job;
         private LoadFileInfo _loadFile;
         private TaskParameters _taskParameters;
@@ -72,14 +70,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private const string _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE = "ImageImport";
         private const string _IMPORTSETTINGS_FOR_DOC = "DocumentImport";
         private const string _IMPORTSETTINGS_FOR_IMAGE = "ImageImport";
-
         private const string _LOAD_FILE_PATH = "LoadFilePath";
         private const long _LOAD_FILE_SIZE = 1000;
         private readonly DateTime _LOAD_FILE_MODIFIED_DATE = new DateTime(2020, 1, 1);
-
         private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
         private const string _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION = "'Name' == 'Automated Workflows'";
-
 
         [SetUp]
         public override void SetUp()
@@ -296,7 +291,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
         }
-
 
         [Test]
         public void Execute_ShouldTriggerRawAsCompletedWithErrors_WhenRunCompletedWithErrorsAndAutomatedWorkflowsIsInstalled()

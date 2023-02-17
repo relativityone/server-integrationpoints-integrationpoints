@@ -15,10 +15,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     public class ViewValidatorTests
     {
         private const int _VIEW_ID = 10001;
-
         private Mock<IAPILog> _loggerFake;
         private Mock<IRelativityObjectManager> _objectManagerMock;
-
         private ViewValidator _sut;
 
         [SetUp]
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             // Arrange
             _objectManagerMock
-                .Setup(x => x.Query(It.Is<QueryRequest>(request => 
+                .Setup(x => x.Query(It.Is<QueryRequest>(request =>
                         request.ObjectType.ArtifactTypeID == (int)ArtifactType.View &&
                         request.Condition == $"'Artifact ID' == {_VIEW_ID}"),
                     It.IsAny<ExecutionIdentity>()))

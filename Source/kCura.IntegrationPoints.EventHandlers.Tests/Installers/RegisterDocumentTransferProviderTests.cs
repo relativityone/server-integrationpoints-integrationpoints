@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             Assert.AreEqual(1, installationInfo.Count, "Expect the installer to only have one provider.");
             Assert.IsTrue(installationInfo.ContainsKey(new Guid(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)), "entry in the installer must be relativity provider.");
 
-            string expectedUrl = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/", Core.Constants.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID, Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_CONFIGURATION);
+            string expectedUrl = string.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/", Core.Constants.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID, Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_CONFIGURATION);
 
             SourceProvider provider = installationInfo[new Guid(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)];
             Assert.IsNotNull(provider);

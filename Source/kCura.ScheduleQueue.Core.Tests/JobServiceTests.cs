@@ -31,13 +31,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         private const long _MOCK_JOB_ID = 123;
         private const long _PARENT_JOB_ID = 756;
         private const long _ROOT_JOB_ID = 287;
-
         private const string _MOCK_JOB_DETAILS = "There should be details";
         private const TaskType _TASK_TYPE = TaskType.ImportService;
         private readonly DateTime _mockScheduleRuleReturnDate = new DateTime(2020, 12, 31);
         private readonly Guid _goldFlowAgentGuid = Guid.NewGuid();
         private readonly IHelper _mockEmptyDbHelper = Substitute.For<IHelper>();
-
         private readonly int _goldFlowAgentTypeId = 54;
         private readonly string _goldFlowAgentName = "AgentName";
         private readonly string _goldFlowAgentNamespace = "Namespace";
@@ -88,7 +86,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             Assert.AreEqual(job.JobId, _MOCK_JOB_ID);
         }
-        
+
         [Test]
         public void GetNextQueueJob_ResourceGroupIdsEmpty_ThrowsArgumentException()
         {
@@ -305,10 +303,8 @@ namespace kCura.ScheduleQueue.Core.Tests
             IScheduleRule scheduleRule = CreateScheduleRuleReturning(_mockScheduleRuleReturnDate);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-
             Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
-
 
             Assert.AreEqual(job.JobDetails, _MOCK_JOB_DETAILS);
         }
@@ -327,10 +323,8 @@ namespace kCura.ScheduleQueue.Core.Tests
             IScheduleRule scheduleRule = CreateScheduleRuleReturning(null);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-
             Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
-
 
             _dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
             Assert.AreEqual(job.JobDetails, _MOCK_JOB_DETAILS);
@@ -346,10 +340,8 @@ namespace kCura.ScheduleQueue.Core.Tests
                 .ReturnsForAnyArgs(dataTable);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-
             Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
-
 
             _dataProviderMock.DidNotReceive().DeleteJob(Arg.Any<long>());
             Assert.IsNull(job);
@@ -368,10 +360,8 @@ namespace kCura.ScheduleQueue.Core.Tests
                 .ReturnsForAnyArgs(dataTable);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-
             Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
-
 
             Assert.AreEqual(job.JobId, _MOCK_JOB_ID);
         }

@@ -39,13 +39,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _instrumentationMock.Setup(x => x.Execute(It.IsAny<Func<object>>())).Returns<Func<object>>(x => x.Invoke());
             _instrumentationProviderMock
                 .Setup(x => x.CreateSimple(
-                    ExternalServiceTypes.API_FOUNDATION, 
+                    ExternalServiceTypes.API_FOUNDATION,
                     nameof(IAuditRepository),
                     nameof(IAuditRepository.CreateAuditRecord)))
                 .Returns(_instrumentationMock.Object);
             _foundationAuditRepositoryMock = new Mock<IAuditRepository>();
             _sut = new RelativityAuditRepository(
-                _foundationAuditRepositoryMock.Object, 
+                _foundationAuditRepositoryMock.Object,
                 _instrumentationProviderMock.Object,
                 _retryHandlerFactoryMock.Object);
         }
@@ -65,9 +65,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _retryHandlerMock.Verify(x => x.ExecuteWithRetries(It.IsAny<Func<object>>(), It.IsAny<string>()), Times.Once);
             _instrumentationProviderMock.Verify(
                 x => x.CreateSimple(
-                    ExternalServiceTypes.API_FOUNDATION, 
+                    ExternalServiceTypes.API_FOUNDATION,
                     nameof(IAuditRepository),
-                    nameof(IAuditRepository.CreateAuditRecord)), 
+                    nameof(IAuditRepository.CreateAuditRecord)),
                 Times.Once);
             _instrumentationMock.Verify(x => x.Execute(It.IsAny<Func<object>>()), Times.Once);
             _foundationAuditRepositoryMock.Verify(x => x.CreateAuditRecord(It.Is<IAuditRecord>(auditRecord =>

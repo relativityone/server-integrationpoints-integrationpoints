@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
             int start);
 
         Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             Guid runID,
             int resultsBlockSize,
             int exportIndexID);

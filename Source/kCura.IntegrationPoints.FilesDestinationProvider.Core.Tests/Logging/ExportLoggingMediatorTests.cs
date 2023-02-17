@@ -20,13 +20,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
     {
         private readonly string _errorMessageTemplate = "Error occured: {message}.";
         private readonly string _fileTransferTemplateMessage = "File transfer mode has been changed: {mode}";
-
         private readonly string _progressMessageTemplate = "Progress update: {message}.";
-
         private readonly string _statusMessageTemplate = "Status update: {message}.";
         private readonly string _unexpectedEventTypeTemplate = "Unexpected EventType.{event}. EventArgs: {@eventArgs}";
         private readonly string _warningMessageTemplate = "Warning: {message}.";
-
         private IAPILog _apiLog;
         private ICoreExporterStatusNotification _exporterStatusNotification;
         private IUserMessageNotification _userMessageNotification;

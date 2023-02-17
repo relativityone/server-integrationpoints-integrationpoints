@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
     {
         private readonly IExportInitProcessService _exportInitProcessService;
 
-        public ExportFileValidator(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportInitProcessService exportInitProcessService, IExportFileBuilder exportFileBuilder) : 
+        public ExportFileValidator(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportInitProcessService exportInitProcessService, IExportFileBuilder exportFileBuilder) :
             base(serializer, exportSettingsBuilder, exportFileBuilder)
         {
             _exportInitProcessService = exportInitProcessService;

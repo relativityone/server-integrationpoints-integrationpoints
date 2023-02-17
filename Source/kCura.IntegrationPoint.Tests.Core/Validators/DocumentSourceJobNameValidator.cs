@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
             var fieldQuery = new QueryRequest
             {
                 ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-                Fields = new []{ new FieldRef { Name = "ArtifactID" } },
+                Fields = new[]{ new FieldRef { Name = "ArtifactID" } },
                 Condition = $"'Object Type Artifact Type ID' == OBJECT {(int)ArtifactType.Document} AND 'DisplayName' == '{displayName}' AND 'Field Type' == '{fieldType}'"
             };
 
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
             {
                 ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
                 Condition = $"'ArtifactID' in [{string.Join(",", documentId)}]",
-                Fields = new []{new FieldRef { ArtifactID = fieldId }}
+                Fields = new[]{ new FieldRef { ArtifactID = fieldId }}
             };
 
             try

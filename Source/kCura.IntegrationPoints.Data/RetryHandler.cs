@@ -16,9 +16,7 @@ namespace kCura.IntegrationPoints.Data
     public class RetryHandler : IRetryHandler
     {
         private const string _CALLER_NAME_KEY = "CallerName";
-
         private const int _secondsBetweenSqlRetriesBase = 4;
-
         private readonly ushort _maxNumberOfRetries;
         private readonly ushort _exponentialWaitTimeBaseInSeconds;
         private readonly IAPILog _logger;

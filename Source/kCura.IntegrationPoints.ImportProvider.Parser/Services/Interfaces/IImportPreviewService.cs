@@ -12,18 +12,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces
     {
         int CreatePreviewJob(ImportPreviewSettings settings);
 
-
         void StartPreviewJob(int jobId);
-
 
         ImportPreviewStatus CheckProgress(int jobId);
 
-
         bool IsJobComplete(int jobId);
 
-
         ImportPreviewTable RetrievePreviewTable(int jobId);
-   
 
     }
 }

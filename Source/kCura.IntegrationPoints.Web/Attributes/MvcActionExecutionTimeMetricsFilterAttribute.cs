@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
             }
 
             GetService<IControllerActionExecutionTimeMetrics>().LogExecutionTime(
-                FormatURL(filterContext.HttpContext.Request.RawUrl), 
+                FormatURL(filterContext.HttpContext.Request.RawUrl),
                 (DateTime)filterContext.HttpContext.Items[_TIMESTAMP_KEY_NAME],
                 filterContext.HttpContext.Request.HttpMethod);
         }

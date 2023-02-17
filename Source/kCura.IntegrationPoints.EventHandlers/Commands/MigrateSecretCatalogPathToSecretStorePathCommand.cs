@@ -43,14 +43,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             foreach (var integrationPoint in integrationPoints)
             {
                 MigrateIntegrationPointSecrets(
-                    integrationPoint, 
+                    integrationPoint,
                     workspaceID
                 );
             }
         }
 
         private void MigrateIntegrationPointSecrets(
-            IntegrationPoint integrationPoint, 
+            IntegrationPoint integrationPoint,
             int workspaceID)
         {
             string secretID = integrationPoint.SecuredConfiguration;
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         {
             var query = new QueryRequest
             {
-                Fields = new []
+                Fields = new[]
                 {
                     new FieldRef
                     {

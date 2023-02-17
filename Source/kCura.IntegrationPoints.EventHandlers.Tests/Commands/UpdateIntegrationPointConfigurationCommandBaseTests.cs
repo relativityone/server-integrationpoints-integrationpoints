@@ -27,12 +27,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
         private Mock<IObjectManager> _objectManagerMock;
         private Mock<IExportQueryResult> _exportQueryResultMock;
-
         private UpdateIntegrationPointConfigurationCommandBaseForTest _sut;
-
         private const string _ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
         private const int _BLOCK_SIZE = 1000;
-
         private readonly List<SourceProvider> _sourceProviders = new List<SourceProvider>
         {
             new SourceProvider { ArtifactId = 1 }
@@ -253,7 +250,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
 
             protected override IList<string> FieldsNamesForUpdate => FieldsNamesForUpdate_VIEW;
 
-            protected override RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto values) 
+            protected override RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto values)
                 => UpdateFieldsFunc != null ? UpdateFieldsFunc(values) : values;
         }
     }

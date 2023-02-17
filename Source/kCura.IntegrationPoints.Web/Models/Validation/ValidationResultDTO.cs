@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Web.Models.Validation
 
         public ValidationResultDTO()
         {
-
         }
 
         public ValidationResultDTO(List<ValidationErrorDTO> errors)

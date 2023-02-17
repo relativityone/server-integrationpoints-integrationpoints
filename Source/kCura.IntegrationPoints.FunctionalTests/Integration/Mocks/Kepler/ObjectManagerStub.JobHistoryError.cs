@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private IList<JobHistoryErrorTest> JobHistoryErrorsFilter(QueryRequest request, IList<JobHistoryErrorTest> list)
         {
-            if(IsMultiJobHistoryErrorItemLevelCondition(request.Condition, out List<int> jobHistoryIds))
+            if (IsMultiJobHistoryErrorItemLevelCondition(request.Condition, out List<int> jobHistoryIds))
             {
                 return list.Where(x => jobHistoryIds.Contains(x.JobHistory.Value)).ToList();
             }

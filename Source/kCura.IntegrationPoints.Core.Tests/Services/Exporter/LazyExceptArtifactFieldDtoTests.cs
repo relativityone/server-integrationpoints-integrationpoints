@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [SetUp]
         public override void SetUp()
         {
-            
         }
 
         [Test]

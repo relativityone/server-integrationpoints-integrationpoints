@@ -24,13 +24,11 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         private string _currentDir;
         private string _tempDir;
         private bool _appDomainReleased;
-
         private Mock<IPluginProvider> _pluginProviderFake;
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<IKubernetesMode> _kubernetesModeFake;
-
         private readonly Guid _applicationGuid = Guid.NewGuid();
-        
+
         [SetUp]
         public void Setup()
         {
@@ -54,7 +52,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             _appDomainReleased = false;
 
             _appDomain = CreateDomain("AppDomainHelperTestsAppDomain");
-            
+
             _sut = new AppDomainHelper(_pluginProviderFake.Object, _fakeHelper,
                 _relativityFeaturePathService, _toggleProviderFake.Object, _kubernetesModeFake.Object);
         }
@@ -83,11 +81,11 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
                 expectedAssembliesLocations.Add(expectedLocation);
             }
 
-            //Act
+            // Act
             _sut.LoadClientLibraries(_appDomain, _applicationGuid);
             List<string> loadedAssemblies = _appDomain.GetAssemblies().Select(x => x.Location).ToList();
-            
-            //Assert
+
+            // Assert
             loadedAssemblies.Count().Should().Be(expectedAssembliesLocations.Count());
             loadedAssemblies.ShouldAllBeEquivalentTo(expectedAssembliesLocations);
         }
@@ -108,7 +106,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         {
             // Arrange
             _kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(true);
-            
+
             // Act
             AppDomain appDomain = _sut.CreateNewDomain();
 
@@ -142,7 +140,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
 
         private AppDomain CreateDomain(string domainName)
         {
-            
             Directory.CreateDirectory(_tempDir);
 
             foreach (string dirPath in Directory.GetDirectories(_currentDir, "*.*", SearchOption.AllDirectories))

@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Services
             try
             {
                 string serializedDetails = null;
-                if(jobDetails != null)
+                if (jobDetails != null)
                 {
                     serializedDetails = _serializer.Serialize(jobDetails);
                 }
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Services
                         results[parameter.BatchInstance] = new List<Job> {job};
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogTaskParametersDeserializationError(e);
                     // in case of the serialization fails for whatever reasons.
@@ -151,7 +151,6 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             return bacthedAgentJobs[batchId];
         }
-
 
         public void StopJobs(IList<long> jobIds)
         {

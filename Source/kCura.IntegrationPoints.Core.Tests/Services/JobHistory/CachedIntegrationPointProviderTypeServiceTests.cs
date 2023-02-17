@@ -57,7 +57,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                     TimeSpan.FromSeconds(_DEFAULT_CACHE_REFRESH_DELAY));
             }
 
-
             [Test]
             public void ItShouldRetrieveDataFromServiceForTheFirstTime()
             {
@@ -169,7 +168,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                     _integrationPointServiceMock, _currentTimeProvider,
                     TimeSpan.FromSeconds(_DEFAULT_CACHE_REFRESH_DELAY));
             }
-
 
             [Test]
             public void ItShouldRetrieveDataFromServiceForTheFirstTime()

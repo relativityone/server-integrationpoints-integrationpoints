@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
         {
             IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(caseContextArtifactID);
             IField field = fieldRepository.Read(fieldArtifactID);
-            
+
             return _converter.ConvertToField(field);
         }
     }

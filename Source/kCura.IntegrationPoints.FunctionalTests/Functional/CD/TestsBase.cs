@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 
             var app = applicationService.Get(Const.Application.INTEGRATION_POINTS_APPLICATION_NAME);
 
-            if(!applicationService.IsInstalledInWorkspace(Workspace.ArtifactID, app.ArtifactID))
+            if (!applicationService.IsInstalledInWorkspace(Workspace.ArtifactID, app.ArtifactID))
             {
                 applicationService.InstallToWorkspace(Workspace.ArtifactID, app.ArtifactID);
             }

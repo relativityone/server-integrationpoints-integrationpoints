@@ -16,9 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.Metrics
         private Mock<IEHHelper> _helperFake;
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IInternalMetricsCollectionManager> _metricsCollectionManagerFake;
-
         private IAPILog _emptyLogger;
-
         private RegisterScheduleJobSumMetricsCommand _sut;
 
         [SetUp]
@@ -77,7 +75,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.Metrics
         {
             // Arrange
             List<CategoryTarget> categoryList = new List<CategoryTarget>();
-            
+
             _metricsCollectionManagerFake.Setup(x => x.GetCategoryTargetsAsync()).Returns(Task.FromResult(categoryList));
 
             // Act

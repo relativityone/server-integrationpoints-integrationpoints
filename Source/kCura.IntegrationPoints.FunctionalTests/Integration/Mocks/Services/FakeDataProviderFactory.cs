@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
     public class FakeDataProviderFactory : IDataProviderFactory
     {
         private readonly WindsorContainer _container;
-        
+
         public FakeDataProviderFactory(WindsorContainer container)
         {
             _container = container;

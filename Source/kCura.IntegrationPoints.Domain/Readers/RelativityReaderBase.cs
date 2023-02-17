@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
                 {
                     ReadingArtifactIDs = FetchedArtifacts.Select(artifact => artifact.ArtifactId).ToArray();
                     Enumerator = ((IEnumerable<ArtifactDTO>)FetchedArtifacts).GetEnumerator();
-                    
+
                 }
                 else if (!AllArtifactsFetched())
                 {
@@ -146,8 +146,8 @@ namespace kCura.IntegrationPoints.Domain.Readers
         private Exception CreateFetchDataToReadException(Exception exception)
         {
             bool isDataGridException = exception is DataGridException;
-            string exceptionMessage = isDataGridException 
-                ? "Error occurred while fetching data from Data Grid" 
+            string exceptionMessage = isDataGridException
+                ? "Error occurred while fetching data from Data Grid"
                 : "Error occurred while fetching data";
             string exceptionSource = isDataGridException
                 ? IntegrationPointsExceptionSource.DATA_GRID

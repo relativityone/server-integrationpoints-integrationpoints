@@ -13,12 +13,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
     {
         private Mock<IDestinationProviderRepository> _destinationProviderRepositoryMock;
         private Mock<IAPILog> _loggerMock;
-
         private RdoSynchronizerProvider _sut;
-
         private const string _RELATIVITY_PROVIDER_NAME = "Relativity";
         private const string _LOAD_FILE_PROVIDER_NAME = "Load File";
-
         private readonly IDictionary<string, string> _destinationProviders = new Dictionary<string, string>
         {
             [_RELATIVITY_PROVIDER_NAME] = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",

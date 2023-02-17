@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Web.DataStructures
     {
         private readonly string _pathSeparatorString = @"\";
         private readonly char _pathSeparatorChar = '\\';
-
         private readonly FolderTreeCollection _root;
         private int _count;
 
@@ -81,6 +80,7 @@ namespace kCura.IntegrationPoints.Web.DataStructures
     internal class Folder
     {
         public string Name { get; set; }
+
         public FolderTreeCollection Children { get; set; }
 
         public Folder()

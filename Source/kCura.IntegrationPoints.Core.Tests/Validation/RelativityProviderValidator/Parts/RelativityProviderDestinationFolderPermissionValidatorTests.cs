@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             Assert.IsTrue(result.IsValid);
         }
 
-
         [TestCase(ArtifactType.Folder, ArtifactPermission.Create)]
         [TestCase(ArtifactType.Document, ArtifactPermission.Create)]
         [TestCase(ArtifactType.Document, ArtifactPermission.Delete)]

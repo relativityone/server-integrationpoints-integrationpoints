@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         public string RelativityUserName { get; }
 
         public string RelativityPassword { get; }
-        
+
         public TestHelper()
             : this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
         { }
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             RegisterProxyInServiceManagerMock<IChoiceQueryManager>(ExecutionIdentity.System);
             _serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
         }
-        
+
         private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
         {
             _serviceManager.CreateProxy<T>(executionIdentity).Returns(_ => CreateProxy<T>());
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         {
             return CreateProxy<T>(RelativityUserName);
         }
-        
+
         public T CreateProxy<T>(string username) where T : IDisposable
         {
             var userCredential = new UsernamePasswordCredentials(username, RelativityPassword);
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
             return userServiceFactory.CreateProxy<T>();
         }
-        
+
         public void Dispose()
         {
             // empty by design

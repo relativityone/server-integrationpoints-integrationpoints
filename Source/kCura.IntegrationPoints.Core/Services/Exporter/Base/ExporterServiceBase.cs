@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
         protected readonly FieldEntry IdentifierField;
 
         protected IDataTransferContext Context { get; set; }
+
         protected int RetrievedDataCount { get; set; }
 
         internal ExporterServiceBase(
@@ -53,7 +54,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             int searchArtifactId)
             : this(mappedFields, jobStopManager, helper)
         {
-
             DocumentRepository = documentRepository;
             FileRepository = fileRepository;
             Serializer = serializer;

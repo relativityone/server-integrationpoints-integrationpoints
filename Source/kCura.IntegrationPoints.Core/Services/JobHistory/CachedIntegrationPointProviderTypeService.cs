@@ -8,10 +8,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     public class CachedIntegrationPointProviderTypeService : IIntegrationPointProviderTypeService
     {
         private DateTime _lastRefreshTime = DateTime.MinValue;
-
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IProviderTypeService _providerTypeService;
-
         private readonly IDateTimeHelper _currentDateTimeProvider;
         private readonly TimeSpan _cacheRefreshDelay;
         private readonly Dictionary<int, ProviderType> _providerTypesCache = new Dictionary<int, ProviderType>();
@@ -53,7 +51,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             return providerType;
         }
-
 
         private ProviderType GetProviderTypeFromService(int integrationPointArtifactID)
         {

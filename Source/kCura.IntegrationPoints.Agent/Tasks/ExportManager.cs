@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             get
             {
-                //Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
-                //so for now we need to create only one worker job
+                // Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+                // so for now we need to create only one worker job
                 return int.MaxValue;
             }
         }
@@ -75,8 +75,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         /// <returns>List of batch ids to be processed</returns>
         public override IEnumerable<string> GetUnbatchedIDs(Job job)
         {
-            //Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
-            //so for now we need to create only one worker job
+            // Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+            // so for now we need to create only one worker job
             LogGettingUnbatchedIDs(job);
             return Enumerable.Empty<string>(); // not using "yield break" to prevent lazy evaluation of IEnumerable
         }

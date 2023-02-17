@@ -8,9 +8,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
     public class RelativityProviderWorkspaceNameValidator : BasePartsValidator<int>
     {
         private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
-
         private readonly IWorkspaceManager _workspaceManager;
-
         private readonly string _prefix;
 
         public RelativityProviderWorkspaceNameValidator(IWorkspaceManager workspaceManager, string prefix)

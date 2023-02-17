@@ -23,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
     internal class XssTestsImplementation
     {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-
         private readonly string _savedSearch = nameof(XssTestsImplementation);
 
         public XssTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)

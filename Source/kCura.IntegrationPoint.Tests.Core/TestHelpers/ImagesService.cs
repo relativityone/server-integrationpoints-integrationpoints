@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         public ImagesService(ITestHelper testHelper) : base(testHelper)
         {
         }
-               
+
         public IList<FileTestDto> GetImagesFileInfo(int workspaceId, int documentArtifactId)
         {
             using (ISearchService searchService = TestHelper.CreateProxy<ISearchService>())
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
                     .GetResult()
                     .Unwrap()
                     .Tables[0];
-                
+
                 if (imagesTable == null || imagesTable.Rows.Count == 0)
                 {
                     return new List<FileTestDto>();

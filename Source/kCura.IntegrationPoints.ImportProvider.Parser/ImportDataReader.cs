@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         private bool _isClosed;
         private readonly IDataReader _sourceDataReader;
-        private readonly Dictionary<int, int> _ordinalMap; //map publicly available ordinals ==> source data reader ordinals
+        private readonly Dictionary<int, int> _ordinalMap; // map publicly available ordinals ==> source data reader ordinals
         private readonly DataTable _schemaTable;
 
         public ImportDataReader(IDataReader sourceDataReader)
@@ -30,16 +30,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             {
                 int sourceOrdinal = _sourceDataReader.GetOrdinal(cur.SourceField.FieldIdentifier);
 
-                //special cases
+                // special cases
                 if (cur.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
                 {
-                    //Add special folder path column
+                    // Add special folder path column
                     AddColumn(
                         kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
                         sourceOrdinal,
                         curColIdx++);
 
-                    //If field is also mapped to a document field, it needs a column as well
+                    // If field is also mapped to a document field, it needs a column as well
                     if (cur.DestinationField.FieldIdentifier != null)
                     {
                         AddColumn(
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 }
                 else if (cur.FieldMapType == FieldMapTypeEnum.NativeFilePath)
                 {
-                    //Add special native file path column
+                    // Add special native file path column
                     AddColumn(
                         kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
                         sourceOrdinal,
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                             curColIdx++);
                     }
                 }
-                //general case
+                // general case
                 else
                 {
                     AddColumn(
@@ -121,6 +121,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return _sourceDataReader.Read();
 
         }
+
         public override string GetDataTypeName(int i)
         {
             throw new NotImplementedException();
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             throw new NotImplementedException();
         }
 
-        //IArtifactReader
+        // IArtifactReader
         public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
         {
             return ((IArtifactReader)_sourceDataReader).ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);

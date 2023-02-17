@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         private CoreServiceFactory _sut;
         private Mock<IServiceFactory> _webApiServiceFactoryMock;
         private Mock<Func<IAuditManager>> _auditManagerFactoryMock;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -116,13 +116,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         [Test]
         public void CreateExportManager_ShouldReturnProperImplementation()
         {
-            //arrange
+            // arrange
             var exportManagerMock = new Mock<IExportManager>();
             _webApiServiceFactoryMock
                 .Setup(x => x.CreateExportManager(It.IsAny<Func<string>>()))
                 .Returns(exportManagerMock.Object);
 
-            //act & assert
+            // act & assert
             IExportManager actualExportManager = _sut.CreateExportManager(() => string.Empty);
 
             // assert
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
             // assert
             _webApiServiceFactoryMock.Verify(
-                x => x.CreateExportManager(It.IsAny<Func<string>>()), 
+                x => x.CreateExportManager(It.IsAny<Func<string>>()),
                 Times.Exactly(numberOfCalls)
             );
         }
@@ -151,11 +151,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         [Test]
         public void CreateProductionManager_ShouldReturnProperImplementation()
         {
-            //arrange
+            // arrange
             var productionManagerMock = new Mock<IProductionManager>();
             _webApiServiceFactoryMock.Setup(x => x.CreateProductionManager(It.IsAny<Func<string>>())).Returns(productionManagerMock.Object);
 
-            //act & assert
+            // act & assert
             IProductionManager actualProductionManager = _sut.CreateProductionManager(() => string.Empty);
 
             // assert

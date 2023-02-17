@@ -64,13 +64,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         }
 
         public bool HasMoreRecords { get; }
+
         public int CurrentLineNumber { get; }
+
         public long SizeInBytes { get; }
+
         public long BytesProcessed { get; }
 
         public event IArtifactReader.OnIoWarningEventHandler OnIoWarning;
+
         public event IArtifactReader.DataSourcePrepEventHandler DataSourcePrep;
+
         public event IArtifactReader.StatusMessageEventHandler StatusMessage;
+
         public event IArtifactReader.FieldMappedEventHandler FieldMapped;
 
         protected virtual void OnOnIoWarning(IoWarningEventArgs e)

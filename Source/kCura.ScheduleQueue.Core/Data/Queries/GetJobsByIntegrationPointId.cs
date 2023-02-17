@@ -35,7 +35,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
                               ,[SubmittedDate]
                               ,[SubmittedBy]
                               ,[StopState]
-                              ,[Heartbeat] 
+                              ,[Heartbeat]
                             FROM [eddsdbo].[{_qDbContext.TableName}] WHERE RelatedObjectArtifactID = @RelatedObjectArtifactID";
 
             List<SqlParameter> sqlParams = new List<SqlParameter>();

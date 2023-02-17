@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
 
                 await metrics.SendAsync().ConfigureAwait(false);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 const string errorMsg = "Send metrics failed on job started";
                 _logger.LogError(ex, errorMsg);

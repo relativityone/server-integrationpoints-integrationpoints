@@ -23,7 +23,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
         public DataTable Execute()
         {
-            //Gets only scheduled job
+            // Gets only scheduled job
             string sql = string.Format(Resources.GetJobByRelatedObjectIDandTaskType, _qDbContext.TableName, Utility.Array.StringArrayToCsvForSql(_taskTypes.ToArray()));
 
             var sqlParams = new List<SqlParameter>
