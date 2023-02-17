@@ -19,20 +19,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
     {
         private DirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;
         private IDirectory _directoryMock;
-
         private const string _ROOT_FOLDER = @"\\localhost\Root";
         private const string _SUB_FOLDER_A = @"A";
         private const string _SUB_FOLDER_B = @"B";
-
         private const string _SUB_FOLDER_1 = @"1";
         private const string _SUB_FOLDER_2 = @"2";
-
         private const string _SUB_FILE_1 = @"FILE1.txt";
-
         private readonly string _subFolderAPath = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A);
         private readonly string _subFolderA1Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A, _SUB_FOLDER_1);
         private readonly string _subFolderA2Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_A, _SUB_FOLDER_2);
-
         private readonly string _subFolderBPath = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_B);
         private readonly string _subFolderB1Path = Path.Combine(_ROOT_FOLDER, _SUB_FOLDER_B, _SUB_FOLDER_1);
 
@@ -47,17 +42,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [Test]
         public void ItShouldReturnRootSubDirectories()
         {
-            //Arrange
+            // Arrange
             MockDirHierarchy();
 
-            //Act
+            // Act
             List<JsTreeItemDTO> rootItem = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
 
-            //Assert
+            // Assert
             Assert.That(rootItem.Count, Is.EqualTo(1));
             var subItems = rootItem[0].Children;
             Assert.That(subItems.Count, Is.EqualTo(2));
-            
+
             var subFolderA = subItems[0];
             Assert.That(subFolderA, Is.Not.Null);
             Assert.That(subFolderA.Text, Is.EqualTo(_SUB_FOLDER_A));
@@ -72,42 +67,42 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [Test]
         public void ItShouldReturnSubDirectoriesFiles()
         {
-            //Arrange
+            // Arrange
             MockDirHierarchy();
 
-            //Act
+            // Act
             List<JsTreeItemDTO> subItems = _subjectUnderTest.GetChildren(_subFolderBPath, false, true);
 
-            //Assert
-            Assert.That(subItems.Count, Is.EqualTo(3)); //should have 3 subItems total
-            Assert.That(subItems.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));//2 of these subItems are not Folders
+            // Assert
+            Assert.That(subItems.Count, Is.EqualTo(3)); // should have 3 subItems total
+            Assert.That(subItems.Where(i => i.IsDirectory == false).Count, Is.EqualTo(2));// 2 of these subItems are not Folders
         }
 
         [Test]
         public void ItShouldThrowExceptionWhenRootFolderPathIsEmpty()
         {
-            //Arrange
+            // Arrange
             const string emptyPath = "";
             _directoryMock.Exists(emptyPath).Returns(false);
 
-            //Act & Assert
+            // Act & Assert
             Assert.That(() => _subjectUnderTest.GetChildren(emptyPath, true),
                 Throws.Exception
                 .TypeOf<ArgumentException>());
         }
-        
+
         [Test]
         public void ItShouldSkipNotAccessibleFolders()
         {
-            //Arrange
+            // Arrange
             MockDirHierarchy();
 
             _directoryMock.GetDirectories(_ROOT_FOLDER).Throws<UnauthorizedAccessException>();
 
-            //Act
+            // Act
             List<JsTreeItemDTO> rootItem = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
 
-            //Assert
+            // Assert
             Assert.That(rootItem.Count,Is.EqualTo(1));
             Assert.That(rootItem[0].Children.Count, Is.EqualTo(0));
         }
@@ -142,4 +137,3 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
     }
 }
-

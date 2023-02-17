@@ -42,16 +42,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
     public class AgentTests
     {
         private const string _PROVIDER_NAME = "TestProvider";
-
         private readonly Guid _batchInstanceGuid = Guid.NewGuid();
-
         private Mock<IMessageService> _messageServiceMock;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
         private Mock<IMemoryUsageReporter> _memoryUsageReporter;
         private Mock<IHeartbeatReporter> _heartbeatReporter;
         private Mock<IAPILog> _loggerMock;
         private Mock<IIntegrationPointService> _integrationPointServiceMock;
-
         private IWindsorContainer _container;
         private Mock<IKubernetesMode> _kubernetesModeMock;
 

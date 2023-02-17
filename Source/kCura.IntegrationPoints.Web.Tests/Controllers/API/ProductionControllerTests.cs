@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnSortedProductions()
         {
-            // Arrange 
+            // Arrange
             var production1 = new ProductionDTO
             {
                 ArtifactID = "1",
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 DisplayName = string.Empty
             };
 
-            //It will sort alphabetically and filter out the empty production
+            // It will sort alphabetically and filter out the empty production
             var expectedResult = new List<ProductionDTO> { production1, production2 };
 
             var productions = new List<ProductionDTO> { production2, production1, production3 };

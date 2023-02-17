@@ -15,7 +15,6 @@ namespace Relativity.IntegrationPoints.Services
         private const string _NO_ACCESS_EXCEPTION_MESSAGE = "You do not have permission to access this service.";
         private const string _ERROR_OCCURRED_DURING_REQUEST = "Error occurred during request processing. Please contact your administrator.";
         private const string _PERMISSIONS_ERROR = "Failed to validate permissions for Integration Points Kepler Service. Denying access.";
-
         private readonly IPermissionRepositoryFactory _permissionRepositoryFactory;
 
         /// <summary>

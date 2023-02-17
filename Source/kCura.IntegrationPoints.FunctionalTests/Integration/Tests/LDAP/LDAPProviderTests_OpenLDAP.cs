@@ -18,7 +18,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
     public class LDAPProviderTests_OpenLDAP : TestsBase
     {
         public readonly AdministrativeTestData AdministrativeTestData;
+
         public readonly ProductDevelopmentTestData ProductDevelopmentTestData;
+
         public readonly HumanResourcesTestData HumanResourcesTestData;
 
         public LDAPProviderTests_OpenLDAP()
@@ -44,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
             // Assert
             object IdSelector(IDictionary<string, object> row) => row[HumanResourcesTestData.UniqueId];
 
-            //We need to sanitize in case of child ou which are bypassed anyway in SyncManager
+            // We need to sanitize in case of child ou which are bypassed anyway in SyncManager
             result.Select(IdSelector).Where(x => x != null)
                 .ShouldBeEquivalentTo(HumanResourcesTestData.EntryIds);
         }
@@ -65,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
             // Assert
             object IdSelector(IDictionary<string, object> row) => row[AdministrativeTestData.UniqueId];
 
-            //We need to sanitize in case of child ou which are bypassed anyway in SyncManager
+            // We need to sanitize in case of child ou which are bypassed anyway in SyncManager
             result.Select(IdSelector).Where(x => x != null)
                 .ShouldBeEquivalentTo(
                     AdministrativeTestData.EntryIds.Concat(ProductDevelopmentTestData.EntryIds));
@@ -87,7 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
             // Assert
             object IdSelector(IDictionary<string, object> row) => row[ProductDevelopmentTestData.UniqueId];
 
-            //We need to sanitize in case of child ou which are bypassed anyway in SyncManager
+            // We need to sanitize in case of child ou which are bypassed anyway in SyncManager
             result.Select(IdSelector).Where(x => x != null)
                 .ShouldBeEquivalentTo(ProductDevelopmentTestData.EntryIds);
         }
@@ -123,7 +125,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
             IDataReader reader = sut.GetData(fieldEntries, entryIds, sourceProviderConfiguration);
 
             IList<IDictionary<string, object>> result = ReaderUtil.Read(reader);
-            
+
             // Assert
             AssertData(HumanResourcesTestData.Data, result);
         }
@@ -195,7 +197,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
             // Assert
             IList<object> dateTimeResults = result.Select(x => x[dateTimeProp]).ToList();
-            
+
             dateTimeResults.Should().AllBeOfType<string>();
         }
 
@@ -210,7 +212,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 
             DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(
                 HumanResourcesTestData.OU, multiValueDelimiter: delimiter);
-
 
             IEnumerable<FieldEntry> fieldEntries = new[]
             {
@@ -242,7 +243,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
             IDataSourceProvider sut = PrepareSut();
 
             DataSourceProviderConfiguration sourceProviderConfiguration = PrepareOpenLDAPConfiguration(HumanResourcesTestData.OU);
-            
+
             IEnumerable<FieldEntry> fieldEntries = new[]
             {
                 HumanResourcesTestData.IdentifierFieldEntry,
@@ -270,7 +271,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
                 Serializer);
         }
 
-        private DataSourceProviderConfiguration PrepareOpenLDAPConfiguration(string ou, 
+        private DataSourceProviderConfiguration PrepareOpenLDAPConfiguration(string ou,
             AuthenticationTypesEnum authType = AuthenticationTypesEnum.FastBind,
             bool importNested = false, char? multiValueDelimiter = '|')
         {
@@ -293,7 +294,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
                 Serializer.Serialize(securedConfiguration));
         }
 
-        private FieldEntry GetFieldEntry(string propertyName) => 
+        private FieldEntry GetFieldEntry(string propertyName) =>
             new FieldEntry
             {
                 DisplayName = propertyName,

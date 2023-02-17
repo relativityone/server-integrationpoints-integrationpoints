@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
     {
         private readonly IEHHelper _helper;
         private readonly IRelativityObjectManager _objectManager;
-
         private string[] _sourceProviderWithEntityObjectType => new[]
         {
             Constants.IntegrationPoints.SourceProviders.LDAP,

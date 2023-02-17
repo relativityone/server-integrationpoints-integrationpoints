@@ -79,7 +79,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
             ExportEventArgs reisedEventArgs = new ExportEventArgs(exportedRecordCount, totalRecordCount, "", EventType2.Progress,
                 null, null);
 
-
             _subjectUnderTest.OnStatusUpdate += (importedCount, errorCount) =>
             {
                 registeredImportedCount = importedCount;

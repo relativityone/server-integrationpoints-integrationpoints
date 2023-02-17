@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 throw new TestException("Importing documents does not succeeded." + errorsDetails);
             }
         }
-        
+
         public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
         {
             using (var productionManager = _testHelper.CreateProxy<IProductionManager>())

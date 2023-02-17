@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
             _servicesMgr = helper.GetServicesManager();
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<ViewService>();
         }
-        
+
         public List<ViewDTO> GetViewsByWorkspaceAndArtifactType(int workspceId, int artifactTypeId)
         {
             using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
                 .OrderBy(view => view.Order)
                 .ToList();
         }
-        
+
         private void LogRetrievingViewsError(int workspceId, int artifactTypeId)
         {
             _logger.LogError("No views returned for ArtifactType {ArtifactTypeId} in Workspace {WorkspaceId}.", artifactTypeId, workspceId);

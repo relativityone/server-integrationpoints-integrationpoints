@@ -18,7 +18,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
     {
         private const string _NATIVES_LOAD_FILE_HEADER = "Control Number,FILE_PATH";
         private const string _NATIVES_DAT_LOAD_FILE_HEADER = "^Control Number^|^FILE_PATH^|^File Size^|^File Name^|^Folder_Path^";
-
         private static readonly string _NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
         private static readonly string _NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
         private static readonly string _NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
@@ -138,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
                 {
                     for (int i = 0; i < imagesCount; i++)
                     {
-                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
+                        string line = string.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
                         optLoadFileWriter.WriteLine(line);
                     }
                 }

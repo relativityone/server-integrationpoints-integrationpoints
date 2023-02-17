@@ -59,7 +59,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
     public class ExportServiceManagerTests : TestBase
     {
         private IntegrationPointDto _integrationPointDto;
-
         private ExportServiceManager _instance;
         private IAgentValidator _agentValidator;
         private IBatchStatus _exportServiceObserver;
@@ -88,7 +87,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private ISerializer _serializer;
         private IExportDataSanitizer _exportDataSanitizer;
         private IAPILog _logger;
-
         private Job _job;
         private JobHistory _jobHistory;
         private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
@@ -97,7 +95,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private SourceProvider _sourceProvider;
         private TaskParameters _taskParameters;
         private ImportSettings _importSettings;
-
         private const int _EXPORT_DOC_COUNT = 0;
         private const int _RETRY_SAVEDSEARCHID = 312;
         private const string _IMPORTSETTINGS_WITH_USERID = "blah blah blah";
@@ -284,7 +281,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 new FieldMap()
                 {
                     SourceField = new FieldEntry() { DisplayName = "source" },
-                    DestinationField =  new FieldEntry() { DisplayName = "destination"},
+                    DestinationField =  new FieldEntry() { DisplayName = "destination" },
                     FieldMapType = FieldMapTypeEnum.Identifier
                 }
             };
@@ -701,13 +698,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             // ARRANGE
 
-
             // ACT
             _instance.Execute(_job);
 
             // ASSERT
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
-
 
             _jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
         }

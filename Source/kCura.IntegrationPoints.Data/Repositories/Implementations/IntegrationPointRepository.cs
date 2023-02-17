@@ -15,9 +15,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private readonly IRelativityObjectManager _objectManager;
         private readonly ISecretsRepository _secretsRepository;
         private readonly IAPILog _logger;
-
         private readonly Guid _securedConfigurationGuid = IntegrationPointFieldGuids.SecuredConfigurationGuid;
-
         private readonly int _workspaceID;
 
         public IntegrationPointRepository(
@@ -319,8 +317,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Can not write Secured Configuration for Integration Point record during encryption process.");
-                //Ignore as Integration Point RDO doesn't always include SecuredConfiguration
-                //Any access to missing fieldGuid will throw FieldNotFoundException
+                // Ignore as Integration Point RDO doesn't always include SecuredConfiguration
+                // Any access to missing fieldGuid will throw FieldNotFoundException
                 return integrationPoint.SecuredConfiguration;
             }
         }

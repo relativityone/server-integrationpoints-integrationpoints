@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnDataReaderAssignedInConstructor()
         {
-            //Assert
+            // Assert
             Assert.AreSame(_dataReader, _instance.DataReader);
         }
 

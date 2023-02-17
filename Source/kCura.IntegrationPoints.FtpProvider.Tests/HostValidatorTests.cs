@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         private Mock<IInstanceSettingsManager> _instanceSettingManagerFake;
         private Mock<IManagerFactory> _managerFactoryFake;
         private HostValidator _sut;
-
         private const string _HOST_IP = "55.66.77.88";
 
         [SetUp]
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             // assert
             canConnect.Should().BeTrue();
         }
-        
+
         [Test]
         public void CanConnectTo_ShouldReturnFalseForLocalhost()
         {

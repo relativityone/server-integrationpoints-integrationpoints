@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         private IFederatedInstanceManager _federatedInstanceManager;
         private IWorkspaceManager _workspaceManager;
         private RestoreJobHistoryDestinationWorkspaceCommand _command;
-
         private const int _WORKSPACE_ARTIFACT_ID = 623424;
 
         public override void SetUp()

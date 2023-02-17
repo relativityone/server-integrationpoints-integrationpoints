@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         {
             if (useDynamicFolderPath)
             {
-                IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactID); //_helper.GetDBContext(workspaceArtifactID);
+                IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactID); // _helper.GetDBContext(workspaceArtifactID);
                 return new DynamicFolderPathReader(dbContext);
             }
 

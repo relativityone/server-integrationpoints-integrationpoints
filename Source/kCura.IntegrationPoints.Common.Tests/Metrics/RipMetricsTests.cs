@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics
             });
         }
 
-
         [Test]
         public void TimedOperation_ShouldCreateAndLogMetric()
         {
@@ -79,7 +78,6 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics
 
         private bool DictionariesAreEqual(Dictionary<string, object> dict1, Dictionary<string, object> dict2) =>
             dict1.Count() == dict2.Count() && !dict1.Except(dict2).Any();
-
         private class MetricValues<T>
         {
             public string Name;

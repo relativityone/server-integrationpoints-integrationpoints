@@ -13,26 +13,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
         [Test]
         public void AddOrThrowIfKeyExists_ShouldAddToDictionaryWhenKeyDoesNotExist()
         {
-            //arrange
+            // arrange
             var dictionary = new Dictionary<int, int>();
             const int expectedKey = 1;
             const int expectedValue = 10;
 
-            //act
+            // act
             dictionary.AddOrThrowIfKeyExists(
                 expectedKey,
                 expectedValue,
                 errorMessage: "Some error message"
             );
 
-            //assert
+            // assert
             dictionary[expectedKey].Should().Be(expectedValue);
         }
 
         [Test]
         public void AddOrThrowIfKeyExists_ShouldThrowWhenKeyExists()
         {
-            //arrange
+            // arrange
             const int expectedKey = 1;
             const int expectedValue = 10;
             const string errorMessage = "Some error message";
@@ -41,14 +41,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
                 [expectedKey] = expectedValue
             };
 
-            //act
+            // act
             Action action = () => dictionary.AddOrThrowIfKeyExists(
                 expectedKey,
                 expectedValue,
                 errorMessage
             );
 
-            //assert
+            // assert
             action
                 .ShouldThrow<IntegrationPointsException>()
                 .WithMessage(
@@ -60,19 +60,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
         [TestCase("")]
         public void AddOrThrowIfKeyExists_ShouldThrowWhenErrorMessageIsNullOrEmpty(string errorMessage)
         {
-            //arrange
+            // arrange
             var dictionary = new Dictionary<int, int>();
             const int expectedKey = 1;
             const int expectedValue = 10;
 
-            //act
+            // act
             Action action = () => dictionary.AddOrThrowIfKeyExists(
                 expectedKey,
                 expectedValue,
                 errorMessage
             );
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentException>();
         }
 

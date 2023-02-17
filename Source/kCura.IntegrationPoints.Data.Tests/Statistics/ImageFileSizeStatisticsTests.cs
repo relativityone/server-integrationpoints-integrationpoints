@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     {
         private const string _PRODUCTION_SQL = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
         private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
-        
         private ImageFileSizeStatistics _instance;
 
         public override void SetUp()

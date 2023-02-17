@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 {
-    internal class ExternalServiceSimpleInstrumentation : IExternalServiceSimpleInstrumentation 
+    internal class ExternalServiceSimpleInstrumentation : IExternalServiceSimpleInstrumentation
     {
         private readonly IExternalServiceInstrumentation _instrumentation;
 

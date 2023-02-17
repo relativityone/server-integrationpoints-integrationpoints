@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap
 {
     public class ImportFromLdapModel
     {
-        public IntegrationPointGeneralModel General { get; set; } 
+        public IntegrationPointGeneralModel General { get; set; }
 
         public ImportFromLdapSourceConnectionModel Source { get; set; }
 

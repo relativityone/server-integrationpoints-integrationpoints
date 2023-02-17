@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             _myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
                 SourceWorkspace, Serializer);
         }
-        
+
         [IdentifiedTest("BCF72894-224F-4DB7-985F-0C53C93D153D")]
         public void SyncWorker_ShouldImportData()
         {
@@ -107,7 +107,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
             JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
-
 
             IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
 

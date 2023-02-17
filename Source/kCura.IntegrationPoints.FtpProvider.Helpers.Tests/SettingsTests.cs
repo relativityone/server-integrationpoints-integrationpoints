@@ -20,14 +20,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
         [SetUp]
         public override void SetUp()
         {
-
         }
 
         [TestCase("172.17.98.46", Description = "IPv4 Address")]
         [TestCase("www.relativity.com", Description = "DNS Address")]
         [TestCase("2001:db8:a0b:12f0::1", Description = "IPv6 Address")]
         [Test]
-        public void WhenHostIsValid_ShouldPassValidation(String validHost)
+        public void WhenHostIsValid_ShouldPassValidation(string validHost)
         {
             _sut.Host = validHost;
 
@@ -41,7 +40,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
         [TestCase("!@db8:12f0::1")]
         [TestCase("")]
         [Test]
-        public void WhenHostIsInvalid_ShouldNotPassValidation(String invalidHost)
+        public void WhenHostIsInvalid_ShouldNotPassValidation(string invalidHost)
         {
             _sut.Host = invalidHost;
 

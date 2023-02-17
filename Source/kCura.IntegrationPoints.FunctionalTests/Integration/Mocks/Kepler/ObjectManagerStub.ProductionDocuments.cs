@@ -14,7 +14,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupProductionDocuments()
         {
-           
             IList<DocumentTest> Filter(QueryRequest request, IList<DocumentTest> list)
             {
                 bool hasNatives = request.Condition.Contains($"'{ProductionConsts.WithNativesFieldName}' == true");
@@ -28,7 +27,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     .ToList();
                 return documents;
             }
-
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsProductionDocumentsQuery(r)), It.IsAny<int>(), It.IsAny<int>()))

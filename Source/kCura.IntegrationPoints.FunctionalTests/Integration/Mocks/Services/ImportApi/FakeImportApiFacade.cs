@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         {
             _instance = instance;
         }
-        
+
         public HashSet<int> GetMappableArtifactIdsWithNotIdentifierFieldCategory(int workspaceArtifactID, int artifactTypeID)
         {
             throw new System.NotImplementedException();

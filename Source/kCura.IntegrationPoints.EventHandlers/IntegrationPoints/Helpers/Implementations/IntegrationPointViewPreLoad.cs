@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             ICaseServiceContext context,
             IRelativityProviderConfiguration relativityProviderSourceConfiguration,
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration,
-            IIntegrationPointBaseFieldsConstants fieldsConstants, 
+            IIntegrationPointBaseFieldsConstants fieldsConstants,
             IRelativityObjectManager objectManager,
             IEHHelper helper)
         {

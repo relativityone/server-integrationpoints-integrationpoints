@@ -14,9 +14,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
         private const string _FOLDER_PATH = @"\\localhost\Export";
         private const string _JOB_NAME = "JobName";
         private readonly DateTime _jobStartTime = DateTime.Now;
-
         private DestinationFolderHelper _instnaceUnderTest;
-
         private ExportSettings _exportSettings;
         private IDirectory _driHelperMock;
         private IJobInfo _jobInfoMock;

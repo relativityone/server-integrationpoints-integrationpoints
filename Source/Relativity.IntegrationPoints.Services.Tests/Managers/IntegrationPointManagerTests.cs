@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         [Test]
         public void ItShouldGrantAccessForView()
         {
-            // Arrange 
+            // Arrange
             const int requiredNumberOfCalls = 4;
 
             // Act
@@ -104,7 +104,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         [TestCase(true, false, "Integration Point - View")]
         public void ItShouldDenyAccessForViewAndLogIt(bool workspaceAccess, bool viewAccess, string missingPermissions)
         {
-            // Arrange 
+            // Arrange
             const int requiredNumberOfCalls = 4;
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPoint), ArtifactPermission.View).Returns(viewAccess);

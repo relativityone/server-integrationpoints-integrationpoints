@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
     {
         private readonly XssTestsImplementation _testsImplementation;
 
-        public XssTests() 
+        public XssTests()
             : base(nameof(XssTests))
         {
             _testsImplementation = new XssTestsImplementation(this);

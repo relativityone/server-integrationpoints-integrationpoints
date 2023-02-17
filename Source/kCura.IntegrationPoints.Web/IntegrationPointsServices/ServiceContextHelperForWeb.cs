@@ -11,13 +11,11 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
     {
         private const int _ADMIN_CASE_WORKSPACE_ARTIFACT_ID = -1;
         private const int _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID = 1;
-
         private readonly IAPILog _logger;
         private readonly IUserContext _userContext;
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IHelper _helper;
         private readonly IWorkspaceContext _workspaceContext;
-
         private int? _workspaceId;
 
         public ServiceContextHelperForWeb(

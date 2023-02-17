@@ -24,9 +24,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             DECLARE @delimiter NVARCHAR(3) SET @delimiter = CAST('\' AS NVARCHAR(1))
             DECLARE @rootFolderID INT SET @rootFolderID = (SELECT ArtifactID FROM SystemArtifact WITH (NOLOCK) WHERE SystemArtifactIdentifier = 'RootFolder')
 
-            DECLARE MY_CURSOR CURSOR 
+            DECLARE MY_CURSOR CURSOR
               LOCAL STATIC READ_ONLY FORWARD_ONLY
-            FOR 
+            FOR
             SELECT ArtifactId FROM @FolderPaths
 
             OPEN MY_CURSOR
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 SET @current = @docID
 
                 WHILE NOT (SELECT TOP 1 ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current) IS NULL BEGIN
-                    IF NOT @path IS NULL AND NOT @current = @rootFolderID BEGIN 
+                    IF NOT @path IS NULL AND NOT @current = @rootFolderID BEGIN
                         SET @path = (SELECT @delimiter + @path)
                     END
                     SET @current = (SELECT ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current)
@@ -60,7 +60,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             DEALLOCATE MY_CURSOR
 
             SELECT * FROM @FolderPaths";
-
         private readonly IWorkspaceDBContext _dbContext;
 
         public DynamicFolderPathReader(IWorkspaceDBContext dbContext)
@@ -90,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 ParameterName = "@ArtifactIds"
             };
 
-            var dataTable = _dbContext.ExecuteSqlStatementAsDataTable(_DYNAMIC_FOLDER_PATH_SQL, new []{parameter});
+            var dataTable = _dbContext.ExecuteSqlStatementAsDataTable(_DYNAMIC_FOLDER_PATH_SQL, new[]{parameter});
 
             foreach (DataRow dataTableRow in dataTable.Rows)
             {

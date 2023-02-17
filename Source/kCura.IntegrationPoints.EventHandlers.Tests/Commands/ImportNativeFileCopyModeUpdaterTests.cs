@@ -86,7 +86,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             Assert.IsNull(updatedSourceConfig);
         }
 
-
         private string CreateSerializedSourceConfigurationToBeCorrected(bool importNativeFileFlagValue, bool shouldHaveImportNativeFileCopyMode)
         {
             string config = CreateProperSerializedSourceConfiguration(importNativeFileFlagValue);

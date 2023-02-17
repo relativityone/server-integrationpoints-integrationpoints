@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             Assert.IsFalse(actual.IsValid);
             Assert.IsTrue(actual.Messages.Any(m => m.Equals(ValidationMessages.DestinationProductionNotEligibleForImport)));
         }
-        
+
         [Test]
         public void ItShouldNotValidate_ProductionDataSource_WhenNoAccessToProduction()
         {
@@ -155,4 +155,3 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         }
     }
 }
-

@@ -29,16 +29,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
         private Mock<IRelativityObjectManager> _templateWorkspaceRelativityObjectManagerFake;
         private Mock<IRelativityObjectManager> _createdWorkspaceRelativityObjectManagerMock;
         private Mock<IIntegrationPointProfilesQuery> _integrationPointProfilesQueryFake;
-
         private const string _TEST_ERROR_MESSAGE = "Failed to migrate the Integration Point Profiles.";
         private const int _TEMPLATE_WORKSPACE_ARTIFACT_ID = 100111;
         private const int _CREATED_WORKSPACE_ARTIFACT_ID = 200111;
         private const int _FIRST_SYNC_PROFILE_ARTIFACT_ID = 300444;
         private const int _FIRST_NON_SYNC_PROFILE_ARTIFACT_ID = 400444;
         private const int _SAVED_SEARCH_ARTIFACT_ID = 123234;
-
         private static ServiceException TestException => new ServiceException(_TEST_ERROR_MESSAGE);
-
         private static IEnumerable<Action<IntegrationPointProfileMigrationEventHandlerTests>> ServicesFailureSetups { get; } = new Action<IntegrationPointProfileMigrationEventHandlerTests>[]
         {
             ctx => ctx._createdWorkspaceRelativityObjectManagerMock
@@ -114,7 +111,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 .Returns(GetSavedSearch(_SAVED_SEARCH_ARTIFACT_ID));
             searchQueryRepositoryMock
                 .Setup(x => x.RetrievePublicSavedSearches())
-                .Returns(new [] { GetSavedSearch(_SAVED_SEARCH_ARTIFACT_ID) });
+                .Returns(new[] { GetSavedSearch(_SAVED_SEARCH_ARTIFACT_ID) });
 
             Mock<IRepositoryFactory> repositoryFactoryMock = new Mock<IRepositoryFactory>();
             repositoryFactoryMock
@@ -228,7 +225,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             // Act
             Response response = _sut.Execute();
 
-            //Assert
+            // Assert
             response.Success.Should().BeTrue("handler should have completed successfully");
             response.Exception.Should().BeNull("there was no failure");
 
@@ -257,7 +254,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             // Act
             Response response = _sut.Execute();
 
-            //Assert
+            // Assert
             response.Success.Should().BeTrue("handler should have completed successfully");
             response.Exception.Should().BeNull("there was no failure");
 
@@ -288,7 +285,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             // Act
             Response response = _sut.Execute();
 
-            //Assert
+            // Assert
             response.Success.Should().BeTrue("handler should have completed successfully");
             response.Exception.Should().BeNull("there was no failure");
 
@@ -301,7 +298,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 .Verify(x => x.MassUpdateAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<FieldRefValuePair>>(),
                     It.IsAny<FieldUpdateBehavior>(), It.IsAny<ExecutionIdentity>()), Times.Exactly(syncProfilesCount - 1));
         }
-
 
         [Test]
         public void Execute_ShouldLogNotDeleteProfiles_WhenTheyDontExistInNewWorkspace()
@@ -326,7 +322,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             // Act
             Response response = _sut.Execute();
 
-            //Assert
+            // Assert
             response.Success.Should().BeTrue("handler should have completed successfully");
             response.Exception.Should().BeNull("there was no failure");
 

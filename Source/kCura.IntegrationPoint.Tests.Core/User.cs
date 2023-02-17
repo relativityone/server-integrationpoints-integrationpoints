@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoint.Tests.Core
     {
         private const int _SYSTEM_ADMINISTRATOR_GROUP_ID = 20;
         private const int _USER_TYPE_INTERNAL_ID = 663;
-
         private static ITestHelper Helper => new TestHelper();
 
         public static UserModel CreateUser(string firstName, string lastName, string emailAddress, IList<int> groupIds = null)

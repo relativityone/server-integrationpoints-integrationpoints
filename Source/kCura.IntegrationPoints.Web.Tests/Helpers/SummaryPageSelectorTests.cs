@@ -53,64 +53,63 @@
             _summaryPageSelector = new SummaryPageSelector();
         }
 
-
         [Test]
         public void ItShouldReturnFtpUrl()
         {
-            //Act
+            // Act
             var url = _summaryPageSelector[ProviderType.FTP];
 
-            //Assert
+            // Assert
             Assert.AreEqual(_expectedMapping[ProviderType.FTP], url);
         }
 
         [Test]
         public void ItShouldReturnLdapUrl()
         {
-            //Act
+            // Act
             var url = _summaryPageSelector[ProviderType.LDAP];
 
-            //Assert
+            // Assert
             Assert.AreEqual(_expectedMapping[ProviderType.LDAP], url);
         }
 
         [Test]
         public void ItShouldReturnLoadFileUrl()
         {
-            //Act
+            // Act
             var url = this._summaryPageSelector[ProviderType.LoadFile];
-            
-            //Assert
+
+            // Assert
             Assert.AreEqual(this._expectedMapping[ProviderType.LoadFile],url);
         }
 
         [Test]
         public void ItShouldReturnRelativityUrl()
         {
-            //Act
+            // Act
             var url = this._summaryPageSelector[ProviderType.Relativity];
-            
-            //Assert
+
+            // Assert
             Assert.AreEqual(this._expectedMapping[ProviderType.Relativity],url);
         }
 
         [Test]
         public void ItShouldReturnOtherUrl()
         {
-            //Act
+            // Act
             var url = this._summaryPageSelector[ProviderType.Other];
-            
-            //Assert
+
+            // Assert
             Assert.AreEqual(this._expectedMapping[ProviderType.Other],url);
         }
 
         [Test]
         public void ItShouldReturnImportLoadFileUrl()
         {
-            //Act
+            // Act
             var url = this._summaryPageSelector[ProviderType.ImportLoadFile];
-            
-            //Assert
+
+            // Assert
             Assert.AreEqual(this._expectedMapping[ProviderType.ImportLoadFile],url);
         }
     }

@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
     public class FieldMappingsControllerTests
     {
         private FieldMappingsController _sut;
-
         private Mock<IFieldsClassifyRunnerFactory> _fieldsClassifyRunnerFactoryMock;
         private Mock<IFieldsClassifierRunner> _fieldsClassifierRunner;
         private Mock<IAutomapRunner> _automapRunnerMock;
@@ -35,7 +34,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
         private List<FieldClassificationResult> _destinationFieldClassificationResults;
         private IEnumerable<ClassifiedFieldDTO> _sourceClassifiedFieldDTOs;
         private IEnumerable<ClassifiedFieldDTO> _destinationClassifiedFieldDTOs;
-
         private const int _SOURCE_WORKSPACE_ID = 1;
         private const int _DESTINATION_WORKSPACE_ID = 2;
         private const int _SOURCE_ARTIFACT_TYPE_ID = 3;

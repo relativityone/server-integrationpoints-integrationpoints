@@ -27,25 +27,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHandleEmptyFiles()
         {
-            //Arrange
+            // Arrange
             _loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
             _instance = new LoadFileFieldParser(_loadFile, _loadFileReader);
 
-            //Act
+            // Act
 
-            //Assert
+            // Assert
             Assert.AreEqual(0, _instance.GetFields().Count);
         }
 
         [Test]
         public void ItShouldReturnFieldsFromLoadFileReader()
         {
-            //Arrange
+            // Arrange
             _instance = new LoadFileFieldParser(_loadFile, _loadFileReader);
 
-            //Act
+            // Act
 
-            //Assert
+            // Assert
             Assert.AreEqual(_HEADERS.Length, _instance.GetFields().Count);
 
             for (int i = 0; i < _HEADERS.Length; i++)

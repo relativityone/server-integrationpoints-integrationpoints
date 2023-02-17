@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Agent
         private const string PROCESSING_JOB_MESSAGE_TEMPLATE = "Processing Job ID : {0} : Workspace ID {1} : Job Type {2}";
         private const string START_PROCESSING_JOB_MESSAGE_TEMPLATE = "Started : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
         private const string FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE = "Finished : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
-
         private readonly ITaskProvider _taskProvider;
         private readonly IAgentNotifier _agentNotifier;
         private readonly IJobService _jobService;

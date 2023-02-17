@@ -17,9 +17,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
     {
         protected static int WorkspaceId { get; } = 123;
         protected ILog Logger { get; private set; }
+
         protected PermissionManagerStub PermissionManager { get; private set; }
+
         protected IPermissionRepositoryFactory PermissionRepositoryFactory { get; private set; }
-        
+
         [SetUp]
         public void BaseSetup()
         {
@@ -38,8 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
            // Assert
             action.ShouldNotThrow<InsufficientPermissionException>();
         }
-        
-        protected void ShouldThrowInsufficientPermissions(PermissionSetup[] permissions, Func<Task> action) 
+
+        protected void ShouldThrowInsufficientPermissions(PermissionSetup[] permissions, Func<Task> action)
         {
             // Arrange
             SetupPermissions(permissions);
@@ -48,7 +50,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             action.ShouldThrow<InsufficientPermissionException>();
         }
 
-
         protected void SetupPermissions(IEnumerable<PermissionSetup> permissions)
         {
             foreach (var permission in permissions)
@@ -56,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 PermissionManager.SetupPermission(permission);
             }
         }
-        
+
         public static PermissionSetup GetPermissionRefForWorkspace(int workspaceId)
         {
             return new PermissionSetup
@@ -77,8 +78,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
     public struct PermissionSetup
     {
         public PermissionRef Permission { get; set; }
+
         public int Workspace { get; set; }
+
         public int? Instance { get; set; }
+
         public bool Granted { get; set; }
 
         public override string ToString()

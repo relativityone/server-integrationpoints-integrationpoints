@@ -8,7 +8,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
     public class SqlToggleProvider : IToggleProviderExtended
     {
         private readonly Func<SqlConnection> _connectionFunc;
-
         private SqlToggleProvider(Func<SqlConnection> connectionFunc)
         {
             _connectionFunc = connectionFunc;
@@ -71,7 +70,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
         }
 
         public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
+
         public bool CacheEnabled { get; set; }
+
         public int CacheTimeoutInSeconds { get; set; }
 
         #endregion

@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             target.DisableUserSecurityCheck = importSettings.DisableUserSecurityCheck;
             target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;
             target.IdentityFieldId = importSettings.IdentityFieldId;
-            target.MaximumErrorCount = int.MaxValue - 1; //Have to pass in MaxValue - 1 because of how the ImportAPI validation works -AJK 10-July-2012
+            target.MaximumErrorCount = int.MaxValue - 1; // Have to pass in MaxValue - 1 because of how the ImportAPI validation works -AJK 10-July-2012
             target.NativeFileCopyMode = importSettings.NativeFileCopyMode;
             target.ObjectFieldIdListContainsArtifactId = importSettings.ObjectFieldIdListContainsArtifactId;
             target.OverwriteMode = importSettings.OverwriteMode;

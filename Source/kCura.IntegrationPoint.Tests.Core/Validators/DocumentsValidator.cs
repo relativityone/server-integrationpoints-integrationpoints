@@ -9,8 +9,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
     {
         private readonly Func<IList<Document>> _expectedDocumentsProvider;
         private readonly Func<IList<Document>> _actualDocumentsProvider;
-        public List<IDocumentValidator> DocumentValidators { get; }
 
+        public List<IDocumentValidator> DocumentValidators { get; }
 
         public DocumentsValidator(Func<IList<Document>> expectedDocumentsProvider, Func<IList<Document>> actualDocumentsProvider, params IDocumentValidator[] documentValidators)
         {
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
             {
                 string expectedDocumentControlNumber = expectedDocument.ControlNumber;
 
-                //We expect only few items so don't need to worry about performance
+                // We expect only few items so don't need to worry about performance
                 Document actualDocument = actualDocuments.FirstOrDefault(document => document.ControlNumber == expectedDocumentControlNumber);
 
                 Assert.That(actualDocument, Is.Not.Null, "Could not find document with control number {0}.", expectedDocumentControlNumber);

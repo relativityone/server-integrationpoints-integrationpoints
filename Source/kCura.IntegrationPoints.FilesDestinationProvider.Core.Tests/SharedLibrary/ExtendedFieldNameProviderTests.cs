@@ -65,7 +65,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
             _settings.SelViewFieldIds.Add(1, new FieldEntry() { DisplayName = "Test field", FieldIdentifier = "TestFieldId" });
             _extendedFieldNameProvider = new ExtendedFieldNameProvider(_settings);
 
-
             var viewFieldInfo = new ViewFieldInfo(_dr);
             string displayName = _extendedFieldNameProvider.GetDisplayName(viewFieldInfo);
             Assert.AreEqual("Test field", displayName);
@@ -100,7 +99,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
             _settings.SelViewFieldIds = new Dictionary<int, FieldEntry>();
             _settings.SelViewFieldIds.Add(1, new FieldEntry() { DisplayName = "Test field", FieldIdentifier = "TestFieldId" });
             _extendedFieldNameProvider = new ExtendedFieldNameProvider(_settings);
-
 
             var textPrecedenceViewFieldInfo = new CoalescedTextViewField(new ViewFieldInfo(_dr), false);
             string displayName = _extendedFieldNameProvider.GetDisplayName(textPrecedenceViewFieldInfo);

@@ -21,15 +21,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         }
 
         public ImportSettings Settings { get; set; }
+
         public IDataTransferContext Context { get; set; }
 
         // disable not used anywhere warning
 #pragma warning disable CS0067
         public event IImportNotifier.OnCompleteEventHandler OnComplete;
+
         public event IImportNotifier.OnFatalExceptionEventHandler OnFatalException;
+
         public event IImportNotifier.OnProgressEventHandler OnProgress;
+
         public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress;
+
         public event OnErrorEventHandler OnError;
+
         public event OnMessageEventHandler OnMessage;
 #pragma warning restore CS0067
 

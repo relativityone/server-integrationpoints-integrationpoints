@@ -3,7 +3,9 @@
     public class EmailMessageDto
     {
         public string Subject { get; }
+
         public string Body { get; }
+
         public string ToAddress { get; }
 
         public EmailMessageDto(

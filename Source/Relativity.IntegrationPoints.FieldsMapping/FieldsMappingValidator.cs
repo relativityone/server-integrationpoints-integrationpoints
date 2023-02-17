@@ -10,7 +10,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
     public class FieldsMappingValidator : IFieldsMappingValidator
     {
         private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
-
         private readonly IList<string> _unicodeDependentFieldsTypes = new List<string>()
         {
             FieldTypeName.FIXED_LENGTH_TEXT,
@@ -74,7 +73,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
         private MapValidationResult IsFieldMapValid(FieldClassificationResult sourceField, FieldClassificationResult destinationField, FieldMapTypeEnum mapType)
         {
-            switch(mapType)
+            switch (mapType)
             {
                 case FieldMapTypeEnum.Identifier:
                     return sourceField.FieldInfo.IsIdentifier && destinationField.FieldInfo.IsIdentifier
@@ -92,25 +91,25 @@ namespace Relativity.IntegrationPoints.FieldsMapping
         {
             var result = MapValidationResult.Valid;
 
-            if(sourceField == null || destinationField == null)
+            if (sourceField == null || destinationField == null)
             {
                 result.AddInvalidReason(InvalidMappingReasons._FIELD_IS_MISSING);
                 return result;
             }
 
-            bool unsupported = sourceField.ClassificationLevel == ClassificationLevel.AutoMap 
+            bool unsupported = sourceField.ClassificationLevel == ClassificationLevel.AutoMap
                 && destinationField.ClassificationLevel == ClassificationLevel.AutoMap;
             if (!unsupported)
             {
                 result.AddInvalidReason(InvalidMappingReasons._UNSUPORTED_TYPES);
             }
 
-            if(!sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo))
+            if (!sourceField.FieldInfo.IsTypeCompatible(destinationField.FieldInfo))
             {
                 result.AddInvalidReason(InvalidMappingReasons._INCOMPATIBLE_TYPES);
             }
 
-            if(!UnicodeIsSame(sourceField, destinationField))
+            if (!UnicodeIsSame(sourceField, destinationField))
             {
                 result.AddInvalidReason(InvalidMappingReasons._UNICODE_DIFFERENCE);
             }
@@ -120,7 +119,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
         private bool UnicodeIsSame(FieldClassificationResult sourceField, FieldClassificationResult destinationField)
             => !_unicodeDependentFieldsTypes.Contains(sourceField.FieldInfo.Type) || sourceField.FieldInfo.Unicode == destinationField.FieldInfo.Unicode;
-
         private class MapValidationResult
         {
             public IList<string> Reasons { get; set; } = new List<string>();

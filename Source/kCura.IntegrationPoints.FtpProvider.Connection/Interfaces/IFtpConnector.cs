@@ -8,10 +8,10 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <summary>
         /// Specify the connection Timeout
         /// </summary>
-        Int32 Timeout { get; set; }
+        int Timeout { get; set; }
 
         /// <summary>
-        /// Throws exception if unable to connect. 
+        /// Throws exception if unable to connect.
         /// The exception should detail why the user is able to connect.
         /// Bad credetails, unable to reach address...etc
         /// </summary>
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <param name="remotePath">The remote path.  Do not include the filename here</param>
         /// <param name="fileName">The name of the file on the remote server</param>
         /// <param name="retryLimit">Number of time to retry when errors occur</param>
-        void DownloadFile(String localDownloadPath, String remotePath, String fileName, Int32 retryLimit);
+        void DownloadFile(string localDownloadPath, string remotePath, string fileName, int retryLimit);
 
         /// <summary>
         /// Returns a file stream of the specified file on the remote server
@@ -33,6 +33,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection.Interfaces
         /// <param name="remotePath">The remote path.  Do not include the filename here</param>
         /// <param name="fileName">The name of the file on the remote server</param>
         /// <param name="retryLimit">Number of time to retry when errors occur</param>
-        Stream DownloadStream(String remotePath, String fileName, Int32 retryLimit);
+        Stream DownloadStream(string remotePath, string fileName, int retryLimit);
     }
 }

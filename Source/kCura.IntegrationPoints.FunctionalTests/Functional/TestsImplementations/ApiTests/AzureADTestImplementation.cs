@@ -22,7 +22,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IRipApi _ripApi;
-
         private Workspace Workspace => _testsImplementationTestFixture.Workspace;
 
         public AzureADTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
@@ -30,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             _testsImplementationTestFixture = testsImplementationTestFixture;
 
             _serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;
-            
+
             _ripApi = new RipApi(_serviceFactory);
         }
 
@@ -38,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         {
             var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-            int appId = applicationService.InstallToLibrary(TestConfig.AzureADProviderRapFileLocation, 
+            int appId = applicationService.InstallToLibrary(TestConfig.AzureADProviderRapFileLocation,
                 new LibraryApplicationInstallOptions { IgnoreVersion = true });
 
             applicationService.InstallToWorkspace(Workspace.ArtifactID, appId);
@@ -56,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             // Act
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, Workspace.ArtifactID).ConfigureAwait(false);
 
-            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, Workspace.ArtifactID, 
+            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, Workspace.ArtifactID,
                 expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
 
             // Assert
@@ -73,7 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         private async Task<int> GetTransferredItemsAsync(int jobHistoryId)
         {
-            using(IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
+            using (IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {
                 ReadRequest request = new ReadRequest
                 {
@@ -89,8 +88,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         private async Task<IEnumerable<object>> GetManagersAsync()
         {
-            using(IObjectTypeManager objectTypeManager = _serviceFactory.GetServiceProxy<IObjectTypeManager>())
-            using(IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
+            using (IObjectTypeManager objectTypeManager = _serviceFactory.GetServiceProxy<IObjectTypeManager>())
+            using (IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {
                 List<ObjectTypeIdentifier> artifactTypes = await objectTypeManager.GetAvailableParentObjectTypesAsync(Workspace.ArtifactID).ConfigureAwait(false);
                 ObjectTypeIdentifier artifactType = artifactTypes.Single(x => x.Name == "Entity");

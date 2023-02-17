@@ -9,7 +9,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
     public class FieldsClassifierRunner : IFieldsClassifierRunner
     {
         private readonly IFieldsRepository _fieldsRepository;
-
         private readonly IList<IFieldsClassifier> _fieldsClassifiers;
 
         public FieldsClassifierRunner(IFieldsRepository fieldsRepository, IList<IFieldsClassifier> fieldsClassifiers = null)

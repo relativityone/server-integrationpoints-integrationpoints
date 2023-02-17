@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
     {
         private IIntegrationPointProfileManager _sut;
         private readonly int _INTEGRATION_POINT_ARTIFACT_ID = 420;
-        
+
         [SetUp]
         public void Setup() => _sut = new IntegrationPointProfileManager(Logger, PermissionRepositoryFactory, Container);
 
@@ -25,12 +25,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.CreateIntegrationPointProfileAsync(createIntegrationPointRequest);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForCreateIntegraionPointProfile))]
         public void CreateIntegrationPointProfileAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -40,54 +40,54 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.CreateIntegrationPointProfileAsync(createIntegrationPointRequest);
             });
         }
-        
+
         [Test]
         public void CreateIntegrationPointProfileFromIntegrationPointAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
-            ShouldPassWithAllPermissions<PermissionsForCreateIntegraionPointProfileFromIntegrationPoint>(() => 
+            ShouldPassWithAllPermissions<PermissionsForCreateIntegraionPointProfileFromIntegrationPoint>(() =>
                 _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceId, _INTEGRATION_POINT_ARTIFACT_ID, "Adler Sieben"));
         }
-        
+
         [TestCaseSource(typeof(PermissionsForCreateIntegraionPointProfileFromIntegrationPoint))]
         public void CreateIntegrationPointProfileFromIntegrationPointAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
-            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+            ShouldThrowInsufficientPermissions(permissionSetups,() =>
                 _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(WorkspaceId, _INTEGRATION_POINT_ARTIFACT_ID, "Adler Sieben"));
         }
-        
+
         [Test]
         public void GetIntegrationPointProfileAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
-            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() => 
+            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() =>
                 _sut.GetIntegrationPointProfileAsync(WorkspaceId, _INTEGRATION_POINT_ARTIFACT_ID));
         }
-        
+
         [TestCaseSource(typeof(PermissionsForGetIntegrationPointProfileAsync))]
         public void GetIntegrationPointProfileAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
-            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+            ShouldThrowInsufficientPermissions(permissionSetups,() =>
                 _sut.GetIntegrationPointProfileAsync(WorkspaceId, _INTEGRATION_POINT_ARTIFACT_ID));
         }
-        
+
         [Test]
         public void GetAllIntegrationPointProfilesAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
-            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() => 
+            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() =>
                 _sut.GetAllIntegrationPointProfilesAsync(WorkspaceId));
         }
-        
+
         [TestCaseSource(typeof(PermissionsForGetIntegrationPointProfileAsync))]
         public void GetAllIntegrationPointProfilesAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
-            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+            ShouldThrowInsufficientPermissions(permissionSetups,() =>
                 _sut.GetAllIntegrationPointProfilesAsync(WorkspaceId));
         }
-        
+
         [Test]
         public void UpdateIntegrationPointProfileAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -97,12 +97,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.UpdateIntegrationPointProfileAsync(createIntegrationPointRequest);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForUpdateIntegrationPointProfileAsync))]
         public void UpdateIntegrationPointProfileAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -112,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 {
                     WorkspaceArtifactId = WorkspaceId
                 };
-            
+
                 // Act
                 return _sut.UpdateIntegrationPointProfileAsync(createIntegrationPointRequest);
             });
@@ -121,17 +121,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         [Test]
         public void GetOverwriteFieldsChoicesAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
-            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() => 
+            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointProfileAsync>(() =>
                 _sut.GetOverwriteFieldsChoicesAsync(WorkspaceId));
         }
-        
+
         [TestCaseSource(typeof(PermissionsForGetIntegrationPointProfileAsync))]
         public void GetOverwriteFieldsChoicesAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
-            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+            ShouldThrowInsufficientPermissions(permissionSetups,() =>
                 _sut.GetOverwriteFieldsChoicesAsync(WorkspaceId));
         }
-        
+
         #region Permissions
 
         class PermissionsForCreateIntegraionPointProfile : PermissionPermutator
@@ -151,7 +151,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 }
             };
         }
-        
+
         class PermissionsForCreateIntegraionPointProfileFromIntegrationPoint : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]
@@ -179,7 +179,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 }
             };
         }
-        
+
         class PermissionsForGetIntegrationPointProfileAsync : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]
@@ -197,7 +197,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 }
             };
         }
-        
+
         class PermissionsForUpdateIntegrationPointProfileAsync : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]

@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     public class IntegrationPointService : IntegrationPointServiceBase, IIntegrationPointService
     {
         private const string _VALIDATION_FAILED = "Failed to submit integration job. Integration Point validation failed.";
-
         private readonly IAPILog _logger;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
@@ -167,7 +166,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                         exception.Value ?? string.Empty);
                 });
 
-
             CalculationState ReadCalculationState()
             {
                 string calculationStateString = _integrationPointRepository.GetCalculationStateAsync(artifactId).GetAwaiter().GetResult();
@@ -280,7 +278,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 CreateRelativityError(
                     Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-                    String.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
+                    string.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
                 );
 
                 throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);

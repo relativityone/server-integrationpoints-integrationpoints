@@ -28,9 +28,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
     {
         private int _MAX_FIELDS = 100;
         private const string _FIELD_NAME_BASE = "col-";
-        private readonly byte[] _FILE_CONTENT_MEM_STREAM_BYTES = new byte[] { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0, 0, 0 }; //"Hello" with some trailing null bytes
+        private readonly byte[] _FILE_CONTENT_MEM_STREAM_BYTES = new byte[] { 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0, 0, 0 }; // "Hello" with some trailing null bytes
         private const int _FILE_CONTENT_VALID_BYTE_COUNT = 5;
-
         private ImportProviderDocumentController _controller;
         private IFieldParserFactory _fieldParserFactory;
         private IFieldParser _fieldParser;
@@ -91,7 +90,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnAsciiDelimiterList()
         {
-            //retrieve the ascii list in the format we expect
+            // retrieve the ascii list in the format we expect
             IEnumerable<string> expectedResult = WinEDDS.Utility.BuildProxyCharacterDatatable().Select().Select(x => x[0].ToString());
 
             IHttpActionResult response = _controller.GetAsciiDelimiters();
@@ -110,7 +109,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _fieldParserFactory.GetFieldParser(null).ReturnsForAnyArgs(_fieldParser);
             _fieldParser.GetFields().Returns(testHeaders);
-
 
             string actionResult = ExtractStringResponse(_controller.LoadFileHeaders(""));
             string[] splittedResult = actionResult.Split(new char[] { (char)13, (char)10 }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -148,7 +146,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             JsonResult<string> result = _controller.IsCloudInstance() as JsonResult<string>;
             string isCloudInstance = result.Content;
 
-            //Assert that we get the correct expected value based on the instance setting value
+            // Assert that we get the correct expected value based on the instance setting value
             string expectedValue;
             if (!string.IsNullOrEmpty(instanceSettingValue))
             {

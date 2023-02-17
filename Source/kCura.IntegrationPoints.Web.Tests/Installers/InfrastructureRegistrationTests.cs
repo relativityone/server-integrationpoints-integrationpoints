@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers
             // assert
             _sut.Should().HaveRegisteredProperImplementation<IExceptionFilter, ExceptionFilter>();
         }
-        
+
         [Test]
         public void FilterProvider_ShouldBeRegisteredWithProperLifestyle()
         {

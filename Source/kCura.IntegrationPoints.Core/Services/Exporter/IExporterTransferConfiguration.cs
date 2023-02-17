@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         Guid Identifier { get;  }
         ImportSettings ImportSettings { get; }
     }
-    
 
     class ExporterTransferConfiguration:IExporterTransferConfiguration
     {
@@ -26,8 +25,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         }
 
         public IScratchTableRepository[] ScratchRepositories { get; }
+
         public IJobHistoryService JobHistoryService { get; }
+
         public Guid Identifier { get; set; }
+
         public ImportSettings ImportSettings { get; }
     }
 }

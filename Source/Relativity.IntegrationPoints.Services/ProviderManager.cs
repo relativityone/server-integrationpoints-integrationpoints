@@ -150,7 +150,7 @@ namespace Relativity.IntegrationPoints.Services
                 throw CreateInternalServerErrorException();
             }
         }
-        
+
         public async Task<UninstallProviderResponse> UninstallProviderAsync(UninstallProviderRequest request)
         {
             PermissionModel[] requiredPermissions =

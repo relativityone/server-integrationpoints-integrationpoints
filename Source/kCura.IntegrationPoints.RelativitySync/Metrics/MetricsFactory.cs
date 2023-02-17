@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
         public IMetric CreateScheduleJobStartedMetric(Job job)
         {
             IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
-            if(scheduleRule == null)
+            if (scheduleRule == null)
             {
                 return new EmptyMetric();
             }

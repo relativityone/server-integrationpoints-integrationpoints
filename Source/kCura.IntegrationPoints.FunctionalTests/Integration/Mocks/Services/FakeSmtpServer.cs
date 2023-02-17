@@ -8,10 +8,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
     internal sealed class FakeSmtpServer : IDisposable
     {
         private bool _isDisposed = false;
-
         private readonly SimpleSmtpServer _smtpServer;
         private readonly TaskCompletionSource<SmtpMessage> _receivedEmail;
-
         private FakeSmtpServer(SimpleSmtpServer smtpServer)
         {
             _receivedEmail = new TaskCompletionSource<SmtpMessage>();

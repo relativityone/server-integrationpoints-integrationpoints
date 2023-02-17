@@ -18,16 +18,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
         private IDocumentTotalStatistics _documentTotalStatistics;
         private IRdoStatistics _rdoStatistics;
         private IAPILog _loggerMock;
-
         private const int _WKSP_ID = 1;
         private const int _VIEW_ID = 2;
         private const int _FOLDER_ID = 3;
         private const int _SAVED_SEARCH_ID = 4;
         private const int _PROD_SET_ID = 5;
 
-        //Document Type ID
+        // Document Type ID
         private const int _DOC_ARTIFACT_TYPE_ID = 10;
-
         private const int _EXPECTED_DOC_COUNT = 10;
 
         [SetUp]

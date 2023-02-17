@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             return _source.Read();
         }
 
-        //IArtifactReader
+        // IArtifactReader
         public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
         {
             IArtifactReader sourceArtifactReader = _source as IArtifactReader;

@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (Exception ex)
             {
-                if(response != null)
+                if (response != null)
                 {
                     _logger.LogWarning(ex, "Error occurred in SaveUsingIntegrationPoint request, but the profile was saved.");
                     return response;

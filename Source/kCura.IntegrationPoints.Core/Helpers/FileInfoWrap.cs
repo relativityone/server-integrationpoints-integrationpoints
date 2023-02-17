@@ -22,16 +22,18 @@ namespace kCura.IntegrationPoints.Core.Helpers
 
         public long Length => _fileInfo.Length;
 
-        public IDateTime LastWriteTimeUtc 
-        { 
-            get => new DateTimeWrap(_fileInfo.LastWriteTimeUtc); 
-            set => throw new System.NotImplementedException(); 
+        public IDateTime LastWriteTimeUtc
+        {
+            get => new DateTimeWrap(_fileInfo.LastWriteTimeUtc);
+            set => throw new System.NotImplementedException();
         }
 
         #region Not Implemented
 
         public FileAttributes Attributes { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public IDateTime CreationTime { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public IDateTime CreationTimeUtc { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public IDirectoryInfo Directory => throw new System.NotImplementedException();
@@ -47,8 +49,11 @@ namespace kCura.IntegrationPoints.Core.Helpers
         public string FullName => throw new System.NotImplementedException();
 
         public bool IsReadOnly { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public IDateTime LastAccessTime { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public IDateTime LastAccessTimeUtc { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
         public IDateTime LastWriteTime { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public string Name => throw new System.NotImplementedException();

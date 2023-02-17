@@ -43,7 +43,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
         protected IJobService _jobService;
         protected IIntegrationPointService _integrationPointService;
 
-
         [SetUp]
         public override void SetUp()
         {
@@ -190,7 +189,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             };
 
             Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
-                jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+                jobDetailsText, 0, DateTime.Now, 0, string.Empty, string.Empty);
 
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
@@ -236,7 +235,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             };
 
             Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
-                jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
+                jobDetailsText, 0, DateTime.Now, 0, string.Empty, string.Empty);
 
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 

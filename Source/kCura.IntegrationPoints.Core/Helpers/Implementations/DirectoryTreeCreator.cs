@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<DirectoryTreeCreator<TTreeItem>>();
             _cryptographyHelper = cryptographyHelper;
         }
-        
+
         public virtual List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
         {
             if (!CanAccessFolder(path, isRoot))
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         {
             _logger.LogWarning(e, "Unauthorized access to folder ({Path}) during directory discovery.", _cryptographyHelper.CalculateHash(path));
         }
-        
+
         #endregion
     }
 }

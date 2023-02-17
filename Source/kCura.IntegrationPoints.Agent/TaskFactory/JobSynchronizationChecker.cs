@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         {
             string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
 
-            //check if it's a scheduled job
+            // check if it's a scheduled job
             if (!string.IsNullOrEmpty(job.ScheduleRuleType))
             {
                 integrationPointDto.NextRun = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult { Status = TaskStatusEnum.None });

@@ -26,9 +26,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<ISerializer> _serializerFake;
         private Mock<IRelativityObjectManager> _objectManagerFake;
-
         private IFixture _fxt;
-
         private CustomProviderFlowCheck _sut;
 
         [SetUp]

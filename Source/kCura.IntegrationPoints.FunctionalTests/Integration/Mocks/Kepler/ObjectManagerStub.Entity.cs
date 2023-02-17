@@ -28,7 +28,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             System.Text.RegularExpressions.Match match = Regex.Match(condition,
                 $@"'{EntityFieldNames.UniqueId}' IN \[(.*)\]");
 
-
             if (match.Success)
             {
                 entitiesUids = match.Groups[1].Value.Split(',').Select(x => x.Trim('\'')).ToList();

@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 Identifier = MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID,
                 ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
             };
-            
+
             Workspace.SourceProviders.Add(myFirstProvider);
             return myFirstProvider;
         }

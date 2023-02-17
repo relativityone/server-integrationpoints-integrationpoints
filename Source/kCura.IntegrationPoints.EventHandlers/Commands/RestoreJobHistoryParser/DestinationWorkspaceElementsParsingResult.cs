@@ -3,7 +3,7 @@
     public class DestinationWorkspaceElementsParsingResult
     {
         public static DestinationWorkspaceElementsParsingResult Empty { get; } = new DestinationWorkspaceElementsParsingResult(null, null);
-    
+
         public string InstanceName { get; set; }
 
         public string WorkspaceName { get; set; }

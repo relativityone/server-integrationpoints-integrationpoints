@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private const int _WORKSPACE_ARTIFACT_ID = 937936;
         private IArtifactGuidManager _artifactGuidManager;
         private IServicesMgr _servicesMgr;
-
         private KeplerArtifactGuidRepository _instance;
 
         [SetUp]
@@ -52,10 +51,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         {
             var guidToIdDictionary = new Dictionary<Guid, int>
             {
-                {new Guid("F2D57E24-DB09-4BB9-9634-AC0D381DDF0A"), 249581},
-                {new Guid("D2028D50-10FD-4855-A941-136C6BB5CE0D"), 235828}
+                { new Guid("F2D57E24-DB09-4BB9-9634-AC0D381DDF0A"), 249581 },
+                { new Guid("D2028D50-10FD-4855-A941-136C6BB5CE0D"), 235828}
             };
-
 
             _instance.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
 

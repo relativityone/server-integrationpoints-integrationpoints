@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         private readonly ISerializer _serializer;
 
         public string Key => Constants.IntegrationPointProfiles.Validation.SCHEDULE;
-
         public const int REOCCUR_MIN = 1, REOCCUR_MAX = 999;
         public const int FIRST_DAY_OF_MONTH = 1, LAST_DAY_OF_MONTH = 31;
 

@@ -12,12 +12,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
     {
         private const int _SIX_AM = 6;
         private const int _SIX_PM = 18;
-
         private readonly IServicesMgr _servicesMgr;
 
         public string Bucket { get; }
+
         public int IntegrationPointId { get; }
+
         public long JobId { get; }
+
         public ExportType Type { get; }
 
         private ScheduleMetric(IServicesMgr servicesMgr, string bucket, int integrationPointId, long jobId, ExportType type)
@@ -51,7 +53,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
         }
 
         private string GetWorkflowId() => $"Sync_{Type}_{IntegrationPointId}_{JobId}";
-
         private static bool IsScheduledDaily(IScheduleRule scheduleRule)
         {
             DateTime scheduleTime = scheduleRule.GetNextUTCRunDateTime().Value;

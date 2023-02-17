@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             };
 
             Relativity.Agents.Add(agent);
-            
+
             return agent;
         }
 

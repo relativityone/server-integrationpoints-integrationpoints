@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
         [Test]
         public void ToArtifactFieldDTO_ShouldConvertValidObject()
         {
-            // arrange 
+            // arrange
             const string name = "name";
             const int artifactID = 414123;
 

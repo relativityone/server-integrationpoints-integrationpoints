@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
             _integrationPointRepository = integrationPointRepository;
         }
 
-        #endregion //Constructors
+        #endregion // Constructors
 
         #region Methods
 
@@ -33,6 +33,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators
             }
         }
 
-        #endregion //Methods
+        #endregion // Methods
     }
 }

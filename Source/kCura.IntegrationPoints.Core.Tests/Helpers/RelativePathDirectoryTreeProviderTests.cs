@@ -17,14 +17,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
     {
         private const int _WKSP_ID = 1234;
         private readonly Guid _ipType = Guid.NewGuid();
-
         private const string _ROOT_PATH = @"\\localhost\FileShare";
         private const string _IP_TYPE_PATH = @"DataTransfer\Type";
         private const string _FOLDER_NAME = "Folder";
-
         private IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreatorMock;
         private IDataTransferLocationService _dataTransferLocationServiceMock;
-
         private RelativePathDirectoryTreeCreator<JsTreeItemDTO> _subjectUnderTest;
 
         public override void SetUp()
@@ -34,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _dataTransferLocationServiceMock.GetWorkspaceFileLocationRootPath(_WKSP_ID).Returns(_ROOT_PATH);
             _dataTransferLocationServiceMock.GetDefaultRelativeLocationFor(_ipType).Returns(_IP_TYPE_PATH);
-
 
             _subjectUnderTest = new RelativePathDirectoryTreeCreator<JsTreeItemDTO>(_directoryTreeCreatorMock, _dataTransferLocationServiceMock);
         }

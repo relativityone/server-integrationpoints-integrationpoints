@@ -48,8 +48,8 @@ namespace kCura.IntegrationPoints.Domain
                 }
 
                 provider = _windsorContainer.Resolve<IDataSourceProvider>(assemblyQualifiedName);
-            } 
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 var message = string.Format(Resources.CouldNotCreateProvider, providerType);
                 LogProviderCreationError(ex, message);

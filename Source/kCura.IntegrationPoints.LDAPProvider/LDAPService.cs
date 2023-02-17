@@ -159,7 +159,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
         {
             _logger.LogInformation("Attempting to fetch items in LDAP Service Failed.");
         }
-        
 
         private void LogAuthenticationError(Exception ex)
         {

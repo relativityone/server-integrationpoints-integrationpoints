@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         private readonly IKubernetesMode _kubernetesMode;
         private readonly Lazy<IAPILog> _logggerLazy;
         private readonly IToggleProvider _toggleProvider;
-
         private IAPILog Logger => _logggerLazy.Value;
 
         protected InternalSourceProviderInstaller()

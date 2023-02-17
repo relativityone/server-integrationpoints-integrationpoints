@@ -63,9 +63,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         public interface ITestCase
         {
             void ShouldCallExecuteTwiceDuringInstrumentation();
+
             void ShouldReturnRepositoryOfSameTypeAndImplementIRepository();
+
             void ShouldCallExecuteTwiceAndRethrowExceptionWhenSecondServiceThrowsDuringInstrumentation();
+
             void ShouldCallExecuteOnceAndRethrowExceptionWhenFirstServiceThrowsDuringInstrumentation();
+
             void ShouldCallExecuteOnceAndRethrowFirstExceptionWhenBothServicesThrowDuringInstrumentation();
         }
 
@@ -111,13 +115,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             public void ShouldCallExecuteTwiceDuringInstrumentation()
             {
-                //arrange
+                // arrange
                 var sut = new FoundationRepositoryFactory(_servicesMgr, _instrumentationProvider);
 
-                //act
+                // act
                 sut.GetRepository<T>(WORKSPACE_ID);
 
-                //assert
+                // assert
                 _instrumentationProvider.Received().CreateSimple(
                     API_FOUNDATION,
                     IWORKSPACE_GATEWAY,
@@ -134,29 +138,29 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             public void ShouldReturnRepositoryOfSameTypeAndImplementIRepository()
             {
-                //arrange
+                // arrange
                 T repository = Substitute.For<T>();
                 _workspaceContext.CreateRepository<T>().Returns(repository);
                 var sut = new FoundationRepositoryFactory(_servicesMgr, _instrumentationProvider);
 
-                //act
+                // act
                 T result = sut.GetRepository<T>(WORKSPACE_ID);
 
-                //assert
+                // assert
                 result.Should().Be(repository);
             }
 
             public void ShouldCallExecuteTwiceAndRethrowExceptionWhenSecondServiceThrowsDuringInstrumentation()
             {
-                //arrange
+                // arrange
                 var exception = new InvalidOperationException();
                 _workspaceContext.CreateRepository<T>().Throws(exception);
                 var factory = new FoundationRepositoryFactory(_servicesMgr, _instrumentationProvider);
 
-                //act
+                // act
                 Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
-                //assert
+                // assert
                 sut.ShouldThrowExactly<InvalidOperationException>();
                 _instrumentationProvider.Received().CreateSimple(
                     API_FOUNDATION,
@@ -174,15 +178,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             public void ShouldCallExecuteOnceAndRethrowExceptionWhenFirstServiceThrowsDuringInstrumentation()
             {
-                //arrange
+                // arrange
                 var exception = new InvalidOperationException();
                 _workspaceGateway.GetWorkspaceContext(Arg.Any<int>()).Throws(exception);
                 var factory = new FoundationRepositoryFactory(_servicesMgr, _instrumentationProvider);
 
-                //act
+                // act
                 Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
-                //assert
+                // assert
                 sut.ShouldThrowExactly<InvalidOperationException>();
                 _instrumentationProvider.Received().CreateSimple(
                     API_FOUNDATION,
@@ -200,17 +204,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             public void ShouldCallExecuteOnceAndRethrowFirstExceptionWhenBothServicesThrowDuringInstrumentation()
             {
-                //arrange
+                // arrange
                 var exception1 = new NullReferenceException();
                 var exception2 = new InvalidOperationException();
                 _workspaceGateway.GetWorkspaceContext(Arg.Any<int>()).Throws(exception1);
                 _workspaceContext.CreateRepository<T>().Throws(exception2);
                 var factory = new FoundationRepositoryFactory(_servicesMgr, _instrumentationProvider);
 
-                //act
+                // act
                 Action sut = () => factory.GetRepository<T>(WORKSPACE_ID);
 
-                //assert
+                // assert
                 sut.ShouldThrowExactly<NullReferenceException>();
                 _instrumentationProvider.Received().CreateSimple(
                     API_FOUNDATION,

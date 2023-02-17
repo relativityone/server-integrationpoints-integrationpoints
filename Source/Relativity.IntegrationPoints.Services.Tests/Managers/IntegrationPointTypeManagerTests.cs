@@ -55,7 +55,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
             _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.IntegrationPointType), ArtifactPermission.View).Returns(integrationPointTypeAccess);
 
-
             Assert.That(() => _integrationPointTypeManager.GetIntegrationPointTypes(_WORKSPACE_ID).Wait(),
                 Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
                     .And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
@@ -79,7 +78,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             }
             catch (Exception)
             {
-                //Ignore as this test checks logging only
+                // Ignore as this test checks logging only
             }
 
             _logger.Received(1)
@@ -136,7 +135,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             }
             catch (Exception)
             {
-                //Ignore as this test checks logging only
+                // Ignore as this test checks logging only
             }
 
             _logger.Received(1).LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetIntegrationPointTypes");

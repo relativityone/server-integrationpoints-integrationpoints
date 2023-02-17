@@ -17,12 +17,10 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
     {
         private const int _DESTINATION_WORKSPACE_ID = 416177;
         private const int _SOURCE_WORKSPACE_ARTIFACT_TYPE_ID = 778398;
-
         private ISourceJobRepository _sourceJobRepository;
         private IRelativitySourceRdoObjectType _relativitySourceRdoObjectType;
         private IRelativitySourceRdoDocumentField _relativitySourceRdoDocumentField;
         private IRelativitySourceRdoFields _relativitySourceRdoFields;
-
         private RelativitySourceJobRdoInitializer _instance;
 
         public override void SetUp()

@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(data.Options.ToString());
 
             FieldEntry[] fields = _exportFieldsService.GetAllExportableFields(settings.SourceWorkspaceArtifactId, data.TransferredArtifactTypeId);
-                
+
             return Request.CreateResponse(HttpStatusCode.OK, SortFields(fields));
         }
 

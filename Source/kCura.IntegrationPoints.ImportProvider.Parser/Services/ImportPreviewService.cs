@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
     {
         private readonly Dictionary<int, IPreviewJob> _loadFilePreviewers;
         private readonly IPreviewJobFactory _previewJobFactory;
+
         public ImportPreviewService(IPreviewJobFactory previewJobFactory)
         {
             _previewJobFactory = previewJobFactory;
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
 
             if (status.IsFailed)
             {
-                //Dispose here if job has failed
+                // Dispose here if job has failed
                 _loadFilePreviewers[jobId].DisposePreviewJob();
                 _loadFilePreviewers.Remove(jobId);
             }
@@ -84,7 +85,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Services
             ImportPreviewTable table = _loadFilePreviewers[jobId].PreviewTable;
             if (table != null || IsJobComplete(jobId))
             {
-                //Dispose here if job is complete
+                // Dispose here if job is complete
                 _loadFilePreviewers[jobId].DisposePreviewJob();
                 _loadFilePreviewers.Remove(jobId);
             }

@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
         private readonly IExportFileBuilder _exportFileBuilder;
 
         protected ExportUsingSavedSearchSettings ExportSettingsEx { get; private set; }
+
         protected DestinationConfiguration DestinationSettingsEx { get; private set; }
 
         protected ExportFileValidatorBase(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder)

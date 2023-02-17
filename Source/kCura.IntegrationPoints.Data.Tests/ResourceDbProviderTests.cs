@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Data.Tests
         private IResourceDbProvider _sut;
         private Mock<IDBContext> _dbContextMock;
         private Mock<IHelper> _helperMock;
-
         private const int _WORKSPACE_ID = 1000123;
 
         [SetUp]

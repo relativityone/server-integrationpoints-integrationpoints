@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Web.Tests
         private FilterFactoryMock _filterFactoryMock;
         private Mock<HttpActionDescriptor> _actionDescriptorMock;
         private WindsorFilterProvider _sut;
-
         private readonly HttpConfiguration _configuration = null;
 
         [SetUp]
@@ -78,6 +77,7 @@ namespace kCura.IntegrationPoints.Web.Tests
         private class FilterFactoryMock
         {
             public LogApiExceptionFilterAttribute AttributePassedToFilterFactory { get; private set; }
+
             public ExceptionFilter CreatedFilterInstance { get; private set; }
 
             public ExceptionFilter FilterFactory(LogApiExceptionFilterAttribute attribute)

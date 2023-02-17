@@ -68,13 +68,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-
         private EmailJobParameters GetEmailJobParametersFromJob(Job job)
         {
             TaskParameters emailTaskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 
-            //We need this 'if' here to provide backwards compatibility with older email jobs
-            //after changing the way EmailJobParameters are send here. JIRA: REL-354651
+            // We need this 'if' here to provide backwards compatibility with older email jobs
+            // after changing the way EmailJobParameters are send here. JIRA: REL-354651
             EmailJobParameters details = emailTaskParameters.BatchParameters is JObject
                 ? ((JObject)emailTaskParameters.BatchParameters).ToObject<EmailJobParameters>()
                 : _serializer.Deserialize<EmailJobParameters>(job.JobDetails);
@@ -87,6 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _logger.LogInformation("Started executing send email worker, job: {JobId}", jobID);
         }
+
         private void LogExecuteSuccessfulEnd(long jobID)
         {
             _logger.LogInformation("Successfully sent email in worker, job: {JobId}", jobID);

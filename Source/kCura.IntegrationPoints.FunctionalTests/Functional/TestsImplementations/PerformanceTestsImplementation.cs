@@ -32,14 +32,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         private ICommonIntegrationPointDataService _destinationWorkspaceDataService;
         private Workspace[] _destinationWorkspaces;
         private List<int> _integrationPoints = new List<int>();
-
         private readonly IRipApi _ripApi =
             new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);
 
         private int _savedSearchId;
         private int _destinationProviderId;
         private int _sourceProviderId;
-        private int _integrationPointType;       
+        private int _integrationPointType;
 
         public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
 
@@ -54,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
 
             _sourceWorkspaceDataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, _testsImplementationTestFixture.Workspace.ArtifactID);
-            
+
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 
             GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
@@ -178,7 +177,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             _destinationWorkspaceDataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, destinationWorkspace.ArtifactID);
 
             List<FieldMap> fieldsMapping = await _sourceWorkspaceDataService.GetIdentifierMappingAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
-            int rootFolderId = await _destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);            
+            int rootFolderId = await _destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);
 
             var sourceConfiguration = new RelativityProviderSourceConfiguration
             {
@@ -207,14 +206,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private async Task GetIntegrationPointsConstantsAsync()
         {
-            _savedSearchId = await _sourceWorkspaceDataService.GetSavedSearchArtifactIdAsync(SavedSearchName).ConfigureAwait(false);          
+            _savedSearchId = await _sourceWorkspaceDataService.GetSavedSearchArtifactIdAsync(SavedSearchName).ConfigureAwait(false);
 
-            _destinationProviderId = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false);            
+            _destinationProviderId = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false);
 
-            _sourceProviderId = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false);           
+            _sourceProviderId = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false);
 
-            _integrationPointType = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false);             
-        }        
+            _integrationPointType = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false);
+        }
 
         private RelativityProviderDestinationConfiguration GetDestinationConfiguration(int workspaceId, int folderId)
         {
@@ -228,6 +227,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 FolderPathSourceField = 0,
                 UseFolderPathInformation = false
             };
-        }        
+        }
     }
 }

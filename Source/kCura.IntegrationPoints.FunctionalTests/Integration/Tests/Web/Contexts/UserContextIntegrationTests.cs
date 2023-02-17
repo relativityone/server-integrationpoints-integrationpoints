@@ -22,7 +22,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
         private Mock<HttpRequestBase> _httpRequestMock;
         private Mock<ISessionService> _sessionServiceMock;
 
-
         [SetUp]
         public void Setup()
         {
@@ -187,14 +186,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
 
             Container.Register(Component.For<HttpRequestBase>().Instance(_httpRequestMock.Object));
             Container.Register(Component.For<ISessionService>().Instance(_sessionServiceMock.Object));
-            
+
             Container.Register(
                 Component
                     .For<TestController>()
                     .LifestyleTransient()
             );
         }
-        
+
         private class TestController : Controller
         {
             private readonly IUserContext _userContext;

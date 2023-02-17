@@ -27,18 +27,23 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
     public abstract class RelativityProviderTemplate : SourceProviderTemplate
     {
         private string _destinationConfig;
-
         private readonly string _targetWorkspaceName;
         private readonly string _targetWorkspaceTemplate;
 
         protected SourceProvider RelativityProvider { get; private set; }
+
         protected SourceProvider LdapProvider { get; private set; }
+
         protected IRepositoryFactory RepositoryFactory { get; private set; }
 
         public int SourceWorkspaceArtifactID { get; private set; }
+
         public int TargetWorkspaceArtifactID { get; private set; }
+
         public int SavedSearchArtifactID { get; set; }
+
         public int TypeOfExport { get; set; }
+
         public int FolderArtifactID { get; set; }
 
         protected RelativityProviderTemplate(

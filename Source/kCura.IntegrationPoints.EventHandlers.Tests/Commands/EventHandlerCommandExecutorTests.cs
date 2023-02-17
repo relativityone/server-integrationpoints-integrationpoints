@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
     {
         private const string _SUCCESS_MESSAGE = "success_message_326";
         private const string _FAILURE_MESSAGE = "failure_message_219";
-
         private EventHandlerCommandExecutor _instance;
         private IAPILog _logger;
         private ICommand _command;

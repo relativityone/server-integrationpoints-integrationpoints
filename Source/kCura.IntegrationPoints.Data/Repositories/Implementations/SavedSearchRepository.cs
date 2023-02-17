@@ -16,9 +16,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private int _documentsRetrieved = 0;
         private int _totalDocumentsRetrieved = 0;
         private bool _startedRetrieving = false;
-
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
-
         private readonly IRelativityObjectManager _objectManager;
         private readonly int _savedSearchId;
 
@@ -46,7 +44,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     },
                     Condition = $"'ArtifactId' IN SAVEDSEARCH {_savedSearchId}"
                 };
-
 
                 ExportInitializationResults export = await _objectManager.InitializeExportAsync(queryRequest, 1).ConfigureAwait(false);
                 _runId = export.RunID;

@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             foreach (var itemName in itemNames)
             {
-                string xpath = $"{hierarchy}//a[@role='treeitem'][.='{itemName}']";
+                string xpath = $"{hierarchy}// a[@role='treeitem'][.='{itemName}']";
                 hierarchy = $"{xpath}/..";
 
                 var textItem = item.FindElement(By.XPath(xpath));

@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core.Validation
         private readonly IAPILog _logger;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
         private readonly IIntegrationPointProviderValidator _integrationModelValidator;
-
         private enum OperationType
         {
             Run,

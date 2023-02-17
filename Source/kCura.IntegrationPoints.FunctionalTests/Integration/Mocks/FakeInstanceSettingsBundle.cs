@@ -82,7 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         {
             throw new System.NotImplementedException();
         }
-        
+
         public void ForceRefresh()
         {
             throw new System.NotImplementedException();

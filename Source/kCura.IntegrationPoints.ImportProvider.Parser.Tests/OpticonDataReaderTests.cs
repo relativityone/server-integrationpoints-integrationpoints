@@ -51,26 +51,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHandleEmptyFiles()
         {
-            //Arrange
+            // Arrange
             _opticonFileReader.HasMoreRecords.Returns(false);
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.IsFalse(_instance.Read());
         }
-
 
         [Test]
         public void ItShouldCallGetImageRecord_IfReaderHasMoreRecords()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(_instance.Read());
             _opticonFileReader.Received(1).GetImageRecord();
         }
@@ -78,12 +77,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldRewriteFileLocation_WithoutRootedPath()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(_instance.Read());
             Assert.AreEqual(_instance.GetValue(OpticonInfo.FILE_LOCATION_FIELD_INDEX), Path.Combine(Path.GetDirectoryName(_LOAD_FILE_FULL_PATH), _imageRecord.FileLocation));
         }
@@ -91,13 +90,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldNotRewriteFileLocation_WithRootedPath()
         {
-            //Arrange
+            // Arrange
             _imageRecord.FileLocation = _ROOTED_IMAGE_PATH;
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(_instance.Read());
             Assert.AreEqual(_instance.GetValue(OpticonInfo.FILE_LOCATION_FIELD_INDEX), _ROOTED_IMAGE_PATH);
         }
@@ -105,13 +104,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldNotAdvanceDocumentId_WhenIsNewDocFalse()
         {
-            //Arrange
+            // Arrange
             _imageRecord.IsNewDoc = false;
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             for (int i = 0; i < 3; i++)
             {
                 Assert.IsTrue(_instance.Read());
@@ -122,12 +121,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldAdvanceDocumentId_WhenIsNewDocTrue()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             for (int i = 0; i < 3; i++)
             {
                 Assert.IsTrue(_instance.Read());
@@ -138,12 +137,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnBatesNumberUnchanged()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(_instance.Read());
             Assert.AreEqual(_imageRecord.BatesNumber, _instance.GetValue(OpticonInfo.BATES_NUMBER_FIELD_INDEX));
         }
@@ -151,12 +150,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHaveCorrectSchemaTable()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             DataTable schemaTable = _instance.GetSchemaTable();
             Assert.AreEqual(3, schemaTable.Columns.Count);
             Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_NAME, schemaTable.Columns[OpticonInfo.DOCUMENT_ID_FIELD_INDEX].ColumnName);
@@ -167,37 +166,37 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHaveCorrectFieldCount()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(3, _instance.FieldCount);
         }
 
         [Test]
         public void ItShouldBeClosedAfterCloseCalled()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
             _instance.Close();
 
-            //Assert
+            // Assert
             Assert.IsTrue(_instance.IsClosed);
         }
 
         [Test]
         public void ItShouldReturnCorrectOrdinal()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(OpticonInfo.BATES_NUMBER_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.BATES_NUMBER_FIELD_NAME));
             Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.DOCUMENT_ID_FIELD_NAME));
             Assert.AreEqual(OpticonInfo.FILE_LOCATION_FIELD_INDEX, _instance.GetOrdinal(OpticonInfo.FILE_LOCATION_FIELD_NAME));
@@ -206,12 +205,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnCorrectName()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(OpticonInfo.BATES_NUMBER_FIELD_NAME, _instance.GetName(OpticonInfo.BATES_NUMBER_FIELD_INDEX));
             Assert.AreEqual(OpticonInfo.DOCUMENT_ID_FIELD_NAME, _instance.GetName(OpticonInfo.DOCUMENT_ID_FIELD_INDEX));
             Assert.AreEqual(OpticonInfo.FILE_LOCATION_FIELD_NAME, _instance.GetName(OpticonInfo.FILE_LOCATION_FIELD_INDEX));
@@ -220,26 +219,26 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnCorrectRecordCountFromOpticonFileReader()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(_RECORD_COUNT, _instance.CountRecords());
         }
 
         [Test]
         public void ItShouldThrowNotImplementedForUnusedMethods()
         {
-            //Arrange
+            // Arrange
 
-            //Act
+            // Act
             _instance.Init();
 
-            //Assert
+            // Assert
 
-            //Methods
+            // Methods
             Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetDataTypeName(0));
             Assert.Throws(typeof(System.NotImplementedException), () => _instance.GetFieldType(0));
         }

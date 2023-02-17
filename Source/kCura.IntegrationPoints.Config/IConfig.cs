@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Config
         int BatchSize { get; }
 
         /// <summary>
-        /// The maximum number of failed scheduled jobs for single integration point. 
+        /// The maximum number of failed scheduled jobs for single integration point.
         /// </summary>
         int MaxFailedScheduledJobsCount { get; }
 

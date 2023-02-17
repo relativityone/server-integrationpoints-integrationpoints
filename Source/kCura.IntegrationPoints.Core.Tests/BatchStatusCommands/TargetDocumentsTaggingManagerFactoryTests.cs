@@ -32,12 +32,10 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private ImportSettings _settings;
         private IDataSynchronizer _dataSynchronizer;
         private IDiagnosticLog _diagnosticLog;
-
         private const string _DEST_CONFIG = "destination config";
         private const string _NEW_DEST_CONFIG = "new destination config";
         private const int _JOBHISTORY_ARTIFACT_ID = 321;
         private const string _UNIQUE_JOBID = "very unique";
-
         private readonly SourceConfiguration _sourceConfiguration = new SourceConfiguration();
 
         [SetUp]

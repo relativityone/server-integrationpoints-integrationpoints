@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoint.Tests.Core
         private const int _DELAY_BETWEEN_RETRIES_IN_MINUTES = 1;
         private const int _APP_INSTALLATION_TIMEOUT_IN_MINUTES = 15;
         private const int _ADMIN_CASE_ID = -1;
-
         private readonly ITestHelper _helper;
 
         public RelativityApplicationManager(ITestHelper helper)
@@ -71,7 +70,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 await WaitForInstallCompletionWithinTimeoutAsync(currentInstallStatusGetter).ConfigureAwait(false);
             }
         }
-        
+
         private string GetLocalRipRapPath()
         {
             return SharedVariables.RipRapFilePath;
@@ -211,7 +210,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         private bool IsInstallSuccessfullyCompleted(InstallStatus installStatus)
             => installStatus.Code == InstallStatusCode.Completed;
-
         private bool IsInstallIncomplete(InstallStatus installStatus)
         {
             InstallStatusCode[] notCompletedInstallStatuses =

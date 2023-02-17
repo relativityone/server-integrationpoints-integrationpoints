@@ -11,27 +11,27 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
         [Test]
         public void Convert_ShouldConvertToArrayWhenStringWithSingleIntPassed()
         {
-            //arrange
+            // arrange
             string formatString = "123";
 
-            //act
+            // act
             int[] result = CommaSeparatedNumbersToArrayConverter.Convert(formatString);
 
-            //assert
+            // assert
             result.Should().Contain(new[] { 123 });
         }
 
         [Test]
         public void Convert_ShouldConvertToArrayWhenCommaSeparatedStringPassed()
         {
-            //arrange
+            // arrange
             string formatString = "123,321,1,9999";
 
-            //act
+            // act
             int[] result = CommaSeparatedNumbersToArrayConverter.Convert(formatString);
 
-            //assert
-            result.Should().Contain(new []{ 123, 321, 1, 9999 });
+            // assert
+            result.Should().Contain(new[]{ 123, 321, 1, 9999 });
         }
 
         [Test]
@@ -41,21 +41,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Utilities
         [TestCase("123;321,1,9999")]
         public void Convert_ShouldThrowWhenInvalidStringPassed(string formatString)
         {
-            //act
+            // act
             Action action = () => CommaSeparatedNumbersToArrayConverter.Convert(formatString);
 
-            //assert
+            // assert
             action.ShouldThrow<FormatException>();
         }
 
         [Test]
         public void Convert_ShouldThrowWhenNullIsPassed()
         {
-            //act
-            Action action = 
+            // act
+            Action action =
                 () => CommaSeparatedNumbersToArrayConverter.Convert(commaSeparatedNumbers: null);
 
-            //assert
+            // assert
             action.ShouldThrow<NullReferenceException>();
         }
     }

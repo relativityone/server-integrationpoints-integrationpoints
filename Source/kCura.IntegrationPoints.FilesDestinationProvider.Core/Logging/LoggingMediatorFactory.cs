@@ -16,10 +16,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
         private readonly IDateTimeHelper _dateTimeHelper;
 
         public LoggingMediatorFactory(
-            JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, 
+            JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider,
             IHelper helper,
-            IMessageService messageService, 
-            ICaseServiceContext caseServiceContext, 
+            IMessageService messageService,
+            ICaseServiceContext caseServiceContext,
             IDateTimeHelper dateTimeHelper,
             IIntegrationPointProviderTypeService integrationPointProviderTypeService)
         {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
             var apiLog = _helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessRunner>();
             var exportLoggingMediator = new ExportLoggingMediator(apiLog);
             var jobErrorLoggingMediator = new JobErrorLoggingMediator(_historyErrorService);
-            
+
             compositeLoggingMediator.AddLoggingMediator(exportLoggingMediator);
             compositeLoggingMediator.AddLoggingMediator(jobErrorLoggingMediator);
             compositeLoggingMediator.AddLoggingMediator(new StatisticsLoggingMediator(_messageService, _historyErrorService, _caseServiceContext, _integrationPointProviderTypeService, _dateTimeHelper));

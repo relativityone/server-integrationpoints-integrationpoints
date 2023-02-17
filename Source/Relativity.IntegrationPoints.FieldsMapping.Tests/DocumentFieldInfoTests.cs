@@ -119,7 +119,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
         [Test]
         public void DisplayType_ShouldReturnEmptyStringForNullType()
         {
-            // Arrange 
+            // Arrange
             var field = new FieldInfo("1", "Name", null);
 
             // Act

@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             string integrationPointName = nameof(ImportNativesFromLoadFileGoldFlow);
 
-            // Act 
+            // Act
             var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
                 .NewIntegrationPoint.ClickAndGo();
 

@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser
             _workspaceManager = workspaceManager;
             _thisInstanceName = thisInstanceName;
         }
+
         public ParserStateEnum DoTransition(CurrentParserState state)
         {
             if (state.Input != null)

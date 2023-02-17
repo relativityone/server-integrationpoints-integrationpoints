@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
     [TestFixture, Category("Unit")]
     public class ImportProviderTests : TestBase
     {
-
         private IFieldParser _fieldParser;
         private IFieldParserFactory _fieldParserFactory;
         private ISerializer _serializer;
@@ -46,7 +45,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
             foreach (FieldEntry ipEntry in ipFields)
             {
                 Assert.AreEqual(tdEnum.Current, ipEntry.DisplayName);
-                Assert.AreEqual(tdIndex, Int32.Parse(ipEntry.FieldIdentifier));
+                Assert.AreEqual(tdIndex, int.Parse(ipEntry.FieldIdentifier));
                 tdIndex++;
                 tdEnum.MoveNext();
             }
@@ -76,4 +75,3 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests
         }
     }
 }
-

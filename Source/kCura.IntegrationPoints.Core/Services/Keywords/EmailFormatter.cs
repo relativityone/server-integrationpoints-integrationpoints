@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             var matchPattern = string.Join("|", dictionary.Keys);
             var expression = new Regex(matchPattern, RegexOptions.IgnoreCase);
             var matches = expression.Matches(textToFormat);
-            //only replace the keys found
+            // only replace the keys found
             foreach (Match match in matches)
             {
                 IKeyword keyword;
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
                 catch (Exception e)
                 {
                     LogFormattingError(e);
-                    //eat
+                    // eat
                 }
                 if (!string.IsNullOrEmpty(replacementValue))
                 {
@@ -52,9 +52,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
                 }
                 else
                 {
-                    //remove line if this keyword is the only entry on the line
+                    // remove line if this keyword is the only entry on the line
                     returnValue = Regex.Replace(returnValue, Environment.NewLine + @"\" + match.Value + Environment.NewLine, replacementValue);
-                    //remove keyword for cases when this keyword is not the only entry on the line
+                    // remove keyword for cases when this keyword is not the only entry on the line
                     returnValue = Regex.Replace(returnValue, @"\" + match.Value, replacementValue);
                 }
             }

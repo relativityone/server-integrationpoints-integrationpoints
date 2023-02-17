@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private readonly int _savedSearchArtifactId = 93032;
         private readonly int _sourceProviderId = 321;
         private readonly int _destinationProviderId = 424;
-
         private IHelper _helper;
         private ICaseServiceContext _caseServiceContext;
         private IRelativityObjectManager _objectManager;
@@ -202,10 +201,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void GetRdo_ArtifactIdExists_ReturnsRdo_Test()
         {
-            //Act
+            // Act
             IntegrationPointProfile integrationPointProfile = _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId);
 
-            //Assert
+            // Assert
             _objectManager.Received(1).Read<IntegrationPointProfile>(_integrationPointProfileArtifactId);
             Assert.IsNotNull(integrationPointProfile);
         }
@@ -213,10 +212,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
         {
-            //Arrange
+            // Arrange
             _objectManager.Read<IntegrationPointProfile>(_integrationPointProfileArtifactId).Throws<Exception>();
 
-            //Act
+            // Act
             Assert.Throws<Exception>(() => _instance.ReadIntegrationPointProfile(_integrationPointProfileArtifactId), "Unable to retrieve Integration Point.");
         }
 

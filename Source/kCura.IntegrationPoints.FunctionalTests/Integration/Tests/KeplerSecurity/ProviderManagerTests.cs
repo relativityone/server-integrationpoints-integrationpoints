@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         public void GetSourceProviderArtifactIdAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
             ShouldPassWithAllPermissions<PermissionsForGettingSourceProviders>(() =>
-                _sut.GetSourceProviderArtifactIdAsync(WorkspaceId, String.Empty));
+                _sut.GetSourceProviderArtifactIdAsync(WorkspaceId, string.Empty));
         }
 
         [TestCaseSource(typeof(PermissionsForGettingSourceProviders))]
@@ -56,14 +56,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             PermissionSetup[] permissionSetups)
         {
             ShouldThrowInsufficientPermissions(permissionSetups, () =>
-                _sut.GetSourceProviderArtifactIdAsync(WorkspaceId, String.Empty));
+                _sut.GetSourceProviderArtifactIdAsync(WorkspaceId, string.Empty));
         }
 
         [Test]
         public void GetDestinationProviderArtifactIdAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
             ShouldPassWithAllPermissions<PermissionsForGettingDestinationProviders>(() =>
-                _sut.GetDestinationProviderArtifactIdAsync(WorkspaceId, String.Empty));
+                _sut.GetDestinationProviderArtifactIdAsync(WorkspaceId, string.Empty));
         }
 
         [TestCaseSource(typeof(PermissionsForGettingDestinationProviders))]
@@ -71,7 +71,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             PermissionSetup[] permissionSetups)
         {
             ShouldThrowInsufficientPermissions(permissionSetups, () =>
-                _sut.GetDestinationProviderArtifactIdAsync(WorkspaceId, String.Empty));
+                _sut.GetDestinationProviderArtifactIdAsync(WorkspaceId, string.Empty));
         }
 
         [Test]

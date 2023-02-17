@@ -11,7 +11,7 @@
         public LoadFileSettingsModel LoadFileSettings { get; set; }
 
         public IntegrationPointGeneralModel General { get; set; }
-        
+
         public ImportDocumentsModel(string name, string transferredObject)
         {
             General = new IntegrationPointGeneralModel(name)

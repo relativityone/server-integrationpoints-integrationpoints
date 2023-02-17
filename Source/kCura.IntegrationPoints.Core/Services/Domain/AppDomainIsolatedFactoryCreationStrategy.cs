@@ -26,11 +26,11 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 
         public virtual IProviderFactory CreateProviderFactory(Guid applicationId)
         {
-            if(_kubernetesMode.IsEnabled())
+            if (_kubernetesMode.IsEnabled())
             {
                 return GetKubernetesProviderFactory(applicationId);
             }
-            
+
             return GetInTenantProviderFactory(applicationId);
         }
 
@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
             _logger.LogInformation("Prepare ProviderFactory in in-tenant architecture for {domain}", newDomain.BaseDirectory);
             IAppDomainManager domainManager = DomainHelper.SetupDomainAndCreateManager(newDomain, applicationId);
             DomainHelper.BootstrapDomain(newDomain);
-
 
             return domainManager.CreateProviderFactory();
         }

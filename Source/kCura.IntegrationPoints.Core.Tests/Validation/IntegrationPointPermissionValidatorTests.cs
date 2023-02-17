@@ -36,57 +36,57 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void TestIntegrationPointValidatorGetsCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             validator.Key.Returns(Constants.IntegrationPoints.Validation.INTEGRATION_POINT);
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
-            //act
+            // act
             permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received(1).Validate(Arg.Any<object>());
         }
 
         [Test]
         public void TestImportValidatorGetsCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             validator.Key.Returns(Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString());
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
-            //act
+            // act
             _integrationPointType.Identifier = Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString();
             permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received(1).Validate(Arg.Any<object>());
         }
 
         [Test]
         public void TestExportValidatorGetsCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             validator.Key.Returns(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
-            //act
+            // act
             _integrationPointType.Identifier = Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString();
             permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received().Validate(Arg.Any<object>());
         }
 
         [Test]
         public void TestSpecificValidatorGetsCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             var sourceGuid = Guid.NewGuid();
             var destinationGuid = Guid.NewGuid();
@@ -95,19 +95,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
-            //act
+            // act
             _sourceProvider.Identifier = sourceGuid.ToString();
             _destinationProvider.Identifier = destinationGuid.ToString();
             permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received(1).Validate(Arg.Any<object>());
         }
 
         [Test]
         public void TestIntegrationPointValidatorAndSaveValidatorGetCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             validator.Key.Returns(Constants.IntegrationPoints.Validation.INTEGRATION_POINT);
 
@@ -116,10 +116,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator, saveValidator }, _serializer);
 
-            //act
+            // act
             permissionValidator.ValidateSave(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received(1).Validate(Arg.Any<object>());
             saveValidator.Received(1).Validate(Arg.Any<object>());
         }
@@ -127,16 +127,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void TestStopValidatorGetsCalled()
         {
-            //arrange
+            // arrange
             var validator = Substitute.For<IPermissionValidator>();
             validator.Key.Returns(Constants.IntegrationPoints.Validation.STOP);
 
             var permissionValidator = new IntegrationPointPermissionValidator(new[] { validator }, _serializer);
 
-            //act
+            // act
             permissionValidator.ValidateStop(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
-            //assert
+            // assert
             validator.Received(1).Validate(Arg.Any<object>());
         }
     }

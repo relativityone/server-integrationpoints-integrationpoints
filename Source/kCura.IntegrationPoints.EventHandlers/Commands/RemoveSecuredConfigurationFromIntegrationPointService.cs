@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             integrationPoint.SourceConfiguration = RemoveSecuredConfigurationSettingFromJson(originalSourceConfiguration);
             integrationPoint.DestinationConfiguration = RemoveSecuredConfigurationSettingFromJson(originalDestinationConfiguration);
 
-            return integrationPoint.SourceConfiguration != originalSourceConfiguration 
+            return integrationPoint.SourceConfiguration != originalSourceConfiguration
                    || integrationPoint.DestinationConfiguration != originalDestinationConfiguration;
         }
 

@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
     internal class ObjectManagerFacadeFactory : IObjectManagerFacadeFactory
     {
         private readonly IServicesMgr _servicesMgr;
-
         private readonly Func<IObjectManagerFacade, IObjectManagerFacade>[] _decorators;
 
         public ObjectManagerFacadeFactory(
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
         public IObjectManagerFacade Create(ExecutionIdentity executionIdentity)
         {
-            Func<IObjectManager> objectManagerFactory = 
+            Func<IObjectManager> objectManagerFactory =
                 () => _servicesMgr.CreateProxy<IObjectManager>(executionIdentity);
             IObjectManagerFacade objectManagerFacade = new ObjectManagerFacade(objectManagerFactory);
             return _decorators.Aggregate(

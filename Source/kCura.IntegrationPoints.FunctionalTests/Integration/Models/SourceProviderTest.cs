@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     public class SourceProviderTest : RdoTestBase
     {
         public string Name { get; set; }
-        
+
         public string Identifier { get; set; }
 
         public string SourceConfigurationUrl { get; set; }

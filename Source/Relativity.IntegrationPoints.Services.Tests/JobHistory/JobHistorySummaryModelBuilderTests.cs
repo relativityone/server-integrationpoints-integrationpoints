@@ -37,7 +37,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.JobHistory
             Assert.That(summaryModel.TotalAvailable, Is.EqualTo(expectedTotalAvailable));
         }
 
-
         [Test]
         [TestCase(new[] {0, 0, 0}, 0)]
         [TestCase(new[] {10, 5, 1}, 16)]

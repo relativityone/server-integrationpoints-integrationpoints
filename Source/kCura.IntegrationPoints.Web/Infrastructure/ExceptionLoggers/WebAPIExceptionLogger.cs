@@ -10,8 +10,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Infrastructure.ExceptionLoggers
 {
-    //we don't use Raygun but the article is good
-    //http://www.strathweb.com/2014/03/asp-net-web-api-exception-logging-raygun-io/
+    // we don't use Raygun but the article is good
+    // http://www.strathweb.com/2014/03/asp-net-web-api-exception-logging-raygun-io/
     public class WebAPIExceptionLogger : ExceptionLogger
     {
         private readonly Func<IErrorService> _errorServiceFactory;

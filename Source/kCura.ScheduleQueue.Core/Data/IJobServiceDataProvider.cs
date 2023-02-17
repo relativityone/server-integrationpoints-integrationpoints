@@ -16,7 +16,6 @@ namespace kCura.ScheduleQueue.Core.Data
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
 
-
         DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
@@ -28,8 +27,11 @@ namespace kCura.ScheduleQueue.Core.Data
         DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes);
         DataTable GetAllJobs();
         int UpdateStopState(IList<long> jobIds, StopState state);
+
         void CleanupJobQueueTable();
+
         void CleanupScheduledJobsQueue();
+
         void UnlockScheduledJob(int agentId);
 
         /// <summary>

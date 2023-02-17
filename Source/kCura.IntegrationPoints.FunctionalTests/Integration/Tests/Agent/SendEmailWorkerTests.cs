@@ -110,7 +110,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 jobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(message);
             }
 
-
             job.JobDetails = jobDetails;
 
             return job;

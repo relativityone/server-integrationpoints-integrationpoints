@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         [Test]
         public void ShouldSendEmailWIthDetailsFromTaskParameters()
         {
-            //ARRANGE
+            // ARRANGE
             EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
             Guid guid = Guid.NewGuid();
             TaskParameters taskParameters = new TaskParameters
@@ -55,31 +55,31 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             };
             Job job = CreateSendEmailJob(emailJobParameters);
 
-            //ACT
+            // ACT
             _sut.Execute(job);
-            
-            //ASSERT
+
+            // ASSERT
             VerifyEmailHasBeenSent(emailJobParameters);
         }
 
         [Test]
         public void ShouldSendEmailWithDetailsFromEmailJobDetails()
         {
-            //ARRANGE
+            // ARRANGE
             EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
             Job job = CreateSendEmailJob(emailJobParameters);
 
-            //ACT
+            // ACT
             _sut.Execute(job);
 
-            //ASSERT
+            // ASSERT
             VerifyEmailHasBeenSent(emailJobParameters);
         }
 
         [Test]
         public void ShouldCatchEmailExceptionAndProceedWithSendingOtherEmails()
         {
-            //ARRANGE
+            // ARRANGE
             EmailJobParameters emailJobParameters = GenerateEmailJobParameters(_emails);
             string emailToPass = _emails.First();
             string emailToFail = _emails.Skip(1).First();
@@ -87,11 +87,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _emailSender
                 .Setup(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToFail)))
                 .Throws(new SendEmailException(""));
-            
-            //ACT
+
+            // ACT
             Action act = () => _sut.Execute(job);
 
-            //ASSERT
+            // ASSERT
             act.ShouldThrowExactly<AggregateException>().Where(x => x.InnerExceptions.Count == 1);
             _emailSender.Verify(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToPass)));
         }
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         [Test]
         public void ShouldNotCatchGenericExceptionAndStopExecution()
         {
-            //ARRANGE
+            // ARRANGE
             EmailJobParameters emailJobParameters = GenerateEmailJobParameters(_emails);
             string emailToFail = _emails.First();
             Job job = CreateSendEmailJob(emailJobParameters);
@@ -107,10 +107,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .Setup(x => x.Send(It.Is<EmailMessageDto>(y => y.ToAddress == emailToFail)))
                 .Throws<NullReferenceException>();
 
-            //ACT
+            // ACT
             Action act = () => _sut.Execute(job);
 
-            //ASSERT
+            // ASSERT
             act.ShouldThrowExactly<NullReferenceException>();
             _emailSender.Verify(x => x.Send(
                 It.IsAny<EmailMessageDto>()),
@@ -142,7 +142,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
         private EmailJobParameters GenerateEmailJobParameters()
         {
-
             return GenerateEmailJobParameters(_emails.Take(1).ToList());
         }
 

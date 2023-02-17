@@ -13,7 +13,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
     public class NestedParentObjectFieldsClassifier : IFieldsClassifier
     {
         private const int WorkspaceArtifactTypeID = (int)ArtifactType.Case;
-
         private readonly IServicesMgr _servicesMgr;
 
         public NestedParentObjectFieldsClassifier(IServicesMgr servicesMgr)
@@ -34,7 +33,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
             using (var fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
             {
                 await objectFields.Select(x =>
-                    { 
+                    {
                         int artifactId = 0;
                         int.TryParse(x.FieldIdentifier, out artifactId);
                         return Observable.FromAsync(() => fieldManager.ReadAsync(workspaceID, artifactId));

@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices.Logging
     {
         private const string _SESSION_PREFIX = "_RIP_LOG_";
 
-        // As per now Releativity Web guaranties that the user requests will not be redirected to the 
+        // As per now Releativity Web guaranties that the user requests will not be redirected to the
         private static readonly ConcurrentDictionary<string, object> _cache = new ConcurrentDictionary<string, object>();
 
         public T GetObject<T>(string key) where T : class

@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Domain.Models
     public class WorkspaceDTO : IEquatable<WorkspaceDTO>
     {
         public int ArtifactId { get; set; }
-         
+
         public string Name { get; set; }
 
         public bool Equals(WorkspaceDTO other)

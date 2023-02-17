@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
     public class FirstAndLastNameMappedValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
     {
         private readonly IAPILog _logger;
+
         public override string Key => ObjectTypeGuids.Entity.ToString();
 
         public FirstAndLastNameMappedValidator(IAPILog logger)

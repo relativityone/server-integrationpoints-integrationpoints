@@ -29,7 +29,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         {
             var sourceProviders = _relativityObjectManagerService.RelativityObjectManager.Query<SourceProvider>(new QueryRequest()
             {
-                Fields = new List<FieldRef>() {new FieldRef() { Guid = SourceProviderFieldGuids.NameGuid },
+                Fields = new List<FieldRef>() { new FieldRef() { Guid = SourceProviderFieldGuids.NameGuid },
                     new FieldRef() { Guid = SourceProviderFieldGuids.IdentifierGuid }
                 }
             });

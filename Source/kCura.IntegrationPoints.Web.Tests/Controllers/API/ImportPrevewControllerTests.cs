@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void GetPreviewTableShouldAddFirstColumn()
         {
-            //Create a dummy Table
+            // Create a dummy Table
             ImportPreviewTable previewTable = new ImportPreviewTable();
             previewTable.Header.Clear();
             previewTable.Header.AddRange(new List<string> { "a", "b", "c", "d" });
@@ -50,14 +50,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             }
             _service.RetrievePreviewTable(0).ReturnsForAnyArgs(previewTable);
 
-            //Test that the controller takes our dummy table and adds a new first column
+            // Test that the controller takes our dummy table and adds a new first column
             IHttpActionResult responseMessage = _controller.GetImportPreviewTable(0);
             ImportPreviewTable result = ExtractTableResponse(responseMessage);
 
-            //assert that our resulting header now has the "#" in the first column
+            // assert that our resulting header now has the "#" in the first column
             Assert.AreEqual(new List<string> { "#", "a", "b", "c", "d" }, result.Header);
 
-            //assert that the first column contains each row's number
+            // assert that the first column contains each row's number
             int rowNumber = 1;
             foreach (List<string> resultRow in result.Data)
             {

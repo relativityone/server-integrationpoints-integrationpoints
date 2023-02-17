@@ -5,24 +5,32 @@ namespace kCura.IntegrationPoints.Domain.Readers
 {
     public abstract class DataReaderBase : IDataReader
     {
-        private bool _isDisposed = false; 
-        //Abstract Properties
+        private bool _isDisposed = false;
+        // Abstract Properties
 
         public abstract int FieldCount { get; }
+
         public abstract bool IsClosed { get; }
+
         public abstract Type GetFieldType(int i);
 
-        //Abstract Methods 
+        // Abstract Methods
 
         public abstract void Close();
+
         public abstract string GetName(int i);
+
         public abstract int GetOrdinal(string name);
+
         public abstract DataTable GetSchemaTable();
+
         public abstract object GetValue(int i);
+
         public abstract bool Read();
+
         public abstract string GetDataTypeName(int i);
 
-        //IDataReader implementation
+        // IDataReader implementation
 
         public virtual object this[string name]
         {
@@ -42,7 +50,7 @@ namespace kCura.IntegrationPoints.Domain.Readers
 
         public virtual int Depth
         {
-            //change if we support nesting in the future
+            // change if we support nesting in the future
             get
             {
                 return 0;

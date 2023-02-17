@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     public class RdoMetaController : ApiController
     {
         private readonly Core.Services.ObjectTypeService _service;
+
         public RdoMetaController(Core.Services.ObjectTypeService service)
         {
             _service = service;

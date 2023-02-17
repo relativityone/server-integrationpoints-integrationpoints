@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IAPILog _logger;
         private readonly IDbContextFactory _dbContextFactory;
-
         private const string _FOR_JOBHISTORY_ERROR = "Failed to retrieve total files size for job history id: {JobHistoryArtifactId}.";
 
         public ErrorFilesSizeStatistics(IHelper helper, IRepositoryFactory repositoryFactory)

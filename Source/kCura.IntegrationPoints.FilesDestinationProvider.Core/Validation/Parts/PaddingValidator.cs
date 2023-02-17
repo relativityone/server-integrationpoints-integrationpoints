@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
         public ValidationResult Validate(ExportFile value, long totalDocCount)
         {
-            //Logic extracted from SharedLibrary
+            // Logic extracted from SharedLibrary
             var currentVolumeNumber = value.VolumeInfo.VolumeStartNumber;
             var currentSubdirectoryNumber = value.VolumeInfo.SubdirectoryStartNumber;
 

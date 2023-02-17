@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         public static int CreateSavedSearch(int workspaceID, string name)
         {
-            return CreateSavedSearchAsync(workspaceID, name, new List<FieldRef> {new FieldRef("Control Number")}).GetAwaiter().GetResult();
+            return CreateSavedSearchAsync(workspaceID, name, new List<FieldRef> { new FieldRef("Control Number")}).GetAwaiter().GetResult();
         }
 
         public static async Task<int> CreateSavedSearchAsync(int workspaceID, string name, IEnumerable<FieldRef> fields)
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 return await proxy.CreateSingleAsync(workspaceID, keywordSearch).ConfigureAwait(false);
             }
         }
-        
+
         public static int Create(int workspaceArtifactID, KeywordSearch search)
         {
             using (var proxy = Helper.CreateProxy<IKeywordSearchManager>())
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 return proxy.CreateSingleAsync(workspaceArtifactID, search).GetAwaiter().GetResult();
             }
         }
-        
+
         public static int CreateSearchFolder(int workspaceArtifactID, SearchContainer searchContainer)
         {
             using (var proxy = Helper.CreateProxy<ISearchContainerManager>())

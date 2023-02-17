@@ -17,9 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
     public class TestsSetUpFixture
     {
         public const string _WORKSPACE_TEMPLATE_NAME = "RIP Functional Tests Template";
-
         private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
-
         private IToggleProviderExtended _toggleProvider;
 
         [OneTimeSetUp]

@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         private ImportProviderRdoSynchronizerFactory _sut;
         private Mock<IKernel> _kernel;
         private Mock<IObjectTypeRepository> _objectTypeRepository;
-
         private const int _ARTIFACT_TYPE_ID = 3242;
         private readonly string _rdoEntitySynchronizerAssemblyName = typeof(RdoEntitySynchronizer).AssemblyQualifiedName;
         private readonly string _rdoSynchronizerAssemblyName = typeof(RdoSynchronizer).AssemblyQualifiedName;

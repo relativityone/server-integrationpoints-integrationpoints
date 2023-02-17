@@ -55,7 +55,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
             bool integrationPointExists = await CheckIfIntegrationPointExistsAsync(integrationPointID).ConfigureAwait(false);
             integrationPointExists.Should().BeFalse("because integration points should be deleted");
         }
-        
+
         [IdentifiedTest("513f1d3b-d1fb-49a4-919e-b0a6ef33529d")]
         public void Delete_ShouldUnlinkJobHistoryButNotDeleteIt()
         {
@@ -162,7 +162,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.Repositories
             }
 
             public int IntegrationPointID { get; set; }
+
             public int JobHistoryID { get; set; }
+
             public int JobHistoryErrorID { get; set; }
         }
     }

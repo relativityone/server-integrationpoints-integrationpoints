@@ -13,9 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.ExportMana
     {
         private IAuditRepository _auditRepository;
         private IRepositoryFactory _repositoryFactory;
-
         private CurrentUser _currentUser;
-
         private const int _APP_ID = 123;
         private const int _USER_ID = 9;
 

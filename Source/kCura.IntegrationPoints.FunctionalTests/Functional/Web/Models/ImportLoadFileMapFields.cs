@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 
         public RelativityProviderCopyNativeFiles CopyNativeFiles { get; set; }
 
-        public YesNo UseFolderPathInformation { get; set; } 
+        public YesNo UseFolderPathInformation { get; set; }
 
         public string NativeFilePath { get; set; }
 

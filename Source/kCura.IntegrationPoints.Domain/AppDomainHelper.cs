@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Domain
     {
         private const ushort _MAX_NUMBER_OF_DIRECTORY_DELETE_RETRIES = 3;
         private const ushort _DIRECTORY_DELETE_RETRIES_WAIT_TIME_BASE_IN_SECONDS = 3;
-
         private AssemblyDomainLoader _appDomainLoader;
         private readonly IPluginProvider _pluginProvider;
         private readonly IHelper _helper;
@@ -24,10 +23,9 @@ namespace kCura.IntegrationPoints.Domain
         private readonly IToggleProvider _toggleProvider;
         private readonly IKubernetesMode _kubernetesMode;
 
-        public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService, 
+        public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService,
             IToggleProvider toggleProvider, IKubernetesMode kubernetesMode)
         {
-
             _pluginProvider = pluginProvider;
             _helper = helper;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<AppDomainHelper>();
@@ -139,7 +137,7 @@ namespace kCura.IntegrationPoints.Domain
             AppDomain newDomain = AppDomain.CreateDomain(domainName, null, domainInfo);
 
             _logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
-            
+
             if (_kubernetesMode.IsEnabled() || _toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActive"))
             {
                 _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
@@ -167,7 +165,7 @@ namespace kCura.IntegrationPoints.Domain
 
             return manager;
         }
-        
+
         public void BootstrapDomain(AppDomain domain)
         {
             Bootstrappers.AppDomainBootstrapper.Bootstrap(
@@ -224,14 +222,14 @@ namespace kCura.IntegrationPoints.Domain
             string libDllPath = _relativityFeaturePathService.LibraryPath;
             CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
-            //kCura.Agent
+            // kCura.Agent
             libDllPath = _relativityFeaturePathService.WebProcessingPath;
             if (!string.IsNullOrWhiteSpace(libDllPath))
             {
                 CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
             }
 
-            //FSharp.Core
+            // FSharp.Core
             libDllPath = _relativityFeaturePathService.EddsPath;
             if (!string.IsNullOrWhiteSpace(libDllPath))
             {
@@ -241,7 +239,7 @@ namespace kCura.IntegrationPoints.Domain
 
         private void LoadRequiredAssemblies(AppDomain domain)
         {
-            //loads the contracts dll into the app domain so we have reference 
+            // loads the contracts dll into the app domain so we have reference
             var assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
             var assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
             var assemblyPath = Path.Combine(assemblyLocalDirectory, "Relativity.IntegrationPoints.Contracts.dll");

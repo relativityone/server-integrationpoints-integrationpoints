@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         private const string _DESTINATION_CONFIGURATION_WITH_SECURED = @"{""artifactTypeID"":106, ""SecuredConfiguration"":""{\""ClientId\"":\""1886\"",\""ClientSecret\"":\""8edf\""}""}";
         private const string _SOURCE_CONFIGURATION_WITHOUT_SECURED = @"{""FederatedInstanceArtifactId"":1}";
         private const string _DESTINATION_CONFIGURATION_WITHOUT_SECURED = @"{""artifactTypeID"":106}";
-
         private UpdateRelativityConfigurationCommand _sut;
 
         protected override List<string> Names => new List<string>() { "Secured Configuration", "Source Configuration", "Destination Configuration" };
@@ -42,7 +41,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             ShouldNotBeUpdated();
         }
 
-
         [TestCase(_SOURCE_CONFIGURATION_WITH_SECURED, "", _SOURCE_CONFIGURATION_WITHOUT_SECURED, "")]
         [TestCase("", _DESTINATION_CONFIGURATION_WITH_SECURED, "", _DESTINATION_CONFIGURATION_WITHOUT_SECURED)]
         [TestCase(_SOURCE_CONFIGURATION_WITH_SECURED, _DESTINATION_CONFIGURATION_WITH_SECURED, _SOURCE_CONFIGURATION_WITHOUT_SECURED, _DESTINATION_CONFIGURATION_WITHOUT_SECURED)]
@@ -52,12 +50,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             // Arrange
             const string securedConfiguration = "Some Configuration";
 
-            RelativityObjectSlim objectSlim = PrepareObject(securedConfiguration, 
+            RelativityObjectSlim objectSlim = PrepareObject(securedConfiguration,
                 sourceConfiguration, destinationConfiguration);
 
             RelativityObjectSlim objectSlimExpected = PrepareObject(securedConfiguration,
                 expectedSourceConfiguration, expectedDestinationConfiguration);
-            
+
             SetupRead(objectSlim);
 
             // Act

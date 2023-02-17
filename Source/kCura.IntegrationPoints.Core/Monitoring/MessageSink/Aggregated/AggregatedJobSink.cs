@@ -18,12 +18,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         private const string _INTEGRATION_POINTS_PERFORMANCE_PREFIX = "IntegrationPoints.Performance";
         private const string _INTEGRATION_POINTS_USAGE_PREFIX = "IntegrationPoints.Usage";
         private const double _TOLERANCE = 0.0000001;
-
         private readonly IMetricsManagerFactory _metricsManagerFactory;
         private readonly IAPILog _logger;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IRipMetrics _ripMetrics;
-        
         private readonly ConcurrentDictionary<string, JobStatistics>
             _jobs = new ConcurrentDictionary<string, JobStatistics>();
 
@@ -211,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             JobStatistics jobStatistics;
             if (_jobs.TryRemove(message.CorrelationID, out jobStatistics) && CanSendJobStatistics(jobStatistics))
             {
-                FillInMissingFields(jobStatistics, message);    
+                FillInMissingFields(jobStatistics, message);
 
                 long jobSize = jobStatistics.FileBytes + jobStatistics.MetaBytes;
                 IMetricsManager sum = _metricsManagerFactory.CreateSUMManager();
@@ -319,31 +317,22 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
         private string JobStartedCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobStartedCount.{message.Provider}";
-        
         private string JobCompletedCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobCompletedCount.{message.Provider}";
-
         private string JobFailedCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobFailedCount.{message.Provider}";
-
         private string JobValidationFailedCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobValidationFailedCount.{message.Provider}";
-
         private string JobSuspendedCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobSuspendedCount.{message.Provider}";
-
         private string TotalRecordsCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_USAGE_PREFIX}.TotalRecords.{message.Provider}";
-
         private string CompletedRecordsCountMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_USAGE_PREFIX}.CompletedRecords.{message.Provider}";
-
         private string ThroughputMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.Throughput.{message.Provider}";
-        
         private string JobSizeMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.JobSize.{message.Provider}";
-
         private string ThroughputBytesMetric(JobMessageBase message) =>
             $"{_INTEGRATION_POINTS_PERFORMANCE_PREFIX}.ThroughputBytes.{message.Provider}";
 

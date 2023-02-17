@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
     public class ObjectManagerFacadeTests
     {
         private const int _WORKSPACE_ID = 101;
-
         private Mock<IObjectManager> _objectManagerMock;
         private ObjectManagerFacade _sut;
 

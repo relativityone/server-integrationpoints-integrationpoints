@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _context = new Mock<IEddsDBContext>();
             _databasePingReporterFake = new DatabasePingReporter(_context.Object, _loggerMock.Object);
         }
-        
+
         [Test]
         public void SystemHealthReporter_ShouldSendSystemDiscUsage()
         {

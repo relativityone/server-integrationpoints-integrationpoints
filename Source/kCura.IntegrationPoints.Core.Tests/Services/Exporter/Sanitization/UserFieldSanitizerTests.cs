@@ -22,12 +22,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
         private Mock<IHelper> _helperStub;
         private Mock<IUserInfoManager> _userInfoManagerMock;
         private Mock<ISanitizationDeserializer> _sanitizationHelperStub;
-
         private const int _WORKSPACE_ID = 1014023;
         private const string _ITEM_IDENTIFIER_SOURCE_FIELD_NAME = "Control Number";
         private const string _ITEM_IDENTIFIER = "RND000000";
         private const string _SANITIZING_SOURCE_FIELD_NAME = "Relativity Sync Test User";
-
         private const int _EXISTING_USER_ARTIFACT_ID = 9;
         private const int _NON_EXISTING_USER_ARTIFACT_ID = 10;
         private const string _EXISTING_USER_EMAIL = "relativity.admin@kcura.com";

@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 integrationPointId = -1;
                 return false;
             }
-            
+
             bool IsArtifactIdCondition(string condition, out int artifactId)
             {
                 Match match = Regex.Match(condition,
@@ -78,8 +78,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
                 return new List<JobHistoryTest>();
             }
-            
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsJobHistoryQueryRequest(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {

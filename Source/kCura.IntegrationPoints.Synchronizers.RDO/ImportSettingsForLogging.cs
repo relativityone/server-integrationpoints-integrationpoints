@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
     public class ImportSettingsForLogging
     {
         private readonly ImportSettings _settings;
+
         public ImportSettingsForLogging(ImportSettings settings)
         {
             _settings = settings;
@@ -157,8 +158,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         internal ImportAuditLevel AuditLevel => _settings.AuditLevel;
 
         public bool MoveDocumentsInAnyOverlayMode => _settings.MoveDocumentsInAnyOverlayMode;
-
-
         private string RemoveIfNotEmpty(string toSanitize)
         {
             const string sensitiveDataRemoved = "[Sensitive data has been removed]";

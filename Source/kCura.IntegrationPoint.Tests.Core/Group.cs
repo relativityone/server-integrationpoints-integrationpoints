@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoint.Tests.Core
                 {
                     ObjectType = new ObjectTypeRef() {ArtifactTypeID = (int) ArtifactType.Client}
                 };
-                
+
                 QueryResultSlim result = objectManager.QuerySlimAsync(-1, clientRequest, 0, int.MaxValue)
                     .GetAwaiter().GetResult();
-                
-                if(result.ResultCount == 0)
+
+                if (result.ResultCount == 0)
                 {
                     throw new NotFoundException("There is no client in the instance");
                 }
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         {
             AddGroupToWorkspaceAsync(workspaceId, groupId).GetAwaiter().GetResult();
         }
-        
+
         private static async Task AddGroupToWorkspaceAsync(int workspaceId, int groupId)
         {
             using (var proxy = Helper.CreateProxy<IPermissionManager>())

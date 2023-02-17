@@ -12,13 +12,13 @@ namespace kCura.IntegrationPoints.Data
         protected ExecutionIdentity ExecutionIdentity = ExecutionIdentity.CurrentUser;
 
         public virtual IRelativityObjectManager RelativityObjectManager => GetRelativityObjectManager();
-        
+
         public RelativityObjectManagerService(IHelper helper, int workspaceArtifactId)
         {
             _helper = helper;
             _workspaceArtifactId = workspaceArtifactId;
         }
-        
+
         public IRelativityObjectManager GetRelativityObjectManager()
         {
             var factory = new RelativityObjectManagerFactory(_helper);

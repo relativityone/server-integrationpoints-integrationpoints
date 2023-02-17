@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoint.Tests.Core
     public static class SharedVariables
     {
         private const string _NOT_APPLICABLE = "N/A";
-
         private static readonly Dictionary<string, string> ConfigurationOverrides = new Dictionary<string, string>();
 
         public static Configuration CustomConfig { get; set; }
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoint.Tests.Core
                 {
                     return;
                 }
-
 
                 foreach (var configurationLine in File.ReadAllLines(customConfigurationPath))
                 {
@@ -194,13 +192,13 @@ namespace kCura.IntegrationPoint.Tests.Core
         public static bool UiOptionsAcceptInsecureCertificates => AppSettingBool("UI.Options.AcceptInsecureCertificates");
 
         public static bool UiOptionsArgumentsDisableInfobars => AppSettingBool("UI.Options.Arguments.DisableInfoBars");
-        
+
         public static bool UiOptionsArgumentsHeadless => AppSettingBool("UI.Options.Arguments.Headless");
 
         public static bool UiOptionsArgumentsIgnoreCertificateErrors => AppSettingBool("UI.Options.Arguments.IgnoreCertificateErrors");
 
         public static bool UiOptionsArgumentsNoSandbox => AppSettingBool("UI.Options.Arguments.NoSandbox");
-        
+
         public static bool UiOptionsAdditionalCapabilitiesAcceptSslCertificates =>
             AppSettingBool("UI.Options.AdditionalCapabilities.AcceptSslCertificates");
 
@@ -220,7 +218,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         /// <summary>
         /// Returns RelativityHostAddress value from config file
         /// </summary>
-        public static string RelativityHostAddress => AppSettingString("RelativityInstanceAddress").NullIfEmpty() ?? AppSettingString("RelativityHostAddress"); //REL-390973
+        public static string RelativityHostAddress => AppSettingString("RelativityInstanceAddress").NullIfEmpty() ?? AppSettingString("RelativityHostAddress"); // REL-390973
 
         /// <summary>
         /// Returns Relativity instance base URL
@@ -236,7 +234,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         /// Returns Relativity fronted URI
         /// </summary>
         public static Uri RelativityFrontedUri => new Uri(RelativityFrontendUrlValue);
-        
+
         /// <summary>
         /// Returns Relativity REST URL
         /// </summary>
@@ -246,19 +244,19 @@ namespace kCura.IntegrationPoint.Tests.Core
         /// Returns Relativity WebAPI URL
         /// </summary>
         public static string RelativityWebApiUrl => $"{RelativityBaseAdressUrlValue}/RelativityWebAPI/";
-
         private static string ServerBindingType => AppSettingString("ServerBindingType");
-        
+
         #endregion Relativity Settings
 
         #region ConnectionString Settings
 
         public static string TargetDbHost => GetTargetDbHost();
-        public static string SqlServer => GetRunSettingsParameter("SqlServer") ?? AppSettingString("SQLServerAddress"); //REL-390973
 
-        public static string DatabaseUserId => AppSettingString("SqlUsername"); //REL-390973
+        public static string SqlServer => GetRunSettingsParameter("SqlServer") ?? AppSettingString("SQLServerAddress"); // REL-390973
 
-        public static string DatabasePassword => AppSettingString("SqlPassword"); //REL-390973
+        public static string DatabaseUserId => AppSettingString("SqlUsername"); // REL-390973
+
+        public static string DatabasePassword => AppSettingString("SqlPassword"); // REL-390973
 
         public static string EddsConnectionString => string.Format(AppSettingString("connectionStringEDDS"), SqlServer, DatabaseUserId, DatabasePassword);
 
@@ -307,7 +305,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         public static string LdapPassword => AppSettingString("ldapPassword");
 
         #endregion LDAP Configuration Settings
-        
+
         #region Fileshare Configuration Settings
 
         public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
@@ -326,13 +324,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         #region System Tests Settings
 
-        public static string SystemTestDataLocation => AppSettingString("SystemTestData"); //REL-390973
+        public static string SystemTestDataLocation => AppSettingString("SystemTestData"); // REL-390973
 
         #endregion
 
         #region Sync Settings
 
         public static bool IsSyncEnabled => AppSettingBool("SyncEnabled");
+
         public static bool IsSyncApplicable => AppSettingString("SyncEnabled") != _NOT_APPLICABLE;
 
         #endregion
@@ -362,7 +361,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             }
             return true;
         }
-        
+
         public static bool UseLegacyTemplateName()
         {
             string environmentVariableName = AppSettingString("UseLegacyTemplateName");

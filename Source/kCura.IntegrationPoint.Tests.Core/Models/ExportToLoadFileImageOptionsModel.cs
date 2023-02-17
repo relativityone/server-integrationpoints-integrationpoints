@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
     {
         [DefaultValue("Single page TIFF/JPEG")]
         public string ImageFileType { get; set; }
-        
+
         public ImagePrecedence ImagePrecedence { get; set; }
 
         [DefaultValue("IMG")]

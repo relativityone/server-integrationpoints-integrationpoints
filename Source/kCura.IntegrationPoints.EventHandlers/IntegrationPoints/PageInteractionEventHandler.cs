@@ -3,7 +3,7 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Scripts;
 
-//http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
+// http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 Success = true,
                 Message = string.Empty
             };
-
 
             if (PageMode == EventHandler.Helper.PageMode.View)
             {

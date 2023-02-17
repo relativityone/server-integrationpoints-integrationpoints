@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Domain.Authentication
         public string GetAuthToken()
         {
             string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-            
+
             return token;
         }
     }

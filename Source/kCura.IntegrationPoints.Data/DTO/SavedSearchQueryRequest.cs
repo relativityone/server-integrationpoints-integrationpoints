@@ -10,7 +10,9 @@
         }
 
         public string SearchTerm { get; }
+
         public int Page { get; }
+
         public int PageSize { get; }
     }
 }

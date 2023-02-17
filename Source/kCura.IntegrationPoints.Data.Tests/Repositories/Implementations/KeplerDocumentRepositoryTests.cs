@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private ExportInitializationResultsDto _initializationResults;
         private KeplerDocumentRepository _sut;
         private MassUpdateTests _massUpdateTests;
-
         private const int _SEARCH_ARTIFACT_ID = 12321;
         private const int _PRODUCTION_ARTIFACT_ID = 45654;
         private const int _START_AT_RECORD = 1;

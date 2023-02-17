@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total documents count for saved search id: {savedSearchId}.";
         private const string _FOR_FOLDER_ERROR = "Failed to retrieve total documents count for folder: {folderId} and view: {viewId}.";
         private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total documents count for production set: {productionSetId}.";
-
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManager _relativityObjectManager;
 

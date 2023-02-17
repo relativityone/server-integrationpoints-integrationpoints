@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Services
             : base(logger, permissionRepositoryFactory, container)
         {
         }
-        
+
         public IntegrationPointProfileManager(ILog logger) : base(logger)
         {
         }
@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Services
             LogInvocation(nameof(CreateIntegrationPointProfileAsync));
 
             CheckPermissions(nameof(CreateIntegrationPointProfileAsync), request.WorkspaceArtifactId,
-                new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create)});
+                new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Create)});
             try
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -55,7 +55,7 @@ namespace Relativity.IntegrationPoints.Services
             LogInvocation(nameof(UpdateIntegrationPointProfileAsync));
 
             CheckPermissions(nameof(UpdateIntegrationPointProfileAsync), request.WorkspaceArtifactId,
-                new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Edit)});
+                new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.Edit)});
             try
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Services
         public async Task<IntegrationPointModel> GetIntegrationPointProfileAsync(int workspaceArtifactId, int integrationPointProfileArtifactId)
         {
             CheckPermissions(nameof(GetIntegrationPointProfileAsync), workspaceArtifactId,
-                new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+                new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
             try
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -93,7 +93,7 @@ namespace Relativity.IntegrationPoints.Services
         public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointProfilesAsync(int workspaceArtifactId)
         {
             CheckPermissions(nameof(GetAllIntegrationPointProfilesAsync), workspaceArtifactId,
-                new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+                new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
             try
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
@@ -112,7 +112,7 @@ namespace Relativity.IntegrationPoints.Services
         public async Task<IList<OverwriteFieldsModel>> GetOverwriteFieldsChoicesAsync(int workspaceArtifactId)
         {
             CheckPermissions(nameof(GetOverwriteFieldsChoicesAsync), workspaceArtifactId,
-                new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
+                new[] { new PermissionModel(ObjectTypeGuids.IntegrationPointProfileGuid, ObjectTypes.IntegrationPointProfile, ArtifactPermission.View)});
             try
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))

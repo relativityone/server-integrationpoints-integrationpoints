@@ -21,13 +21,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     public class NativeFileSizeStatisticsTests : TestBase
     {
         private const string _SQL_TEXT = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
-
         private const int _WORKSPACE_ID = 882826;
-
         private IAPILog _logger;
         private IHelper _helper;
         private IRelativityObjectManager _relativityObjectManager;
-
         private NativeFileSizeStatistics _instance;
         private IExportQueryResult _exportResult;
 
@@ -40,7 +37,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             var relativityObjectManagerFactory = Substitute.For<IRelativityObjectManagerFactory>();
             relativityObjectManagerFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_relativityObjectManager);
             _helper.GetLoggerFactory().GetLogger().ForContext<NativeFileSizeStatistics>().Returns(_logger);
-
 
             _exportResult = Substitute.For<IExportQueryResult>();
 

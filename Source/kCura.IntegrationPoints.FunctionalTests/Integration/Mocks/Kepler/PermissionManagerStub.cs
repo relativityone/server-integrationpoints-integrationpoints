@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         Selected = true
                     }).ToList());
                 });
-            
+
             Mock.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>()))
                 .Returns((int workspaceId, List<PermissionRef> permissions, int instanceId) =>
                 {
@@ -67,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             _setPermissions[GetPermissionKey(permissionModel, workspaceId, instanceId)] = granted;
         }
-        
+
         public void SetupPermission(PermissionRef permissionModel, int workspaceId, int? instanceId = null, bool granted = true)
         {
             _setPermissions[GetPermissionKey(permissionModel, workspaceId, instanceId)] = granted;
@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             _setPermissions[GetWorkspaceKey(workspaceId)] = granted;
         }
-        
+
         private static PermissionType ArtifactPermissionToPermissionType(ArtifactPermission artifactPermission)
         {
             switch (artifactPermission)
@@ -97,16 +97,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     throw new System.Exception("Invalid ArtifactPermission");
             }
         }
-        
+
         private static string GetWorkspaceKey(int workspaceId) => GetPermissionKey(new PermissionRef()
         {
             ArtifactType = new ArtifactTypeIdentifier((int) ArtifactType.Case),
             PermissionType = PermissionType.View
         }, -1, workspaceId);
-
         private static string GetPermissionKey(PermissionModel permissionModel, int workspaceId, int? instanceId = null) =>
             $"{permissionModel.ObjectTypeGuid};{ArtifactPermissionToPermissionType(permissionModel.ArtifactPermission).Name};{workspaceId};{instanceId}";
-
         private static string GetPermissionTypeDescription(ArtifactTypeIdentifier permissionRefArtifactType)
         {
             if (permissionRefArtifactType.Guids.Any())
@@ -116,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             return permissionRefArtifactType.ID.ToString();
         }
-        
+
         private static string GetPermissionKey(PermissionRef permissionRef, int workspaceId, int? instanceId = null) =>
             $"{GetPermissionTypeDescription(permissionRef.ArtifactType)};{permissionRef.PermissionType.Name};{workspaceId};{instanceId}";
     }

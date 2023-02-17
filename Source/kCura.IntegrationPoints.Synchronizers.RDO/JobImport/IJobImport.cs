@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport
         event OnMessageEventHandler OnMessage;
 
         void RegisterEventHandlers();
+
         void Execute();
     }
 }

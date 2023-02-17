@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
     public class EnumerableExtensionsTests
     {
         private string[] _expectedColumnNames;
-
         private readonly TestCase[] _testCases =
         {
             new TestCase
@@ -40,10 +39,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
         [Test]
         public void ToDataTable_ShouldCreateDataTableWithCorrectNumberOfColumnsAndRows()
         {
-            //arrange
+            // arrange
             DataTable result = _testCases.ToDataTable();
 
-            //assert
+            // assert
             AssertDataTableColumns(result, _expectedColumnNames);
             AssertDataTableRows(result, _testCases);
         }
@@ -51,10 +50,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
         [Test]
         public void ToDataView_ShouldCreateDataViewWithCorrectNumberOfColumnsAndRows()
         {
-            //arrange
+            // arrange
             kCura.Data.DataView result = _testCases.ToDataView();
 
-            //assert
+            // assert
             AssertDataTableColumns(result.Table, _expectedColumnNames);
             AssertDataTableRows(result.Table, _testCases);
         }
@@ -62,16 +61,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
         [Test]
         public void ToDataSet_ShouldCreateDataSetWithCorrectNumberOfColumnsAndRows()
         {
-            //arrange
+            // arrange
             DataSet result = _testCases.ToDataSet();
 
-            //assert
+            // assert
             result.Tables.Count.Should().Be(1);
             DataTable dataTable = result.Tables[0];
             AssertDataTableColumns(dataTable, _expectedColumnNames);
             AssertDataTableRows(dataTable, _testCases);
         }
-
 
         private static void AssertDataTableColumns(DataTable result, string[] expectedColumnsNames)
         {
@@ -109,8 +107,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
         private class TestCase
         {
             public int ID { get; set; }
+
             public string Name { get; set; }
+
             public double Duration { get; set; }
+
             public string Description { get; set; }
         }
     }

@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         private Mock<ExportServiceFactory.CreateCoreServiceFactoryDelegate> _createCoreServiceFactoryDelegate;
         private Mock<IInstanceSettingRepository> _instanceSettingRepository;
         private ExportDataContext _exportDataContext;
-
         private const int _exportTypeArtifactID = 1234;
 
         [SetUp]

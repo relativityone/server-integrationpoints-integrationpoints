@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             var permissionValidator = new PermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
             ValidationResult validationResult = permissionValidator.Validate(_validationModel);
 
-            // ASSERT    
+            // ASSERT
             bool expected =
                 sourceWorkspacePermission &&
                 integrationPointTypeViewPermission &&

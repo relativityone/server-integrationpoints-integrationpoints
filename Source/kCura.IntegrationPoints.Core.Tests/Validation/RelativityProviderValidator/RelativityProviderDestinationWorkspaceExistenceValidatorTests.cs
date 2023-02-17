@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     public class RelativityProviderDestinationWorkspaceExistenceValidatorTests : TestBase
     {
         private IWorkspaceManager _workspaceManager;
-
         private const int _DESTINATION_WORKSPACE_ID = 349234;
         private const int _FEDERATED_INSTANCE_ID = 432943;
 

@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
     {
         private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
         private const string _IMPORT_API_ERROR_PREFIX = "IAPI";
-
         private readonly BatchManager _batchManager;
         private readonly Dictionary<string, int> _inputMappings;
         private readonly IAPILog _logger;
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly IImportJobFactory _jobFactory;
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
         private readonly NativeFileImportService _nativeFileImportService;
-
         private Dictionary<int, string> _idToFieldNameDictionary;
         private IImportAPI _importApi;
         private int _lastJobStatusUpdate;

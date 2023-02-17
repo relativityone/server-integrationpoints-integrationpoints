@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
     {
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
-
         private readonly ILoginHelperFacade _authProvider;
         private readonly IRetryHandler _retryHandler;
 

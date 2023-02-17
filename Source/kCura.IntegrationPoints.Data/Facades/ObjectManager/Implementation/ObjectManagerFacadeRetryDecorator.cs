@@ -12,10 +12,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
     {
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
-
         private readonly IRetryHandler _retryHandler;
         private readonly IObjectManagerFacade _objectManager;
-
         private bool _disposedValue;
 
         /// <summary>

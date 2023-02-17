@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobManager _jobManager;
         private readonly IJobService _jobService;
         private readonly IScheduleRuleFactory _scheduleRuleFactory;
-
         private IEnumerable<IBatchStatus> _batchStatus;
 
         public SyncManager(

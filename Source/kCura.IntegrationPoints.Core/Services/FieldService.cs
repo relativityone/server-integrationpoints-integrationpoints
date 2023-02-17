@@ -13,10 +13,8 @@ namespace kCura.IntegrationPoints.Core.Services
     public class FieldService : IFieldService
     {
         private const string _GET_TEXT_FIELDS_ERROR = "Integration Points failed during getting text fields";
-
         private const string _LONG_TEXT_QUERY = "'Field Type' == 'Long Text'";
         private const string _FIXED_LENGTH_TEXT_QUERY = "'Field Type' == 'Fixed-Length Text'";
-
         private readonly IRelativityObjectManagerFactory _objectManagerFactory;
 
         public FieldService(IRelativityObjectManagerFactory objectManagerFactory)

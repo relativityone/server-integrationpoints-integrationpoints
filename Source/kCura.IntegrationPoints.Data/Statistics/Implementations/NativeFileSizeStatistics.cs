@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private const string _FOR_FOLDER_ERROR = "Failed to retrieve total native files size for folder: {folderId} and view: {viewId}.";
         private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total native files count for production set: {productionSetId}.";
         private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total native files size for saved search id: {savedSearchId}.";
-
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
@@ -130,10 +129,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
         private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId) =>
             ExecuteQuery(query, workspaceArtifactId, out _);
-
         private IEnumerable<int> GetArtifactIds(IEnumerable<RelativityObjectSlim> relativityObjects) =>
             relativityObjects.Select(GetArtifactId);
-
         private int GetArtifactId(RelativityObjectSlim relativityObject) => relativityObject.ArtifactID;
 
     }

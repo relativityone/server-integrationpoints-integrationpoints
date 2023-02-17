@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public bool HasOnlyPendingJobHistory
             => HasAny(PendingJobHistory) && !HasAny(ProcessingJobHistory);
-
         private bool HasAny(IEnumerable<JobHistory> jobHistory) => jobHistory?.Any() ?? false;
     }
 }

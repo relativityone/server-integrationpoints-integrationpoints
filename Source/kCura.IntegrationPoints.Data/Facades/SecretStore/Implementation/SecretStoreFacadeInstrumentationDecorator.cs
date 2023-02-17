@@ -75,8 +75,8 @@ namespace kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation
         {
             IExternalServiceInstrumentation instrumentation =
                 _instrumentationProvider.Create(
-                    ExternalServiceTypes.SECRET_STORE, 
-                    nameof(ISecretStore), 
+                    ExternalServiceTypes.SECRET_STORE,
+                    nameof(ISecretStore),
                     operationName
                 );
             return instrumentation.Started();

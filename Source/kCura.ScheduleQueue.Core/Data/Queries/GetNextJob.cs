@@ -9,7 +9,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class GetNextJob : IQuery<DataTable>
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly int _agentId;
         private readonly int _agentTypeId;
         private readonly int[] _resourceGroupArtifactId;
@@ -34,11 +33,11 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             {
                 if (AgentTimeMachineProvider.Current.WorkspaceID > 0)
                 {
-                    sql = sql.Replace("q.[NextRunTime] <= GETUTCDATE()", String.Format("((q.[NextRunTime] <= GETUTCDATE() AND q.[WorkspaceID]<>{0}) OR (q.[NextRunTime] <= CAST('{1}' AS DATETIME) AND q.[WorkspaceID]={0}))", AgentTimeMachineProvider.Current.WorkspaceID, AgentTimeMachineProvider.Current.UtcNow));
+                    sql = sql.Replace("q.[NextRunTime] <= GETUTCDATE()", string.Format("((q.[NextRunTime] <= GETUTCDATE() AND q.[WorkspaceID]<>{0}) OR (q.[NextRunTime] <= CAST('{1}' AS DATETIME) AND q.[WorkspaceID]={0}))", AgentTimeMachineProvider.Current.WorkspaceID, AgentTimeMachineProvider.Current.UtcNow));
                 }
                 else
                 {
-                    sql = sql.Replace("GETUTCDATE()", String.Format("CAST('{0}' AS DATETIME)", AgentTimeMachineProvider.Current.UtcNow));
+                    sql = sql.Replace("GETUTCDATE()", string.Format("CAST('{0}' AS DATETIME)", AgentTimeMachineProvider.Current.UtcNow));
                 }
             }
 #endif

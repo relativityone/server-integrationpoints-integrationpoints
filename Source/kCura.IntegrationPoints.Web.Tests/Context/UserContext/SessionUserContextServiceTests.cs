@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
     {
         private Mock<ISessionService> _sessionServiceMock;
         private Mock<IUserContext> _nextUserContextServiceMock;
-
         private SessionUserContextService _sut;
 
         [SetUp]

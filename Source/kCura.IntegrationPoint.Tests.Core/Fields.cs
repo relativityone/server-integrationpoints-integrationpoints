@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                     "Is Identifier"
                 })).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            string fieldName = String.Empty;
+            string fieldName = string.Empty;
             foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
             {
                 int isIdentifierFieldValue = 0;

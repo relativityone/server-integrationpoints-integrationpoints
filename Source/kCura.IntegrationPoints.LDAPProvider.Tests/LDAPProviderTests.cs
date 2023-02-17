@@ -94,7 +94,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         [Test]
         public void GetData_FieldsListDoesNotHaveIdentifierElement_Throws()
         {
-
             var provider = new LDAPProvider(_ldapSettingsReader, _serviceFactory, _helper, _serializer);
 
             Assert.Catch(() => provider.GetData(_fieldEntries, _entryIds, new DataSourceProviderConfiguration(_optionsString, _securedConfigurationString)));

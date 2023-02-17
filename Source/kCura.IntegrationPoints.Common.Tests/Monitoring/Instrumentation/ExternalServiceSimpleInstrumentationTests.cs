@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
         private IExternalServiceInstrumentation _instrumentation;
         private IExternalServiceInstrumentationStarted _startedInstrumentation;
         private ExternalServiceSimpleInstrumentation _sut;
-
         private const int _EXPECTED_RETURN_VALUE = 4324324;
 
         [SetUp]
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
             // act & assert
             _sut.Execute(ValidateActionExecution);
         }
-        
+
         [Test]
         public void ItShouldCallCompletedWhenActionExecutedWithoutException()
         {
@@ -46,7 +45,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
         {
             // arrange
             var expectedException = new ArgumentException();
-            
+
             // act
             try
             {
@@ -113,7 +112,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
         [Test]
         public async Task ItShouldCallStartedBeforeAsyncFunctionWasExecuted()
         {
-            //arrange
+            // arrange
             Func<int> func = ValidateFunctionExecution;
 
             // act & assert
@@ -164,7 +163,6 @@ namespace kCura.IntegrationPoints.Common.Tests.Monitoring.Instrumentation
             // assert
             _startedInstrumentation.Received(1).Failed(expectedException);
         }
-
 
         private int ValidateFunctionExecution()
         {

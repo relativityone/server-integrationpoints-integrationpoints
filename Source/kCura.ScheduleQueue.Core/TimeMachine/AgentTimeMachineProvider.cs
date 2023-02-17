@@ -35,7 +35,9 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
         }
 
         public abstract bool Enabled { get; }
+
         public abstract int WorkspaceID { get; }
+
         public abstract DateTime UtcNow { get; }
 
         public static void ResetToDefault()

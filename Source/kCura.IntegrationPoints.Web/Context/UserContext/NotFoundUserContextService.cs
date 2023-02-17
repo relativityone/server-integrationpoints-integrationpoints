@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Web.Context.UserContext
         public int GetUserID() => LogWarningAndThrowException();
 
         public int GetWorkspaceUserID() => LogWarningAndThrowException();
-
         private int LogWarningAndThrowException([CallerMemberName] string propertyName = "")
         {
             _logger.LogWarning("{propertyName} not found in user context", propertyName);

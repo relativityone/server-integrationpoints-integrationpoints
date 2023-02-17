@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
                 BatchInstance = batchInstanceId
             };
 
-            switch(taskType)
+            switch (taskType)
             {
                 case TaskType.ImportService:
                     parameters.BatchParameters = BuildLoadFileParameters(sourceConfiguration, destinationConfiguration);

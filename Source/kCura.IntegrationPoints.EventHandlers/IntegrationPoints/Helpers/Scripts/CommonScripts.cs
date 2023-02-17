@@ -119,11 +119,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
             ipModelBuilder.AppendLine(FormatIPProperty("emailNotificationId", emailNotificationId));
             ipModelBuilder.AppendLine(FormatIPProperty("promoteEligibleId", promoteEligibleId));
             ipModelBuilder.AppendLine(FormatIPProperty("apiControllerName", apiControllerName));
-            
+
             ipModelBuilder.AppendLine("IP.params = IP.params || {};");
             ipModelBuilder.AppendLine($"IP.params['scheduleRuleId'] = '{scheduleRuleId}';");
             ipModelBuilder.AppendLine($"IP.params['sourceUrl'] = '{sourceViewUrl}';");
-            
+
             ipModelBuilder.AppendLine("</script>");
 
             return ipModelBuilder.ToString();

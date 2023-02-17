@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             _context = context;
             _workspaceRepository = workspaceRepository;
         }
-        
+
         public string Convert()
         {
             string workspaceName = _workspaceRepository.Retrieve(_context.WorkspaceID).Name;

@@ -62,8 +62,8 @@ namespace kCura.IntegrationPoints.Data.Extensions
         }
 
         private static void PopulateRows<T>(
-            IEnumerable<T> collection, 
-            DataTable dataTable, 
+            IEnumerable<T> collection,
+            DataTable dataTable,
             PropertyInfo[] properties)
                 where T : class
         {

@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         private Mock<IProviderFactory> _providerFactory;
         private Mock<ProviderFactoryVendor> _providerFactoryVendorMock;
         private DataProviderBuilder _sut;
-
         private readonly Guid _applicationGuid = Guid.NewGuid();
         private readonly Guid _providerGuid = Guid.NewGuid();
 

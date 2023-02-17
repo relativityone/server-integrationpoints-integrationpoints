@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private int? _federatedInstanceArtifactId;
         private ImportSettings _importSettings;
         private readonly string _uniqueJobId = "1_JobIdGuid";
-
         private TargetDocumentsTaggingManager _instance;
 
         [SetUp]
@@ -147,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             }
             catch
             {
-                //ignore
+                // ignore
             }
 
             // ACT

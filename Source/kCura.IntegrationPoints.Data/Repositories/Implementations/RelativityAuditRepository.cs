@@ -16,13 +16,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     {
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SECONDS = 3;
-
         private readonly IFoundationAuditRepository _foundationAuditRepository;
         private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
         private readonly IRetryHandler _retryHandler;
 
         public RelativityAuditRepository(
-            IFoundationAuditRepository foundationAuditRepository, 
+            IFoundationAuditRepository foundationAuditRepository,
             IExternalServiceInstrumentationProvider instrumentationProvider,
             IRetryHandlerFactory retryHandlerFactory)
         {

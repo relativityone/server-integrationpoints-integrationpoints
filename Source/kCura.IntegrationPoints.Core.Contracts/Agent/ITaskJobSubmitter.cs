@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
         private readonly Job _parentJob;
         private readonly TaskType _taskToSubmit;
         private readonly Guid _batchInstance;
+
         public TaskJobSubmitter(IJobManager jobManager, IJobService jobService, Job parentJob, TaskType taskToSubmit, Guid batchInstance)
         {
             _jobManager = jobManager;

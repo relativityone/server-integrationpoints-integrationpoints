@@ -31,17 +31,14 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         private const int _DESTINATION_PROVIDER_ID = 789;
         private const string _SOURCE_CONFIGURATION = "Source Configuration";
         private const string _DESTINATION_CONFIGURATION = "Destination Configuration";
-
         private Mock<IProviderTypeService> _providerTypeService;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
         private Mock<IToggleProvider> _toggleProvider;
         private Job _job;
-
         private Mock<ISerializer> _configurationDeserializer;
         private SourceConfiguration _sourceConfiguration;
         private ImportSettings _importSettings;
         private TaskParameters _taskParameters;
-
         private RelativitySyncConstrainsChecker _sut;
 
         [SetUp]

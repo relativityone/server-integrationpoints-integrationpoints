@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private CaseRepository _sut;
         private IResourceServerManager _resourceServerManager;
         private IExternalServiceSimpleInstrumentation _simpleInstrumentation;
-
         private const int _CASE_ARTIFACT_ID = 3535;
 
         [SetUp]
@@ -113,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 Name = "name",
                 ArtifactID = 5454,
                 AsImportAllowed = true,
-                DocumentPath = "//fileshare/path",
+                DocumentPath = "// fileshare/path",
                 DownloadHandlerURL = "https://relativity.com",
                 RootArtifactID = 34343,
                 MatterArtifactID = 6576,

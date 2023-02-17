@@ -53,39 +53,39 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnImportDataReader_WhenImportingDocuments()
         {
-            //Arrange
+            // Arrange
             _settings.ImportType = ((int)ImportType.ImportTypeValue.Document).ToString();
 
-            //Act
+            // Act
             IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
-            //Assert
+            // Assert
             Assert.IsNotNull(reader as ImportDataReader);
         }
 
         [Test]
         public void ItShouldReturnOpticonDataReader_WhenImportingImages()
         {
-            //Arrange
+            // Arrange
             _settings.ImportType = ((int)ImportType.ImportTypeValue.Image).ToString();
 
-            //Act
+            // Act
             IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
-            //Assert
+            // Assert
             Assert.IsNotNull(reader as OpticonDataReader);
         }
 
         [Test]
         public void ItShouldReturnOpticonDataReader_WhenImportingProductions()
         {
-            //Arrange
+            // Arrange
             _settings.ImportType = ((int)ImportType.ImportTypeValue.Production).ToString();
 
-            //Act
+            // Act
             IDataReader reader = _instance.GetDataReader(new FieldMap[0], _serializer.Serialize(_settings), _jobStopManager);
 
-            //Assert
+            // Assert
             Assert.IsNotNull(reader as OpticonDataReader);
         }
     }

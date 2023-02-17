@@ -28,11 +28,8 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
         private Mock<IDateTimeHelper> _dateTimeHelperFake;
         private Mock<IJobStatusUpdater> _jobStatusUpdaterFake;
-
         private JobLifetimeMetricBatchStatus _sut;
-
         private const string _EXPECTED_PROVIDER_NAME = "SomeProvider";
-
         private readonly DateTime _JOB_HISTORY_START_TIME_UTC = new DateTime(2021, 9, 3, 7, 0, 0);
 
         [SetUp]

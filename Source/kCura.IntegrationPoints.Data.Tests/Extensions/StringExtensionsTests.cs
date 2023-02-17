@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Extensions
             // arrange
             string input = null;
 
-            // act 
+            // act
             Action escapeSingleQuoteAction = () => input.EscapeSingleQuote();
 
             // assert

@@ -17,17 +17,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Telemetry
         #region Fields
 
         private TelemetryManager _instanceUnderTest;
-
         private IHelper _mockHelper;
         private IServicesMgr _mockServicesMgr;
         private IInternalMetricsCollectionManager _mockInternalMetricsCollectionManager;
         private ITelemetryMetricProvider _mockTelemetryMetricProviderBase;
-
         private Category _category;
         private CategoryTarget _categoryTarget;
         private List<CategoryTarget> _categoryTargets;
 
-        #endregion //Fields
+        #endregion // Fields
 
         [SetUp]
         public override void SetUp()
@@ -122,7 +120,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Telemetry
             Assert.That(_categoryTargets[0].IsCategoryMetricTargetEnabled[CategoryMetricTarget.SUM]);
         }
 
-
         [Test]
         public void ItShouldThrowExceptionOnMetricEnabled()
         {
@@ -184,6 +181,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Telemetry
             Assert.That(() => _instanceUnderTest.InstallMetrics(), Throws.TypeOf<Exception>());
         }
 
-        #endregion //Tests
+        #endregion // Tests
     }
 }

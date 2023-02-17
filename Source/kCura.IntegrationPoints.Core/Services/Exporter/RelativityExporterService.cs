@@ -23,30 +23,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         private readonly IExportDataSanitizer _exportDataSanitizer;
 
         public RelativityExporterService(
-            IDocumentRepository documentRepository, 
+            IDocumentRepository documentRepository,
             IRelativityObjectManager relativityObjectManager,
             IRepositoryFactory repositoryFactory,
-            IJobStopManager jobStopManager, 
+            IJobStopManager jobStopManager,
             IHelper helper,
             IFolderPathReader folderPathReader,
             IFileRepository fileRepository,
             ISerializer serializer,
             IExportDataSanitizer exportDataSanitizer,
-            FieldMap[] mappedFields, 
-            int startAt, 
-            SourceConfiguration sourceConfiguration, 
+            FieldMap[] mappedFields,
+            int startAt,
+            SourceConfiguration sourceConfiguration,
             int searchArtifactId)
             : base(
                 documentRepository,
                 relativityObjectManager,
                 repositoryFactory,
-                jobStopManager, 
+                jobStopManager,
                 helper,
                 fileRepository,
                 serializer,
-                mappedFields, 
-                startAt, 
-                sourceConfiguration, 
+                mappedFields,
+                startAt,
+                sourceConfiguration,
                 searchArtifactId)
         {
             _folderPathReader = folderPathReader;
@@ -56,9 +56,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
         {
             var documentTransferDataReader = new DocumentTransferDataReader(
-                this, 
+                this,
                 MappedFields,
-                transferConfiguration.ScratchRepositories, 
+                transferConfiguration.ScratchRepositories,
                 RelativityObjectManager,
                 DocumentRepository,
                 Logger,
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 FileRepository,
                 transferConfiguration.ImportSettings.UseDynamicFolderPath,
                 SourceConfiguration.SourceWorkspaceArtifactId);
-            var exporterTransferContext = 
+            var exporterTransferContext =
                 new ExporterTransferContext(documentTransferDataReader, transferConfiguration)
                     { TotalItemsFound = TotalRecordsFound };
             return Context ?? (Context = exporterTransferContext);
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 string itemIdentifier = data.FieldValues[IdentifierField.ActualName].ToString();
                 SetupBaseFieldsAsync(data.FieldValues.Values.ToArray(), fields, itemIdentifier).GetAwaiter().GetResult();
 
-                // TODO: replace String.empty
+                // TODO: replace string.empty
                 string textIdentifier = string.Empty;
                 result.Add(new ArtifactDTO(documentArtifactID, (int) ArtifactType.Document, textIdentifier, fields));
             }

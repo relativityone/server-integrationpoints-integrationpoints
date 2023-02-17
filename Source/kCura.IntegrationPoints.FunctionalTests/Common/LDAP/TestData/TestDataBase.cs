@@ -10,7 +10,6 @@ namespace Relativity.IntegrationPoints.Tests.Common.LDAP.TestData
     public abstract class TestDataBase
     {
         private const string _RELATIVE_TEST_DATA_PATH = @"Common\LDAP\TestData";
-
         private readonly string _TEST_DATA_PATH = Path.Combine(
             new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName,
             _RELATIVE_TEST_DATA_PATH);
@@ -33,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Common.LDAP.TestData
         protected TestDataBase(string testDataName, string uniqueId)
         {
             string testDataFile = Path.Combine(_TEST_DATA_PATH, $"{testDataName}.csv");
-            
+
             TextFieldParser csvParser = new TextFieldParser(testDataFile)
             {
                 Delimiters = new[] { "," }

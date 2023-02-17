@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         private IHelper _helperMock;
         private IAPILog _loggerMock;
 
-
         public override void SetUp()
         {
             _domainHelperMock = Substitute.For<IAppDomainHelper>();
@@ -45,7 +44,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
             _sut =
                 new AppDomainIsolatedFactoryLifecycleStrategy(_domainHelperMock, _kubernetesModeMock, _helperMock);
         }
-
 
         [Test]
         public void CreateProviderFactory_CallsSetupDomainAndCreateManager()
@@ -99,10 +97,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
         {
             // Arrange
             _kubernetesModeMock.IsEnabled().Returns(true);
-            
+
             // Act
             _sut.CreateProviderFactory(_applicationGuid);
-            
+
             // Assert
             _domainHelperMock.Received(1).SetupDomainAndCreateManager(AppDomain.CurrentDomain, _applicationGuid);
         }

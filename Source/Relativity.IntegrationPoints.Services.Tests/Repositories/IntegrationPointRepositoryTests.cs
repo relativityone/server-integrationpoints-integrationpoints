@@ -31,7 +31,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private DestinationConfiguration _destinationConfiguration;
         private string _serializedDestinationConfiguration;
         private ICaseServiceContext _caseContext;
-
         private int _workspaceArtifactId = 100;
 
         public override void SetUp()
@@ -242,7 +241,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             Assert.That(actualResult, Is.EqualTo(expectedArtifactTypeId));
         }
-
 
         [Test]
         public void ItShouldRetrieveAllOverwriteFieldChoices()

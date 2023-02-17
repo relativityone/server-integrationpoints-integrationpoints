@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             _integrationPointTypeService = integrationPointTypeService;
         }
-        
+
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point types.")]
         public HttpResponseMessage Get()
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 ArtifactId = x.ArtifactId,
                 Identifier = x.Identifier
             });
-            
+
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
     }

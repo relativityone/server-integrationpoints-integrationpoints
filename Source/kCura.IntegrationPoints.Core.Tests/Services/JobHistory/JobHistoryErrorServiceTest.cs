@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private Mock<IJobStopManager> _stopJobManagerFake;
         private Mock<IIntegrationPointRepository> _integrationPointRepositoryFake;
         private List<JobHistoryError> _errors;
-
         private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
         private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
         private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
@@ -117,7 +116,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 });
 
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
-
 
             // act & assert
             new Action(() => _instance.CommitErrors()).ShouldThrow<Exception>();
@@ -221,7 +219,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.IntegrationPointDto.HasErrors = false;
 
             // act
-            //Adding job level error automatically commits errors
+            // Adding job level error automatically commits errors
             Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
             // assert
@@ -378,10 +376,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private class Reporter : IBatchReporter
         {
             public event BatchCompleted OnBatchComplete { add { } remove { } }
+
             public event BatchSubmitted OnBatchSubmit { add { } remove { } }
+
             public event BatchCreated OnBatchCreate { add { } remove { } }
+
             public event StatusUpdate OnStatusUpdate { add { } remove { } }
+
             public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
+
             public event JobError OnJobError;
             public event RowError OnDocumentError;
 

@@ -28,9 +28,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _SCHEDULE_RULE = "ScheduleRule";
         private const string _STOP_STATE = "StopState";
         private const string _HEARTBEAT = "Heartbeat";
-
         private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
-
         private IsJobFailed _jobFailed;
         private DataRow _jobData;
 

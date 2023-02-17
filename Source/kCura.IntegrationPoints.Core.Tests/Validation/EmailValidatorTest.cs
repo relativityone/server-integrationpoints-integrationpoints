@@ -43,13 +43,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("test@domain.com;\ntest2@domain.com")]
         public void Validate_Valid_Notification_Emails_List(string emails)
         {
-            //Arrange
+            // Arrange
             var validator = new EmailValidator();
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(emails);
 
-            //Assert
+            // Assert
             Assert.IsTrue(result.IsValid);
             Assert.IsNull(result.MessageTexts.FirstOrDefault());
         }
@@ -78,15 +78,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("js@proseware..com")]
         public void Validate_Invalid_Emails(string emails)
         {
-            //Arrange
+            // Arrange
             string validationMessage = IntegrationPointProviderValidationMessages.ERROR_INVALID_EMAIL + emails;
 
             var validator = new EmailValidator();
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(emails);
 
-            //Assert
+            // Assert
             Assert.IsFalse(result.IsValid);
             Assert.That(result.MessageTexts.Contains(validationMessage));
         }
@@ -99,13 +99,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("test@domain.com    ;            ")]
         public void Validate_Missing_Emails(string emails)
         {
-            //Arrange
+            // Arrange
             var validator = new EmailValidator();
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(emails);
 
-            //Assert
+            // Assert
             Assert.IsFalse(result.IsValid);
             Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_MISSING_EMAIL));
         }
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("test@domain.com;testdomain.com ; test@domain..com;    test2@domain.com;", new[] { true, false, false, true })]
         public void Validate_Notification_Emails_List(string emails, bool[] isValidList)
         {
-            //Arrange
+            // Arrange
             string[] emailList = emails.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 
             var invalidEmailList = new List<string>();
@@ -130,10 +130,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             var validator = new EmailValidator();
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(emails);
 
-            //Assert
+            // Assert
             Assert.IsFalse(result.IsValid);
             foreach (string invalidEmail in invalidEmailList)
             {

@@ -19,7 +19,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
         private const string _AUTOMAPPED_COUNT_METRIC_NAME = "AutoMappedCount";
         private const string _AUTOMAPPED_BY_NAME_COUNT_METRIC_NAME = "AutoMappedByNameCount";
         private const string _AUTOMAPPED_FIXED_LENGTH_TEXTS_WITH_DIFFERENT_LENGTHS_METRIC_NAME = "FixedLengthTextTooShortInDestinationCount";
-
         private readonly IServicesMgr _servicesMgr;
         private readonly IMetricsSender _metrics;
         private readonly IMetricBucketNameGenerator _metricBucketNameGenerator;
@@ -102,6 +101,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
         private class AutomapBuilder
         {
             public IEnumerable<FieldMap> Mapping { get; }
+
             private readonly IEnumerable<FieldInfo> _sourceFields;
             private readonly IEnumerable<FieldInfo> _destinationFields;
 

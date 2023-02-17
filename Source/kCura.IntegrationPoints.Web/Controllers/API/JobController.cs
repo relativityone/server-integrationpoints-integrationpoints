@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
         private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
         private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
-
         private readonly IManagerFactory _managerFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
@@ -229,6 +228,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public class Payload
         {
             public int AppId { get; set; }
+
             public int ArtifactId { get; set; }
         }
 

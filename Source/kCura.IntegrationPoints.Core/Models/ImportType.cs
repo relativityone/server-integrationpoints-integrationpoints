@@ -10,10 +10,11 @@
         {
             Document = 0,
             Image = 1,
-            Production = 2
+            Production = 2,
         }
 
         public string Name { get; set; }
+
         public ImportTypeValue? Value { get; set; }
 
         public ImportType(string name, ImportTypeValue value)

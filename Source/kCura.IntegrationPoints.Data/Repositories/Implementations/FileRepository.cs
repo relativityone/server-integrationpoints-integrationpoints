@@ -18,21 +18,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     {
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
-
         private const string _DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
         private const string _FILE_NAME_COLUMN = "Filename";
         private const string _LOCATION_COLUMN = "Location";
         private const string _FILE_SIZE_COLUMN = "Size";
-
         private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
         private const string _LOCATION_COLUMN_NAME = "Location";
         private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
         private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
         private const string _NATIVE_IDENTIFIER = "NativeIdentifier";
-
         private const string _FILENAME_COLUMN_NAME = "Filename";
         private const string _SIZE_COLUMN_NAME = "Size";
-
         private readonly IServicesMgr _servicesMgr;
         private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
         private readonly IRetryHandler _retryHandler;

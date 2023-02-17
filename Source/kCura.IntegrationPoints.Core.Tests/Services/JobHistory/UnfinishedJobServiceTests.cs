@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
     {
         private IRelativityObjectManager _objectManager;
         private UnfinishedJobService _sut;
-
         private const int _WORKSPACE_ID = 551970;
 
         public override void SetUp()

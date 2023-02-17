@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             : TestConfig.ConnectionStringWorkspace(workspaceArtifactId);
 
         public static DataTable ExecuteSqlStatementAsDataTable(int workspaceArtifactId, string sqlQuery)
-        {            
+        {
             DataTable dataTable = new DataTable();
             using (SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId))
             {
@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
                 {
                     dataTable.Load(command.ExecuteReader());
                 }
-            }           
+            }
             return dataTable;
         }
     }

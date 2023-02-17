@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class TaggerTests : TestBase
     {
         private Tagger _instance;
-
         private IDocumentRepository _documentRepository;
         private IDataSynchronizer _dataSynchronizer;
         private IDiagnosticLog _diagnosticLog;

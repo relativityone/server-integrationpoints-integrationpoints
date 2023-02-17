@@ -15,14 +15,12 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         private DateTime _startDateTime;
         private bool _runningJobTimeExceededCheck;
         private string _correlationId;
-
         private readonly IQueueQueryManager _queueManager;
         private readonly IMonitoringConfig _config;
         private readonly IDateTime _dateTime;
         private readonly IAPM _apmClient;
         private readonly ITimerFactory _timerFactory;
         private readonly IAPILog _log;
-
         private static readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
 
         public HeartbeatReporter(IQueueQueryManager queueManager, IMonitoringConfig config,

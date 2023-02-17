@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     public class PreviewJobFactory : IPreviewJobFactory
     {
         private readonly IWinEddsLoadFileFactory _winEddsLoadFileFactory;
+
         public PreviewJobFactory(IWinEddsLoadFileFactory winEddsLoadFileFactory)
         {
             _winEddsLoadFileFactory = winEddsLoadFileFactory;

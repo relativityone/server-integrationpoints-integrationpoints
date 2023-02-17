@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             return this;
         }
-        
+
         public JobBuilder WithJobDetails(object parameters)
         {
             _job.JobDetailsHelper.BatchParameters = parameters;

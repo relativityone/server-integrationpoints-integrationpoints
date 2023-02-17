@@ -15,13 +15,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 
         public PerformanceTests() : base(nameof(PerformanceTests))
         {
-            _implementation = new PerformanceTestsImplementation(this); 
+            _implementation = new PerformanceTestsImplementation(this);
         }
 
         [OneTimeSetUp]
         public void OneTimeSetup() => _implementation.OnSetUpFixture(PerformanceTestsConstants.RUN_COUNT);
 
-        [OneTimeTearDown] 
+        [OneTimeTearDown]
         public void OneTimeTeardown() => _implementation.OnTearDownFixture();
 
         [IdentifiedTest("601D1C86-18A4-45AD-ABF5-38FE1D3BC99C")]

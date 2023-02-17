@@ -36,13 +36,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
         public void Delete(string path)
         {
-            // Required by interface but not used by this API. 
+            // Required by interface but not used by this API.
             throw new System.NotImplementedException();
         }
 
         public void DeleteIfExists(string path, bool recursive, bool throwOnExistsCheck)
         {
-            // Note: this method is only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today). 
+            // Note: this method is only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today).
             if (Exists(path, throwOnExistsCheck))
             {
                 Delete(path, recursive);
@@ -56,19 +56,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
         public bool Exists(string path, bool throwOnExistsCheck)
         {
-            // Note: this method in only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today). 
+            // Note: this method in only implemented to enhance backwards compatibility with IDirectory (e.g. the export code never calls it as of today).
             if (!throwOnExistsCheck)
             {
                 return ZlpIOHelper.DirectoryExists(path);
             }
 
-            // <see cref="Relativity.DataExchange.Io.DirectoryWrap"/> for more details. 
+            // <see cref="Relativity.DataExchange.Io.DirectoryWrap"/> for more details.
             return ZlpIOHelper.GetFileCreationTime(path) != new System.DateTime(1601, 1, 1);
         }
 
         public IDirectoryInfo GetParent(string path)
         {
-            // Required by interface but not used by this API. 
+            // Required by interface but not used by this API.
             throw new System.NotImplementedException();
         }
     }

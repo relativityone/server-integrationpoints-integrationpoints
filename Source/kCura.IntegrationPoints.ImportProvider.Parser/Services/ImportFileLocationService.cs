@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private const string _ERROR_FILE_FOLDER_NAME = "Error_Files";
         private const string _ERROR_FILE_NAME_STUB = "Error_file";
         private const string _ELEMENT_SEPARATOR = "-";
-
         private readonly IDataTransferLocationService _locationService;
         private readonly ISerializer _serializer;
         private readonly IDirectory _directoryHelper;
@@ -62,7 +61,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             // Doing the GetFullPath make sure that if the LoadFile has "../../" in it we get the true path
             string loadFileFullPath = Path.GetFullPath(Path.Combine(fileLocationRootPath, settings.LoadFile));
 
-            //We need to do a security check here to ensure that we don't allow paths that are not in the DataTransfer/Import directory
+            // We need to do a security check here to ensure that we don't allow paths that are not in the DataTransfer/Import directory
             if (Path.IsPathRooted(settings.LoadFile) || !loadFileFullPath.StartsWith(Path.Combine(fileLocationRootPath, dataTransferImportPath)))
             {
                 throw new System.Exception("Invalid Load File Location");

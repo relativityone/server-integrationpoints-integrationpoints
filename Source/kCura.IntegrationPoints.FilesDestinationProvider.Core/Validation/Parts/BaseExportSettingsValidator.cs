@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
             NonValidCharactersValidator = nonValidCharactersValidator;
         }
 
-
         public override ValidationResult Validate(ExportSettings value)
         {
             var result = new ValidationResult();
