@@ -6,7 +6,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
-    public interface IRecordIdService
+    public interface IIdFilesBuilder
     {
         Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint, string directoryPath);
     }

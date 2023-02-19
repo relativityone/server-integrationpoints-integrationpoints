@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to query for Source Provider ID: {sourceProviderId} in Workspace {workspaceId}", sourceProviderId, workspaceId);
+                _logger.LogError(ex, "Failed to query for Source Provider ID: {sourceProviderId} in workspace ID: {workspaceId}", sourceProviderId, workspaceId);
                 throw;
             }
         }

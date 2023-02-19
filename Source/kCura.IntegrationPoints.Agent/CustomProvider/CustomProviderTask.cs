@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
@@ -19,18 +20,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
     {
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISourceProviderService _sourceProviderService;
-        private readonly IRecordIdService _recordIdService;
-        private readonly IFileShareService _fileShareService;
+        private readonly IIdFilesBuilder _idFilesBuilder;
+        private readonly IRelativityStorageService _relativityStorageService;
         private readonly ISerializer _serializer;
         private readonly IJobService _jobService;
         private readonly IAPILog _logger;
 
-        public CustomProviderTask(IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IRecordIdService recordIdService, IFileShareService fileShareService, ISerializer serializer, IJobService jobService, IAPILog logger)
+        public CustomProviderTask(IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IIdFilesBuilder idFilesBuilder, IRelativityStorageService relativityStorageService, ISerializer serializer, IJobService jobService, IAPILog logger)
         {
             _integrationPointService = integrationPointService;
             _sourceProviderService = sourceProviderService;
-            _recordIdService = recordIdService;
-            _fileShareService = fileShareService;
+            _idFilesBuilder = idFilesBuilder;
+            _relativityStorageService = relativityStorageService;
             _serializer = serializer;
             _jobService = jobService;
             _logger = logger;
@@ -43,27 +44,24 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private async Task ExecuteAsync(Job job)
         {
+            Guid jobId = Guid.NewGuid();
+
+            IStorageAccess<string> storage = null;
             DirectoryInfo importDirectory = null;
 
             try
             {
-                Guid jobId = Guid.NewGuid();
+                storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
 
-                string fileSharePath = await _fileShareService.GetWorkspaceFileShareLocationAsync(job.WorkspaceID).ConfigureAwait(false);
-
-                if (!Directory.Exists(fileSharePath))
-                {
-                    throw new DirectoryNotFoundException($"Fileshare directory does not exist: {fileSharePath}");
-                }
-
-                importDirectory = new DirectoryInfo(Path.Combine(fileSharePath, "RIP", "CustomProvider-Import", jobId.ToString()));
-                importDirectory.Create();
+                string workspaceDirectoryPath = await _relativityStorageService.GetWorkspaceDirectoryPathAsync(job.WorkspaceID).ConfigureAwait(false);
+                importDirectory = new DirectoryInfo(Path.Combine(workspaceDirectoryPath, "RIP", "Import", jobId.ToString()));
+                await storage.CreateDirectoryAsync(importDirectory.FullName).ConfigureAwait(false);
 
                 IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
                 IDataSourceProvider provider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
 
-                List<CustomProviderBatch> batches = await _recordIdService.BuildIdFilesAsync(provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
+                List<CustomProviderBatch> batches = await _idFilesBuilder.BuildIdFilesAsync(provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
 
                 CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
                 {
@@ -81,7 +79,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
             finally
             {
-                importDirectory?.Delete(true);
+                if (storage != null && importDirectory != null)
+                {
+                    await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
+                    {
+                        Recursive = true
+                    }).ConfigureAwait(false);
+                }
             }
         }
     }
