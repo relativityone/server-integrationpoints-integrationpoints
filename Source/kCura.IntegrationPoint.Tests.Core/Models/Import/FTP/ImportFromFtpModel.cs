@@ -25,6 +25,6 @@
         public FieldsMappingModel FieldsMapping { get; set; }
 
         public SettingsModel Settings { get; set; }
-        
+
     }
 }

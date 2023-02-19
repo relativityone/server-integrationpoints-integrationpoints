@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
         public bool ShouldSanitize(FieldTypeHelper.FieldType fieldType) => _sanitizers.ContainsKey(fieldType);
 
         public Task<object> SanitizeAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             string itemIdentifierSourceFieldName,
             string itemIdentifier,
             string fieldName,

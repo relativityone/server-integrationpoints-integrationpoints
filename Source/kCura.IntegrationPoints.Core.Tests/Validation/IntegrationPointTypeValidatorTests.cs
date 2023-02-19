@@ -41,16 +41,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase(_LDAP_SOURCE_PROVIDE_IDENTIFIER, IpType.Import)]
         public void ValidateIntegrationPointTypeValid(string sourceProviderId, IpType ipType)
         {
-            //Arrange
+            // Arrange
             MockIpTypeId(ipType);
             IAPILog logger = Substitute.For<IAPILog>();
             var validator = new IntegrationPointTypeValidator(_objectManager, logger);
             var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(ipModel);
 
-            //Assert
+            // Assert
             Assert.IsTrue(result.IsValid);
             Assert.IsNull(result.MessageTexts.FirstOrDefault());
         }
@@ -61,33 +61,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase(_LDAP_SOURCE_PROVIDE_IDENTIFIER, IpType.Export)]
         public void ValidateIntegrationPointTypeInvalid(string sourceProviderId, IpType ipType)
         {
-            //Arrange
+            // Arrange
             MockIpTypeId(ipType);
             IAPILog logger = Substitute.For<IAPILog>();
             var validator = new IntegrationPointTypeValidator(_objectManager, logger);
             var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(ipModel);
 
-            //Assert
+            // Assert
             Assert.IsFalse(result.IsValid);
             Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
         }
 
         public void ValidateIntegrationPointTypeMissing()
         {
-            //Arrange
+            // Arrange
             IntegrationPointType ipTypeObject = null;
             _objectManager.Read<IntegrationPointType>(Arg.Any<int>()).Returns(ipTypeObject);
             IAPILog logger = Substitute.For<IAPILog>();
             var validator = new IntegrationPointTypeValidator(_objectManager, logger);
             var ipModel = GetProviderValidationModelObject(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID);
 
-            //Act
+            // Act
             ValidationResult result = validator.Validate(ipModel);
 
-            //Assert
+            // Assert
             Assert.IsFalse(result.IsValid);
             Assert.That(result.MessageTexts.Contains(IntegrationPointProviderValidationMessages.ERROR_INTEGRATION_POINT_TYPE_INVALID));
         }

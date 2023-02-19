@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Extensions.Moq
         {
             return valuesToReturn
                 .Aggregate(
-                    setupSequentialResult, 
+                    setupSequentialResult,
                     (current, valueToReturn) => current.Returns(valueToReturn));
         }
 

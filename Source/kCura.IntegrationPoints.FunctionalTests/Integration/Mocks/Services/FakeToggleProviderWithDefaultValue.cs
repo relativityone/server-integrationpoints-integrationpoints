@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
                 case "Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle":
                     return false;
                 default:
-                    throw new NotSupportedException();
+                    return false;
             }
         }
 

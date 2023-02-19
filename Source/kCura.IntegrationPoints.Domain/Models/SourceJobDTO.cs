@@ -9,11 +9,17 @@ namespace kCura.IntegrationPoints.Domain.Models
     public class SourceJobDTO
     {
         public static readonly Guid ObjectTypeGuid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
+
         public int SourceWorkspaceArtifactId { get; set; }
+
         public int ArtifactId { get; set; }
+
         public int ArtifactTypeId { get; set; }
+
         public string Name { get; set; }
+
         public int JobHistoryArtifactId { get; set; }
+
         public string JobHistoryName { get; set; }
 
         public List<FieldRefValuePair> FieldRefValuePairs => CreateFieldRefValuePairs();
@@ -34,17 +40,17 @@ namespace kCura.IntegrationPoints.Domain.Models
             {
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Name = Constants.SOURCEJOB_NAME_FIELD_NAME},
+                    Field = new FieldRef {Name = Constants.SOURCEJOB_NAME_FIELD_NAME },
                     Value = Name
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME},
+                    Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME },
                     Value = JobHistoryArtifactId
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME},
+                    Field = new FieldRef {Name = Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME },
                     Value = JobHistoryName
                 }
             };

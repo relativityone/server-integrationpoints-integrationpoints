@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
         [Test]
         public void ShouldReturnWorkspaceIfHttpRequestContainsWorkspaceId()
         {
-            //arrange
+            // arrange
             const int workspaceId = 1019723;
 
             HttpRequestBase httpRequest = CreateHttpRequestMock();
@@ -30,17 +30,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 
             RequestContextWorkspaceContextService sut = CreateSut(httpRequest);
 
-            //act
+            // act
             int result = sut.GetWorkspaceID();
 
-            //assert
+            // assert
             result.Should().Be(workspaceId);
         }
 
         [Test]
         public void ShouldCallNextServiceIfHttpRequestDoesNotContainWorkspaceId()
         {
-            //arrange
+            // arrange
             const int workspaceId = 10148942;
             _nextWorkspaceContextServiceMock
                 .Setup(x => x.GetWorkspaceID())
@@ -49,10 +49,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
             HttpRequestBase httpRequest = CreateHttpRequestMock();
             RequestContextWorkspaceContextService sut = CreateSut(httpRequest);
 
-            //act
+            // act
             int result = sut.GetWorkspaceID();
 
-            //assert
+            // assert
             result.Should().Be(workspaceId);
             _nextWorkspaceContextServiceMock
                 .Verify(x => x.GetWorkspaceID());
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
         [Test]
         public void ShouldCallNextServiceIfHttpRequestContainsWorkspaceIdWhichCannotBeParsedToNumber()
         {
-            //arrange
+            // arrange
             const int workspaceId = 10148942;
             _nextWorkspaceContextServiceMock
                 .Setup(x => x.GetWorkspaceID())
@@ -73,10 +73,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 
             RequestContextWorkspaceContextService sut = CreateSut(httpRequest);
 
-            //act
+            // act
             int result = sut.GetWorkspaceID();
 
-            //assert
+            // assert
             result.Should().Be(workspaceId);
             _nextWorkspaceContextServiceMock
                 .Verify(x => x.GetWorkspaceID());
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
         [Test]
         public void ShouldRethrowExceptionThrownByNextService()
         {
-            //arrange
+            // arrange
             var expectedException = new InvalidOperationException();
             _nextWorkspaceContextServiceMock
                 .Setup(x => x.GetWorkspaceID())
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 
             HttpRequestBase httpRequest = CreateHttpRequestMock();
             RequestContextWorkspaceContextService sut = CreateSut(httpRequest);
-            
+
             Action getWorkspaceIdAction = () => sut.GetWorkspaceID();
 
             // act & assert

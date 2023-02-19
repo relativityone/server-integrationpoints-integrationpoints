@@ -23,9 +23,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private Mock<ICPHelper> _helperMock;
         private Mock<IObjectManager> _objectManagerMock;
         private Mock<IObjectTypeManager> _objectTypeManagerMock;
-
         private ObjectTypeController _sut;
-
         private const int _WORKSPACE_ID = 111;
 
         [SetUp]
@@ -218,11 +216,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                     Objects = new List<RelativityObject>()
                 });
 
-
             _objectTypeManagerMock
                 .Setup(x => x.GetAvailableParentObjectTypesAsync(destinationWorkspaceId))
                 .ReturnsAsync(new List<ObjectTypeIdentifier>());
-
 
             // Act
             int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);

@@ -7,8 +7,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
         public string DestinationWorkspace { get; set; }
 
         public RelativityProviderDestinationLocations Location { get; set; }
-
-        public YesNo EnableTagging { get; set; }
     }
 
     // This looks kinda crazy, right? But there is method in this madness...
@@ -18,6 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
         public RelativityProviderSources Source { get; } = RelativityProviderSources.SavedSearch;
 
         public string SavedSearch { get; set; }
+
+        public YesNo TagDocumentsWithJobName { get; set; }
     }
 
     internal class RelativityProviderConnectToProductionSource : RelativityProviderConnectToSource

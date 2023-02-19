@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     {
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManager _relativityObjectManager;
-
         private readonly IDestinationProviderArtifactIdByGuidQueryBuilder _artifactIdByGuid = new DestinationProviderArtifactIdByGuidQueryBuilder();
 
         public DestinationProviderRepository(IAPILog logger, IRelativityObjectManager relativityObjectManager)
@@ -65,5 +64,4 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _logger.LogWarning("More than one Destination Provider with {GUID} found.", providerGuid);
         }
     }
-
 }

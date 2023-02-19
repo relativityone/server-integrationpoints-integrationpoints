@@ -18,35 +18,28 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Services
     {
         private ViewService _sut;
         private ISearchService _searchServiceMock;
-
         private const int _WORKSPACE_ID = 12345;
         private const int _ARTIFACT_TYPE_ID = 10;
-
         private const string _ARTIFACT_ID_COL_NAME = "ArtifactId";
         private const string _NAME_COL_NAME = "Name";
         private const string _AVAILABLE_COL_NAME = "AvailableInObjectTab";
         private const string _ORDER_COL_NAME = "Order";
-
         private const int _VIEW_1_ARTIFACT_ID = 10;
         private const string _VIEW_1_NAME = "View1";
         private const bool _VIEW_1_AVAILABLE = true;
         private readonly int _VIEW_1_ORDER = 101;
-        
         private const int _VIEW_2_ARTIFACT_ID = 20;
         private const string _VIEW_2_NAME = "View2";
         private const bool _VIEW_2_AVAILABLE = true;
         private readonly int _VIEW_2_ORDER = 10;
-
         private const int _VIEW_3_ARTIFACT_ID = 30;
         private const string _VIEW_3_NAME = "View3";
         private const bool _VIEW_3_AVAILABLE = true;
         private readonly int _VIEW_3_ORDER = 100;
-
         private const int _VIEW_4_ARTIFACT_ID = 40;
         private const string _VIEW_4_NAME = "View4";
         private const bool _VIEW_4_AVAILABLE = true;
         private readonly int _VIEW_4_ORDER = 99;
-
         private const int _VIEW_5_ARTIFACT_ID = 50;
         private const string _VIEW_5_NAME = "View5";
         private const bool _VIEW_5_AVAILABLE = false;

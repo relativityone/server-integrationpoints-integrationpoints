@@ -41,7 +41,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public EntityTest() : base("Entity")
         {
-
         }
 
         public override RelativityObject ToRelativityObject()

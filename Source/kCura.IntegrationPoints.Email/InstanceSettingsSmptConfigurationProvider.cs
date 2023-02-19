@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Email
         private const string _SMTP_PORT_SETTING_NAME = "SMTPPort";
         private const string _SMTP_USER_NAME_SETTING_NAME = "SMTPUserName";
         private const string _SMTP_EMAIL_FROM_SETTING_NAME = "EmailFrom";
-
         private readonly IInstanceSettingsBundle _instanceSettingsBundle;
         private readonly IAPILog _logger;
 

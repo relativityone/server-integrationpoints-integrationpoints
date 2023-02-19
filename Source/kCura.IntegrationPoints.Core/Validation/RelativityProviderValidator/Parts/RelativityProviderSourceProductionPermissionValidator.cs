@@ -12,11 +12,13 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
     {
         private readonly IProductionRepository _productionRepository;
         private readonly IAPILog _logger;
+
         public RelativityProviderSourceProductionPermissionValidator(IProductionRepository productionRepository, IAPILog logger)
         {
             _productionRepository = productionRepository;
             _logger = logger.ForContext<RelativityProviderSourceProductionPermissionValidator>();
         }
+
         public ValidationResult Validate(int sourceWorkspaceId, int sourceProductionArtifactId)
         {
             var result = new ValidationResult();

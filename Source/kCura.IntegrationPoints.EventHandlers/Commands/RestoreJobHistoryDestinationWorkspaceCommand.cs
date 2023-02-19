@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             List<JobHistory> jobHistories = _objectManager.Query<JobHistory>(request);
             foreach (JobHistory jobHistory in jobHistories)
             {
-
                 DestinationWorkspaceElementsParsingResult result = _parser.Parse(jobHistory.DestinationWorkspace);
                 jobHistory.DestinationWorkspace = result.WorkspaceName;
                 jobHistory.DestinationInstance = result.InstanceName;
@@ -35,6 +34,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         }
 
         public string SuccessMessage => "Successfully updated Job History RDOs.";
+
         public string FailureMessage => "Failed to update Job History RDOs.";
     }
 }

@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
     public static class Workspace
     {
         private static ITestHelper Helper => new TestHelper();
-        
+
         public static Task<WorkspaceRef> GetWorkspaceAsync(string workspaceName) => GetWorkspaceAsync(x => x.Name == workspaceName);
 
         public static Task<WorkspaceRef> CreateWorkspaceAsync(string name)
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         {
             using (var workspaceManager = Helper.CreateProxy<IWorkspaceManager>())
             {
-                IEnumerable<WorkspaceRef> activeWorkspaces = 
+                IEnumerable<WorkspaceRef> activeWorkspaces =
                     await workspaceManager.RetrieveAllActive().ConfigureAwait(false);
 
                 return activeWorkspaces.FirstOrDefault(workspaceFunc);

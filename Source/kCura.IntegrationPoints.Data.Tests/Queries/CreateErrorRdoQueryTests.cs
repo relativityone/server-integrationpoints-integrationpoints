@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
         private Mock<IAPILog> _logger;
         private Mock<IServicesMgr> _servicesMgr;
         private Mock<IErrorManager> _errorManager;
-
         private Data.Queries.CreateErrorRdoQuery _sut;
 
         [SetUp]
@@ -44,8 +43,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
             _sut.LogError(errorDto);
 
             // Assert
-            _errorManager.Verify(x => x.CreateSingleAsync(It.Is<Error>(error=> 
-                error.Message.Length <= 2000 && 
+            _errorManager.Verify(x => x.CreateSingleAsync(It.Is<Error>(error=>
+                error.Message.Length <= 2000 &&
                 error.Source.Length <= 255)), Times.Once);
         }
 

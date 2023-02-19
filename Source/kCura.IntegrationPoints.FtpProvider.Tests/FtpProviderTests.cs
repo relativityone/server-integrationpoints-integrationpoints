@@ -42,8 +42,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             {
                 ColumnList = new List<FieldEntry>()
                 {
-                    new FieldEntry() {FieldIdentifier = "aAa"},
-                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "aAa" },
+                    new FieldEntry() {FieldIdentifier = "BBB" },
                     new FieldEntry() {FieldIdentifier = "CcC"}
                 }
             };
@@ -63,8 +63,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             {
                 ColumnList = new List<FieldEntry>()
                 {
-                    new FieldEntry() {FieldIdentifier = "aAa"},
-                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "aAa" },
+                    new FieldEntry() {FieldIdentifier = "BBB" },
                     new FieldEntry() {FieldIdentifier = "CcC"}
                 }
 

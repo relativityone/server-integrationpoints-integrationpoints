@@ -8,13 +8,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
     {
         private const string SourceConfigurationWithSecuredConfiguration =
             @"{""FederatedInstanceArtifactId"":1,""SavedSearchArtifactId"":""1"",""SecuredConfiguration"":""{\""ClientId\"":\""1886\"",\""ClientSecret\"":\""8edf\""}"",""SourceWorkspaceArtifactId"":""8""}";
-
         private const string DestinationConfigurationWithSecuredConfiguration =
             @"{""artifactTypeID"":10,""destinationProviderType"":""74A863B9-00EC-4BB7-9B3E-1E22323010C6"",""SecuredConfiguration"":""{\""ClientId\"":\""1886\"",\""ClientSecret\"":\""8edf\""}"",""CreateSavedSearchForTagging"":""false"",""ProductionImport"":false}";
-
         private const string SourceConfigurationWithoutSecuredConfiguration =
             @"{""FederatedInstanceArtifactId"":1,""SavedSearchArtifactId"":""1"",""SourceWorkspaceArtifactId"":""8""}";
-
         private const string DestinationConfigurationWithoutSecuredConfiguration =
             @"{""artifactTypeID"":10,""destinationProviderType"":""74A863B9-00EC-4BB7-9B3E-1E22323010C6"",""CreateSavedSearchForTagging"":""false"",""ProductionImport"":false}";
 

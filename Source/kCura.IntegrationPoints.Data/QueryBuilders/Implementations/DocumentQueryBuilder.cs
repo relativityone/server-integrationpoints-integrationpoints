@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 
             return this;
         }
-        
+
         public override QueryRequest Build()
         {
             return new QueryRequest

@@ -40,7 +40,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         private Mock<IDateTime> _dateTime;
         private Mock<IConfig> _config;
         private Mock<IRelativityObjectManager> _objectManagerFake;
-
         private IFixture _fxt;
 
         [SetUp]

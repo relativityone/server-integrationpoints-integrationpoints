@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Agent.Validation
         private readonly IValidationExecutor _validationExecutor;
         private readonly ICaseServiceContext _caseServiceContext;
 
-        #endregion //Fields
+        #endregion // Fields
 
         #region Constructors
 
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Agent.Validation
             _caseServiceContext = caseServiceContext;
         }
 
-        #endregion //Constructors
+        #endregion // Constructors
 
         #region Methods
 
@@ -47,6 +47,6 @@ namespace kCura.IntegrationPoints.Agent.Validation
             _validationExecutor.ValidateOnRun(context);
         }
 
-        #endregion //Methods
+        #endregion // Methods
     }
 }

@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
         private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
         private readonly string DestinationConfiguration = "{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}";
-
         private readonly int[] _fieldsArtifactId = new int[] { 1000186, 1003667, 1035368, 1038073, 1038074, 1038389, 1035395 };
 
         private readonly JSONSerializer _serializer = new JSONSerializer();
@@ -311,7 +310,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
                 {
                     var fields = new List<ArtifactFieldDTO>()
                     {
-                        new ArtifactFieldDTO() {Name = RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME, Value = field},
+                        new ArtifactFieldDTO() {Name = RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME, Value = field },
                         new ArtifactFieldDTO() {Name = RelativityProviderValidationMessages.FIELD_MAP_FIELD_IS_IDENTIFIER, Value = "1"}
                     };
                     fieldArtifacts.Add(new ArtifactDTO(0, 0, "", fields));

@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
         private readonly IAPILog _logger;
         private readonly IObjectManagerFacade _objectManager;
-
         private bool _isDisposed;
 
         public ObjectManagerFacadeInstrumentationDecorator(

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
             add { _exporter.StatusMessage += value; }
             remove { _exporter.StatusMessage -= value; }
         }
-        
+
         public event IExporterStatusNotification.FileTransferMultiClientModeChangeEventEventHandler FileTransferMultiClientModeChangeEvent
 
         {
@@ -94,7 +94,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
         private struct ExportJobStats
         {
             public DateTime StartTime { get; set; }
+
             public DateTime EndTime { get; set; }
+
             public int ExportedItemsCount { get; set; }
         }
 

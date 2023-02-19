@@ -4,8 +4,8 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -32,7 +33,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     public class IntegrationPointService : IntegrationPointServiceBase, IIntegrationPointService
     {
         private const string _VALIDATION_FAILED = "Failed to submit integration job. Integration Point validation failed.";
-
         private readonly IAPILog _logger;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
@@ -40,10 +40,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IMessageService _messageService;
         private readonly IProviderTypeService _providerTypeService;
         private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IRelativityObjectManager _objectManager;
         private readonly ITaskParametersBuilder _taskParametersBuilder;
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
+        private readonly IAgentLauncher _agentLauncher;
+        private readonly IDateTimeHelper _dateTimeHelper;
 
         public IntegrationPointService(
             IHelper helper,
@@ -61,7 +64,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IRelativityObjectManager objectManager,
             ITaskParametersBuilder taskParametersBuilder,
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            IRelativitySyncAppIntegration relativitySyncAppIntegration)
+            IRelativitySyncAppIntegration relativitySyncAppIntegration,
+            IAgentLauncher agentLauncher,
+            IDateTimeHelper dateTimeHelper)
             : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
@@ -72,9 +77,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _messageService = messageService;
             _validationExecutor = validationExecutor;
             _integrationPointRepository = integrationPointRepository;
+            _objectManager = objectManager;
             _taskParametersBuilder = taskParametersBuilder;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
+            _agentLauncher = agentLauncher;
+            _dateTimeHelper = dateTimeHelper;
 
             _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
@@ -157,7 +165,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                         artifactId,
                         exception.Value ?? string.Empty);
                 });
-
 
             CalculationState ReadCalculationState()
             {
@@ -271,7 +278,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 CreateRelativityError(
                     Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-                    String.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
+                    string.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
                 );
 
                 throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);
@@ -443,15 +450,54 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (shouldUseRelativitySyncAppIntegration)
             {
                 _logger.LogInformation("Using Sync application to run the job");
-                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                _logger.LogInformation("Sync retry job has been submitted");
+                try
+                {
+                    _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
+                    _logger.LogInformation("Sync retry job has been submitted");
+                }
+                catch (SyncJobSendingException ex)
+                {
+                    _logger.LogError(ex, "Failed to send sync job");
+                    MarkSyncJobAsFailed(jobHistory.ArtifactId, integrationPointArtifactId, ex);
+                }
             }
             else
             {
                 _logger.LogInformation("Using Sync DLL to run the job");
-                CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
-                _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
+                Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
+                if (job != null)
+                {
+                    _agentLauncher.LaunchAgentAsync().GetAwaiter().GetResult();
+                    _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
+                }
             }
+        }
+
+        private void MarkSyncJobAsFailed(int jobHistoryId, int integrationPointId, Exception ex)
+        {
+            DateTime endTime = _dateTimeHelper.Now();
+
+            Data.JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(jobHistoryId);
+            jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+            jobHistory.EndTimeUTC = endTime;
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+
+            JobHistoryError jobHistoryError = new JobHistoryError
+            {
+                ParentArtifactId = jobHistoryId,
+                JobHistory = jobHistoryId,
+                Name = Guid.NewGuid().ToString(),
+                ErrorType = ErrorTypeChoices.JobHistoryErrorJob,
+                ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew,
+                SourceUniqueID = string.Empty,
+                Error = ex.Message,
+                StackTrace = ex.FlattenErrorMessagesWithStackTrace(),
+                TimestampUTC = endTime,
+            };
+            _objectManager.Create(jobHistoryError);
+
+            _integrationPointRepository.UpdateHasErrors(integrationPointId, true);
+            _integrationPointRepository.UpdateLastAndNextRunTime(integrationPointId, endTime, null);
         }
 
         private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
@@ -543,7 +589,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void CreateJob(
+        private Job CreateJob(
             IntegrationPointDto integrationPoint,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
@@ -554,6 +600,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _logger.LogInformation("Creating Job for Integration Point {integrationPointId} by user {userId}...",
                 integrationPoint.ArtifactId, userId);
 
+            Job job = null;
             lock (Lock)
             {
                 // If the Relativity provider is selected, we need to create an export task
@@ -563,10 +610,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, batchInstance, integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
-                _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
 
             _logger.LogInformation("Job was successfully created.");
+            return job;
         }
 
         private Data.JobHistory CreateJobHistory(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, bool switchToAppendOverlayMode = false)

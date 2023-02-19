@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private IErrorManager _errorManager;
         private IRepositoryFactory _repositoryFactory;
         private IErrorRepository _errorRepository;
-
         private const int _WORKSPACE_ID = 1234567;
 
         [SetUp]

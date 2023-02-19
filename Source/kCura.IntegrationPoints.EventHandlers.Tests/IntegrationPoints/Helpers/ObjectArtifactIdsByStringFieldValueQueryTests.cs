@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private IObjectArtifactIdsByStringFieldValueQuery _query;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
         private string _expectedCondition;
-
         private const string _FIELD_GUID = "085CB84B-4DAA-400F-B28F-18DE267BD7EA";
         private const string _FIELD_VALUE = "valid value";
         private const int _WORKSPACE_ID = 100000;

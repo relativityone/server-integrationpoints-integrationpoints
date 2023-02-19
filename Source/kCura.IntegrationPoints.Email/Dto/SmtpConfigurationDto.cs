@@ -3,10 +3,15 @@
     internal class SmtpConfigurationDto
     {
         public string Domain { get; }
+
         public uint? Port { get; }
+
         public string UserName { get; }
+
         public string Password { get; }
+
         public bool? UseSSL { get; }
+
         public string EmailFromAddress { get; }
 
         public SmtpConfigurationDto(

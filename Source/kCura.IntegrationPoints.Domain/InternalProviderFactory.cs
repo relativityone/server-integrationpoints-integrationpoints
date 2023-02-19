@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Domain
         {
             _container = container;
         }
+
         public IDataSourceProvider CreateProvider(Guid identifier)
         {
             return _container.Resolve<IDataSourceProvider>(identifier.ToString());

@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
         public void OnJobStart(Job job)
         {
-
         }
 
         public void OnJobComplete(Job job)
@@ -61,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
             _log.LogInformation("On Lifetime Metric - BatchInstance {batchInstanceId}, Status {status}",
                 correlationId, status?.Name);
-            if(IsJobEnd(status))
+            if (IsJobEnd(status))
             {
                 _log.LogInformation("Sending Statistics Metrics when Job End");
                 SendRecordsMessage(providerName, jobHistory, correlationId);

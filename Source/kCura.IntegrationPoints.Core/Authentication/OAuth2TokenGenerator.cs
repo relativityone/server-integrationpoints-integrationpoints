@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Core.Authentication
         private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
         private readonly ITokenProviderFactoryFactory _tokenProviderFactory;
         private readonly CurrentUser _contextUser;
-
         private class OAuth2ClientCredentials : ICredentialsProvider
         {
             private readonly ITokenProvider _tokenProvider;
@@ -79,9 +78,9 @@ namespace kCura.IntegrationPoints.Core.Authentication
         {
             string relativityInstance = ExtensionPointServiceFinder.ServiceUriProvider
                 .AuthenticationUri().ToString();
-            var relativityStsUri = new Uri(System.IO.Path.Combine(relativityInstance, Constants.IntegrationPoints.RELATIVITY_AUTH_ENDPOINT));            
+            var relativityStsUri = new Uri(System.IO.Path.Combine(relativityInstance, Constants.IntegrationPoints.RELATIVITY_AUTH_ENDPOINT));
             return relativityStsUri;
-        }        
+        }
 
         private void LogGetAuthTokenError(Exception exception)
         {

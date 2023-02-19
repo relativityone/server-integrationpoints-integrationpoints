@@ -183,12 +183,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 f.CopyTo(msWrap);
             }
 
-            //Cannot pass stream.GetBuffer() directly to ByteArrayContent ctor: MemoryStream's buffer has trailing NULLs.
-            //http://stackoverflow.com/a/240745
+            // Cannot pass stream.GetBuffer() directly to ByteArrayContent ctor: MemoryStream's buffer has trailing NULLs.
+            // http://stackoverflow.com/a/240745
 
             byte[] memStreamBuf = msWrap.GetBuffer();
             int i = msWrap.GetBuffer().Length - 1;
-            while(memStreamBuf[i] == 0)
+            while (memStreamBuf[i] == 0)
             {
                 i--;
             }

@@ -133,7 +133,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             // Assert
             integrationPoints.Count.ShouldBeEquivalentTo(integrationPointsCount);
 
-            for(int i = 0; i < integrationPointsCount; i++)
+            for (int i = 0; i < integrationPointsCount; i++)
             {
                 AssertIntegrationPointModel(
                     integrationPoints[i],

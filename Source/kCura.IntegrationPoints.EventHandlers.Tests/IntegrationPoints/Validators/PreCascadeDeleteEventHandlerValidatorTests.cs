@@ -14,12 +14,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
 
         private const int _INTEGRATION_POINT_ID = 1;
         private const int _WORKSPACE_ID = 2;
-
         private PreCascadeDeleteEventHandlerValidator _instance;
         private IQueueRepository _queueRepository;
         private IIntegrationPointRepository _integrationPointRepository;
 
-        #endregion //Fields
+        #endregion // Fields
 
         [SetUp]
         public override void SetUp()
@@ -63,6 +62,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
             Assert.Throws<Exception>(() => _instance.Validate(_WORKSPACE_ID, _INTEGRATION_POINT_ID));
         }
 
-        #endregion //Tests
+        #endregion // Tests
     }
 }

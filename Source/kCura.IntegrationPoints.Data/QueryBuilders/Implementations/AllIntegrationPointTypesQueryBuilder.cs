@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
                 ObjectType = new ObjectTypeRef { Guid = new Guid(ObjectTypeGuids.IntegrationPointType) },
                 Fields = new List<FieldRef>
                 {
-                    new FieldRef {Guid = new Guid(IntegrationPointTypeFieldGuids.Name)},
+                    new FieldRef {Guid = new Guid(IntegrationPointTypeFieldGuids.Name) },
                     new FieldRef { Guid = new Guid(IntegrationPointTypeFieldGuids.Identifier)}
                 }
             };

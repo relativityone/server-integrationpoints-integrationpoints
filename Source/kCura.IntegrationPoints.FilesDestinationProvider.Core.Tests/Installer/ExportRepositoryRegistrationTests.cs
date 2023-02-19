@@ -18,15 +18,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
     [TestFixture, Category("Unit")]
     public class ExportRepositoryRegistrationTests
     {
-
         [Test]
         public void FileRepository_ShouldBeRegisteredWithProperLifestyle()
         {
-            //arrange
+            // arrange
             IWindsorContainer sut = new WindsorContainer();
             sut.AddExportRepositories();
 
-            //assert
+            // assert
             sut.Should()
                 .HaveRegisteredSingleComponent<IFileRepository>()
                 .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -35,30 +34,30 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
         [Test]
         public void FileRepository_ShouldBeResolvedWithoutThrowing()
         {
-            //arrange
+            // arrange
             IWindsorContainer sut = new WindsorContainer();
             sut.AddExportRepositories();
             RegisterDependencies(sut);
 
-            //assert
+            // assert
             sut.Should().ResolveWithoutThrowing<IFileRepository>();
         }
 
         [Test]
         public void FileRepository_ShouldBeRegisteredWithProperImplementation()
         {
-            //arrange
+            // arrange
             IWindsorContainer sut = new WindsorContainer();
             sut.AddExportRepositories();
 
-            //assert
+            // assert
             sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepository>();
         }
 
         private static void RegisterDependencies(IWindsorContainer container)
         {
             var servicesMgrMock = new Mock<IServicesMgr>();
-            
+
             IRegistration[] dependencies =
             {
                 Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),

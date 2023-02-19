@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
     public class LDAPDataReader : IDataReader
     {
         public bool IsClosed { get; private set; }
+
         public int RecordsAffected { get; private set; }
 
         private readonly DataTable _schemaTable;
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
         public void Close()
         {
             IsClosed = true;
-            //TODO: is there anything to do?
+            // TODO: is there anything to do?
         }
 
         public int Depth => 0;
@@ -182,7 +183,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
             Array.Copy(newValues, values, fieldCount);
             return fieldCount;
         }
-        
+
         // TODO FIXME This method is currently useless, as formatter in GetValue always returns string
         public bool IsDBNull(int i)
         {

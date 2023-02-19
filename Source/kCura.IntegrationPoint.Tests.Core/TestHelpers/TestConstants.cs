@@ -31,6 +31,7 @@
             public const string FIXED_LENGTH_TEXT = "Fixed-Length Text";
             public const string LONG_TEXT = "Long Text";
         }
+
         public enum FieldMapMatchType
         {
             IsIdentifier,

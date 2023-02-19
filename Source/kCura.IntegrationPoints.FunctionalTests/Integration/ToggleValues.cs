@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         public bool? GetValue<T>() where T: IToggle
         {
-            if(_values.ContainsKey(typeof(T)))
+            if (_values.ContainsKey(typeof(T)))
             {
                 return _values[typeof(T)];
             }

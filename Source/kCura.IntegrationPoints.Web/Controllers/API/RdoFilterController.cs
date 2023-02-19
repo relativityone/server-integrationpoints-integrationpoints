@@ -96,7 +96,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         internal class ViewableRdo
         {
             public string Name { get; set; }
+
             public int? Value { get; set; }
+
             public bool BelongsToApplication { get; set; }
         }
     }

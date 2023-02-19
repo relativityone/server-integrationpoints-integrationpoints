@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Models
         }
 
         public int Value { get; set; }
+
         public string DisplayName { get; set; }
     }
 }

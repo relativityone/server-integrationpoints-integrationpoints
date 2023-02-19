@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ItShouldRetrieveExistingProduction()
         {
-            // Arrange 
+            // Arrange
             const int expectedArtifactId = 4321;
             const string expectedName = "productionName";
             var production = new Production()
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             // Arrange
             List<ProductionDTO> productionsDtos = GetProductionDtos();
             DataSet productionsDataSet = CreateDataSet(productionsDtos);
-            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
+            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, string.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
             IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID)
@@ -88,12 +88,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.DisplayName));
             actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.ArtifactID));
         }
-        
+
         [Test]
         public void GetProductionsForExportAsync_ItShouldThrowExceptionWhenExceptionIsThrown()
         {
-            // Arrange 
-            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
+            // Arrange
+            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, string.Empty).Throws<Exception>();
 
             // Act
             Func<Task> function = async () => await _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID);
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             // Arrange
             List<ProductionDTO> productionsDtos = GetProductionDtos();
             DataSet productionsDataSet = CreateDataSet(productionsDtos);
-            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
+            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, string.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
             IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID)
@@ -122,8 +122,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void GetProductionsForImportAsync_ItShouldThrowExceptionWhenExceptionIsThrown()
         {
-            // Arrange 
-            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
+            // Arrange
+            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, string.Empty).Throws<Exception>();
 
             // Act
             Func<Task> function = async () => await _instance.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID);
@@ -137,13 +137,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         {
             // Arrange
             const int expectedResult = 1000;
-            var production = new Production(); 
+            var production = new Production();
             _productionManager.CreateSingleAsync(_WORKSPACE_ARTIFACT_ID, production).Returns(expectedResult);
 
             // Act
             int actualResult = _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
 
-            //Assert
+            // Assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 

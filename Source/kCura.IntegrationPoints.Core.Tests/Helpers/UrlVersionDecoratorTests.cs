@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             // Act
             string result = UrlVersionDecorator.AppendVersion(url);
 
-
             // Assert
             result.EndsWith("&v=" + _assemblyVersion).Should().BeTrue();
         }
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             // Act
             string result = UrlVersionDecorator.AppendVersion(url);
-
 
             // Assert
             result.EndsWith("?v=" + _assemblyVersion).Should().BeTrue();

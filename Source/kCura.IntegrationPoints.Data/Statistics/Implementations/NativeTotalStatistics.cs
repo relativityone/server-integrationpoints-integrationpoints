@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private const string _FOR_FOLDER_ERROR = "Failed to retrieve total native files count for folder: {folderId} and view: {viewId}.";
         private const string _FOR_PRODUCTION_ERROR = "Failed to retrieve total native files count for production set: {productionSetId}.";
         private const string _FOR_SAVED_SEARCH_ERROR = "Failed to retrieve total native files count for saved search id: {savedSearchId}.";
-
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 

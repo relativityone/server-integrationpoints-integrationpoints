@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private ISettingsManager _settingsManager;
         private IDataProviderFactory _providerFactory;
         private ISerializer _serializer;
-        
+
         [SetUp]
         public override void SetUp()
         {
@@ -41,20 +41,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _instance.Request.SetConfiguration(new HttpConfiguration());
         }
-        
+
         [Test]
         public void ItShouldGetColumnList()
         {
-            //Arrange
-            var fields = new List<FieldEntry>() {new FieldEntry() {DisplayName = "A"}, new FieldEntry() {DisplayName = "B"}};
+            // Arrange
+            var fields = new List<FieldEntry>() { new FieldEntry() {DisplayName = "A"}, new FieldEntry() {DisplayName = "B"}};
             IDataSourceProvider ftpProvider = Substitute.For<IDataSourceProvider>();
             ftpProvider.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(fields);
             _providerFactory.GetDataProvider(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(ftpProvider);
 
-            //Act
+            // Act
             IHttpActionResult actualResult = _instance.GetColumnList(new SynchronizerSettings());
 
-            //Assert
+            // Assert
             Assert.AreEqual(typeof(OkNegotiatedContentResult<List<FieldEntry>>), actualResult.GetType());
             Assert.AreEqual(fields, ((OkNegotiatedContentResult<List<FieldEntry>>)actualResult).Content);
         }
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase("some data")]
         public void ItShouldGetViewFields([FromBody] object data)
         {
-            //Arrange
+            // Arrange
             var settings = new Settings() {Filename_Prefix = "SettigsFileName", Host = "HostName"};
             _settingsManager.DeserializeSettings(data.ToString()).Returns(settings);
             var expectedModel = new FtpProviderSummaryPageSettingsModel(settings);
@@ -70,10 +70,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _serializer.Serialize(Arg.Any<FtpProviderSummaryPageSettingsModel>()).Returns(expectedSerializedModel);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetViewFields(data);
 
-            //Assert
+            // Assert
             Assert.IsNotNull(response, "Response should not be null");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
             Assert.AreEqual(expectedSerializedModel, JsonConvert.DeserializeObject(response.Content.ReadAsStringAsync().Result), "The HttpContent should be as expected");

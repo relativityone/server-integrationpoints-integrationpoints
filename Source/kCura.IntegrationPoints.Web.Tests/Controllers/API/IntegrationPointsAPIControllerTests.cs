@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private IRdoSynchronizerProvider _rdoSynchronizerProvider;
         private ICPHelper _cpHelper;
         private IServicesMgr _svcMgr;
-
         private const int _WORKSPACE_ID = 23432;
         private const string _CREDENTIALS = "{}";
 
@@ -127,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             Assert.IsNotNull(response);
-            String actual = response.Content.ReadAsStringAsync().Result;
+            string actual = response.Content.ReadAsStringAsync().Result;
             _relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
             ValidationResultDTO actualResult =
                 JsonConvert.DeserializeObject<ValidationResultDTO>(actual);

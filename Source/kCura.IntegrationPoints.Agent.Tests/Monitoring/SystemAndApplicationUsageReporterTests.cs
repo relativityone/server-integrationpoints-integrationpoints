@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
         private const int _dummyMemorySize = 12345;
-
         private Mock<IAPM> _apmMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IRipMetrics> _ripMetricMock;
@@ -37,9 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<ITimerFactory> _timerFactory;
         private TimerFake _timer;
-
         private SystemAndApplicationUsageReporter _sut;
-
         private readonly TimeSpan _memoryUsageInterval = TimeSpan.FromMilliseconds(10);
         private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
@@ -77,8 +74,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "AppDomainMemoryInMB", _dummyMemorySize },
                     { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
                     { "PrivateMemoryInMB", _dummyMemorySize },
-                    { "SystemFreeMemoryPercentage",  _dummyMemorySize},
-                    { "CpuUsageSystem",  _dummyMemorySize},
+                    { "SystemFreeMemoryPercentage",  _dummyMemorySize },
+                    { "CpuUsageSystem",  _dummyMemorySize },
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
 
@@ -293,13 +290,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void Execute_ShouldNotStartTheTimer_WhenEnableMonitoringIsNotWorking()
         {
-            //Arrange
+            // Arrange
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(false);
 
-            //Act
+            // Act
             _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
 
-            //Assert
+            // Assert
             _apmMock.Verify(x => x.CountOperation(
                 It.IsAny<string>(),
                 It.IsAny<Guid>(),
@@ -314,13 +311,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void Execute_ShouldNotStartTheTimer_ToggleIsDisabled()
         {
-            //Arrange
+            // Arrange
             _toggleProviderFake.Setup(x => x.IsEnabled<EnableMemoryUsageReportingToggle>()).Returns(false);
 
-            //Act
+            // Act
             _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
 
-            //Assert
+            // Assert
             _apmMock.Verify(x => x.CountOperation(
                 It.IsAny<string>(),
                 It.IsAny<Guid>(),
@@ -358,15 +355,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
                 { "r1.team.id", "PTCI-2456712" },
-                { "r1.job.id", _jobId.ToString()},
-                { "JobType", _jobType},
-                { "WorkflowId", _jobDetails},
+                { "r1.job.id", _jobId.ToString() },
+                { "JobType", _jobType },
+                { "WorkflowId", _jobDetails },
                 { "SystemProcessMemoryInMB", _dummyMemorySize },
                 { "AppDomainMemoryInMB", _dummyMemorySize },
                 { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },
                 { "PrivateMemoryInMB", _dummyMemorySize },
-                { "SystemFreeMemoryPercentage",  _dummyMemorySize},
-                { "CpuUsageSystem",  _dummyMemorySize},
+                { "SystemFreeMemoryPercentage",  _dummyMemorySize },
+                { "CpuUsageSystem",  _dummyMemorySize },
                 { "CpuUsageProcess",  _dummyMemorySize}
             };
 

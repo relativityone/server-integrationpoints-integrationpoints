@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
     {
         private const string _OLD_PROPERTY_NAME = "CustodianManagerFieldContainsLink";
         private const string _NEW_PROPERTY_NAME = "EntityManagerFieldContainsLink";
-
         private const string _DESTINATION_CONFIGURATION = IntegrationPointFields.DestinationConfiguration;
 
         public RenameCustodianToEntityForSourceProviderCommand(string sourceProviderGuid, IEHHelper helper, IRelativityObjectManager relativityObjectManager) :
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
         protected override RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
         {
             string destinationConfiguration = value.FieldValues[_DESTINATION_CONFIGURATION] as string;
-            if(destinationConfiguration == null)
+            if (destinationConfiguration == null)
             {
                 return null;
             }

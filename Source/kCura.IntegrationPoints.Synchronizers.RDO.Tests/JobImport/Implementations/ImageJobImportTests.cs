@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         private IImportAPI _importApi;
         private IImportSettingsBaseBuilder<ImageSettings> _builder;
         private IAPILog _logger;
-
         private ImageJobImport _instance;
         private ImportSettings _importSettings;
 
@@ -37,14 +36,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         [Test]
         public void ItShouldCreateJob()
         {
-            //Arrange
+            // Arrange
             var expected = new ImageImportBulkArtifactJob();
             _importApi.NewImageImportJob().Returns(expected);
 
-            //Act
+            // Act
             ImageImportBulkArtifactJob actual = _instance.CreateJob();
 
-            //Assert
+            // Assert
             Assert.AreEqual(expected, actual);
             _importApi.Received().NewImageImportJob();
         }

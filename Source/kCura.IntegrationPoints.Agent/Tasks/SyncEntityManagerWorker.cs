@@ -45,7 +45,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IQueueQueryManager _queueQueryManager;
-
         private IEnumerable<FieldMap> _entityManagerFieldMap;
         private List<EntityManagerMap> _entityManagerMap;
         private bool _managerFieldIdIsBinary;
@@ -559,6 +558,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _logger.LogInformation("Getting entity manager field artifactID.");
         }
+
         private void LogReconfigureImportApiSettingsSuccessfulEnd(int entityManagerFieldArtifactID)
         {
             _logger.LogInformation("Successfully reconfigured import API settings for: {entityManagerFieldArtifactID}",

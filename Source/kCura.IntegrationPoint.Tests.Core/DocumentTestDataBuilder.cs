@@ -19,11 +19,11 @@ namespace kCura.IntegrationPoint.Tests.Core
         private static readonly string TestDataTextNativesPath = $@"{TestDataTextPath}\NATIVES";
         private static readonly string SaltPepperTestDataPath = @"TestDataSaltPepper";
         private static readonly string SaltPepperTestDataNativesPath = $@"{SaltPepperTestDataPath}\NATIVES";
-        
+
         public static DocumentsTestData BuildTestData(
-            string prefix = "", 
-            string testDirectory = null, 
-            bool withNatives = true, 
+            string prefix = "",
+            string testDirectory = null,
+            bool withNatives = true,
             TestDataType testDataType = TestDataType.SmallWithFoldersStructure)
         {
             if (string.IsNullOrEmpty(testDirectory))
@@ -84,10 +84,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         private static string GetFoldersPrefix(string folderPath) =>
             folderPath.Replace(Path.GetFileName(folderPath), "");
-
         private static string GetDocumentFolderRelativePath(string folderPath, string foldersPrefix) =>
             folderPath.Replace(foldersPrefix, "").Replace("\\\\", "\\");
-
         private static IList<FolderWithDocuments> GetFoldersWithDocumentsBasedOnDirectoryStructureOfNatives(string nativesFolderPath, bool withNatives = true)
         {
             var foldersList = new List<FolderWithDocuments>();
@@ -100,7 +98,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
                 FillFolderWithFiles(newFolder, folderPath, foldersPrefix, withNatives);
 
-                //Link "Child folder" with "Parent folder"
+                // Link "Child folder" with "Parent folder"
                 DirectoryInfo parentFolderInfo = Directory.GetParent(folderPath);
                 if (parentFolderInfo.FullName != nativesFolderPath && foldersList.Any(n => n.FolderName == parentFolderInfo.Name))
                 {
@@ -125,11 +123,11 @@ namespace kCura.IntegrationPoint.Tests.Core
             foreach (string filePath in Directory.GetFiles(folderPath, "*", SearchOption.TopDirectoryOnly))
             {
                 newFolder.Documents.Rows.Add(
-                    Path.GetFileNameWithoutExtension(filePath), 
-                    Path.GetFileName(filePath), 
-                    withNatives ? filePath : string.Empty, 
-                    issueDesignation, 
-                    hasImages, 
+                    Path.GetFileNameWithoutExtension(filePath),
+                    Path.GetFileName(filePath),
+                    withNatives ? filePath : string.Empty,
+                    issueDesignation,
+                    hasImages,
                     documentsFolderPath,
                     Path.GetExtension(filePath)?.ToUpperInvariant() ?? string.Empty);
             }
@@ -147,11 +145,11 @@ namespace kCura.IntegrationPoint.Tests.Core
             foreach (string filePath in Directory.GetFiles(nativesFolderPath, "*", SearchOption.AllDirectories))
             {
                 newFolder.Documents.Rows.Add(
-                    prefix + Path.GetFileNameWithoutExtension(filePath), 
+                    prefix + Path.GetFileNameWithoutExtension(filePath),
                     Path.GetFileName(filePath),
-                    withNatives ? filePath : string.Empty, 
-                    issueDesignation, 
-                    hasImages, 
+                    withNatives ? filePath : string.Empty,
+                    issueDesignation,
+                    hasImages,
                     newFolder.FolderName,
                     Path.GetExtension(filePath)?.ToUpperInvariant() ?? string.Empty);
             }

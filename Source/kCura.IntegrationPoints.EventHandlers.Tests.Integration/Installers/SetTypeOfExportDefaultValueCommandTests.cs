@@ -73,6 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
             SetSourceConfigurationWithoutTypeOfExport(context, "IntegrationPoint", createdDto);
             return createdDto;
         }
+
         private IntegrationPointProfileDto PrepareIntegrationPointProfile(IDBContext context)
         {
             IntegrationPointProfileDto createdDto = CreateOrUpdateIntegrationPointProfile(_defaultIntegrationPointProfileDto);

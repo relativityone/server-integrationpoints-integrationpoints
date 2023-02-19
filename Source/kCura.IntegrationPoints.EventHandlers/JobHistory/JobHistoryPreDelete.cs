@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.EventHandlers.JobHistory
 
         public override EventHandler.Response Execute()
         {
-
             return null;
         }
 

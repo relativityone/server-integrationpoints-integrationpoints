@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
     public class NativeCopyLinksValidatorTests
     {
         private NativeCopyLinksValidator _sut;
-
         private Mock<ISerializer> _serializerFake;
         private Mock<IAPILog> _loggerFake;
         private Mock<IHelper> _helperFake;
@@ -31,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         private Mock<IInstanceSettingsManager> _instanceSettingsFake;
         private Mock<IManagerFactory> _managerFactoryFake;
         private Mock<IToggleProvider> _toggleProviderFake;
-
         private const int _SOURCE_WORKSPACE_ID = 10000;
         private const int _ADMIN_GROUP_ID = 100;
         private const int _USER_IS_ADMIN_ID = 1;
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             _groupManager = new Mock<IGroupManager>();
 
             _servicesMgrFake = new Mock<IServicesMgr>();
-            _servicesMgrFake.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object); 
+            _servicesMgrFake.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object);
 
             _helperFake = new Mock<IHelper>();
             _helperFake.Setup(m => m.GetServicesManager()).Returns(_servicesMgrFake.Object);
@@ -66,16 +64,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void Validate_ShouldHandleValidConfiguration_WhenConditionsAreMet()
         {
-            //arrange
+            // arrange
             var userIsAdmin = true;
             var nativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
             var restrictReferentialFileLinksOnImport = true;
             var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
 
-            //act
+            // act
             ValidationResult result = _sut.Validate(validationModel);
 
-            //assert
+            // assert
             result.IsValid.Should().BeTrue();
             result.Messages.Should().BeEmpty();
         }
@@ -83,16 +81,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void Validate_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
         {
-            //arrange
+            // arrange
             var userIsAdmin = false;
             var nativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
             var restrictReferentialFileLinksOnImport = true;
             var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
 
-            //act
+            // act
             ValidationResult result = _sut.Validate(validationModel);
 
-            //assert
+            // assert
             result.IsValid.Should().BeFalse();
             result.Messages.Should().NotBeEmpty();
         }
@@ -100,16 +98,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void Validate_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse()
         {
-            //arrange
+            // arrange
             var userIsAdmin = false;
             var nativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
             var restrictReferentialFileLinksOnImport = false;
             var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
 
-            //act
+            // act
             ValidationResult result = _sut.Validate(validationModel);
 
-            //assert
+            // assert
             result.IsValid.Should().BeTrue();
             result.Messages.Should().BeEmpty();
         }
@@ -117,41 +115,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [Test]
         public void Validate_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks()
         {
-            //arrange
+            // arrange
             var userIsAdmin = false;
             var nativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
             var restrictReferentialFileLinksOnImport = true;
             var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
 
-            //act
+            // act
             ValidationResult result = _sut.Validate(validationModel);
 
-            //assert
+            // assert
             result.IsValid.Should().BeTrue();
             result.Messages.Should().BeEmpty();
         }
-        
+
         [Test]
         public void Validate_ShouldSkipValidation_WhenToggleIsEnabledAndNativeCopyModeIsFileLinks()
         {
-            //arrange
+            // arrange
             var userIsAdmin = false;
             var nativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
             var restrictReferentialFileLinksOnImport = true;
             _toggleProviderFake.Setup(p => p.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE)).Returns(true);
             var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
 
-            //act
+            // act
             ValidationResult result = _sut.Validate(validationModel);
 
-            //assert
+            // assert
             result.IsValid.Should().BeTrue();
             result.Messages.Should().BeEmpty();
         }
 
         private IntegrationPointProviderValidationModel SetupValidator(
-            bool userIsAdmin, 
-            ImportNativeFileCopyModeEnum fileCopyMode, 
+            bool userIsAdmin,
+            ImportNativeFileCopyModeEnum fileCopyMode,
             bool restrictReferentialFileLinksOnImport)
         {
             var validationModel = new IntegrationPointProviderValidationModel()

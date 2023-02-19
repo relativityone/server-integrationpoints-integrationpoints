@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private IExternalServiceInstrumentationProvider _instrumentationProvider;
         private IExternalServiceInstrumentation _instrumentation;
         private IExternalServiceInstrumentationStarted _startedInstrumentation;
-
         private const int WORKSPACE_ID = 10001;
         private const string API_FOUNDATION = "API.Foundation";
         private const string IFIELD_REPOSITORY = "IFieldRepository";
@@ -52,22 +51,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ShouldCallStartedAndCompletedWhenReadExecutedSuccessfully()
         {
-            //arrange
+            // arrange
             const int fieldId = 100;
             IField field = Substitute.For<IField>();
             field.ArtifactID.Returns(fieldId);
             _apiFieldRepository.Read(Arg.Any<IArtifactRef>()).Returns(field);
             var sut = new FieldRepository(
-                _servicesMgr, 
+                _servicesMgr,
                 _helper,
                 _foundationRepositoryFactory,
                 _instrumentationProvider,
                 WORKSPACE_ID);
 
-            //act
+            // act
             IField result = sut.Read(fieldId);
 
-            //assert
+            // assert
             result.ArtifactID.Should().Be(fieldId);
             _instrumentationProvider.Received()
                 .Create(API_FOUNDATION, IFIELD_REPOSITORY, READ);
@@ -78,7 +77,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ShouldCallStartedAndFailedWhenReadThrowsException()
         {
-            //arrange
+            // arrange
             const int fieldId = 100;
             var exception = new InvalidOperationException();
             _apiFieldRepository.Read(Arg.Any<IArtifactRef>()).Throws(exception);
@@ -89,10 +88,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 _instrumentationProvider,
                 WORKSPACE_ID);
 
-            //act
+            // act
             Action act = () => sut.Read(fieldId);
 
-            //assert
+            // assert
             act.ShouldThrow<IntegrationPointsException>()
                .WithMessage($"An error occured while reading field {fieldId} from workspace {WORKSPACE_ID}")
                .WithInnerExceptionExactly<InvalidOperationException>();

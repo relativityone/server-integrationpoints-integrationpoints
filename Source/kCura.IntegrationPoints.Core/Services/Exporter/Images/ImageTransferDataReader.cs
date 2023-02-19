@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             return base.Read();
         }
 
-        private IntegrationPointsException LogGetValueError(Exception e, 
+        private IntegrationPointsException LogGetValueError(Exception e,
             int i,
             string fieldIdentifier,
             int fieldArtifactId,

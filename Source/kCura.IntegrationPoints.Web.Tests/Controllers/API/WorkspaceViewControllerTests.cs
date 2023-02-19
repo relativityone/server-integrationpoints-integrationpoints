@@ -15,16 +15,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
     internal class WorkspaceViewControllerTests : TestBase
     {
         private WorkspaceViewController _sut;
-        
         private IViewService _viewServiceMock;
-
         private const int _WORKSPACE_ID = 12345;
         private const int _ARTIFAC_TYPE_ID = 10;
-
         private const int _VIEW_ARTIFACT_ID = 10;
         private const string _VIEW_NAME = "View";
         private const bool _VIEW_AVAILABLE = true;
-
         private List<ViewDTO> _views = new List<ViewDTO>()
         {
             new ViewDTO()
@@ -34,12 +30,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 IsAvailableInObjectTab = _VIEW_AVAILABLE
             }
         };
-        
+
         [SetUp]
         public override void SetUp()
         {
             _viewServiceMock = Substitute.For<IViewService>();
-            
+
             _sut = new WorkspaceViewController(_viewServiceMock)
             {
                 Request = new HttpRequestMessage()

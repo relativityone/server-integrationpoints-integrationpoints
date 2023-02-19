@@ -16,21 +16,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
     {
         private int _currentArtifactIndex;
         private const int _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX = 1;
-
         private const int _IDENTIFIER_FIELD_TYPE = 2;
-
-
         private const int _NATIVE_PATH_LOAD_FILE_INDEX = 1;
         private const int _NONE_FIELD_TYPE = -1;
-
         private const int _ROOTED_PATH_ARTIFACT_INDEX = 0;
         private const int _UN_ROOTED_PATH_ARTIFACT_INDEX = 1;
         private const string _ERROR_FILE_PATH = @"ExampleErrorFile.csv";
         private const string _LOAD_FILE_FULL_PATH = @"C:\LoadFileDirectory\ExampleLoadFile.csv";
         private const string _ROOTED_PATH = @"C:\Images\Example.txt";
         private const string _UN_ROOTED_PATH = @"Example.txt";
-
         private readonly string[] _HEADERS = new string[] { "Control Number", "Native File Path", "Extracted Text" };
+
         private readonly string[][] _RECORDS = new string[][]
         {
             new string [] { "REL1", _ROOTED_PATH, _ROOTED_PATH },
@@ -64,15 +60,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHandleEmptyFiles()
         {
-            //Arrange
+            // Arrange
             _loadFileReader.HasMoreRecords.Returns(false);
-            
+
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsFalse(sut.Read());
             Assert.IsTrue(sut.IsClosed);
         }
@@ -80,13 +76,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldCallReadArtifact_IfReaderHasMoreRecords()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(sut.Read());
             _loadFileReader.Received(1).ReadArtifact();
         }
@@ -94,17 +90,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldRewriteFileLocations_WithoutRootedPath()
         {
-            //Arrange
+            // Arrange
             LoadArtifact(_UN_ROOTED_PATH_ARTIFACT_INDEX);
             _providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
             _providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-            
+
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(sut.Read());
             Assert.AreEqual(Path.Combine(Path.GetDirectoryName(_LOAD_FILE_FULL_PATH), _RECORDS[_currentArtifactIndex][_NATIVE_PATH_LOAD_FILE_INDEX]),
                 sut.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
@@ -115,17 +111,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldNotRewriteFileLocation_WithRootedPath()
         {
-            //Arrange
+            // Arrange
             LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
             _providerSettings.NativeFilePathFieldIdentifier = _NATIVE_PATH_LOAD_FILE_INDEX.ToString();
             _providerSettings.ExtractedTextPathFieldIdentifier = _EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX.ToString();
-            
+
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(sut.Read());
             Assert.AreEqual(_RECORDS[_currentArtifactIndex][_NATIVE_PATH_LOAD_FILE_INDEX], sut.GetValue(_NATIVE_PATH_LOAD_FILE_INDEX));
             Assert.AreEqual(_RECORDS[_currentArtifactIndex][_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX], sut.GetValue(_EXTRACTED_TEXT_PATH_LOAD_FILE_INDEX));
@@ -134,15 +130,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldSequentiallyNameColumnsInSchemaTable()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsTrue(sut.Read());
-            DataTable schemaTable = sut.GetSchemaTable(); 
+            DataTable schemaTable = sut.GetSchemaTable();
             for (int i = 0; i < schemaTable.Columns.Count; i++)
             {
                 Assert.AreEqual(i.ToString(), schemaTable.Columns[i].ColumnName);
@@ -152,80 +148,80 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldPassThroughCallsToManageErrorRecords()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(_ERROR_FILE_PATH, sut.ManageErrorRecords(string.Empty, string.Empty));
         }
 
         [Test]
         public void ItShouldPassThroughCallsToCountRecords()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(_RECORDS.Length, sut.CountRecords());
         }
 
         [Test]
         public void ItShouldNotBeClosed_WhenFirstCreated()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.IsFalse(sut.IsClosed);
         }
 
         [Test]
         public void ItShouldReturnFieldCountOfZero_WhenOperatingOnEmptyFile()
         {
-            //Arrange
+            // Arrange
             _loadFileReader.GetColumnNames(Arg.Any<object>()).Returns(new string[0]);
-            
+
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(0, sut.FieldCount);
         }
 
         [Test]
         public void ItShouldReturnFieldCount_WhenOperatingOnNonEmptyFile()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             Assert.AreEqual(_HEADERS.Length, sut.FieldCount);
         }
 
         [Test]
         public void ItShouldReturnCorrectOrdinal()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             for (int i = 0; i < _HEADERS.Length; i++)
             {
                 Assert.AreEqual(i, sut.GetOrdinal(i.ToString()));
@@ -235,32 +231,32 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnCorrectName()
         {
-            //Arrange
+            // Arrange
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
 
-            //Assert
+            // Assert
             for (int i = 0; i < _HEADERS.Length; i++)
             {
                 Assert.AreEqual(i.ToString(), sut.GetName(i));
             }
         }
 
-        //Note: This unit test is related to a work-around; see comment above catch block in LoadFileDataReader.ReadCurrentRecord
+        // Note: This unit test is related to a work-around; see comment above catch block in LoadFileDataReader.ReadCurrentRecord
         [Test]
         public void ItShouldBlankOutput_WhenLoadFileReaderThrowsColumnCountMismatchException()
         {
             _loadFileReader.ReadArtifact().Throws(new kCura.WinEDDS.LoadFileBase.ColumnCountMismatchException(0,0,0));
-            
+
             LoadFileDataReader sut = PrepareSut();
 
-            //Act
+            // Act
             sut.Init();
             sut.Read();
 
-            //Assert
+            // Assert
             for (int i = 0; i < _RECORDS[_currentArtifactIndex].Length; i++)
             {
                 Assert.IsEmpty(sut.GetString(i));

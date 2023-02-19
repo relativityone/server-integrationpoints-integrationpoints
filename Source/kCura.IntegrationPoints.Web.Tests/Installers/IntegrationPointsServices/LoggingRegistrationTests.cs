@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers.IntegrationPointsServices
             sut.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
             sut.AddLoggingContext();
 
-            //act & assert
+            // act & assert
             sut.Should().ResolveWithoutThrowing<IWebCorrelationContextProvider>();
         }
     }

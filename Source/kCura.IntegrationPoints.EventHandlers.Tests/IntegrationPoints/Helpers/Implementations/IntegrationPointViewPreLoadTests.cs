@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
     internal class IntegrationPointViewPreLoadTests
     {
         private IIntegrationPointBaseFieldsConstants _fieldsConstants;
-
         private Mock<IRelativityProviderConfiguration> _relativityProviderSourceConfigurationFake;
         private Mock<IRelativityProviderConfiguration> _relativityProviderDestinationConfigurationMock;
         private Mock<ICaseServiceContext> _caseServiceContextMock;
@@ -32,11 +31,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IAPILog> _loggerMock;
         private Mock<IDBContext> _dbContextMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
-
         private Artifact _artifact;
-
         private IntegrationPointViewPreLoad _sut;
-
         private const string _INTEGRATION_POINT_NAME = "A7 Integration Point";
         private const string _SAVEDSEARCH_ARTIFACT_ID_KEY = "SavedSearchArtifactId";
         private const string _SAVEDSEARCH_NAME = "A7 SavedSearch";
@@ -345,7 +341,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _objectManagerMock.Setup(
                     x => x.QueryAsync(
                     It.Is<QueryRequest>(
-                        y => 
+                        y =>
                             y.ObjectType.ArtifactTypeID == (int)ArtifactType.Search &&
                             y.Condition == $"'Artifact ID' == {_SAVEDSEARCH_ARTIFACT_ID_VALUE}"),
                     It.IsAny<ExecutionIdentity>()))

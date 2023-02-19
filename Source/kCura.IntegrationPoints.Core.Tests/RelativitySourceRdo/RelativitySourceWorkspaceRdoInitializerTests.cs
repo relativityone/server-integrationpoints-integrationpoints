@@ -17,12 +17,10 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
     public class RelativitySourceWorkspaceRdoInitializerTests : TestBase
     {
         private const int _DESTINATION_WORKSPACE_ID = 581555;
-
         private ISourceWorkspaceRepository _sourceWorkspaceRepository;
         private IRelativitySourceRdoObjectType _relativitySourceRdoObjectType;
         private IRelativitySourceRdoDocumentField _relativitySourceRdoDocumentField;
         private IRelativitySourceRdoFields _relativitySourceRdoFields;
-
         private RelativitySourceWorkspaceRdoInitializer _instance;
 
         public override void SetUp()

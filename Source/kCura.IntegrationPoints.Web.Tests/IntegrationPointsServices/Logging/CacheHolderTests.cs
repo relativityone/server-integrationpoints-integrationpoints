@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices.Logging
     public class CacheHolderTests : TestBase
     {
         private CacheHolder _cacheHolder;
-
         private static readonly string _key = "MyKey";
 
         public override void SetUp()

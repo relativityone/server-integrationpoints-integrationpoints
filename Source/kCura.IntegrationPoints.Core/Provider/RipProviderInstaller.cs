@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Core.Provider
                 // REL-539111
                 _logger.LogWarning("There are duplicated entries in SourceProvider database table.");
             }
-            
+
             return deduplicatedProviders;
         }
 

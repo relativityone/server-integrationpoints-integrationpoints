@@ -7,6 +7,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
     {
         int BatchSize { get; }
         List<T> GetUnbatchedIDs(Job job);
+
         void CreateBatchJob(Job job, List<T> batchIDs);
     }
 }

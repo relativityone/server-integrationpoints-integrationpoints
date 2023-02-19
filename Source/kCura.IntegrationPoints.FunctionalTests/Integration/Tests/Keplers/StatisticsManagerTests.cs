@@ -24,7 +24,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         private DocumentHelper _documentHelper;
         private ProductionHelper _productionHelper;
         private SavedSearchHelper _savedSearchHelper;
-
         private const string _PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX = "ProductionDocumentFile_";
 
         [SetUp]
@@ -45,13 +44,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
             IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
-            // Act 
+            // Act
             long totalDocuments = await _sut
                 .GetDocumentsTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
-            totalDocuments.ShouldBeEquivalentTo(documents.Count); 
+            totalDocuments.ShouldBeEquivalentTo(documents.Count);
         }
 
         [IdentifiedTest("386DAB5A-A60D-4CB6-92B7-2759A4DB28FB")]
@@ -63,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalSize, FileType.Tif);
 
-            // Act 
+            // Act
             long totalImages = await _sut
                 .GetImagesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearch.ArtifactId)
                 .ConfigureAwait(false);
@@ -81,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalFileSize, FileType.Tif);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetImagesFileSizeForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearch.ArtifactId)
                 .ConfigureAwait(false);
@@ -96,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             // Arrange
             int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
 
-            // Act 
+            // Act
             long totalNatives = await _sut
                 .GetNativesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
                 .ConfigureAwait(false);
@@ -114,7 +113,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalFileSize, FileType.Native);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetNativesFileSizeForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearch.ArtifactId)
                 .ConfigureAwait(false);
@@ -130,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
             IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
-            // Act 
+            // Act
             long totalDocuments = await _sut
                 .GetDocumentsTotalForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
                 .ConfigureAwait(false);
@@ -148,7 +147,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             SetupExport(totalSize, FileType.Tif);
 
-            // Act 
+            // Act
             long totalDocuments = await _sut
                 .GetImagesTotalForProductionAsync(SourceWorkspace.ArtifactId, production.ArtifactId)
                 .ConfigureAwait(false);
@@ -170,7 +169,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 x.ExecuteSqlStatementAsScalar<long>(It.Is<string>(parameter => parameter == string.Format(sqlText, tableName))))
                 .Returns(totalFileSize);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetImagesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, production.ArtifactId)
                 .ConfigureAwait(false);
@@ -185,7 +184,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             // Arrange
             int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
 
-            // Act 
+            // Act
             long totalNatives = await _sut
                 .GetNativesTotalForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
                 .ConfigureAwait(false);
@@ -203,7 +202,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             SetupExport(totalFileSize, FileType.Native);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetNativesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, production.ArtifactId)
                 .ConfigureAwait(false);
@@ -219,7 +218,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int folderArtifactId = SourceWorkspace.Folders.First().ArtifactId;
             IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
-            // Act 
+            // Act
             long totalDocuments = await _sut
                 .GetDocumentsTotalForFolderAsync(SourceWorkspace.ArtifactId, folderArtifactId, -1, false)
                 .ConfigureAwait(false);
@@ -237,7 +236,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalSize, FileType.Tif);
 
-            // Act 
+            // Act
             long totalImages = await _sut
                 .GetImagesTotalForFolderAsync(SourceWorkspace.ArtifactId, folder.ArtifactId, -1, false)
                 .ConfigureAwait(false);
@@ -255,7 +254,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalFileSize, FileType.Tif);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetImagesFileSizeForFolderAsync(SourceWorkspace.ArtifactId, folder.ArtifactId, -1, false)
                 .ConfigureAwait(false);
@@ -270,7 +269,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             // Arrange
             int folderArtifactId = SourceWorkspace.Folders.First().ArtifactId;
 
-            // Act 
+            // Act
             long totalNatives = await _sut
                 .GetNativesTotalForFolderAsync(SourceWorkspace.ArtifactId, folderArtifactId, -1, false)
                 .ConfigureAwait(false);
@@ -288,7 +287,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalFileSize, FileType.Native);
 
-            // Act 
+            // Act
             long returnedTotalFileSize = await _sut
                 .GetNativesFileSizeForFolderAsync(SourceWorkspace.ArtifactId, folder.ArtifactId, -1, false)
                 .ConfigureAwait(false);

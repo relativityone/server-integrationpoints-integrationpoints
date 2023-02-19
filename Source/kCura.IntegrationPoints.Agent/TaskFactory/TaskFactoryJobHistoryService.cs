@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IIntegrationPointService _integrationPointService;
-
         private readonly IntegrationPointDto _integrationPoint;
 
         public TaskFactoryJobHistoryService(

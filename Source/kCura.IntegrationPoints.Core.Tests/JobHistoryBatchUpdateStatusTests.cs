@@ -89,7 +89,6 @@ namespace kCura.IntegrationPoints.Core.Tests
                 .UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(obj => obj.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)));
         }
 
-
         [Test]
         public void OnJobComplete_UpdateTheJobStatus()
         {
@@ -108,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _jobHistoryService
                 .Received(1)
                 .UpdateRdoWithoutDocuments(
-                    Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus) 
+                    Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus)
                                              && jh.EndTimeUTC == expectedEndTimeUtc));
             _logger
                 .DidNotReceive()
@@ -138,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _jobHistoryService
                 .Received(1)
                 .UpdateRdoWithoutDocuments(
-                    Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus) 
+                    Arg.Is<JobHistory>(jh => jh.JobStatus.EqualsToChoice(expectedStatus)
                                              && jh.EndTimeUTC == expectedEndTimeUtc));
             _logger
                 .Received(1)

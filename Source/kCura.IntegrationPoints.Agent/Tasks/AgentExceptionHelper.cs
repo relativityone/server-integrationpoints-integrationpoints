@@ -25,4 +25,3 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         }
     }
 }
-

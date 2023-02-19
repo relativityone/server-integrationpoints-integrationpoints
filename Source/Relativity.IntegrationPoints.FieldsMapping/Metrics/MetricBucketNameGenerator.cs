@@ -10,9 +10,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
     public class MetricBucketNameGenerator : IMetricBucketNameGenerator
     {
         private const string AutoMap = "AutoMap";
-
         private static readonly Guid DestinationProviderObjectTypeGuid = new Guid("d014f00d-f2c0-4e7a-b335-84fcb6eae980");
-
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
 

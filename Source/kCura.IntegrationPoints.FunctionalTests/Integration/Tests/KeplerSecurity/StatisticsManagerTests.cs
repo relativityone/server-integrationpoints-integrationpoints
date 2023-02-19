@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
         [SetUp]
         public void Setup() => _sut = new StatisticsManager(Logger, PermissionRepositoryFactory, Container);
-        
+
         [TestCaseSource(nameof(Actions))]
         public void Method_ShouldNotThrow_WhenAllPermissionsAreGranted(Func<IStatisticsManager, Task> action)
         {
@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         {
             ShouldThrowInsufficientPermissions(new PermissionSetup[0], () => action(_sut));
         }
-        
+
         public static IEnumerable<Func<IStatisticsManager ,Task>> Actions()
         {
             yield return (manager => manager.GetDocumentsTotalForFolderAsync(WorkspaceId, 1, 1, true));
@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
             yield return (manager => manager.GetNativesTotalForFolderAsync(WorkspaceId, 1, 1, true));
             yield return (manager => manager.GetImagesFileSizeForFolderAsync(WorkspaceId, 1, 1, true));
             yield return (manager => manager.GetNativesFileSizeForFolderAsync(WorkspaceId, 1, 1, true));
-            
+
             yield return (manager => manager.GetDocumentsTotalForProductionAsync(WorkspaceId, 1));
             yield return (manager => manager.GetImagesTotalForProductionAsync(WorkspaceId, 1));
             yield return (manager => manager.GetNativesTotalForProductionAsync(WorkspaceId, 1));

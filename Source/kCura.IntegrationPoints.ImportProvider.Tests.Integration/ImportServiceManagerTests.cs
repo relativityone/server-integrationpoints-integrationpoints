@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         private IntegrationPointDto _ip;
         private IImportFileLocationService _importFileLocationService;
         private ImportServiceManager _instanceUnderTest;
-
         private ISerializer _serializer;
         private string _testDataDirectory;
         private static WindsorContainer _windsorContainer;
@@ -59,7 +58,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         public ImportServiceManagerTests()
             : base($"{nameof(ImportServiceManagerTests)} {DateTime.UtcNow.ToString("yyyyMMdd_HHmmss")}")
         {
-
         }
 
         public override void SuiteSetup()
@@ -68,7 +66,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             _testDataDirectory = CopyTestData();
 
-            //Substitutes
+            // Substitutes
             IHelper helper = Substitute.For<IHelper>();
             IDiagnosticLog diagnosticLog = Substitute.For<IDiagnosticLog>();
             ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
@@ -86,7 +84,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
             IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 
-            //Data Transfer Location
+            // Data Transfer Location
             IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
             IDataTransferLocationService ls = Substitute.For<IDataTransferLocationService>();
             ls.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).Returns(_testDataDirectory);
@@ -95,7 +93,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             _windsorContainer.Register(Component.For<IRelativityObjectManager>().Instance(ObjectManager));
 
-            //TestRdoSynchronizer
+            // TestRdoSynchronizer
             TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(
                 _windsorContainer.Resolve<IRelativityFieldQuery>(),
                 _windsorContainer.Resolve<IImportApiFactory>(),
@@ -106,11 +104,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 instanceSettingsManager);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
-            //RSAPI
+            // RSAPI
             IRelativityObjectManagerService relativityObjectManagerServiceMock = Substitute.For<IRelativityObjectManagerService>();
             caseServiceContext.RelativityObjectManagerService.Returns(relativityObjectManagerServiceMock);
 
-            //Source library
+            // Source library
             IRelativityObjectManager objectManager = Substitute.For<IRelativityObjectManager>();
             relativityObjectManagerServiceMock.RelativityObjectManager.Returns(objectManager);
 
@@ -122,19 +120,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
 
-            //IpLibrary
+            // IpLibrary
             _ip = new IntegrationPointDto();
             _ip.SecuredConfiguration = "";
             _ip.SourceProvider = -1;
 
             integrationPointService.Read(Arg.Any<int>()).Returns(_ip);
 
-            //JobStopManager
+            // JobStopManager
             IJobStopManager stopManager = Substitute.For<IJobStopManager>();
             managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
                 Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(stopManager);
 
-            //Job History Service
+            // Job History Service
             JobHistory jobHistoryDto = new JobHistory()
             {
                 BatchInstance = Guid.NewGuid().ToString(),
@@ -145,14 +143,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 .Returns(jobHistoryDto);
             jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
-            //Logging
+            // Logging
             IAPILog logger = Substitute.For<IAPILog>();
             ILogFactory loggerFactory = Substitute.For<ILogFactory>();
             helper.GetLoggerFactory().Returns(loggerFactory);
             loggerFactory.GetLogger().Returns(logger);
             logger.ForContext<ImportService>().Returns(logger);
 
-            //Resolve concrete implementations
+            // Resolve concrete implementations
             _serializer = _windsorContainer.Resolve<ISerializer>();
             IDataReaderFactory dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
 

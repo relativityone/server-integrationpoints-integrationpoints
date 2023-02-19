@@ -10,13 +10,13 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
     public class ErrorKeyword : IKeyword
     {
-
         public string KeywordName { get { return "\\[ERROR]"; } }
 
         private readonly Job _job;
         private readonly JobHistoryErrorQuery _query;
         private readonly IJobHistoryService _historyService;
         private readonly ISerializer _serializer;
+
         public ErrorKeyword(Job job, JobHistoryErrorQuery query, IJobHistoryService historyService, ISerializer serializer)
         {
             _job = job;
@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             _historyService = historyService;
             _serializer = serializer;
         }
+
         public string Convert()
         {
             var details = _serializer.Deserialize<TaskParameters>(_job.JobDetails);

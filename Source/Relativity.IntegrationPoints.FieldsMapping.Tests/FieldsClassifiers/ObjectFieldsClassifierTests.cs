@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
         [Test]
         public async Task ClassifyAsync_ShouldProperlyClassifySingleObjectFields()
         {
-            // Arrange 
+            // Arrange
 
             var fields = new List<FieldInfo>
             {
@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
         [Test]
         public async Task ClassifyAsync_ShouldProperlyClassifyMultiObjectFields()
         {
-            // Arrange 
+            // Arrange
 
             var fields = new List<FieldInfo>
             {
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
         [Test]
         public async Task ClassifyAsync_ShouldProperlyClassifyNonObjectFields()
         {
-            // Arrange 
+            // Arrange
 
             var fields = new List<FieldInfo>
             {

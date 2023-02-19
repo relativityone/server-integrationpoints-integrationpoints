@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Helpers
             var objectTypeService = new ObjectTypeService(objectTypeRepositoryMock.Object);
 
             var sut = new RelativityUrlHelper(httpRequest.Object, objectTypeService);
-            
+
             string version = FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(UrlVersionDecorator)).Location).FileVersion;
 
             // act

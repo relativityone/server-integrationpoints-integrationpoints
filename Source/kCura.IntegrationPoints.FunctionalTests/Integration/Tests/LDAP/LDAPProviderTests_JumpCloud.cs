@@ -16,7 +16,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
     public class LDAPProviderTests_JumpCloud : TestsBase
     {
         public readonly JumpCloudUsersTestData UsersTestData;
-
         private readonly string[] _SKIPPED_PROPERTIES = new[]
         {
             "adspath"

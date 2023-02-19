@@ -8,6 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         private readonly TestContext _context;
 
         public DateTime UtcNow => _context.CurrentDateTime;
+
         public DateTime LocalTime => UtcNow.ToLocalTime();
 
         public FakeTimeService(TestContext context)

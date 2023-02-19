@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Models
                 }
                 if (rule.OccuranceInMonth.HasValue)
                 {
-                    //we are the more complex month selector
+                    // we are the more complex month selector
 
                 }
                 switch (rule.Interval)
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Models
                     date = date.AddMinutes(ticks.Minute);
                     ScheduledTime = date.Hour + ":" + date.Minute;
                 }
-                TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  //PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
+                TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  // PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
             }
         }
 

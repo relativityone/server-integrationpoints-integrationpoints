@@ -35,12 +35,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
     {
         private ISerializer _serializer;
         private IEnumerable<int> _createdProfilesArtifactIDs;
-
         private const int _SAVED_SEARCH_ARTIFACT_ID = 123456;
-
         private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery =
             new ObjectArtifactIdsByStringFieldValueQuery(CreateRelativityObjectManagerForWorkspace);
-
         private static readonly FieldRef SourceConfigurationField = new FieldRef()
         {
             Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
@@ -214,7 +211,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
         private async Task<IEnumerable<int>> CreateTestProfilesAsync(int workspaceID)
         {
-            using(IObjectManager objectManager = CreateObjectManager())
+            using (IObjectManager objectManager = CreateObjectManager())
             {
                 List<IntegrationPointProfile> profilesToCreate = await GetProfilesToCreateAsync(workspaceID).ConfigureAwait(false);
                 MassCreateRequest createRequest = new MassCreateRequest()
@@ -264,7 +261,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
                     SourceProvider =  relativitySourceProviderArtifactID,
                     DestinationProvider = relativityDestinationProviderArtifactID,
                     SourceConfiguration = CreateSourceConfigurationJson(SourceConfiguration.ExportType.SavedSearch),
-                    //11k size
+                    // 11k size
                     DestinationConfiguration = CreateDestinationConfigurationJson(exportToProduction: false, copyImages: true, useImagePrecedence: true),
                     FieldMappings = null
                 },
@@ -392,7 +389,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
         private static IObjectManager CreateObjectManager()
             => SystemTestsSetupFixture.Container.Resolve<IHelper>().GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System);
-
         private string CreateSourceConfigurationJson(SourceConfiguration.ExportType exportType)
         {
             var sourceConfiguration = new SourceConfiguration()

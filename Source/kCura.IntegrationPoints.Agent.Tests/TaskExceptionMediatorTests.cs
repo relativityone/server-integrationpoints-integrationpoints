@@ -29,50 +29,50 @@ namespace kCura.IntegrationPoints.Agent.Tests
         [Test]
         public void ItShould_TriggerOnTaskExecutionError()
         {
-            //Arrange
+            // Arrange
             _subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
             _subjectUnderTest.RegisterEvent(_agentMock);
             ITask task = Substitute.For<ITask>();
 
-            //Act
+            // Act
             _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, task, new Exception());
 
-            //Assert
+            // Assert
             _taskExceptionServiceMock.Received(1).EndTaskWithError( Arg.Any<ITask>(), Arg.Any<Exception>());
         }
 
         [Test]
         public void ItShould_TriggerOnJobExecutionError()
         {
-            //Arrange
+            // Arrange
             _subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
             _subjectUnderTest.RegisterEvent(_agentMock);
             Job job = JobExtensions.CreateJob();
 
-            //Act
+            // Act
             _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(job, null, new Exception());
 
-            //Assert
+            // Assert
             _taskExceptionServiceMock.Received(1).EndJobWithError(Arg.Any<Job>(), Arg.Any<Exception>());
         }
 
         [Test]
         public void ItShouldNot_TriggerOnTaskExecutionError_AfterDispose()
         {
-            //Arrange
+            // Arrange
             using (_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock))
             {
                 _subjectUnderTest.RegisterEvent(_agentMock);
             }// Dispose called
 
-            //Act
+            // Act
             _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, null, new Exception());
 
-            //Assert
+            // Assert
             _taskExceptionServiceMock.Received(0).EndTaskWithError(Arg.Any<ITask>(), Arg.Any<Exception>());
         }
     }
-    
+
     public class TestAgentBase : Agent
     {
         public TestAgentBase() : base(Guid.Empty, kubernetesMode: Substitute.For<IKubernetesMode>())
@@ -80,6 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         }
 
         public override string Name { get; }
+
         protected override TaskResult ProcessJob(Job job)
         {
             throw new NotImplementedException();

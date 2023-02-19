@@ -5,7 +5,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     public class DestinationParser : IDestinationParser
     {
         private const char _SEPARATOR = '-';
-
         private readonly string parsingError =
             "Destination workspace object: {0} could not be parsed.";
 

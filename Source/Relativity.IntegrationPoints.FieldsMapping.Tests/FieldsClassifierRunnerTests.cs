@@ -149,7 +149,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
-
             // Act
             IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>(), _ARTIFACT_TYPE_ID).ConfigureAwait(false);
 
@@ -159,7 +158,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
             filteredFields.Select(x => x.FieldInfo.IsIdentifier).Any(x => x).Should().BeFalse();
             filteredFields.Select(x => x.FieldInfo.IsRequired).Any(x => x).Should().BeFalse();
             filteredFields.Select(x => x.FieldInfo.Type).All(x => x == "Some type").Should().BeTrue();
-
 
             filteredFields[0].FieldInfo.FieldIdentifier.Should().Be("1");
             filteredFields[1].FieldInfo.FieldIdentifier.Should().Be("2");
@@ -217,7 +215,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             List<FieldInfo> sortedFields = fields.OrderBy(x => x.Name).ToList();
             string[] artifactIDs = fields.Select(x => x.FieldIdentifier).ToArray();
-            
+
             _fieldsRepositoryFake
                 .Setup(x => x.GetFieldsByArtifactsIdAsync(artifactIDs, 0))
                 .ReturnsAsync(fields);

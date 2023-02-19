@@ -19,19 +19,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             _proxy = proxy;
             _serializer = serializer;
         }
-        
 
         public WorkspaceTest CreateWorkspace(int? workspaceArtifactId = null)
         {
             WorkspaceTest workspace = new WorkspaceTest(_serializer, workspaceArtifactId);
 
             Relativity.Workspaces.Add(workspace);
-            
+
             workspace.Folders.Add(new FolderTest
             {
                 Name = workspace.Name
             });
-            
+
             workspace.ObjectTypes.Add(new ObjectTypeTest
                 {
                     Name = Const.Document._DOCUMENT_NAME,
@@ -64,7 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                     ArtifactTypeId = Const.Entity._ENTITY_TYPE_ARTIFACT_ID
                 }
             );
-            
+
             int _artifactTypeIdEntity = workspace.ObjectTypes.First(x => x.Name == Const.Entity._ENTITY_OBJECT_NAME).ArtifactTypeId;
             workspace.Fields.Add(new FieldTest
             {
@@ -119,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, true, true));
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, true, false));
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, false, true));
-            
+
             FolderTest folder = workspace.Folders.First();
             IList<FieldTest> fields = workspace.Fields;
 
@@ -249,12 +248,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             workspace.Helpers.SourceProviderHelper.CreateRelativity();
 
             workspace.Helpers.DestinationProviderHelper.CreateRelativityProvider();
-            
+
             workspace.Helpers.DestinationProviderHelper.CreateLoadFile();
-            
+
             workspace.Helpers.IntegrationPointTypeHelper.CreateImportType();
             workspace.Helpers.IntegrationPointTypeHelper.CreateExportType();
-        
+
             return workspace;
         }
 

@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 // If the source provider has been changed, the code below this exception is invalid
                 invalidProperties.Add("Source Provider");
-                throw new Exception(String.Format(UnableToSaveFormat, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+                throw new Exception(String.Format(UnableToSaveFormat, string.Join(",", invalidProperties.Select(x => $" {x}"))));
             }
 
             // check permission if we want to push
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             if (invalidProperties.Any())
             {
-                throw new Exception(String.Format(UnableToSaveFormat, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+                throw new Exception(String.Format(UnableToSaveFormat, string.Join(",", invalidProperties.Select(x => $" {x}"))));
             }
         }
 

@@ -56,7 +56,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         internal void ExecuteInternal()
         {
-
             IList<Data.JobHistory> jobHistories = _jobHistoryService.GetAll();
 
             foreach (Data.JobHistory jobHistory in jobHistories)

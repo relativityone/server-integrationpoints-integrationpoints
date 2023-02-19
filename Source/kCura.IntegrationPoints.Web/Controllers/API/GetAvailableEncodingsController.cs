@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 });
             }
 
-            encodings.Sort((x, y) => String.CompareOrdinal(x.DisplayName, y.DisplayName));
+            encodings.Sort((x, y) => string.CompareOrdinal(x.DisplayName, y.DisplayName));
             return Request.CreateResponse(HttpStatusCode.OK, encodings);
         }
     }

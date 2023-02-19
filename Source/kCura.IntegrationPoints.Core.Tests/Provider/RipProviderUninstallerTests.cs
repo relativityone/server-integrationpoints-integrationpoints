@@ -19,13 +19,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
         private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
         private Mock<IApplicationGuidFinder> _appGuidFinderMock;
         private Mock<IIntegrationPointsRemover> _integrationPointRemoverMock;
-
         private RipProviderUninstaller _sut;
-
         private Data.SourceProvider _sourceProviderToDelete;
-
         private const int _APPLICATION_ID = 454342;
-
         private readonly Guid _applicationGuid = Guid.NewGuid();
 
         [SetUp]

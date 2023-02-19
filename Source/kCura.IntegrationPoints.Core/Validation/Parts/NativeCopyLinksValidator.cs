@@ -19,10 +19,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION =
             "You do not have permission to perform this operation because it uses referential links to files. " +
             "You must either log in as a system administrator or change the settings to upload files.";
-
         private const string _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE =
             "Relativity.Sync.Toggles.EnableNonAdminSyncLinksToggle";
-
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly ISerializer _serializer;
@@ -63,7 +61,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
                 _logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, Toggle {toggleName}: {toggleValue}",
                     isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE, nonAdminCanSyncUsingLinks );
-                
 
                 if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
                 {

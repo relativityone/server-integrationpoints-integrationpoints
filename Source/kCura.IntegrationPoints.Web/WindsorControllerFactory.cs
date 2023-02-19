@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.Web
     public class WindsorControllerFactory : DefaultControllerFactory
     {
         private readonly IKernel _kernel;
+
         public WindsorControllerFactory(IKernel kernel)
         {
             _kernel = kernel;

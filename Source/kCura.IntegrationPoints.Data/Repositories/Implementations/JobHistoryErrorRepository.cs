@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public int CreateItemLevelErrorsSavedSearch(int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
         {
-            //Check for all documents that are part of the current saved search
+            // Check for all documents that are part of the current saved search
             FieldRef savedSearchFieldRef = new FieldRef("(Saved Search)");
             Criteria savedSearchCriteria = new Criteria
             {
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 BooleanOperator = BooleanOperatorEnum.And
             };
 
-            //Check that the documents have not been tagged with the last Job History Object (meaning the job finished for them)
+            // Check that the documents have not been tagged with the last Job History Object (meaning the job finished for them)
             FieldRef jobHistoryFieldRef = new FieldRef(JobHistoryErrorFields.JobHistory);
             Criteria jobHistoryArtifactIdCriteria = new Criteria
             {

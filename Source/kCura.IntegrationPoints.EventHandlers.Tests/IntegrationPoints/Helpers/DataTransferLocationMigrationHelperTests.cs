@@ -11,10 +11,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
     public class DataTransferLocationMigrationHelperTests : TestBase
     {
         private const string SOURCECONFIGURATION_FILESHARE_KEY = "Fileshare";
-
         private DataTransferLocationMigrationHelper _dataTransferLocationMigrationHelper;
         private ISerializer _serializer;
-
         private string _newDataTransferLocationRoot = "DataTransfer\\Export";
 
         public override void SetUp()

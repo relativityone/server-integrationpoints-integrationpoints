@@ -233,7 +233,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
-
         [IdentifiedTest("63B88DB8-C459-4608-A92E-B39E15EEA138")]
         public void Stop_ShouldNotStopUnstoppableJob()
         {
@@ -267,7 +266,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
-
 
         [IdentifiedTest("63B88DB8-C459-4608-A92E-B39E15EEA138")]
         public void Stop_ShouldStopJobWithChildJobs()
@@ -404,7 +402,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                             new Claim("rel_uai", User.ArtifactId.ToString())
                         })
             });
-
         private JobController PrepareSut(HttpMethod method, string requestUri)
         {
             JobController sut = Container.Resolve<JobController>();

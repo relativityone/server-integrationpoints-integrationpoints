@@ -14,10 +14,15 @@
         }
 
         public int DocumentArtifactId { get; }
+
         public string Location { get; }
+
         public string Filename { get; }
+
         public long Size { get; }
+
         public int? ProductionId { get; }
+
         public string NativeIdentifier { get; }
     }
 }

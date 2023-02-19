@@ -54,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IExportDataSanitizer _exportDataSanitizer;
         private readonly object _syncRoot = new object();
         private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
+
         private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
         public ExportServiceManager(
@@ -144,7 +145,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     _repositoryFactory.GetJobHistoryRepository(extendedJob.WorkspaceId);
                 try
                 {
-
                     if (ex is IntegrationPointValidationException)
                     {
                         jobHistoryRepository.MarkJobAsValidationFailed(extendedJob.JobHistoryId,
@@ -158,7 +158,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 }
                 catch (Exception)
                 {
-
                 }
 
                 if (ex is PermissionException || ex is IntegrationPointValidationException || ex is IntegrationPointsException)
@@ -304,7 +303,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         protected override void JobHistoryErrorManagerSetup(Job job)
         {
             LogJobHistoryErrorManagerSetupStart(job);
-            //Load Job History Errors if any
+            // Load Job History Errors if any
             string uniqueJobId = GetUniqueJobId(job);
             JobHistoryErrorManager =
                 ManagerFactory.CreateJobHistoryErrorManager(SourceConfiguration.SourceWorkspaceArtifactId,
@@ -315,7 +314,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 _sourceSavedSearchArtifactID = RetrieveSavedSearchArtifactId(job);
 
-                //Load saved search for just item-level error retries
+                // Load saved search for just item-level error retries
                 if (UpdateStatusType.IsItemLevelErrorRetry())
                 {
                     Logger.LogInformation("Creating item level errors saved search for retry job.");
@@ -329,7 +328,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private int RetrieveSavedSearchArtifactId(Job job)
         {
-            //Quick check to see if saved search is still available before using it for the job
+            // Quick check to see if saved search is still available before using it for the job
             ISavedSearchQueryRepository savedSearchRepository =
                 _repositoryFactory.GetSavedSearchQueryRepository(SourceConfiguration.SourceWorkspaceArtifactId);
 
@@ -418,7 +417,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                //we can delete the temp saved search (only gets called on retry for item-level only errors)
+                // we can delete the temp saved search (only gets called on retry for item-level only errors)
                 if (UpdateStatusType == null || !UpdateStatusType.IsItemLevelErrorRetry())
                 {
                     return;

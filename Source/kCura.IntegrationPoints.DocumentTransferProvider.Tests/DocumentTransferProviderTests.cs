@@ -28,9 +28,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
             DocumentFields.RelativityDestinationCase,
             DocumentFields.JobHistory
         };
+
         private List<ArtifactDTO> _retrievieFieldsResult;
         private List<Relativity.ImportAPI.Data.Field> _getWorkspaceFieldsResult = new List<Relativity.ImportAPI.Data.Field>();
         private readonly List<int> _expectedArtifactIds = new List<int> {123, 321, 333};
+
         private readonly List<int> _excludedArtifactIds = new List<int> {987, 789, 673};
 
         [SetUp]
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
         [Test]
         public void GetEmailBodyData_HasWorkspace_CorrectlyFormatedOutput()
         {
-            //ARRANGE
+            // ARRANGE
             var repositoryFactory = Substitute.For<IRepositoryFactory>();
             var workspaceRepository = Substitute.For<IWorkspaceRepository>();
             var workspace = new WorkspaceDTO { ArtifactId = _WORKSPACE_ARTIFACT_ID, Name = "My Test workspace" };
@@ -53,10 +55,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
             var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
             var options = JsonConvert.SerializeObject(settings);
 
-            //ACT
+            // ACT
             var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("\r\nSource Workspace: My Test workspace - 1111111", returnedString);
         }
 
@@ -72,11 +74,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests
             var mockDocumentTransferProvider = new DocumentTransferProvider(Substitute.For<IImportApiFacade>(), Substitute.For<IRepositoryFactory>(), Substitute.For<IAPILog>());
             var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID };
             var options = JsonConvert.SerializeObject(settings);
-            
-            //ACT
+
+            // ACT
             var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual("", returnedString);
         }
 

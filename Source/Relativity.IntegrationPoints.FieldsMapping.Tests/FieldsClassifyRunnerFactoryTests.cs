@@ -9,10 +9,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
     public class FieldsClassifyRunnerFactoryTests
     {
         private IFieldsClassifyRunnerFactory _sut;
-
         private Mock<IImportApiFacade> _importApiFacadeFake;
         private Mock<IFieldsRepository> _fieldsRepositoryFake;
-
         private const int _ARTIFACT_TYPE_ID = 111;
 
         [SetUp]

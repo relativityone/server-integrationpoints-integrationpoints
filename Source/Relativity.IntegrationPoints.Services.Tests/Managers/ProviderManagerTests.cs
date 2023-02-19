@@ -407,7 +407,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             result.Success.Should().BeFalse("because provider was not uninstalled successfully");
             result.ErrorMessage.Should().Be(errorMessage, $"becuase {nameof(RipProviderUninstaller)} returned this error");
         }
-        
+
         [Test]
         public async Task UninstallProviderAsyncShouldReturnErrorAndLogFatalWhenRipProviderUninstallerReturnedBottom()
         {

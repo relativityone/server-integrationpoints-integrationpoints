@@ -4,7 +4,6 @@ namespace kCura.IntegrationPoints.Data.Attributes
 {
     public class DynamicFieldAttribute : Attribute
     {
-
         public DynamicFieldAttribute(string fieldName, string fieldGuid, string type)
         {
             this.FieldName = fieldName;
@@ -37,10 +36,15 @@ namespace kCura.IntegrationPoints.Data.Attributes
         }
 
         public string FieldName { get; set; }
+
         public string Type { get; set; }
+
         public int Length { get; set; }
+
         public Type ChoiceFieldStringEnum { get; set; }
+
         public string ObjectFieldArtifactType { get; set; }
+
         public Guid FieldGuid { get; set; }
 
     }

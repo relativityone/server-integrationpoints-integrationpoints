@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public IntegrationPointTypeHelper(WorkspaceTest workspace) : base(workspace)
         {
         }
-        
+
         public IntegrationPointTypeTest CreateImportType()
         {
             var integrationPointType = new IntegrationPointTypeTest

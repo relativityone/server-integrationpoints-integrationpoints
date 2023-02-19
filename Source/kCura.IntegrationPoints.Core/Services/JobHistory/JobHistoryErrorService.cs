@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Services
     public class JobHistoryErrorService : IJobHistoryErrorService
     {
         public const int ERROR_BATCH_SIZE = 5000;
-
         private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
         private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
         private readonly Guid _errorStatusField = new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678");
@@ -29,12 +28,10 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly Guid _sourceUniqueIdField = new Guid("5519435E-EE82-4820-9546-F1AF46121901");
         private readonly Guid _stackTraceField = new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF");
         private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
-
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
         private readonly ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
-
         private bool _errorOccurredDuringJob;
 
         public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IHelper helper, IIntegrationPointRepository integrationPointRepository)

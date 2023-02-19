@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             _artifactsToDelete = artifactsToDelete;
         }
 
-
         public void Execute()
         {
             List<int> artifactIds = _artifactsToDelete.GetIds();

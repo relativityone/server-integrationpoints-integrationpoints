@@ -12,12 +12,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.JobHistory
     {
         private JobHistoryAccess _jobHistoryAccess;
 
-
         public override void SetUp()
         {
             _jobHistoryAccess = new JobHistoryAccess(new DestinationParser());
         }
-        
+
         [TestCaseSource(nameof(TestCases))]
         public void ItShouldFilterWorkspaces(TestData testData)
         {
@@ -38,7 +37,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.JobHistory
         public class TestData
         {
             public IList<JobHistoryModel> JobHistories { get; private set; }
+
             public IList<JobHistoryModel> ExpectedJobHistories { get; private set; }
+
             public IList<int> Workspaces { get; private set; }
 
             public static TestData EmptyJobHistoriesList()

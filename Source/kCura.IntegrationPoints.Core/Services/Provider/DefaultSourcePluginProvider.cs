@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
     public class DefaultSourcePluginProvider : IPluginProvider
     {
         private readonly GetApplicationBinaries _getApplicationBinaries;
+
         public DefaultSourcePluginProvider(GetApplicationBinaries getApplicationBinaries)
         {
             _getApplicationBinaries = getApplicationBinaries;

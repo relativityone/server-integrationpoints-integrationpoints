@@ -13,9 +13,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class TagSavedSearchFolderTests : TestBase
     {
         private const int _WORKSPACE_ID = 513406;
-
         private IKeywordSearchRepository _keywordSearchRepository;
-
         private TagSavedSearchFolder _instance;
 
         public override void SetUp()

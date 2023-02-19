@@ -3,6 +3,7 @@
     public class EntityExportToLoadFileDetails : ExportToLoadFileDetailsModel
     {
         public string View { get; set; }
+
         public bool SelectAllFields { get; set; }
     }
 }

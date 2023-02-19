@@ -48,9 +48,9 @@ namespace kCura.IntegrationPoints.Data.Factories
         /// <param name="workspaceArtifactId">The workspace artifact id.</param>
         /// <returns>A class implementing the IFieldQueryRepository interface.</returns>
         IFieldQueryRepository GetFieldQueryRepository(int workspaceArtifactId);
-        
+
         IFieldRepository GetFieldRepository(int workspaceArtifactId);
-        
+
         /// <summary>
         /// Returns a class implementing the IJobHistoryRepository interface.
         /// </summary>
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Data.Factories
         /// <param name="workspaceArtifactId">The workspace artifact id.</param>
         /// <returns>A class implementing the ISourceJobRepository interface.</returns>
         ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId);
-        
+
         /// <summary>
         /// Returns a class implementing the ISourceProviderRepository interface
         /// </summary>
@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.Data.Factories
         /// </summary>
         /// <returns>A class implementing the IResourcePoolRepository interface.</returns>
         IResourcePoolRepository GetResourcePoolRepository();
-        
+
         IKeywordSearchRepository GetKeywordSearchRepository();
 
         /// <summary>

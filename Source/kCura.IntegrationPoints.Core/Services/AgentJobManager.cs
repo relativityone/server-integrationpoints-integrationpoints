@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Services
             try
             {
                 string serializedDetails = null;
-                if(jobDetails != null)
+                if (jobDetails != null)
                 {
                     serializedDetails = _serializer.Serialize(jobDetails);
                 }
@@ -84,10 +84,10 @@ namespace kCura.IntegrationPoints.Core.Services
             return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
         }
 
-        public void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
+        public Job CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
             long? parentJobId = null) where T: class
         {
-            CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
+            return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
         }
 
         public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Services
                         results[parameter.BatchInstance] = new List<Job> {job};
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     LogTaskParametersDeserializationError(e);
                     // in case of the serialization fails for whatever reasons.
@@ -151,7 +151,6 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             return bacthedAgentJobs[batchId];
         }
-
 
         public void StopJobs(IList<long> jobIds)
         {

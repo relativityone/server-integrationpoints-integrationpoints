@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         private Job _testJob;
         private Guid _testGuid;
         private TaskType _task;
-
         private const long _createdJobId = 1;
 
         [SetUp]
@@ -42,13 +41,13 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         [Test]
         public void TestJobSubmitter()
         {
-            //Arrange
+            // Arrange
             string sorawit = "sorawit";
 
-            //Act
+            // Act
             _instance.SubmitJob(sorawit);
 
-            //Assert
+            // Assert
             _jobManager.Received(1).CreateJobWithTracker(
                 _testJob,
                 Arg.Is<TaskParameters>(x => x.BatchInstance == _testGuid && (string)x.BatchParameters == sorawit),

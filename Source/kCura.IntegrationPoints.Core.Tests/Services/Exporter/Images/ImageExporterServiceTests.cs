@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
     public class ImageExporterServiceTests : TestBase
     {
         private ImageExporterService _sut;
-        
         private IDocumentRepository _documentRepository;
         private IRepositoryFactory _repositoryFactoryMock;
         private IJobStopManager _jobStopManager;
@@ -37,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         private IFileRepository _fileRepository;
         private IRelativityObjectManager _relativityObjectManager;
         private ISerializer _serializer;
-        
         private const int _START_AT = 0;
         private const int _SEARCH_ARTIFACT_ID = 0;
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
@@ -84,7 +82,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             _fileRepository = Substitute.For<IFileRepository>();
         }
 
-        
         [Test]
         public void ItShouldGetDataTransferContext()
         {
@@ -139,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             _sut = new ImageExporterService(
                 _documentRepository,
                 _relativityObjectManager,
-                _repositoryFactoryMock, 
+                _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
                 _helper,
@@ -190,7 +187,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             _sut = new ImageExporterService(
                 _documentRepository,
                 _relativityObjectManager,
-                _repositoryFactoryMock, 
+                _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
                 _helper,
@@ -216,7 +213,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         {
             const int productionArtifactID = 10010;
             const int documentCount = 50;
-
 
             SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch, productionArtifactID);
 
@@ -290,13 +286,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
         }
 
-
         [Test]
         public void RetrieveData_ShouldRespectImagePrecedenceSetting()
         {
             const int productionArtifactID = 10010;
             const int documentCount = 50;
-
 
             SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch, productionArtifactID);
 
@@ -354,16 +348,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             ArtifactDTO[] actual = _sut.RetrieveData(0);
             var sourceProductionIds = actual.Select(x => x.GetFieldByName("NATIVE_FILE_PATH_001").Value.ToString().Split('_').First()).ToArray();
 
-
             // Assert
             actual.Length.Should().Be(documentCount);
-
 
             sourceProductionIds.Take(3).All(x => x == "1").Should().BeTrue();
             sourceProductionIds.Skip(3).Take(3).All(x => x == "2").Should().BeTrue();
             sourceProductionIds.Skip(6).All(x => x == "3").Should().BeTrue();
         }
-        
+
         private SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)
         {
             var sourceConfiguration = new SourceConfiguration()
@@ -381,7 +373,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         {
             var data = new Dictionary<string, object>
             {
-                {"Control Number", "AZIPPER_0007293"},
+                {"Control Number", "AZIPPER_0007293" },
                 {"ArtifactID", documentArtifactId}
             };
             var relativityObjectSlimDto = new RelativityObjectSlimDto(documentArtifactId, data);
@@ -393,7 +385,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         {
             return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
         }
-        
+
         private ILookup<int, ImageFile> CreateDocumentImageResponses(int[] ids)
         {
             return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));

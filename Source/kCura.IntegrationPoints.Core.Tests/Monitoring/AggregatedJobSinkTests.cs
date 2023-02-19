@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
         private IMetricsManager _sum, _apm;
         private IDateTimeHelper _dateTimeHelper;
         private IRipMetrics _ripMetrics;
-
         private string _provider = "TestProvider";
         private string _correlationId;
         private AggregatedJobSink _sink;
@@ -564,7 +563,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
                     x.CustomData[JobStatistics.METADATA_KEY_NAME].Equals(expectedMetaBytes)
                 ));
         }
-
 
         [Test]
         public void ShouldSendAggregatedJobStatisticsWithAdditionalSumMetrics()

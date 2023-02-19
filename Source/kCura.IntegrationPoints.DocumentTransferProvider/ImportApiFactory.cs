@@ -3,14 +3,12 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.Relativity.ImportAPI;
 
-
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
     public class ImportApiFactory : IImportApiFactory
     {
         private readonly IWebApiConfig _webApiConfig;
         private readonly IAuthTokenGenerator _authTokenGenerator;
-
         private class RelativityTokenProvider : IRelativityTokenProvider
         {
             private readonly IAuthTokenGenerator _authTokenGenerator;

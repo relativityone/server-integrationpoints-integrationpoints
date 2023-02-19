@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
         private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
         private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
-
         private readonly IManagerFactory _managerFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
@@ -45,6 +44,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             try
             {
+                _log.LogInformation("'Run' button clicked for Integration Point id: {id}", payload.ArtifactId);
+
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
                 IntegrationPointSlimDto integrationPoint = _integrationPointService
@@ -81,6 +82,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
         public HttpResponseMessage Retry(Payload payload, bool switchToAppendOverlayMode = false)
         {
+            _log.LogInformation("'Retry' button clicked for Integration Point id: {id}", payload.ArtifactId);
+
             AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
             HttpResponseMessage httpResponseMessage = RunInternal(
@@ -225,6 +228,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public class Payload
         {
             public int AppId { get; set; }
+
             public int ArtifactId { get; set; }
         }
 

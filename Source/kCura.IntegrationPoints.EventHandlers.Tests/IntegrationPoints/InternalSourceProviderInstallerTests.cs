@@ -22,11 +22,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
         private Mock<IRipProviderInstaller> _ripProviderInstallerMock;
         private Mock<IEHHelper> _helperMock;
         private Mock<IKubernetesMode> _kubernetesModeFake;
-
         private SourceProvider _sourceProvider;
-
         private SubjectUnderTest _sut;
-
         private const int _APPLICATION_ID = 3232;
         private const int _WORKSPACE_ID = 84221;
 

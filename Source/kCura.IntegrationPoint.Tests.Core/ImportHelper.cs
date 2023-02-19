@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoint.Tests.Core
     public class ImportHelper
     {
         private const int _CONTROL_NUMBER_FIELD_ARTIFACT_ID = 1003667;
-
         private readonly bool _withNatives;
 
         public List<string> Messages { get; } = new List<string>();
@@ -23,10 +22,11 @@ namespace kCura.IntegrationPoint.Tests.Core
         {
             _withNatives = withNatives;
         }
+
         public bool HasErrors => ErrorMessages.Any();
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="workspaceArtifactId"></param>
         /// <param name="documentsTestData"></param>
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
             return !HasErrors;
         }
-        
+
         public bool ImportToProductionSet(int workspaceID, int productionID, DataTable data)
         {
             Messages.Clear();
@@ -74,9 +74,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
             // Indicates filepath for an image.
             importJob.Settings.FileLocationField = "File";
-            //Indicates that the images must be copied to the document repository
+            // Indicates that the images must be copied to the document repository
             importJob.Settings.CopyFilesToDocumentRepository = true;
-            //For testing purpose
+            // For testing purpose
             importJob.Settings.DisableImageTypeValidation = true;
 
             // Specifies the ArtifactID of a document identifier field, such as a control number.
@@ -148,9 +148,9 @@ namespace kCura.IntegrationPoint.Tests.Core
             // Indicates filepath for an image.
             importJob.Settings.FileLocationField = "File";
             importJob.Settings.BatesNumberField = "Bates Beg";
-            //Indicates that the images must be copied to the document repository
+            // Indicates that the images must be copied to the document repository
             importJob.Settings.CopyFilesToDocumentRepository = true;
-            //For testing purpose
+            // For testing purpose
             importJob.Settings.DisableImageTypeValidation = true;
 
             // Specifies the ArtifactID of a document identifier field, such as a control number.

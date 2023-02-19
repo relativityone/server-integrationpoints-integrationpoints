@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
         public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
         public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
-
         private int _destinationArtifactTypeId;
 
         public ImportSettings()

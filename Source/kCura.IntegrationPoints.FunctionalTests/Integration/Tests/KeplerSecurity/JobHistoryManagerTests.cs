@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
 
         [SetUp]
         public void Setup() => _sut = new JobHistoryManager(Logger, PermissionRepositoryFactory, Container);
-        
+
         [Test]
         public void GetJobHistoryAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 return _sut.GetJobHistoryAsync(request);
             });
         }
-        
+
         [TestCaseSource(typeof(PermissionsForJobHistoryManager))]
         public void GetJobHistoryAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         }
 
         #region Permissions
-     
+
         class PermissionsForJobHistoryManager : PermissionPermutator
         {
             protected override IEnumerable<PermissionSetup> NeededPermissions => new[]
@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
                 }
             };
         }
-        
+
         #endregion
     }
 }

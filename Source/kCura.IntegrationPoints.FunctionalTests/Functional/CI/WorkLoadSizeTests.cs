@@ -9,6 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
     public class WorkLoadSizeTests : TestsBase
     {
         private readonly WorkloadSizeTestImplementation _workloadSizeTestImplementation;
+
         public WorkLoadSizeTests() : base(nameof(WorkLoadSizeTests))
         {
             _workloadSizeTestImplementation = new WorkloadSizeTestImplementation();
@@ -20,7 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             WorkloadSize expectedValue = WorkloadSize.One;
             // ARRANGE
             _workloadSizeTestImplementation.AddMockJobToSqlTable();
-            
+
             // ACT
             WorkloadSize workloadSizeReturned = await _workloadSizeTestImplementation.RequestWorkloadSizeFromRIPAsync().ConfigureAwait(false);
 

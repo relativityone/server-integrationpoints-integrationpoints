@@ -32,10 +32,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private const string _VIEW_ERRORS = "View Errors";
         private const string _SAVE_AS_PROFILE = "Save as Profile";
         private const string _DOWNLOAD_ERROR_FILE = "Download Error File";
-
         private ConsoleBuilder _consoleBuilder;
         private OnClickEventDTO _onClickEventDTO;
-
         private bool ButtonExists(IEnumerable<IConsoleItem> items, string buttonName)
         {
             return FindButton(items, buttonName) != null;
@@ -103,7 +101,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             var expectedButtons = GetExpectedButtons(buttonState);
 
             var console = _consoleBuilder.CreateConsole(buttonState, _onClickEventDTO);
-            
+
             foreach (var expectedButton in expectedButtons)
             {
                 Assert.That(ButtonExists(console.Items, expectedButton));

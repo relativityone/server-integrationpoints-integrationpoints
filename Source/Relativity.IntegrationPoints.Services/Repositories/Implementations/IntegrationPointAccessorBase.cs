@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         protected string GetOverwriteFieldsName(int overwriteFieldsId)
         {
-            //TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
+            // TODO remove this hack when IntegrationPointModel will start using ChoiceId instead of ChoiceName
             return GetOverwriteFieldChoices().First(x => x.ArtifactId == overwriteFieldsId).Name;
         }
 

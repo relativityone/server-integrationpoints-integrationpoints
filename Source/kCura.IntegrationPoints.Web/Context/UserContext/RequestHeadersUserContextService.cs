@@ -7,7 +7,6 @@ namespace kCura.IntegrationPoints.Web.Context.UserContext
     {
         private const string _USER_HEADER_VALUE = "X-IP-USERID";
         private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
-
         private readonly HttpRequestBase _httpRequest;
         private readonly IUserContext _nextUserContextService;
 

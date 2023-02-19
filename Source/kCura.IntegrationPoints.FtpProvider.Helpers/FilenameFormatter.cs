@@ -9,21 +9,21 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
 {
     public static class FilenameFormatter
     {
-        public static String FormatFilename(String filename, Char wildCard, DateTime date)
+        public static string FormatFilename(string filename, char wildCard, DateTime date)
         {
             var indexes = FindAllIndexes(filename, wildCard);
             var replacements = FindTextToBeReplaced(filename, indexes, date);
             var final = InsertReplacementText(filename, replacements, wildCard);
             return final;
         }
-        internal static Int32[] FindAllIndexes(String filename, Char wildCard)
+        internal static int[] FindAllIndexes(string filename, char wildCard)
         {
             var cnt = filename.Count(c => c == wildCard);
             if (cnt % 2 != 0)
             {
                 throw new Exceptions.UnevenNumberOfWildCardCharactersException();
             }
-            var retVal = new Int32[cnt];
+            var retVal = new int[cnt];
             var retValCnt = 0;
 
             for (var i = 0; i < filename.Length; i++)
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             return retVal;
         }
 
-        internal static TextReplacement[] FindTextToBeReplaced(String input, Int32[] indexes, DateTime date)
+        internal static TextReplacement[] FindTextToBeReplaced(string input, int[] indexes, DateTime date)
         {
             var retVal = new TextReplacement[indexes.Length / 2];
             var replacementCnt = 0;
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             return retVal;
         }
 
-        internal static String InsertReplacementText(String filename, TextReplacement[] replacements, Char searchChar)
+        internal static string InsertReplacementText(string filename, TextReplacement[] replacements, char searchChar)
         {
             var updatedText = filename;
 
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             return updatedText;
         }
 
-        public static String FormatFtpPath(String path)
+        public static string FormatFtpPath(string path)
         {
             var retVal = path.Trim();
             retVal = retVal.Replace("\\", "/");

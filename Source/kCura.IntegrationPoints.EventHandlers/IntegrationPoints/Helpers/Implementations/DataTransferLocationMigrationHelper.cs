@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             {
                 if (processingSourceLocation == currentExportLocation)
                 {
-                    //This means that previous Export was done to root of Processing Source Location therefore new destination folder is also root of new Data Transfer Location
+                    // This means that previous Export was done to root of Processing Source Location therefore new destination folder is also root of new Data Transfer Location
                     return string.Empty;
                 }
 
@@ -56,9 +56,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 {
                     string exportDestinationFolder = currentExportLocation.Substring(processingSourceLocation.Length);
 
-                    //In case exportDestinationFolder contains '\\' characters in front we need to trim it.
-                    //If path2 does not include a root, the result is a concatenation of the two paths, with an intervening separator character. 
-                    //If path2 includes a root, path2 is returned.
+                    // In case exportDestinationFolder contains '\\' characters in front we need to trim it.
+                    // If path2 does not include a root, the result is a concatenation of the two paths, with an intervening separator character.
+                    // If path2 includes a root, path2 is returned.
                     return exportDestinationFolder.TrimStart('/', '\\');
                 }
             }

@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private IArtifactGuidManager _testInstance;
         private IRepositoryFactory _repositoryFactory;
         private IArtifactGuidRepository _artifactGuidRepository;
-
         private const int _WORKSPACE_ID = 100532;
 
         [SetUp]

@@ -14,7 +14,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
     public class NotSupportedByIAPIFieldsClassifierTests
     {
         private const int _ARTIFACT_TYPE_ID = 123;
-
         private Mock<IImportApiFacade> _importApiFacadeFake;
         private NotSupportedByIAPIFieldsClassifier _sut;
 

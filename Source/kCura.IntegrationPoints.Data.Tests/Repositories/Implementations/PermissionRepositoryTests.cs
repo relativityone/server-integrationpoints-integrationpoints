@@ -295,7 +295,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Returns(permissionValues);
 
             // Act
-            bool result = _sut.UserHasArtifactTypePermissions(artifactTypeId, new [] { ArtifactPermission.View });
+            bool result = _sut.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View });
 
             // Assert
             Assert.IsTrue(result);

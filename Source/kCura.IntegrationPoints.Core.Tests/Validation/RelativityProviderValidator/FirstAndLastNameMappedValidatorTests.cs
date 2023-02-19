@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const string _LAST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\""+EntityFieldNames.LastName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                               "\"destinationField\":{\"displayName\":\""+EntityFieldNames.LastName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                               "\"fieldMapType\":\"None\"}";
-
         private readonly JSONSerializer _serializer = new JSONSerializer();
 
         [SetUp]
@@ -40,14 +39,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [Test]
         public void ItShouldValidateFieldMapWhenFirstAndLastAreNamePresent()
         {
-            //Arrange
+            // Arrange
             string fieldMap = $"[{_FIRST_NAME_FIELD_MAP},{_LAST_NAME_FIELD_MAP}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 
-            //Act
+            // Act
             ValidationResult validationResult = _sut.Validate(integrationPointProviderValidationModel);
 
-            //Assert
+            // Assert
             validationResult.IsValid.Should().BeTrue();
             validationResult.Messages.Should().BeEmpty();
         }
@@ -57,14 +56,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [TestCase(_FULLNAME_FIELD_MAP)]
         public void ItShouldFailValidationFieldMapWhenFirstOrLastNameIsMissing(string field)
         {
-            //Arrange
+            // Arrange
             string fieldMap = $"[{field}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
 
-            //Act
+            // Act
             ValidationResult validationResult = _sut.Validate(integrationPointProviderValidationModel);
 
-            //Assert
+            // Assert
             validationResult.IsValid.Should().BeFalse();
             validationResult.Messages.Should().NotBeEmpty();
         }

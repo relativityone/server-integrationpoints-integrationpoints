@@ -19,10 +19,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
         private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
         private Mock<IViewManager> _viewManager;
         private Mock<IServicesMgr> _servicesMgrFake;
-
         private const int _WORKSPACE_ID = 111;
         private const int _SAVED_SEACH_ID = 222;
-
         private ExportedArtifactNameRepository _sut;
 
         [SetUp]

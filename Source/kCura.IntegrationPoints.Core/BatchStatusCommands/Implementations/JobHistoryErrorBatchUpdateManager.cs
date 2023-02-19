@@ -252,6 +252,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private struct UpdateErrorStatusData
         {
             public IScratchTableRepository ScratchTableRepository { get; }
+
             public Guid ErrorStatusValue { get; }
 
             public UpdateErrorStatusData(IScratchTableRepository scratchTableRepository, Guid errorStatusValue)

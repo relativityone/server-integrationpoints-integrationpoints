@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// <param name="objectTypeGuid">The GUID of the object type to find.</param>
         /// <returns>The Descriptor Artifact Type ID for the object type, <code>NULL</code> if not found.</returns>
         int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid);
-        
+
         /// <summary>
         /// Retrieves the Artifact ID for the given object type name.
         /// </summary>

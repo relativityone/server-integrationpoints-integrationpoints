@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
         protected readonly IExporterService RelativityExporterService;
         protected readonly int FolderPathFieldSourceArtifactId;
         protected readonly IScratchTableRepository[] ScratchTableRepositories;
-
         public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 
         protected ExportTransferDataReaderBase(

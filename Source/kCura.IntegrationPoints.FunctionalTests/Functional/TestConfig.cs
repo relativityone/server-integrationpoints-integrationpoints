@@ -29,7 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional
         public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
 
         public static string LogsDirectoryPath => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
-
         private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
             ? TestContext.Parameters[name]
             : ConfigurationManager.AppSettings.Get(name);

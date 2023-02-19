@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.Helpers
         private const char _LAST_PRINTABLE_ASCII_CHARACTER = (char)126;
         private const string _ERROR_MESSAGE = "EM";
         private readonly char[] _forbiddenPrintableCharacters = { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
+
         private readonly NonValidCharactersValidator _validator = new NonValidCharactersValidator();
 
         [TestCase("abc")]

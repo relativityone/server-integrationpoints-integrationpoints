@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoints.Data.Tests
         {
             return new ArtifactDTO[]
             {
-                new ArtifactDTO(1,10, String.Empty, new ArtifactFieldDTO[0]),
-                new ArtifactDTO(10,10, String.Empty, new ArtifactFieldDTO[0]),
+                new ArtifactDTO(1,10, string.Empty, new ArtifactFieldDTO[0]),
+                new ArtifactDTO(10,10, string.Empty, new ArtifactFieldDTO[0]),
             };
         }
 

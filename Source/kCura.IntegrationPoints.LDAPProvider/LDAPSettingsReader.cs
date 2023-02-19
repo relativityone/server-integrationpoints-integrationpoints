@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
             }
             catch (JsonReaderException)
             {
-                // We're just checking if options aren't sent as JSON string inside JSON. 
+                // We're just checking if options aren't sent as JSON string inside JSON.
                 // If deserialization throws it only means this wasn't the case and we're returning original options string as a result.
             }
 
@@ -74,15 +74,15 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
             if (!settings.MultiValueDelimiter.HasValue || settings.MultiValueDelimiter.ToString() == string.Empty)
             {
-                //not knowing what data can look like we will assume 
-                //blank entry (" ") is possible user entry as legit delimiter
+                // not knowing what data can look like we will assume
+                // blank entry (" ") is possible user entry as legit delimiter
                 LogUsageOfDefaultMultiValueDelimiter();
                 settings.MultiValueDelimiter = LDAPSettings.MULTIVALUEDELIMITER_DEFAULT;
             }
         }
 
         #region logging
-        
+
         private void LogUsageOfDefaultMultiValueDelimiter()
         {
             _logger.LogWarning(

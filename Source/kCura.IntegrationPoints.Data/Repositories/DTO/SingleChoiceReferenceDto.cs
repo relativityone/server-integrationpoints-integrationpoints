@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.DTO
         {
             Guid = ChoiceValueGuid
         };
-        
+
         public SingleChoiceReferenceDto(Guid choiceValueGuid)
         {
             ChoiceValueGuid = choiceValueGuid;

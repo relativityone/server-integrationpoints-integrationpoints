@@ -29,12 +29,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         {
             public const string _MY_FIRST_PROVIDER = "C9DE331D-2DCA-4F78-85BD-91493D0B9B37";
         }
-        
+
         public static class Document
         {
             public static readonly string _DOCUMENT_NAME = "Document";
             public static readonly Guid _DOCUMENT_GUID = new Guid("2A3F1212-C8CA-4FA9-AD6B-F76C97F05438");
-            
+
         }
 
 
@@ -134,7 +134,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                     EntityFieldGuids.FullNameGuid,
                     EntityFieldGuids.ManagerGuid
                 };
-            }            
+            }
         }
         public static class FieldOverlayBehaviorName
         {

@@ -16,9 +16,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         private const string _PROMOTE_GUID = "4E418A56-90C5-4E59-A1C5-C43C11A3CCFF";
         private const string _INCLUDE_GUID = "6884BAC4-DD8F-4087-9C17-B4BCE99815D5";
         private const string _EXCLUDE_GUID = "DB110A00-AC87-4C40-96E2-827BF9B18909";
-
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
-
         private readonly IRelativityObjectManagerFactory _releRelativityObjectManagerFactory;
 
         public DocumentAccessor(IRelativityObjectManagerFactory relativityObjectManagerFactory)
@@ -39,7 +37,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             var queryDocsPushedToReview = new QueryRequest
             {
                 Condition = $"'{destinationWorkspaceDisplayName}' ISSET",
-                Fields = new [] { new FieldRef { Guid = new Guid(_DESTINATION_WORKSPACE_FIELD_GUID) } },
+                Fields = new[] { new FieldRef { Guid = new Guid(_DESTINATION_WORKSPACE_FIELD_GUID) } },
                 ObjectType = new ObjectTypeRef { ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID }
 
             };
@@ -197,7 +195,6 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             INNER JOIN Field AS F WITH (NOLOCK)
             ON F.ArtifactID = A.ArtifactID
             WHERE ArtifactGuid = @artifactGuid";
-
         private const string _DOCUMENT_VOLUME_SQL = @"
             SELECT TOP(30) [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
             FROM [eddsdbo].[DocumentVolume] WITH (NOLOCK)

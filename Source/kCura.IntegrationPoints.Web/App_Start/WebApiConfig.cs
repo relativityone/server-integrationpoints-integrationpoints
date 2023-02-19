@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web
             config.Routes.MapHttpRoute(
                 name: "GetProfile",
                 routeTemplate: "{workspaceID}/api/IntegrationPointProfilesAPI/{artifactId}",
-                defaults: new {controller = "IntegrationPointProfilesAPI", action = "Get"},
+                defaults: new {controller = "IntegrationPointProfilesAPI", action = "Get" },
                 constraints: new {artifactId = @"^[0-9]+$"}
             );
 
@@ -393,7 +393,7 @@ namespace kCura.IntegrationPoints.Web
                 routeTemplate: "{workspaceID}/api/WorkspaceFinder/{federatedInstanceId}",
                 defaults: new {controller = "WorkspaceFinder", action = "GetFederatedInstanceWorkspaces"}
             );
-            
+
             config.Routes.MapHttpRoute(
                 name: "CheckToggle",
                 routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",

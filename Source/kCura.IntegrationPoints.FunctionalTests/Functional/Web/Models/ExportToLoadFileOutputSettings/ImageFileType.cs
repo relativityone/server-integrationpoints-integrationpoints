@@ -2,7 +2,6 @@
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models.ExportToLoadFileOutputSettings
 {
-    
     public enum ImageFileTypes
     {
         [Term("Single page TIFF/JPEG")]

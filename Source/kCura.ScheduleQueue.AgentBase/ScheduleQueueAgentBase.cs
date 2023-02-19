@@ -33,7 +33,6 @@ namespace kCura.ScheduleQueue.AgentBase
     public abstract class ScheduleQueueAgentBase : Agent.AgentBase
     {
         private const int _MAX_MESSAGE_LENGTH = 10000;
-
         private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
         {
             [LogCategory.Debug] = 20,
@@ -44,7 +43,6 @@ namespace kCura.ScheduleQueue.AgentBase
         private readonly Lazy<int> _agentId;
         private readonly Lazy<IAPILog> _loggerLazy;
         private readonly Guid _agentInstanceGuid;
-
         private readonly bool _shouldReadJobOnce = false; // Only for testing purposes. DO NOT MODIFY IT!
 
         private IAgentService _agentService;
@@ -58,7 +56,6 @@ namespace kCura.ScheduleQueue.AgentBase
         private IAPM _apm;
         private IDbContextFactory _dbContextFactory;
         private IRelativityObjectManagerFactory _objectManagerFactory;
-
         private DateTime _agentStartTime;
 
         protected ScheduleQueueAgentBase(
@@ -112,7 +109,6 @@ namespace kCura.ScheduleQueue.AgentBase
         protected virtual IAPILog Logger => _loggerLazy.Value;
 
         protected IJobService JobService => _jobService;
-
         private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
 
         public sealed override void Execute()

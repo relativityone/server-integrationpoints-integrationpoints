@@ -22,9 +22,11 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Messages
         }
 
         public string CorrelationID { get; set; }
+
         public int WorkspaceID { get; set; }
+
         public string UnitOfMeasure { get; set; }
-        
+
         public Dictionary<string, object> CustomData { get; set; } = new Dictionary<string, object>();
 
         protected void Set(object value, [CallerMemberName] string key = "")

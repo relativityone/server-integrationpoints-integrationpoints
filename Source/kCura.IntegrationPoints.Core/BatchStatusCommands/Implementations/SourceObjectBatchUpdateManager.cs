@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
     {
         private int _destinationWorkspaceRdoId;
         private bool _errorOccurDuringJobStart;
-
         private readonly JobHistory _jobHistory;
         private readonly int _destinationWorkspaceID;
         private readonly int? _federatedInstanceID;

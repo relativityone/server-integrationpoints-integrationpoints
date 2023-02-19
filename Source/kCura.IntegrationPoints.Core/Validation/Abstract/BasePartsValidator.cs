@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
     public abstract class BasePartsValidator<T> : IValidator
     {
-        public virtual string Key => String.Empty;
+        public virtual string Key => string.Empty;
 
         public ValidationResult Validate(object value)
         {

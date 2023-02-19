@@ -40,10 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                });
         }
 
-        private bool IsSourceProviderQuery(QueryRequest query) => 
+        private bool IsSourceProviderQuery(QueryRequest query) =>
             query.ObjectType.Guid == ObjectTypeGuids.SourceProviderGuid;
-
-
         private bool IsSourceIdentifierCondition(string condition, out string identifierValue)
         {
             if (condition != null)

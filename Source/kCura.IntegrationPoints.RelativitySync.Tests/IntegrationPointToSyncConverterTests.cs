@@ -21,6 +21,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Toggles;
 using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
@@ -38,10 +39,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ISerializer> _serializerFake;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
+        private Mock<IToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
         private ExtendedImportSettings _destinationConfiguration;
-
         private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;
@@ -76,11 +77,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateNativeDestinationConfiguration();
             _sourceConfiguration = CreateSourceConfiguration();
 
+            _toggleProviderFake = new Mock<IToggleProvider>();
+
             _sut = new IntegrationPointToSyncConverter(
                 _serializerFake.Object,
                 _jobHistoryServiceFake.Object,
                 jobHistorySyncService.Object,
                 syncOperations,
+                _toggleProviderFake.Object,
                 log.Object);
         }
 

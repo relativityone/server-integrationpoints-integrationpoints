@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
         private Mock<IWindsorContainer> _containerFake;
         private Mock<IDateTimeHelper> _dateTimeHelperFake;
         private Mock<IControllerActionExecutionTimeMetrics> _controllerActionExecutionTimeMetricsMock;
-
         private const string _ITEM_KEY_NAME = "ApiActionExecutionStartTimestamp";
 
         [SetUp]

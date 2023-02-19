@@ -9,11 +9,17 @@ namespace kCura.IntegrationPoints.Domain.Models
     public class SourceWorkspaceDTO
     {
         public static readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+
         public int ArtifactTypeId { get; set; }
+
         public int ArtifactId { get; set; }
+
         public string Name { get; set; }
+
         public int SourceCaseArtifactId { get; set; }
+
         public string SourceCaseName { get; set; }
+
         public string SourceInstanceName { get; set; }
 
         public SourceWorkspaceDTO()
@@ -61,22 +67,22 @@ namespace kCura.IntegrationPoints.Domain.Models
             {
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_NAME_FIELD_NAME},
+                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_NAME_FIELD_NAME },
                     Value = Name
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME},
+                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME },
                     Value = SourceCaseArtifactId
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME},
+                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME },
                     Value = SourceCaseName
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME},
+                    Field = new FieldRef { Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME },
                     Value = SourceInstanceName
                 }
             };

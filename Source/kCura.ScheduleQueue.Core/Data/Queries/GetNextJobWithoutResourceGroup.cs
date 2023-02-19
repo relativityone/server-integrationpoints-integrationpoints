@@ -10,7 +10,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class GetNextJobWithoutResourceGroup : IQuery<DataTable>
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly int _agentId;
         private readonly int _agentTypeId;
         private readonly long? _rootJobId;
@@ -27,7 +26,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         public DataTable Execute()
         {
             string sql = string.Format(Resources.GetNextJobWithoutResourceGroup, _dbContext.TableName);
-            
+
             List<SqlParameter> sqlParams = new List<SqlParameter>
             {
                 new SqlParameter("@AgentID", _agentId),

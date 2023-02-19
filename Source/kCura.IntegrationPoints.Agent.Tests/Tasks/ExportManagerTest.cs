@@ -35,18 +35,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         #region Private Fields
 
         private ExportManager _instanceToTest;
-
         private IJobManager _jobManagerMock;
         private IHelper _helperMock;
         private ISerializer _serializerMock;
         private IExportInitProcessService _exportInitProcessService;
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointRepository _integrationPointRepositoryMock;
-
         private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
                 DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
 
-        #endregion //Private Fields
+        #endregion // Private Fields
 
         [SetUp]
         public override void SetUp()

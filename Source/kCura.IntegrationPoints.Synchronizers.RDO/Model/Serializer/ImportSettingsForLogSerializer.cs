@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Model.Serializer
 
         public string Serialize(ImportSettings importSettings)
         {
-
             string serialziedSettings = JsonConvert.SerializeObject(importSettings, GetSerializerSettings());
             return serialziedSettings;
         }

@@ -15,12 +15,11 @@ namespace kCura.IntegrationPoints.Web.Helpers
     public class LiquidFormsHelper
     {
         private readonly ConcurrentDictionary<int, bool> _isLiquidFormsDictionary = new ConcurrentDictionary<int, bool>();
-
         private readonly IServicesMgr _servicesManager;
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManager _relativityObjectManager;
 
-        public LiquidFormsHelper(IServicesMgr servicesManager, IAPILog logger, IRelativityObjectManager relativityObjectManager) 
+        public LiquidFormsHelper(IServicesMgr servicesManager, IAPILog logger, IRelativityObjectManager relativityObjectManager)
         {
             _servicesManager = servicesManager;
             _logger = logger;

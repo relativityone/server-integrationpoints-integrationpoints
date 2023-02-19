@@ -26,7 +26,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
             ISerializer defaultSerializer = new XMLSerializerFactory();
 
-            //Periodic Schedule Rule
+            // Periodic Schedule Rule
             if (scheduleRuleType.StartsWith(Const._PERIODIC_SCHEDULE_RULE_TYPE, StringComparison.InvariantCultureIgnoreCase))
             {
                 rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                 }
             }
 
-            //Try reflection
+            // Try reflection
             rule = DeserializeWithNoType(job);
             if (rule != null)
             {

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Extensions
             result.Should().Be(_DEFAULT_APPLICATION_PATH);
         }
 
-        [TestCase("/Relativity/IntegrationPoints//", "Relativity")]
+        [TestCase("/Relativity/IntegrationPoints// ", "Relativity")]
         [TestCase("/IntegrationPoints/dcf", "IntegrationPoints")]
         [TestCase("//IntegrationPoints/dcf", "IntegrationPoints")]
         [TestCase("/    /IntegrationPoints/dcf", "IntegrationPoints")]

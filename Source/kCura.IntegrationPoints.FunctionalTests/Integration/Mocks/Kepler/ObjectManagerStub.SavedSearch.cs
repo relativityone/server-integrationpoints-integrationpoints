@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupSavedSearch()
         {
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsSavedSearchQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                     {

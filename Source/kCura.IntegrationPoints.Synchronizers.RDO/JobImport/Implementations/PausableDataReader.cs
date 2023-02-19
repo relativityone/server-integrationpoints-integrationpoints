@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             _dataReaderImplementation = dataReaderImplementation;
             _stopManager = stopManager;
         }
-        
+
         public bool Read()
         {
             // IAPI always reads the reader once to get the column names
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             _firstReadDone = true;
             return _dataReaderImplementation.Read();
         }
-        
+
         public void Dispose()
         {
             _dataReaderImplementation.Dispose();

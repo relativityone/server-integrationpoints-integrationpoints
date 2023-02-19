@@ -10,9 +10,13 @@ namespace kCura.IntegrationPoints.Domain.Models
     public class ImportPreviewSettings : ImportSettingsBase
     {
         public int PreviewType { get; set; }
+
         public List<FieldMap> FieldMapping { get; set; }
+
         public List<string> ChoiceFields { get; set; }
+
         public string ExtractedTextColumn { get; set; }
+
         public string ExtractedTextFileEncoding { get; set; }
     }
 }

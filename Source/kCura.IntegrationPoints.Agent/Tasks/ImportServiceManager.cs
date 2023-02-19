@@ -43,10 +43,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     public class ImportServiceManager : ServiceManagerBase
     {
         private const int _MAX_NUMBER_OF_RAW_RETRIES = 4;
-
         private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
         private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
-
         private readonly IHelper _helper;
         private readonly IRetryHandler _automatedWorkflowsRetryHandler;
         private readonly IDataReaderFactory _dataReaderFactory;
@@ -54,9 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobStatusUpdater _jobStatusUpdater;
         private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
         private readonly IJobTracker _jobTracker;
-
         private readonly object _syncRoot = new object();
-
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
         public const string RAW_STATE_COMPLETE = "complete";
         public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
@@ -209,7 +205,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (IsDrainStopped())
             {
                 Logger.LogInformation("ImportServiceManager job {jobId} was DrainStopped.", job.JobId);
-                if(AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
+                if (AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
                 {
                     UpdateJobWithProcessedItemsCount(job, processedItemsCount);
                     return;
@@ -356,7 +352,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber) + 1;
             }
 
-
             int processedItemsCount = GetProcessedItemsCountFromJobDetails(job);
             importSettings.StartRecordNumber += processedItemsCount;
 
@@ -409,7 +404,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             Logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
                 currentLoadFile, storedLoadFileParameters);
 
-            if(storedLoadFileParameters == null)
+            if (storedLoadFileParameters == null)
             {
                 Logger.LogWarning("TaskParameters doesn't contain LoadFile parameters, but should.");
                 UpdateJobWithLoadFileDetails(job, currentLoadFile);

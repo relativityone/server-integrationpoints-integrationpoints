@@ -71,15 +71,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             _shouldRunOnce = shouldRunOnce;
             _container = container;
 
-            //Agent ID setter is marked as private
+            // Agent ID setter is marked as private
             typeof(kCura.Agent.AgentBase).GetField("_agentID", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(this, agent.ArtifactId);
 
-            //IAgentHelper setter is marked as private
+            // IAgentHelper setter is marked as private
             typeof(kCura.Agent.AgentBase).GetField("_helper", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(this, helper);
 
-            //'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
+            // 'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
             typeof(kCura.Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(this, true);
 

@@ -26,17 +26,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         };
 
         public string SuccessMessage => "Integration Point successfully deleted.";
+
         public string FailureMessage => "Failed to delete corresponding secret.";
+
         public Type CommandType => typeof(DeleteIntegrationPointCommand);
 
         public override void Rollback()
         {
-            //Do nothing
+            // Do nothing
         }
 
         public override void Commit()
         {
-            //Do nothing
+            // Do nothing
         }
     }
 }

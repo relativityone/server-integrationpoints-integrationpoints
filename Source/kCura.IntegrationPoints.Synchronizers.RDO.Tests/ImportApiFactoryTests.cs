@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     {
         private bool _shouldThrowInvalidLoginException;
         private bool _shouldThrowInvalidOperationException;
-
         private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
         private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
 
@@ -33,13 +32,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 FederatedInstanceArtifactId = _FEDERATED_INSTANCE_ARTIFACTID
             };
 
-            // act 
+            // act
             TestDelegate createImportApiAction = () => GetImportAPI(settings);
 
             // assert
             Assert.Throws<NotSupportedException>(createImportApiAction);
         }
-        
+
         [Test]
         public void GetImportAPI_ShouldThrowIntegrationPointsException_WhenIAPICannotLogIn()
         {

@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
         private const string _AUTOMAP_SAVED_SEARCH_METRIC_NAME = "AutoMapSavedSearch";
         private const string _AUTOMAP_VIEW_METRIC_NAME = "AutoMapView";
         private const string _INVALID_MAPPING_METRIC_NAME = "InvalidMapping";
-
         private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
         private readonly IAutomapRunner _automapRunner;
         private readonly IFieldsMappingValidator _fieldsMappingValidator;

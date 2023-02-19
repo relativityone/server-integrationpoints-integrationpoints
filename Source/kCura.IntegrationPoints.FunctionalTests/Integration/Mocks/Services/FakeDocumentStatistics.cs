@@ -3,7 +3,7 @@ using kCura.IntegrationPoints.Data.Statistics;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeDocumentStatistics : 
+    class FakeDocumentStatistics :
         IDocumentTotalStatistics, INativeTotalStatistics, IImageTotalStatistics, IImageFileSizeStatistics, INativeFileSizeStatistics
     {
         public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)

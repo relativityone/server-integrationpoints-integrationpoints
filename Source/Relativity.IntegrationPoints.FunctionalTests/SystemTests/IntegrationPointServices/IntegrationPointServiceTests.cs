@@ -34,12 +34,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
         private const string _VERY_LONG_FIELD_NAME_PREFIX = "Very_Long_Field_Name_0000000000000000000000000";
         private const int _VERY_LONG_FIELD_NAME_COUNT = 500;
         private const string _ALL_DOCUMENTS_SAVED_SEARCH_NAME = "All documents";
-
         private int _sourceWorkspaceID => SystemTestsSetupFixture.SourceWorkspace.ArtifactID;
         private int _destinationWorkspaceID => SystemTestsSetupFixture.DestinationWorkspace.ArtifactID;
         private int _savedSearchArtifactID;
         private int _integrationPointExportType;
-
         private IWindsorContainer _container => SystemTestsSetupFixture.Container;
         private ITestHelper _testHelper => SystemTestsSetupFixture.TestHelper;
         private IIntegrationPointService _integrationPointService;

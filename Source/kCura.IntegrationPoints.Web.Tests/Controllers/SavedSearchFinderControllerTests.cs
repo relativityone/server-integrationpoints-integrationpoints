@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             _savedSearchQueryRepository.RetrievePublicSavedSearches().Returns(new[] {savesSearchesDto});
 
-            //Act
+            // Act
 
             HttpResponseMessage response = _subjectUnderTest.Get(_WKSP_ID);
 

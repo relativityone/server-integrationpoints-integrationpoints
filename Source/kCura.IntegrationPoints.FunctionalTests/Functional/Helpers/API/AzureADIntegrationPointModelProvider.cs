@@ -17,7 +17,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
     {
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly ICommonIntegrationPointDataService _commonDataSvc;
-
         private readonly Workspace _sourceWorkspace;
 
         public AzureADIntegrationPointModelProvider(IKeplerServiceFactory serviceFactory, Workspace sourceWorkspace)

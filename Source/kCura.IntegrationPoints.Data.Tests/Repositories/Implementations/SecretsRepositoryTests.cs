@@ -16,12 +16,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
     {
         private Mock<IAPILog> _loggerMock;
         private Mock<ISecretStoreFacade> _secretStoreMock;
-
         private SecretsRepository _sut;
-
         private const int _WORKSPACE_ID = 1001;
         private const int _INTEGRATION_POINT_ID = 2002;
-
         private readonly SecretPath _testSecretPath = SecretPath.ForIntegrationPointSecret(
             _WORKSPACE_ID,
             _INTEGRATION_POINT_ID,
@@ -46,23 +43,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public async Task EncryptAsync_ShouldReturnSecretIDAndCallSecretStoreOnceWhenCorrectSecretPathPassed()
         {
-            //arrange
+            // arrange
             var expectedSecretData = new Dictionary<string, string>
             {
                 ["SecuredConfiguration"] = "TestSecret"
             };
 
-            //act
+            // act
             string secretID = await _sut.EncryptAsync(
-                    _testSecretPath, 
+                    _testSecretPath,
                     expectedSecretData
                 ).ConfigureAwait(false);
 
-            //assert
+            // assert
             secretID.Should().Be(_testSecretPath.SecretID);
             _secretStoreMock.Verify(x => x.SetAsync(
-                    It.Is<string>(secretPath => secretPath == _testSecretPath.ToString()), 
-                    It.Is<Secret>(secret => secret.Data.Count == expectedSecretData.Count 
+                    It.Is<string>(secretPath => secretPath == _testSecretPath.ToString()),
+                    It.Is<Secret>(secret => secret.Data.Count == expectedSecretData.Count
                         && secret.Data["SecuredConfiguration"] == "TestSecret")
                 ), Times.Once);
         }
@@ -70,40 +67,40 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void EncryptAsync_ShouldThrowWhenNullSecretPathPassed()
         {
-            //arrange
+            // arrange
             var expectedSecretData = new Dictionary<string, string>();
 
-            //act
+            // act
             Func<Task> encryptAction = () => _sut.EncryptAsync(
-                secretPath: null, 
+                secretPath: null,
                 secretData: expectedSecretData
             );
 
-            //assert
+            // assert
             encryptAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
         }
 
         [Test]
         public void EncryptAsync_ShouldThrowWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception();
             _secretStoreMock
                 .Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<Secret>()))
                 .Throws(exception);
             var expectedSecretData = new Dictionary<string, string>();
 
-            //act
+            // act
             Func<Task> encryptAction = () => _sut.EncryptAsync(_testSecretPath, expectedSecretData);
 
-            //assert
+            // assert
             encryptAction.ShouldThrow<Exception>().Which.Should().Be(exception);
         }
 
         [Test]
         public async Task DecryptAsync_ShouldReturnSecretDataAndCallSecretStoreOnceWhenCorrectSecretPathPassed()
         {
-            //arrange
+            // arrange
             var expectedSecretData = new Dictionary<string, string>
             {
                 ["SecuredConfiguration"] = "TestSecret"
@@ -116,12 +113,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 .Setup(x => x.GetAsync(_testSecretPath.ToString()))
                 .ReturnsAsync(secret);
 
-            //act
+            // act
             Dictionary<string, string> secretData = await _sut
                 .DecryptAsync(_testSecretPath)
                 .ConfigureAwait(false);
 
-            //assert
+            // assert
             secretData.ShouldAllBeEquivalentTo(expectedSecretData);
 
             _secretStoreMock.Verify(x => x.GetAsync(
@@ -132,28 +129,28 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void DecryptAsync_ShouldThrowWhenNullSecretPathPassed()
         {
-            //act
+            // act
             Func<Task> decryptAction = () => _sut.DecryptAsync(secretPath: null);
 
-            //assert
+            // assert
             decryptAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
         }
 
         [Test]
         public async Task DecryptAsync_ShouldReturnNullAndWarningShouldBeLoggedWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception("test");
             _secretStoreMock
                 .Setup(x => x.GetAsync(It.IsAny<string>()))
                 .ThrowsAsync(exception);
 
-            //act
+            // act
             Dictionary<string, string> secretData = await _sut
                 .DecryptAsync(_testSecretPath)
                 .ConfigureAwait(false);
 
-            //assert
+            // assert
             secretData.Should().BeNull();
             _loggerMock.Verify(x => x.LogWarning(exception, It.IsAny<string>()));
         }
@@ -161,10 +158,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public async Task DeleteAsync_ShouldCallSecretStoreOnceWhenCorrectSecretPathPassed()
         {
-            //act
+            // act
             await _sut.DeleteAsync(_testSecretPath).ConfigureAwait(false);
 
-            //assert
+            // assert
             _secretStoreMock.Verify(x => x.DeleteAsync(
                 It.Is<string>(secretPath => secretPath == _testSecretPath.ToString())
             ), Times.Once);
@@ -173,39 +170,39 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void DeleteAsync_ShouldThrowWhenNullSecretPathPassed()
         {
-            //act
+            // act
             Func<Task> deleteAction = () => _sut.DeleteAsync(secretPath: null);
 
-            //assert
+            // assert
             deleteAction.ShouldThrow<ArgumentException>().WithMessage("Secret path cannot be null");
         }
 
         [Test]
         public void DeleteAsync_ShouldThrowWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception();
             _secretStoreMock
                 .Setup(x => x.DeleteAsync(It.IsAny<string>()))
                 .Throws(exception);
 
-            //act
+            // act
             Func<Task> deleteAction = () => _sut.DeleteAsync(_testSecretPath);
 
-            //assert
+            // assert
             deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
         }
 
         [Test]
         public async Task DeleteAllRipSecretsFromAllWorkspacesAsync_ShouldCallSecretStoreOnceWhenCorrectSecretPathPassed()
         {
-            //arrange
+            // arrange
             string expectedSecretPath = string.Empty;
 
-            //act
+            // act
             await _sut.DeleteAllRipSecretsFromAllWorkspacesAsync().ConfigureAwait(false);
 
-            //assert
+            // assert
             _secretStoreMock.Verify(x => x.DeleteAsync(
                 It.Is<string>(secretPath => secretPath == expectedSecretPath)
             ), Times.Once);
@@ -214,31 +211,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void DeleteAllRipSecretsFromAllWorkspacesAsync_ShouldThrowWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception();
             _secretStoreMock
                 .Setup(x => x.DeleteAsync(It.IsAny<string>()))
                 .Throws(exception);
 
-            //act
+            // act
             Func<Task> deleteAction = () => _sut.DeleteAllRipSecretsFromAllWorkspacesAsync();
 
-            //assert
+            // assert
             deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
         }
-
 
         [Test]
         public async Task DeleteAllRipSecretsFromWorkspaceAsync_ShouldCallSecretStoreOnce()
         {
-            //arrange
+            // arrange
             string expectedSecretPath = $"/{_WORKSPACE_ID}";
 
-            //act
+            // act
             await _sut.DeleteAllRipSecretsFromWorkspaceAsync(_WORKSPACE_ID)
                 .ConfigureAwait(false);
 
-            //assert
+            // assert
             _secretStoreMock.Verify(x => x.DeleteAsync(
                 It.Is<string>(secretPath => secretPath == expectedSecretPath)
             ), Times.Once);
@@ -247,32 +243,32 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void DeleteAllRipSecretsFromWorkspaceAsync_ShouldThrowWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception();
             _secretStoreMock
                 .Setup(x => x.DeleteAsync(It.IsAny<string>()))
                 .Throws(exception);
 
-            //act
+            // act
             Func<Task> deleteAction = () => _sut.DeleteAllRipSecretsFromWorkspaceAsync(_WORKSPACE_ID);
 
-            //assert
+            // assert
             deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
         }
 
         [Test]
         public async Task DeleteAllRipSecretsFromIntegrationPointAsync_ShouldCallSecretStoreOnce()
         {
-            //arrange
+            // arrange
             string expectedSecretPath = $"/{_WORKSPACE_ID}/{_INTEGRATION_POINT_ID}";
 
-            //act
+            // act
             await _sut.DeleteAllRipSecretsFromIntegrationPointAsync(
-                _WORKSPACE_ID, 
+                _WORKSPACE_ID,
                 _INTEGRATION_POINT_ID
             ).ConfigureAwait(false);
 
-            //assert
+            // assert
             _secretStoreMock.Verify(x => x.DeleteAsync(
                 It.Is<string>(secretPath => secretPath == expectedSecretPath)
             ), Times.Once);
@@ -281,19 +277,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void DeleteAllRipSecretsFromIntegrationPointAsync_ShouldThrowWhenSecretStoreThrows()
         {
-            //arrange
+            // arrange
             var exception = new Exception();
             _secretStoreMock
                 .Setup(x => x.DeleteAsync(It.IsAny<string>()))
                 .Throws(exception);
 
-            //act
+            // act
             Func<Task> deleteAction = () => _sut.DeleteAllRipSecretsFromIntegrationPointAsync(
                 _WORKSPACE_ID,
                 _INTEGRATION_POINT_ID
             );
 
-            //assert
+            // assert
             deleteAction.ShouldThrow<Exception>().Which.Should().Be(exception);
         }
     }

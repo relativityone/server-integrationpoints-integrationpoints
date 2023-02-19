@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
     public class JobHistoryErrorBatchUpdateManagerTest : TestBase
     {
         private JobHistoryErrorBatchUpdateManager _sut;
-
         private IRepositoryFactory _repositoryFactoryMock;
         private IJobHistoryErrorRepository _jobHistoryErrorRepositoryMock;
         private IHelper _helperMock;
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private readonly Job _job = null;
         private IJobHistoryErrorManager _jobHistoryErrorManagerMock;
         private IJobStopManager _jobStopManagerMock;
-
         private const string _SCRATCHTABLE_ITEMCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
         private const string _SCRATCHTABLE_JOBCOMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 
@@ -71,45 +69,44 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RunNow_NoErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobStart_RunNow_JobError()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorJobStart,
                 ErrorStatusChoices.JobHistoryErrorExpiredGuid);
         }
 
-
         [Test]
         public void OnJobStart_RunNow_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorJobStart,
                 ErrorStatusChoices.JobHistoryErrorExpiredGuid);
@@ -121,14 +118,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RunNow_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorItemStart,
                 ErrorStatusChoices.JobHistoryErrorExpiredGuid);
@@ -137,14 +134,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RetryErrors_NoErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
 
         }
@@ -152,14 +149,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RetryErrors_JobError()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             _jobHistoryErrorManagerMock.JobHistoryErrorJobStart.Received(1).CopyTempTable(_SCRATCHTABLE_JOBCOMPLETE);
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorJobStart,
@@ -169,14 +166,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RetryErrors_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             _jobHistoryErrorManagerMock.JobHistoryErrorJobStart.Received(1).CopyTempTable(_SCRATCHTABLE_JOBCOMPLETE);
 
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
@@ -190,14 +187,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobStart_RetryErrors_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
-            //Act
+            // Act
             _sut.OnJobStart(_job);
 
-            //Assert
+            // Assert
             _jobHistoryErrorManagerMock.JobHistoryErrorItemStart.Received(1).CopyTempTable(_SCRATCHTABLE_ITEMCOMPLETE);
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorItemStart,
@@ -207,84 +204,84 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_RunNow_NoErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobComplete_RunNow_JobError()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobComplete_RunNow_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobComplete_RunNow_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobComplete_RetryErrors_NoErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorsStatusWasNotUpdated();
         }
 
         [Test]
         public void OnJobComplete_RetryErrors_JobError()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorJobComplete,
                 ErrorStatusChoices.JobHistoryErrorRetriedGuid);
@@ -293,14 +290,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_RetryErrors_JobAndItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorJobComplete,
                 ErrorStatusChoices.JobHistoryErrorRetriedGuid);
@@ -309,14 +306,14 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_RetryErrors_ItemErrors()
         {
-            //Arrange
+            // Arrange
             _updateStatusTypeMock.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
             _updateStatusTypeMock.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorItemComplete,
                 ErrorStatusChoices.JobHistoryErrorRetriedGuid);
@@ -325,13 +322,13 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         [Test]
         public void OnJobComplete_RetryErrors_StopRequested()
         {
-            //Arrange
+            // Arrange
             _jobStopManagerMock.IsStopRequested().Returns(true);
 
-            //Act
+            // Act
             _sut.OnJobComplete(_job);
 
-            //Assert
+            // Assert
             VerifyErrorStatusWasUpdatedAndScratchTableDisposed(
                 _jobHistoryErrorManagerMock.JobHistoryErrorItemComplete,
                 ErrorStatusChoices.JobHistoryErrorExpiredGuid);

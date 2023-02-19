@@ -187,7 +187,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Assertions
             }
         }
 
-
         private Type GetImplementationType<TInterface>() where TInterface : class
         {
             try

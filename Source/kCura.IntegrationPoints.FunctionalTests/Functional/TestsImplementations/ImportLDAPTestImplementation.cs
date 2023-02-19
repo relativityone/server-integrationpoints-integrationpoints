@@ -18,7 +18,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
     internal class ImportLDAPTestImplementation
     {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-
         private readonly HumanResourcesTestData _expectedTestData;
 
         public ImportLDAPTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)

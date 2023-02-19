@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
     public class ExtendedExporterFactory : IExtendedExporterFactory
     {
         private readonly IFactoryConfigBuilder _configFactory;
-        
+
         public ExtendedExporterFactory(IFactoryConfigBuilder factoryConfigBuilder)
         {
             _configFactory = factoryConfigBuilder;

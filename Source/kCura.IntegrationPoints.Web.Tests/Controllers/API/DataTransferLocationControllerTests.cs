@@ -53,17 +53,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase(10)]
         public void ItShouldGetStructure(int numOfTreeElements)
         {
-            //Arrange
+            // Arrange
             List<JsTreeItemDTO> expectedTree = BuildDefaultJsTreeItemDtoList(numOfTreeElements);
             _relativePathDirectoryTreeCreator.GetChildren(_PATH, _IS_ROOT, _WORKSPACE_ID, _integrationPointTypeIdentifier, _INCLUDE_FILES)
                 .Returns(expectedTree);
             MockHasPermissions(true);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetStructure(_WORKSPACE_ID, _integrationPointTypeIdentifier, _PATH, _IS_ROOT, _INCLUDE_FILES);
             List<JsTreeItemDTO> actualResult = ExtractJsTreeItemDtoListFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualResult);
             Assert.AreEqual(expectedTree.Count, actualResult.Count);
             CollectionAssert.AreEqual(expectedTree, actualResult);
@@ -72,26 +72,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldHaveNoPermissionToGetStructure()
         {
-            //Arrange
+            // Arrange
             MockHasPermissions(false);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetStructure(_WORKSPACE_ID, _integrationPointTypeIdentifier, _PATH, _IS_ROOT, _INCLUDE_FILES);
 
-            //Assert
+            // Assert
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Test]
         public void ItShouldThrowWhenGetStructure()
         {
-            //Arrange
+            // Arrange
             _respositoryFactory.GetPermissionRepository(_WORKSPACE_ID).Throws(new Exception());
 
-            //Act
+            // Act
             var exception = Assert.Throws<Exception>(() => _instance.GetStructure(_WORKSPACE_ID, _integrationPointTypeIdentifier, _PATH, _IS_ROOT, _INCLUDE_FILES));
 
-            //Assert
+            // Assert
             Assert.IsNotNull(exception);
             Assert.AreEqual(Constants.PERMISSION_CHECKING_UNEXPECTED_ERROR, exception.Message);
         }
@@ -99,43 +99,43 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldGetRoot()
         {
-            //Arrange
+            // Arrange
             const string expectedRelativeDataTransferLocation = "expectedRelativeDataTransferLocation";
             _dataTransferLocationService.GetDefaultRelativeLocationFor(_integrationPointTypeIdentifier)
                 .Returns(expectedRelativeDataTransferLocation);
             MockHasPermissions(true);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetRoot(_WORKSPACE_ID, _integrationPointTypeIdentifier);
             string actualResult = ExtractRelativeDataTransferLocation(response);
 
-            //Assert
+            // Assert
             Assert.AreEqual(expectedRelativeDataTransferLocation, actualResult);
         }
 
         [Test]
         public void ItShouldHaveNoPermissionToGetRoot()
         {
-            //Arrange
+            // Arrange
             MockHasPermissions(false);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.GetRoot(_WORKSPACE_ID, _integrationPointTypeIdentifier);
 
-            //Assert
+            // Assert
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Test]
         public void ItShouldThrowWhenGetRoot()
         {
-            //Arrange
+            // Arrange
             _respositoryFactory.GetPermissionRepository(_WORKSPACE_ID).Throws(new Exception());
 
-            //Act
+            // Act
             var exception = Assert.Throws<Exception>(() => _instance.GetRoot(_WORKSPACE_ID, _integrationPointTypeIdentifier));
 
-            //Assert
+            // Assert
             Assert.IsNotNull(exception);
             Assert.AreEqual(Constants.PERMISSION_CHECKING_UNEXPECTED_ERROR, exception.Message);
         }
@@ -144,16 +144,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
         private void MockHasPermissions(bool hasPermissions)
         {
-            //This method will manage permissions
+            // This method will manage permissions
             _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(hasPermissions);
 
-            //Another methods always will return true
+            // Another methods always will return true
             _permissionRepository.UserCanExport().Returns(true);
             _permissionRepository.UserCanImport().Returns(true);
             var integrationPointGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
             _permissionRepository.UserHasArtifactTypePermission(integrationPointGuid, ArtifactPermission.Edit).Returns(true);
             _permissionRepository.UserHasArtifactTypePermission(integrationPointGuid, ArtifactPermission.Create).Returns(true);
-
 
             _respositoryFactory.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepository);
         }

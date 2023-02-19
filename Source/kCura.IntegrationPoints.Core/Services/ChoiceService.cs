@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services
             {
                 QueryRequest request = new QueryRequest
                 {
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field},
+                    ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.Field },
                     Condition = $"'FieldArtifactTypeID' == {rdoTypeId} " +
                                 $"AND 'Field Type' IN ['{FieldTypes.SingleChoice}', '{Constants.Fields.MultipleChoice}']",
                     IncludeNameInQueryResult = true,

@@ -16,9 +16,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
     public class PreCascadeDeleteIntegrationPointCommandTests : TestBase
     {
         private const int _WORKSPACE_ID = 979307;
-
         private List<int> _artifactIds;
-
         private PreCascadeDeleteIntegrationPointCommand _instance;
         private IPreCascadeDeleteEventHandlerValidator _preCascadeDeleteEventHandlerValidator;
         private IDeleteHistoryService _deleteHistoryService;

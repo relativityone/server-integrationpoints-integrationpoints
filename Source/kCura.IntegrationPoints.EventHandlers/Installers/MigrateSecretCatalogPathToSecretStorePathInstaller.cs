@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             var executor = new EventHandlerExecutor();
             executor.Execute(this);
         }
+
         protected override IAPILog CreateLogger()
         {
             return Helper.GetLoggerFactory().GetLogger().ForContext<MigrateSecretCatalogPathToSecretStorePathInstaller>();

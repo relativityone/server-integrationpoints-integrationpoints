@@ -44,7 +44,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         protected override string SuccessMessage => "Types migrated successfully.";
 
         protected override string GetFailureMessage(Exception ex) => "Failed to migrate Integration Point Types.";
-
         private List<IntegrationPointType> GetExistingIntegrationPointTypes()
         {
             var query = new QueryRequest { Fields = GetAllIntegrationPointTypeFields() };

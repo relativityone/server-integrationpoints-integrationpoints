@@ -12,28 +12,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         private string _jobDetails;
 
         public long JobId { get; set; }
+
         public long? RootJobId { get; set; }
+
         public long? ParentJobId { get; set; }
+
         public int AgentTypeID { get; set; }
+
         public int? LockedByAgentID { get; set; }
+
         public int WorkspaceID { get; set; }
+
         public int RelatedObjectArtifactID { get; set; }
+
         public string TaskType { get; set; }
+
         public DateTime NextRunTime { get; set; }
+
         public DateTime? LastRunTime { get; set; }
+
         public string ScheduleRuleType { get; set; }
+
         public string SerializedScheduleRule { get; set; }
+
         public int JobFlags { get; set; }
+
         public DateTime SubmittedDate { get; set; }
+
         public int SubmittedBy { get; set; }
+
         public StopState StopState { get; set; }
+
         public DateTime? Heartbeat { get; set; }
-        
+
         public string JobDetails
         {
             get
             {
-                if(string.IsNullOrEmpty(_jobDetails))
+                if (string.IsNullOrEmpty(_jobDetails))
                 {
                     _jobDetails = JsonConvert.SerializeObject(JobDetailsHelper);
                 }
@@ -42,6 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             }
             set { _jobDetails = value; }
         }
+
         public TaskParameters JobDetailsHelper { get; }
 
         public JobTest()
@@ -62,7 +79,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             {
                 return result;
             }
-            
+
             if (parameters.BatchParameters is JObject jObject)
             {
                 return jObject.ToObject<T>();

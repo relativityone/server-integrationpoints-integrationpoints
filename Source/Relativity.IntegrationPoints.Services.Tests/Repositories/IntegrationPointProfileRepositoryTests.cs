@@ -22,7 +22,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private IChoiceQuery _choiceQuery;
         private IBackwardCompatibility _backwardCompatibility;
         private ICaseServiceContext _caseContext;
-
         private int _workspaceArtifactId = 100;
 
         public override void SetUp()
@@ -161,7 +160,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                     (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider) && (actual.ArtifactId == expected.ArtifactId)
                                         && (actual.DestinationProvider == expected.DestinationProvider))));
         }
-
 
         [Test]
         public void ItShouldRetrieveAllOverwriteFieldChoices()

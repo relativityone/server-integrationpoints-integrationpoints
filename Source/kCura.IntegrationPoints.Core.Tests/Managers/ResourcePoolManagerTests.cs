@@ -20,15 +20,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
     public class ResourcePoolManagerTests : TestBase
     {
         private ResourcePoolManager _sut;
-
         private Mock<IRepositoryFactory> _repositoryFactoryFake;
         private Mock<IResourcePoolRepository> _resourcePoolRepositoryMock;
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IWorkspaceManager> _workspaceManagerFake;
         private Mock<IHelper> _helperFake;
-
         private const int _RESOURCE_POOL_ID = 1234;
-
         private readonly WorkspaceResponse _workspaceResponse = new WorkspaceResponse()
         {
             ResourcePool = new Securable<DisplayableObjectIdentifier>(new DisplayableObjectIdentifier()
@@ -42,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             ArtifactId = 1,
             Location = @"\\localhost\Export"
         };
-        
+
         [SetUp]
         public override void SetUp()
         {

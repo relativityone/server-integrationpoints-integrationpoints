@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Assert.That(actual.Text, Is.EqualTo(expected.Text));
             Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count));
 
-            //check mock arguments
+            // check mock arguments
             _treeCreator.Received(1).Create(
                     Arg.Is<IEnumerable<SearchContainerItem>>(list => list.Count() == SavedSearchesTreeTestHelper.GetSampleContainerCollection().SearchContainerItems.Count),
                     Arg.Is<IEnumerable<SavedSearchContainerItem>>(list => list.Count() != SavedSearchesTreeTestHelper.GetSampleContainerCollection().SavedSearchContainerItems.Count));
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             int nodeId = 5;
 
             SearchContainerItemCollection children = new SearchContainerItemCollection();
-            
+
             _searchContainerManager.GetSearchContainerItemsAsync(workspaceArtifactId, Arg.Any<SearchContainerRef>())
             .Returns(children);
 

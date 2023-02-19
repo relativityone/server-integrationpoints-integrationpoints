@@ -30,13 +30,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 IncludeNameInQueryResult = true,
                 Fields = new[]
                 {
-                    new FieldRef() {Name = "Name"},
-                    new FieldRef() {Name = "Choices"},
-                    new FieldRef() {Name = "Object Type Artifact Type ID"},
-                    new FieldRef() {Name = "Field Type"},
-                    new FieldRef() {Name = "Field Type ID"},
-                    new FieldRef() {Name = "Is Identifier"},
-                    new FieldRef() {Name = "Field Type Name"},
+                    new FieldRef() {Name = "Name" },
+                    new FieldRef() {Name = "Choices" },
+                    new FieldRef() {Name = "Object Type Artifact Type ID" },
+                    new FieldRef() {Name = "Field Type" },
+                    new FieldRef() {Name = "Field Type ID" },
+                    new FieldRef() {Name = "Is Identifier" },
+                    new FieldRef() {Name = "Field Type Name" },
                 },
                 Sorts = new[]
                 {

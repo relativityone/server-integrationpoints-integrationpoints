@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.1 There was an error in Import API when fetching workspace fields.";
         private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
             "EC: 4.1 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
-
         private readonly Lazy<IImportAPI> _importApi;
         private readonly IAPILog _logger;
 
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(new ImportSettings { WebServiceURL = config.WebApiPath }));
             _logger = logger.ForContext<ImportApiFacade>();
         }
-        
+
         public ImportApiFacade(IImportApiFactory importApiFactory, ImportSettings importSettings, IAPILog logger)
         {
             _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(importSettings));

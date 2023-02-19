@@ -20,12 +20,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
     {
         private Mock<IRelativityObjectManager> _objectManagerFake;
         private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryFake;
-
         private FieldService _sut;
-
         private const int _WORKSPACE_ID = 9999;
         private const int _ARTIFACT_TYPE_ID = 8888;
-
         private readonly List<RelativityObject> _longTextFields = new List<RelativityObject>()
         {
             new RelativityObject()
@@ -135,4 +132,3 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         }
     }
 }
-

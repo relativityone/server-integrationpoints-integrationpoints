@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Services
         private const string _WORKSPACE_FOLDER_FORMAT = "EDDS{0}";
         private const string _EDDS_PARENT_FOLDER = "DataTransfer";
         private const string _INVALID_PATH_ERROR_MSG = "Given Destination Folder path is invalid!";
-
         private readonly IHelper _helper;
         private readonly IIntegrationPointTypeService _integrationPointTypeService;
         private readonly IDirectory _directoryService;

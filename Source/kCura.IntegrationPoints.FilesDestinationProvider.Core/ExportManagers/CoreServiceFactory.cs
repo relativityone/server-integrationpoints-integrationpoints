@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
     internal class CoreServiceFactory : IServiceFactory
     {
         private readonly Func<IAuditManager> _auditManagerFactory;
-        
         private readonly IServiceFactory _webApiServiceFactory;
 
         public CoreServiceFactory(Func<IAuditManager> auditManagerFactory, IServiceFactory webApiServiceFactory)

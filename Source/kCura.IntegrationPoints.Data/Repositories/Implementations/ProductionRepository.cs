@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
                 productionDtos = await GetProductionsAsync(async (i, s) =>
-                await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
+                await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, string.Empty), workspaceArtifactId)
                     .ConfigureAwait(false);
             }
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
                 productionDtos = await GetProductionsAsync(async (i, s) =>
-                        await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
+                        await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, string.Empty), workspaceArtifactId)
                     .ConfigureAwait(false);
             }
 
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             try
             {
-                DataSetWrapper dataSetWrapper = await function(workspaceArtifactId, String.Empty).ConfigureAwait(false);
+                DataSetWrapper dataSetWrapper = await function(workspaceArtifactId, string.Empty).ConfigureAwait(false);
 
                 DataSet dataSet = dataSetWrapper.Unwrap();
 

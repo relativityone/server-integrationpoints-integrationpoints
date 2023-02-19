@@ -9,7 +9,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
     [Serializable]
     public abstract class ScheduleRuleBase : IScheduleRule
     {
-
         [NonSerialized()]
         private ITimeService _timeService = null;
 
@@ -19,7 +18,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         [NonSerialized()]
         private static ISerializer _serializer;
 
-        //Required by Serializable
+        // Required by Serializable
         protected ScheduleRuleBase()
         {
         }
@@ -46,13 +45,13 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             {
                 return _daysOfWeekMap ?? (_daysOfWeekMap = new Dictionary<DaysOfWeek, DayOfWeek>()
                 {
-                    {DaysOfWeek.Monday, DayOfWeek.Monday},
-                    {DaysOfWeek.Tuesday, DayOfWeek.Tuesday},
-                    {DaysOfWeek.Wednesday, DayOfWeek.Wednesday},
-                    {DaysOfWeek.Thursday, DayOfWeek.Thursday},
-                    {DaysOfWeek.Friday, DayOfWeek.Friday},
-                    {DaysOfWeek.Saturday, DayOfWeek.Saturday},
-                    {DaysOfWeek.Sunday, DayOfWeek.Sunday},
+                    {DaysOfWeek.Monday, DayOfWeek.Monday },
+                    {DaysOfWeek.Tuesday, DayOfWeek.Tuesday },
+                    {DaysOfWeek.Wednesday, DayOfWeek.Wednesday },
+                    {DaysOfWeek.Thursday, DayOfWeek.Thursday },
+                    {DaysOfWeek.Friday, DayOfWeek.Friday },
+                    {DaysOfWeek.Saturday, DayOfWeek.Saturday },
+                    {DaysOfWeek.Sunday, DayOfWeek.Sunday },
                 });
             }
         }
@@ -82,8 +81,8 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         ///</summary>
         protected DateTime? GetNextRunTimeByInterval(ScheduleInterval interval, EndDateHelperBase endDateHelper, DaysOfWeek? daysToRun, int? dayOfMonth, bool? setLastDayOfMonth, int? reoccur, OccuranceInMonth? occuranceInMonth)
         {
-            //* Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
-            //* However, returning value in UTC, since Method Agent framework operates in UTC.
+            // * Due to Daylight Saving Time (DST) all calculations are done with local date/time to insure final time corresponds to Scheduled time
+            // * However, returning value in UTC, since Method Agent framework operates in UTC.
 
             DateTime localNow = endDateHelper.Time;
             DateTime nextRunTimeDate = endDateHelper.StartDate.Date > localNow.Date ? endDateHelper.StartDate.Date : localNow.Date;
@@ -237,12 +236,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                     dayOccurance++;
                     if (dayOccurance == (int)occurance)
                     {
-                        //found the next run date/time
+                        // found the next run date/time
                         break;
                     }
                     else
                     {
-                        //skip to the right occurance right the way
+                        // skip to the right occurance right the way
                         dt = dt.AddDays((((int)occurance - dayOccurance) * 7) - 1);
                     }
                 }
@@ -266,7 +265,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                 dt = new DateTime(year, month, i);
                 if (dt.DayOfWeek == dayOfWeekToFind)
                 {
-                    //found the next run date/time
+                    // found the next run date/time
                     break;
                 }
             }
@@ -330,7 +329,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                 }
                 if (nextRunTimeDate < localNow || nextRunTimeDate.Date < startDate.Date)
                 {
-                    //it has to be moved to next month
+                    // it has to be moved to next month
                     nextRunTimeDate = nextRunTimeDate.AddMonths(reoccurance);
                     continueSearch = true;
                 }
@@ -390,8 +389,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             }
 
             public long TimeOfDayTick { get; set; }
+
             public DateTime StartDate { get; set; }
+
             public DateTime? EndDate { get; set; }
+
             public abstract DateTime Time { get; }
 
             public abstract DateTime? Return(DateTime nextRunTime);

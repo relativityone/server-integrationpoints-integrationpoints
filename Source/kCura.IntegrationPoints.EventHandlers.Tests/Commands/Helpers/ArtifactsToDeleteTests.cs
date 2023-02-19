@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands.Helpers
         private const int _WORKSPACE_ID = 889943;
         private const string _TEMP_TABLE_NAME_WITH_PARENT_ARTIFACTS_TO_DELETE = "temp_table_name";
         private const string _DB_PREPEND = "prefix";
-
         private ArtifactsToDelete _instance;
         private IDBContext _dbContext;
 

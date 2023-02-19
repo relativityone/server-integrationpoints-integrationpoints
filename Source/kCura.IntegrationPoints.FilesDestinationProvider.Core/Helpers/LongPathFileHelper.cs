@@ -104,19 +104,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
         public int CountLinesInFile(string path)
         {
-            // Required by interface but not used by this API. 
+            // Required by interface but not used by this API.
             throw new System.NotImplementedException();
         }
 
         public FileStream Create(string path, FileMode mode, System.IO.FileAccess access, System.IO.FileShare share)
         {
-            // Required by interface but not used by this API. 
+            // Required by interface but not used by this API.
             throw new System.NotImplementedException();
         }
 
         public StreamWriter CreateText(string path)
         {
-            // Required by interface but not used by this API. 
+            // Required by interface but not used by this API.
             throw new System.NotImplementedException();
         }
     }

@@ -34,14 +34,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
         {
             _helper = helper;
             _destinationServiceMgr = destinationServiceMgr;
-            _sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
+            _sourceServiceMgr = _helper.GetServicesManager(); // TODO: it's on our wall of shame
             _objectManagerFactory = CreateRelativityObjectManagerFactory(helper);
             _instrumentationProvider = CreateInstrumentationProvider(helper);
             _dbContextFactory = new DbContextFactory(_helper);
         }
 
         private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
-
         private IExternalServiceInstrumentationProvider InstrumentationProvider => _instrumentationProvider.Value;
 
         public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
@@ -250,7 +249,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
             IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(logger);
             return new RelativityAuditRepository(foundationAuditRepository, InstrumentationProvider, retryHandlerFactory);
         }
-        
+
         public IResourcePoolRepository GetResourcePoolRepository()
         {
             return new ResourcePoolRepository(_helper);
@@ -271,7 +270,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
             IQueryFieldLookupRepository queryFieldLookupRepository = new QueryFieldLookupRepository(fieldLookupHelper, InstrumentationProvider);
             return queryFieldLookupRepository;
         }
-
 
         public IAuditRepository GetAuditRepository(int workspaceArtifactId)
         {

@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly IRelativityFieldQuery _fieldQuery;
-
         private bool _isJobComplete;
         private bool? _disableNativeLocationValidation;
         private bool? _disableNativeValidation;

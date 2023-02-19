@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("21FECB87-6307-43E9-900A-9119C94380DC")]
         public async Task GetJobHistoryAsync_ShouldReturnCorrectValues()
         {
-            //Arrange
+            // Arrange
             AddTestData();
             JobHistoryRequest request = new JobHistoryRequest
             {
@@ -37,10 +37,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int expectedAvailableItems = SourceWorkspace.JobHistory.Count();
             int expectedTransferredItems = SourceWorkspace.JobHistory.Sum(x => x.ItemsTransferred) ?? 0;
 
-            //Act
+            // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             result.TotalAvailable.Should().Be(expectedAvailableItems);
             result.TotalDocumentsPushed.Should().Be(expectedTransferredItems);
@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("8C86BD4C-0BFD-4B01-A36E-5F3625EEF113")]
         public async Task GetJobHistoryAsync_ShouldReturnCorrectData_WhenTooLargeVolumeRequested()
         {
-            //Arrange
+            // Arrange
             AddTestData();
             JobHistoryRequest request = new JobHistoryRequest
             {
@@ -59,10 +59,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 PageSize = 15
             };
 
-            //Act
+            // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             result.Data.Should().BeEmpty();
         }
@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("90EC58F4-B25D-4CD6-8000-013D95A0DEDB")]
         public async Task GetJobHistoryAsync_ShouldReturnCorrectData_WhenPageAndPageSizeLimited()
         {
-            //Arrange
+            // Arrange
             AddTestData();
             JobHistoryRequest request = new JobHistoryRequest
             {
@@ -83,10 +83,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             List<JobHistoryTest> sourceData = SourceWorkspace.JobHistory.Skip(expectedIndexOfFirstReturnedDataSet).Take(expectedNumberOfReturnedDataSets).ToList();
 
-            //Act
+            // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             result.Data.Length.Should().Be(expectedNumberOfReturnedDataSets);
 
@@ -101,7 +101,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTestCase("C803015A-5C75-4C08-AC25-FF4174D71FD4", nameof(JobHistoryModel.Overwrite))]
         public async Task GetJobHistoryAsync_ShouldReturnCorrectlySortedResult_WhenSortDescending(string property)
         {
-            //Arrange
+            // Arrange
             AddTestData();
             JobHistoryRequest request = new JobHistoryRequest
             {
@@ -112,10 +112,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 SortDescending = true
             };
 
-            //Act
+            // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             Assert.That(result.Data, Is.Ordered.Descending.By(property));
         }
 
@@ -124,7 +124,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTestCase("8E13A8AF-03FD-4607-A95D-0B0E9F3F64D8", nameof(JobHistoryModel.Overwrite))]
         public async Task GetJobHistoryAsync_ShouldReturnCorrectlySortedResult_WhenSortAscending(string property)
         {
-            //Arrange
+            // Arrange
             AddTestData();
             JobHistoryRequest request = new JobHistoryRequest
             {
@@ -135,10 +135,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 SortDescending = false
             };
 
-            //Act
+            // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             Assert.That(result.Data, Is.Ordered.By(property));
         }
 

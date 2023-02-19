@@ -29,9 +29,13 @@ namespace kCura.IntegrationPoints.Core.Contracts.Entity
         public const string UniqueID = @"3c5f8ef5-4ed9-40be-b404-1c70318b3563";
 
         public static readonly Guid UniqueIdGuid = new Guid(UniqueID);
+
         public static readonly Guid FirstNameGuid = new Guid(FirstName);
+
         public static readonly Guid LastNameGuid = new Guid(LastName);
+
         public static readonly Guid FullNameGuid = new Guid(FullName);
+
         public static readonly Guid ManagerGuid = new Guid(Manager);
     }
 }

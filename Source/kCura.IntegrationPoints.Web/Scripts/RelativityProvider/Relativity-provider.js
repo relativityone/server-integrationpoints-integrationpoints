@@ -117,10 +117,7 @@
         if (viewModel.errors().length === 0) {
             //Communicate to the host page that it to continue.
             this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
-        } else {
-            if (!viewModel.EnableTagging.IsValid) {
-                document.getElementById("customRadioButtonErrorMsg").style.display = 'block';                
-            }
+        } else {           
             viewModel.errors.showAllMessages();
         }
 
@@ -213,43 +210,15 @@
         });
 
         self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
-
-        var isTaggingEnabledDefault = "false";
-        if (!self.IsTaggingToggleEnabled()) {
-            isTaggingEnabledDefault = "true";
-        }
-        self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || isTaggingEnabledDefault);
-
-        document.getElementById("enable-tagging").checked = self.CreateSavedSearchForTagging() === true || !self.IsTaggingToggleEnabled();
-
-
-        document.getElementById("customRadioButtonErrorMsg").style.display = 'none';
+               
+        self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || "true");        
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
-            if (!self.IsTaggingToggleEnabled()) {
-                self.EnableTagging("true");
-                document.getElementById("enable-tagging").checked = true;
-                return;
-            }
-
             if (value == "true") {
                 self.EnableTagging("true");
                 document.getElementById("enable-tagging").checked = true;
-            }
-            else {
-                self.EnableTagging(null);
-                self.EnableTagging.isModified(true);
-
-                document.getElementById("enable-tagging").checked = false;
-                document.getElementById("disable-tagging").checked = false;
-            }
-        });
-
-        self.EnableTagging.subscribe(function (value) {
-            if (value != null) {
-                document.getElementById("customRadioButtonErrorMsg").style.display = 'none';                
-            }
-        });
+            }          
+        });       
 
         self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
 
@@ -301,6 +270,8 @@
 
         self.TypeOfExport.subscribe(function (value) {
             if (value === ExportEnums.SourceOptionsEnum.Production) {
+
+                self.EnableTagging("true");
 
                 var productionSetsPromise = IP.data.ajax({
                     type: "get",
@@ -549,15 +520,7 @@
 
         self.openCreateProductionSetModal = function () {
             createProductionSetModalViewModel.open();
-        }
-
-        this.EnableTagging.extend({
-            required: {
-                onlyIf: function () {
-                    return !self.IsNonDocumentObjectFlow();
-                }
-            }
-        });
+        }        
 
         this.TargetFolder.extend({
             required: {
@@ -674,7 +637,7 @@
         /********** Tooltips  **********/
         var destinationDetailsTooltips = TooltipDefs.RelativityProviderDestinationDetails;
         if (!self.IsTaggingToggleEnabled()) {
-            destinationDetailsTooltips = TooltipDefs.RelativityProviderDestinationDetails.filter(e => e.name !== "Enable Tagging");
+            destinationDetailsTooltips = TooltipDefs.RelativityProviderDestinationDetails.filter(e => e.name !== "Tag Documents with Job Name");
         }
 
         var destinationTooltipViewModel = new TooltipViewModel(destinationDetailsTooltips, TooltipDefs.RelativityProviderDestinationDetailsTitle);

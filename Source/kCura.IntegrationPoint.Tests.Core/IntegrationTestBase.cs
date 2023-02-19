@@ -19,7 +19,9 @@ namespace kCura.IntegrationPoint.Tests.Core
         public const int ADMIN_USER_ID = 9;
 
         protected IWindsorContainer Container { get; }
+
         protected IConfigurationStore ConfigurationStore { get; }
+
         protected ITestHelper Helper => _testHelperLazy.Value;
 
         protected IntegrationTestBase()

@@ -12,7 +12,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
     public class LdapControllerTests : TestsBase
-    {    
+    {
         [IdentifiedTest("D13E2898-CC2E-4CFC-93B3-25C4398B7F32")]
         public void CheckLdap_ShouldAuthenticateLDAPConnection()
         {
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var result = (StatusCodeResult) response;
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
-        
+
         private SynchronizerSettings PrepareOpenLDAPSettings()
         {
             LDAPSettings settings = new LDAPSettings

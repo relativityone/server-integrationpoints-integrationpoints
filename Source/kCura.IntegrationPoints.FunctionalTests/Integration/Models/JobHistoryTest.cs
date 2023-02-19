@@ -11,7 +11,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public override List<Guid> Guids => Const.RdoGuids.JobHistory.Guids;
 
         public List<int> ItemsTransferredHistory { get; } = new List<int>();
+
         public List<int> ItemsWithErrorsHistory { get; } = new List<int>();
+
         public JobHistoryTest() : base("JobHistory")
         {
             Name = $"Job History";
@@ -23,12 +25,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             {
                 ItemsWithErrorsHistory.Add((int)value);
             }
-            
+
             if (guid == JobHistoryFieldGuids.ItemsTransferredGuid && value != null)
             {
                 ItemsTransferredHistory.Add((int)value);
             }
-            
+
             base.SetField(guid, value);
         }
 
@@ -44,12 +46,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             set => SetField(JobHistoryFieldGuids.IntegrationPointGuid, value);
         }
 
-        public ChoiceRef JobStatus 
+        public ChoiceRef JobStatus
         {
             get => GetField(JobHistoryFieldGuids.JobStatusGuid) as ChoiceRef;
             set => SetField(JobHistoryFieldGuids.JobStatusGuid, value);
         }
-        
+
         public int? ItemsTransferred
         {
             get => GetField(JobHistoryFieldGuids.ItemsTransferredGuid) as int?;

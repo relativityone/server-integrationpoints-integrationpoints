@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             string updatedSourceConfiguration = RemoveSecuredConfigurationSettingFromJson(originalSourceConfiguration);
             string updatedDestinationConfiguration = RemoveSecuredConfigurationSettingFromJson(originalDestinationConfiguration);
 
-            if(updatedSourceConfiguration == originalSourceConfiguration && updatedDestinationConfiguration == originalDestinationConfiguration)
+            if (updatedSourceConfiguration == originalSourceConfiguration && updatedDestinationConfiguration == originalDestinationConfiguration)
             {
                 return null;
             }
@@ -56,7 +56,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         }
 
         protected override string SourceProviderGuid => Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY;
-
         private string RemoveSecuredConfigurationSettingFromJson(string configuration)
         {
             const string securedConfigurationPropertyName = "SecuredConfiguration";

@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class TagSavedSearchManagerTests : TestBase
     {
         private TagSavedSearchManager _instance;
-
         private ITagSavedSearch _tagSavedSearch;
         private ITagSavedSearchFolder _tagSavedSearchFolder;
 

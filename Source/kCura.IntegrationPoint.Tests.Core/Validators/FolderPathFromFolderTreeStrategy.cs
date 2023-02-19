@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Validators
             {
                 folderPath = StripWorkspaceNameFromFolderPath(folderPath);
             }
-            
+
             return folderPath;
         }
 

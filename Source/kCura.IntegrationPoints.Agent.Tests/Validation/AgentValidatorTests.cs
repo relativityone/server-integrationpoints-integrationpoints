@@ -17,22 +17,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
         #region Fields
 
         private AgentValidator _instanceUnderTest;
-
         private IntegrationPointDto _integrationPoint;
-
         private ICaseServiceContext _caseContext;
         private IValidationExecutor _validationExecutor;
-
-
         private const int _ARTIFATC_ID = 1234;
         private const int _TYPE_ID = 1;
         private const int _USER_ID = 2345;
         private const int _SOURCE_PROVIDER_ID = 1;
         private const int _DEST_PROVIDER_ID = 2;
-
-
         private readonly DestinationProvider _destinationProvider = new DestinationProvider();
-
         private readonly SourceProvider _sourceProvider = new SourceProvider();
         private readonly IntegrationPointType _integrationPointType = new IntegrationPointType();
 
@@ -72,7 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
             _instanceUnderTest = new AgentValidator(_validationExecutor, _caseContext);
         }
 
-        #endregion //SetUp
+        #endregion // SetUp
 
         [Test]
         public void ItShouldRunValidation()

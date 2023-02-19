@@ -6,7 +6,9 @@ namespace Relativity.IntegrationPoints.Services.Helpers
     public class PermissionModel
     {
         public Guid ObjectTypeGuid { get; }
+
         public string ObjectTypeName { get; }
+
         public ArtifactPermission ArtifactPermission { get; }
 
         public PermissionModel(Guid objectTypeGuid, string objectTypeName, ArtifactPermission artifactPermission)

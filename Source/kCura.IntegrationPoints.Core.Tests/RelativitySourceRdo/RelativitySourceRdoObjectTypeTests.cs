@@ -12,12 +12,10 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
     public class RelativitySourceRdoObjectTypeTests : TestBase
     {
         private const int _WORKSPACE_ID = 326544;
-
         private IRelativityProviderObjectRepository _relativityObjectRepository;
         private IObjectTypeRepository _objectTypeRepository;
         private IArtifactGuidRepository _artifactGuidRepository;
         private ITabRepository _tabRepository;
-
         private RelativitySourceRdoObjectType _instance;
 
         public override void SetUp()

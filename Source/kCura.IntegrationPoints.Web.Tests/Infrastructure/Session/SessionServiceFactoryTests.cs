@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.Session
         private Mock<IAPILog> _loggerMock;
         private Mock<Func<ICPHelper>> _helperFactoryMock;
         private Mock<Func<IAPILog>> _loggerFactoryMock;
-
         private const string _SESSION_KEY = "__WEB_SESSION_KEY__";
 
         [SetUp]

@@ -5,9 +5,12 @@ namespace kCura.ScheduleQueue.Core
 {
     public class AgentTypeInformation
     {
-        public Int32 AgentTypeID { get; private set; }
+        public int AgentTypeID { get; private set; }
+
         public string Name { get; private set; }
+
         public string FullNamespace { get; private set; }
+
         public Guid GUID { get; private set; }
 
         public AgentTypeInformation(DataRow row)

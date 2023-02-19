@@ -7,7 +7,6 @@ namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
     public sealed class KubernetesMode : IKubernetesMode
     {
         private bool? _isEnabled;
-
         private readonly IAPILog _logger;
 
         public KubernetesMode(IAPILog logger)

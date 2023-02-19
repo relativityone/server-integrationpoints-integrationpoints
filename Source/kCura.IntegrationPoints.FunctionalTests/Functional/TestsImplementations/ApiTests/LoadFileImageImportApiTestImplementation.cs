@@ -23,8 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
     internal class LoadFileImageImportApiTestImplementation
     {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-
-        private readonly IRipApi _ripApi = 
+        private readonly IRipApi _ripApi =
             new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);
 
         public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
@@ -52,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             await _ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID);
             List<RelativityObject> workspaceDocs = GetAllDocumentsFromWorkspace(SourceWorkspace.ArtifactID);
 
-            //Assert
+            // Assert
 
             Document[] docs = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(SourceWorkspace.ArtifactID);
 

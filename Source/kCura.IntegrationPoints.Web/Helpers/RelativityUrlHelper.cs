@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Web.Helpers
     {
         private readonly HttpRequestBase _httpRequest;
         private readonly ObjectTypeService _service;
-
         public const string VIEW_URL_TEMPLATE =
             "/{0}/Case/Mask/View.aspx?AppID={1}&ArtifactID={2}&ArtifactTypeID={3}";
 

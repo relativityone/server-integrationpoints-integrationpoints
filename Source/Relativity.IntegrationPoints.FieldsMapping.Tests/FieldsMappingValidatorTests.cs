@@ -15,10 +15,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
     public class FieldsMappingValidatorTests
     {
         private IFieldsMappingValidator _sut;
-
         private Mock<IFieldsClassifyRunnerFactory> _fieldsClassifyRunnerFactoryFake;
         private Mock<IFieldsClassifierRunner> _fieldClassifierRunnerMock;
-
         private const int _SOURCE_WORKSPACE_ID = 1;
         private const int _DESTINATION_WORKSPACE_ID = 2;
         private const int _SOURCE_ARTIFACT_TYPE_ID = 3;
@@ -53,7 +51,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             var destinationClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(destinationControlNumber) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(destinationControlNumber) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var fieldMap = new List<FieldMap>()
@@ -113,20 +111,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             var sourceClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var destinationClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var fieldMap = new List<FieldMap>()
@@ -168,20 +166,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             var sourceClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var destinationClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
@@ -222,20 +220,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
             var sourceClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var destinationClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap},
-                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(field1) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field2) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field3) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field4) { ClassificationLevel = ClassificationLevel.AutoMap },
+                new FieldClassificationResult(field5) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);
@@ -290,12 +288,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
             // Arrange
             var sourceClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(sourceField) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(sourceField) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             var destinationClassifiedFields = new List<FieldClassificationResult>()
             {
-                new FieldClassificationResult(destinationField) { ClassificationLevel = ClassificationLevel.AutoMap},
+                new FieldClassificationResult(destinationField) { ClassificationLevel = ClassificationLevel.AutoMap },
             };
 
             LoadFieldClassifierRunnerWithData(sourceClassifiedFields, destinationClassifiedFields);

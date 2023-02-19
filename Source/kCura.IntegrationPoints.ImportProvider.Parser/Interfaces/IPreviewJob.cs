@@ -11,7 +11,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
     public interface IPreviewJob
     {
         void Init(LoadFile loadFile, ImportPreviewSettings settings);
+
         void StartRead();
+
         void DisposePreviewJob();
 
         ImportPreviewTable PreviewTable { get;}

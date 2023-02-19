@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
     public class RequestHeadersUserContextServiceTests
     {
         private Mock<IUserContext> _nextUserContextServiceMock;
-
         private const string _USER_HEADER_VALUE = "X-IP-USERID";
         private const string _CASE_USER_HEADER_VALUE = "X-IP-CASEUSERID";
 
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetUserID_ShouldReturnUserIDIfHeaderContainsValue()
         {
-            //arrange
+            // arrange
             const int userId = 1019723;
             var headers = new NameValueCollection
             {
@@ -36,17 +35,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetUserID();
 
-            //assert
+            // assert
             result.Should().Be(userId);
         }
 
         [Test]
         public void GetUserID_ShouldReturnFirstUserIDIfHeaderContainsMoreThanOneValue()
         {
-            //arrange
+            // arrange
             const int userId = 1019723;
             var headers = new NameValueCollection
             {
@@ -59,17 +58,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetUserID();
 
-            //assert
+            // assert
             result.Should().Be(userId);
         }
 
         [Test]
         public void GetUserID_ShouldCallNextServiceIfHeaderDoesNotContainValue()
         {
-            //arrange
+            // arrange
             const int userId = 1019723;
             var headers = new NameValueCollection();
             var httpRequestMock = new Mock<HttpRequestBase>();
@@ -79,10 +78,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetUserID();
 
-            //assert
+            // assert
             result.Should().Be(userId);
             _nextUserContextServiceMock.Verify(x=>x.GetUserID());
         }
@@ -90,7 +89,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetUserID_ShouldCallNextServiceIfHeaderContainNonNumericValue()
         {
-            //arrange
+            // arrange
             const int userId = 1019723;
             var headers = new NameValueCollection
             {
@@ -103,10 +102,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetUserID();
 
-            //assert
+            // assert
             result.Should().Be(userId);
             _nextUserContextServiceMock.Verify(x => x.GetUserID());
         }
@@ -114,7 +113,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetUserID_ShouldRethrowNextServiceException()
         {
-            //arrange
+            // arrange
             var expectedException = new InvalidOperationException();
             var headers = new NameValueCollection();
             var httpRequestMock = new Mock<HttpRequestBase>();
@@ -124,10 +123,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             Action getUserIDAction = () => sut.GetUserID();
 
-            //assert
+            // assert
             getUserIDAction.ShouldThrow<InvalidOperationException>()
                 .Which.Should().Be(expectedException);
         }
@@ -135,7 +134,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetWorkspaceUserID_ShouldReturnUserIDIfHeaderContainsValue()
         {
-            //arrange
+            // arrange
             const int caseUserId = 1019723;
             var headers = new NameValueCollection
             {
@@ -146,17 +145,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetWorkspaceUserID();
 
-            //assert
+            // assert
             result.Should().Be(caseUserId);
         }
 
         [Test]
         public void GetWorkspaceUserID_ShouldReturnFirstUserIDIfHeaderContainsMoreThanOneValue()
         {
-            //arrange
+            // arrange
             const int caseUserId = 1019723;
             var headers = new NameValueCollection
             {
@@ -169,17 +168,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetWorkspaceUserID();
 
-            //assert
+            // assert
             result.Should().Be(caseUserId);
         }
 
         [Test]
         public void GetWorkspaceUserID_ShouldCallNextServiceIfHeaderDoesNotContainValue()
         {
-            //arrange
+            // arrange
             const int caseUserId = 1019723;
             var headers = new NameValueCollection();
             var httpRequestMock = new Mock<HttpRequestBase>();
@@ -189,10 +188,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetWorkspaceUserID();
 
-            //assert
+            // assert
             result.Should().Be(caseUserId);
             _nextUserContextServiceMock.Verify(x => x.GetWorkspaceUserID());
         }
@@ -200,7 +199,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetWorkspaceUserID_ShouldCallNextServiceIfHeaderContainNonNumericValue()
         {
-            //arrange
+            // arrange
             const int caseUserId = 1019723;
             var headers = new NameValueCollection
             {
@@ -213,10 +212,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             int result = sut.GetWorkspaceUserID();
 
-            //assert
+            // assert
             result.Should().Be(caseUserId);
             _nextUserContextServiceMock.Verify(x => x.GetWorkspaceUserID());
         }
@@ -224,7 +223,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
         [Test]
         public void GetWorkspaceUserID_ShouldRethrowNextServiceException()
         {
-            //arrange
+            // arrange
             var expectedException = new InvalidOperationException();
             var headers = new NameValueCollection();
             var httpRequestMock = new Mock<HttpRequestBase>();
@@ -234,10 +233,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Context.UserContext
 
             RequestHeadersUserContextService sut = CreateSut(httpRequestMock.Object);
 
-            //act
+            // act
             Action getWorkspaceUserIDAction = () => sut.GetWorkspaceUserID();
 
-            //assert
+            // assert
             getWorkspaceUserIDAction.ShouldThrow<InvalidOperationException>()
                 .Which.Should().Be(expectedException);
         }

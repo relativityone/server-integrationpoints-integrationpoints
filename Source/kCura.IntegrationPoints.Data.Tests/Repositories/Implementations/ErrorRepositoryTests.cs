@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IErrorManager> _errorManager;
         private Mock<IHelper> _helper;
         private Mock<IAPILog> _logger;
-
         private ErrorRepository _sut;
 
         [SetUp]
@@ -54,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _errorManager.Setup(x => x.CreateSingleAsync(It.IsAny<Error>())).Throws<ServiceException>();
 
             // Act
-            System.Action action = () => _sut.Create(new[] {new ErrorDTO()});
+            System.Action action = () => _sut.Create(new[] { new ErrorDTO()});
 
             // Assert
             action.ShouldNotThrow();

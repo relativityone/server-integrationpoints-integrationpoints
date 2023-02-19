@@ -20,19 +20,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     [TestFixture, Category("Unit")]
     public class DocumentAccumulatedStatisticsTests
     {
-
         private DocumentAccumulatedStatistics _sut;
         private Mock<IAPILog> _loggerFake;
         private Mock<IImageFileSizeStatistics> _imageFileSizeStatisticsFake;
         private Mock<INativeFileSizeStatistics> _nativeFileSizeStatisticsFake;
         private Mock<IRelativityObjectManager> _objectManagerFake;
         private Mock<IExportQueryResult> _exportQueryResultFake;
-
         private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryFake;
         private const int _WORKSPACE_ID = 1111;
 
         public IEnumerable<RelativityObjectSlim> Documents { get; set; }
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -48,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             _objectManagerFake.Setup(x =>
                     x.QueryWithExportAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<ExecutionIdentity>()))
                 .ReturnsAsync(_exportQueryResultFake.Object);
-            
+
             _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
                 .Returns((() => Task.FromResult(Documents)));
 
@@ -73,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
             _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
                 .ReturnsAsync(documents);
-            
+
             _nativeFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IEnumerable<int>>(), _WORKSPACE_ID)).Returns(nativesSize);
 
             // Act
@@ -84,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             actual.TotalNativesCount.Should().Be(nativesCount);
             actual.TotalNativesSizeBytes.Should().Be(nativesSize);
         }
-        
+
         [Test]
         public async Task GetImagesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithSize()
         {
@@ -112,7 +110,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
             actual.TotalImagesSizeBytes.Should().Be(imagesSize);
         }
-
 
         [Test]
         public async Task GetImagesStatisticsForSavedSearchAsync_ShouldCalculateStatisticsWithoutSize()
@@ -165,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
             actual.TotalImagesSizeBytes.Should().Be(imagesSize);
         }
-        
+
         private RelativityObjectSlim CreateDocumentWithHasNativeField(bool hasNative)
         {
             return new RelativityObjectSlim()

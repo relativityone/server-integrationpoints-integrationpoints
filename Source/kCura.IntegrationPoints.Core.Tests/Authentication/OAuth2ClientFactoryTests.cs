@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
         [Test]
         public async Task GetOauth2Client_ShouldReturnExistingOAuth2Client()
         {
-            //Arrange
+            // Arrange
             _retryHandlerMock
                 .Setup(x => x.ExecuteWithRetriesAsync(It.IsAny<Func<Task<OAuth2Client>>>(), It.IsAny<string>()))
                 .ReturnsAsync(_oauth2Client);
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
             // Act
             Func<Task> action = () => _instance.GetOauth2ClientAsync(_contextUserId);
 
-            //Assert
+            // Assert
             action
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
@@ -130,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
             // Act
             Func<Task> action = () => _instance.GetOauth2ClientAsync(_contextUserId);
 
-            //Assert
+            // Assert
             action
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")

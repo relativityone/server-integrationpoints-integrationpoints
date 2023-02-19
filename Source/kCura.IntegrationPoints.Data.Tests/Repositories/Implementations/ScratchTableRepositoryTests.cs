@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             // Arrange
             string expectedQuery =
                 $@"
-            IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{_tableName}') 
+            IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{_tableName}')
             DROP TABLE [Resource].[{_tableName}]
             ";
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             // Arrange
             string expectedQuery =
                 $@"
-            IF EXISTS (SELECT * FROM {_schemalessResourceDatabasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_tableName}') 
+            IF EXISTS (SELECT * FROM {_schemalessResourceDatabasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_tableName}')
             SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_tableName}]
             ";
 
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             int size = 5;
             string expectedQuery =
                 $@"
-            IF EXISTS (SELECT * FROM {_schemalessResourceDatabasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_tableName}') 
+            IF EXISTS (SELECT * FROM {_schemalessResourceDatabasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_tableName}')
             SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_tableName}]
             ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
 

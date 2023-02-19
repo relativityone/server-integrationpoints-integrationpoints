@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<TelemetryManager>();
         }
 
-        #endregion //Constructors
+        #endregion // Constructors
 
         #region Fields
 
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
         private readonly IAPILog _logger;
         private readonly List<ITelemetryMetricProvider> _metricProviders = new List<ITelemetryMetricProvider>();
 
-        #endregion //Fields
+        #endregion // Fields
 
         #region Methods
 
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
             }
         }
 
-        #endregion //Methods
+        #endregion // Methods
 
         #region Logging
 

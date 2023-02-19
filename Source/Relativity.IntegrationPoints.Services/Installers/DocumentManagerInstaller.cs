@@ -18,8 +18,8 @@ namespace Relativity.IntegrationPoints.Services.Installers
         protected override IList<IWindsorInstaller> Dependencies { get; }
 
         protected override void RegisterComponents(
-            IWindsorContainer container, 
-            IConfigurationStore store, 
+            IWindsorContainer container,
+            IConfigurationStore store,
             int workspaceID)
         {
             container.Register(Component.For<IRelativityObjectManagerFactory>()

@@ -32,71 +32,69 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldHaveAllMappedColumns_WithNoFolderMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
-            //ImportDataReader schema should have all columns in field map
+            // ImportDataReader schema should have all columns in field map
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             foreach (FieldMap map in fieldMaps)
             {
                 Assert.IsTrue(columnNames.Contains(map.SourceField.FieldIdentifier));
             }
 
-            //ImportDataReader schema should have no extra columns
+            // ImportDataReader schema should have no extra columns
             Assert.AreEqual(fieldMaps.Count, columnNames.Count);
-            //ImportDataReader schema should have number of mapped columns
+            // ImportDataReader schema should have number of mapped columns
             Assert.AreEqual(fieldMaps.Count, idr.FieldCount);
         }
 
         [Test]
         public void ItShouldHaveAdditionalColumn_WithNativeFileMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_NATIVE_FILE_PATH);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
-            //ImportDataReader schema should have all columns in field map
+            // ImportDataReader schema should have all columns in field map
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             foreach (FieldMap map in fieldMaps)
             {
                 Assert.IsTrue(columnNames.Contains(map.SourceField.FieldIdentifier));
             }
 
-            //ImportDataReader schema should have no extra columns
+            // ImportDataReader schema should have no extra columns
             Assert.AreEqual(fieldMaps.Count + 1, columnNames.Count);
-            //ImportDataReader schema should have number of mapped columns
+            // ImportDataReader schema should have number of mapped columns
             Assert.AreEqual(fieldMaps.Count + 1, idr.FieldCount);
         }
-
-
 
         [Test]
         public void ItShouldHaveAllMappedColumnsAndFolder_WithFolderMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
-            //ImportDataReader schema should have all columns in field map plus extra special column
+            // ImportDataReader schema should have all columns in field map plus extra special column
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             foreach (FieldMap map in fieldMaps)
             {
@@ -110,24 +108,24 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
                 }
             }
 
-            //ImportDataReader schema should have one extra column (folder mapped to group id field)
+            // ImportDataReader schema should have one extra column (folder mapped to group id field)
             Assert.AreEqual(fieldMaps.Count + 1, columnNames.Count);
-            //ImportDataReader schema should have same number of columns as source data
+            // ImportDataReader schema should have same number of columns as source data
             Assert.AreEqual(fieldMaps.Count + 1, idr.FieldCount);
         }
 
         [Test]
         public void ItShouldProvideCorrectData_WithNoFolderMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             int dtRowIndex = 0;
@@ -146,15 +144,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldProvideCorrectData_WithFolderMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             Assert.IsTrue(columnNames.Contains(Domain.Constants.SPECIAL_FOLDERPATH_FIELD));
@@ -184,15 +182,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldProvideCorrectData_WithNativeFileMapping()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_NATIVE_FILE_PATH);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
 
             List<string> columnNames = idr.GetSchemaTable().Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToList();
             Assert.IsTrue(columnNames.Contains(Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD));
@@ -223,50 +221,50 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldPassThroughCallsToManageErrorRecords()
         {
-            //Arrange
+            // Arrange
             IDataReader dataSource = Substitute.For<IDataReader, IArtifactReader>();
             ((IArtifactReader) dataSource).ManageErrorRecords(Arg.Any<string>(), Arg.Any<string>()).Returns("Error_file");
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(dataSource);
 
-            //Assert
+            // Assert
             Assert.AreEqual("Error_file", idr.ManageErrorRecords(string.Empty, string.Empty));
         }
 
         [Test]
         public void ItShouldPassThroughCallsToCountRecords()
         {
-            //Arrange
+            // Arrange
             IDataReader dataSource = Substitute.For<IDataReader, IArtifactReader>();
             ((IArtifactReader) dataSource).CountRecords().Returns(1);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(dataSource);
 
-            //Assert
+            // Assert
             Assert.AreEqual(1, idr.CountRecords());
         }
 
         [Test]
         public void ItShouldNotBeClosed_WhenFirstCreated()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
-            //Assert
+            // Assert
             Assert.IsFalse(idr.IsClosed);
         }
 
         [Test]
         public void ItShouldReturnTheCorrectName_WhenFolderMappingIsPresent()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
 
@@ -276,7 +274,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             nameMap[2] = kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD;
             nameMap[3] = "2";
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
@@ -289,7 +287,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnTheCorrectName_WhenFolderMappingIsNotPresent()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
 
@@ -297,7 +295,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             nameMap[0] = "0";
             nameMap[1] = "2";
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
@@ -310,7 +308,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnTheCorrectOrdinal_WhenFolderMappingIsPresent()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITH_FOLDER);
 
@@ -320,7 +318,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             ordinalMap[kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD] = 2;
             ordinalMap["2"] = 3;
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 
@@ -333,7 +331,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnTheCorrectOrdinal_WhenFolderMappingIsNotPresent()
         {
-            //Arrange
+            // Arrange
             DataTable sourceDataTable = SourceDataTable(_LOADFILE_1);
             List<FieldMap> fieldMaps = FieldMapObject(_FIELDMAP_WITHOUT_FOLDER);
 
@@ -341,7 +339,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             ordinalMap["0"] = 0;
             ordinalMap["2"] = 1;
 
-            //Act
+            // Act
             ImportDataReader idr = new ImportDataReader(sourceDataTable.CreateDataReader());
             idr.Setup(fieldMaps.ToArray());
 

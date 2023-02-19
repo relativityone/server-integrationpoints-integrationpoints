@@ -1,9 +1,6 @@
 ﻿var IP = IP || {};
 
 var loadData = function (ko, dataContainer) {
-
-
-
 	var Model = function (dataContainer) {
 		var self = this;
 

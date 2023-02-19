@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         {
             if (IPAddress.TryParse(host, out IPAddress ip))
             {
-                return new []{ip};
+                return new[]{ip};
             }
             else
             {

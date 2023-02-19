@@ -46,11 +46,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             // act
             _instace.UpdateNames(settings, new EventHandler.Artifact(934580, 990562, 533988, "", false, null));
 
-            //assert
+            // assert
             Assert.AreEqual("RDO", settings[_ARTIFACT_TYPE_NAME]);
             Assert.AreEqual(instanceName, settings[_DESTINATION_RELATIVITY_INSTANCE]);
         }
-    
+
         private void MockFederatedInstanceManager(int instanceId,string federatedInstanceName)
         {
             var federatedInstanceDto = Substitute.For<FederatedInstanceDto>();
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         {
             var settings = new Dictionary<string, object>
             {
-                {nameof(DestinationConfiguration.ArtifactTypeId), _ARTIFACT_TYPE_ID},
+                {nameof(DestinationConfiguration.ArtifactTypeId), _ARTIFACT_TYPE_ID },
                 {nameof(DestinationConfiguration.FederatedInstanceArtifactId), _FEDERATED_INSTANCE_ID}
             };
 

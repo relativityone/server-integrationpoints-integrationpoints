@@ -59,9 +59,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             sut.Execute();
 
             // Assert
-            sut.VerifyJobsWereNotProcessed(new [] {jobWithoutWorkspace.JobId});
+            sut.VerifyJobsWereNotProcessed(new[] {jobWithoutWorkspace.JobId});
 
-            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new []{jobWithoutWorkspace.JobId});
+            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new[]{jobWithoutWorkspace.JobId});
         }
     }
 }

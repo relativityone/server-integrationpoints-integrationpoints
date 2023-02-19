@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
         [SetUp]
         public override void SetUp()
         {
-
         }
 
         [Test, System.ComponentModel.Description("Golden Flow")]
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
         [TestCase("NoReplacementsSpaceOnRightEnd ", '*', "03/31/2016", "NoReplacementsSpaceOnRightEnd ")]
         [TestCase("*yyyy*-*MM*-*dd*-*HH*_Test.csv", '*', "04/05/2016 19:14", "2016-04-05-19_Test.csv")]
 
-        public void GoldenFlow(String filename, Char wildCard, String date, String expected)
+        public void GoldenFlow(string filename, char wildCard, string date, string expected)
         {
             var dateObj = Convert.ToDateTime(date);
             var result = FilenameFormatter.FormatFilename(filename, wildCard, dateObj);
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Tests
         {
             var filename = "*Hello*My*NameIs**Marlon*";
             var result = FilenameFormatter.FindAllIndexes(filename, '*');
-            Int32[] expected = { 0, 6, 9, 16, 17, 24 };
+            int[] expected = { 0, 6, 9, 16, 17, 24 };
 
             Assert.AreEqual(result.Length, expected.Length);
             for (var i = 0; i < expected.Length; i++)
