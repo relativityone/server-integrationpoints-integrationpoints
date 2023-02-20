@@ -37,6 +37,8 @@ nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 nuget Relativity.Platform.Agent.WorkloadDiscovery.SDK
 nuget Relativity.Productions.Services.Interfaces 11.1.0
+nuget Relativity.Storage
+nuget Relativity.Storage.Extensions
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3003.0.2
