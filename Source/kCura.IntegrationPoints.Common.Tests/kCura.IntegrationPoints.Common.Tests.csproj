@@ -34,5 +34,8 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Kepler\" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
