@@ -35,6 +35,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
             return _storageAccess;
         }
 
+        public async Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
+        {
+            IStorageAccess<string> storageAccess = await GetStorageAccessAsync().ConfigureAwait(false);
+            StorageStream stream = await storageAccess.CreateFileOrTruncateExistingAsync(path).ConfigureAwait(false);
+            return stream;
+        }
+
         public async Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId)
         {
             using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))

@@ -8,6 +8,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
     {
         Task<IStorageAccess<string>> GetStorageAccessAsync();
 
+        Task<StorageStream> CreateFileOrTruncateExistingAsync(string path);
+
         Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId);
     }
 }

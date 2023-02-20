@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint, string directoryPath)
         {
             IDataReader reader = await GetIdsReaderAsync(provider, integrationPoint).ConfigureAwait(false);
-            IStorageAccess<string> storageAccess = await _storageService.GetStorageAccessAsync().ConfigureAwait(false);
             int batchSize = await _instanceSettings.GetBatchSizeAsync().ConfigureAwait(false);
 
             _logger.LogInformation("Writing files with IDs using batch size: {batchSize}", batchSize);
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
             while (read)
             {
-                using (StorageStream fileStream = await GetFileStreamAsync(storageAccess, directoryPath, batchIndex).ConfigureAwait(false))
+                using (StorageStream fileStream = await GetFileStreamAsync(directoryPath, batchIndex).ConfigureAwait(false))
                 using (TextWriter textWriter = new StreamWriter(fileStream))
                 {
                     string idFilePath = fileStream.StoragePath;
@@ -76,13 +75,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             return batches;
         }
 
-        private async Task<StorageStream> GetFileStreamAsync(IStorageAccess<string> storageAccess, string directoryPath, int batchIndex)
+        private async Task<StorageStream> GetFileStreamAsync(string directoryPath, int batchIndex)
         {
             try
             {
                 string batchIDsFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.id";
                 string batchIDsFilePath = Path.Combine(directoryPath, batchIDsFileName);
-                StorageStream fileStream = await storageAccess.CreateFileOrTruncateExistingAsync(batchIDsFilePath).ConfigureAwait(false);
+                StorageStream fileStream = await _storageService.CreateFileOrTruncateExistingAsync(batchIDsFilePath).ConfigureAwait(false);
                 return fileStream;
             }
             catch (Exception ex)
