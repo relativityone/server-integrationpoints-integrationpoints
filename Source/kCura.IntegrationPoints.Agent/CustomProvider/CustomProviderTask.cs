@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 ImportApiFlowEnum importApiFlowEnum = GetImportApiFlow(integrationPointDto.DestinationConfiguration);
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(importApiFlowEnum);
-                var importJobContext = new ImportJobContext(jobDetails.JobID, job.JobId, job.WorkspaceID);
+                var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
 
                 await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, WrapFieldMappings(integrationPointDto.FieldMappings));
             }
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private static ImportApiFlowEnum GetImportApiFlow(string destinationConfiguration)
+        private ImportApiFlowEnum GetImportApiFlow(string destinationConfiguration)
         {
             ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
             return settings.ArtifactTypeId == (int)ArtifactType.Document

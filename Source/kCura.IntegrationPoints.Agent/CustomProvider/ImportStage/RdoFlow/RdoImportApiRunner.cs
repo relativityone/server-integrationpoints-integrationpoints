@@ -14,9 +14,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IAPILog _logger;
 
-        public RdoImportApiRunner(IRdoImportSettingsBuilder importSettingsBuilder, IAPILog logger)
+        public RdoImportApiRunner(IRdoImportSettingsBuilder importSettingsBuilder, IKeplerServiceFactory serviceFactory, IAPILog logger)
         {
             _importSettingsBuilder = importSettingsBuilder;
+            _serviceFactory = serviceFactory;
             _logger = logger;
         }
 

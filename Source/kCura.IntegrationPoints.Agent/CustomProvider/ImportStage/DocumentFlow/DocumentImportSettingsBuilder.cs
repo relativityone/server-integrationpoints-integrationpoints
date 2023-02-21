@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             };
 
             advancedSettings.Other.AuditLevel = AuditLevel.FullAudit;
-            advancedSettings.Other.BatchSize = await _instanceSettings.GetBatchSizeAsync().ConfigureAwait(false);
+            advancedSettings.Other.BatchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
 
             return advancedSettings;
         }
