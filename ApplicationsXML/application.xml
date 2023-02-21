@@ -1907,6 +1907,12 @@
       <Name>Relativity.HostingBridge.SDK.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>5539490</ArtifactId>
+      <Keywords />
+      <Name>Polly.Contrib.WaitAndRetry.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles>
     <ResourceFile>
@@ -1926,7 +1932,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2023-02-09T14:48:12.3233789Z</ExtractionDate>
+  <ExtractionDate>2023-02-19T12:39:57.5293872Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -12137,7 +12143,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.60</Version>
+  <Version>12.2.15.62</Version>
   <SchemaVersion>11.3.10.28</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

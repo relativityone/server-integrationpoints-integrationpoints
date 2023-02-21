@@ -2,6 +2,10 @@
 kCura.Apps.Common.Config
 Relativity.API
 Relativity.Productions.Services.Interfaces
+Relativity.Services.Interfaces
 Relativity.Telemetry.APM
 Relativity.DataTransfer.MessageService
 Relativity.Toggles
+Castle.Core
+Polly
+Polly.Contrib.WaitAndRetry
