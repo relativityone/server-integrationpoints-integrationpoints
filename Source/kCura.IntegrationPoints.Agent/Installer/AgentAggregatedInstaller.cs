@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             try
             {
                 container.Register(Component.For<IHelper>().Instance(_agentHelper));
+                container.Register(Component.For<IWindsorContainer>().Instance(container));
                 InstallContainer(container);
             }
             catch (Exception e)

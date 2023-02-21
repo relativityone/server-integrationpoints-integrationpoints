@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -40,11 +39,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>().ConfigureAwait(false);
-                bool isEntityImport = await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
 
-                bool shouldBeUsed = isToggleEnabled && !isEntityImport;
+                ImportSettings settings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+                bool isEntityImport = await IsEntityObjectImportAsync(settings).ConfigureAwait(false);
+                bool isDocumentImport = IsDocumentImport(settings);
 
-                _log.LogInformation("IAPI 2.0 should be used for Custom Provider flow: {shouldBeUsed}, because: is toggle enabled - {isToggleEnabled}; is Entity import - {isEntityImport}",
+                bool shouldBeUsed = isToggleEnabled && !isEntityImport && isDocumentImport;
+
+                _log.LogInformation("Checking if IAPI 2.0 should be used for Custom Provider flow: {shouldBeUsed}, because: is toggle enabled - {isToggleEnabled}; is Entity import - {isEntityImport}",
                     shouldBeUsed, isToggleEnabled, isEntityImport);
 
                 return shouldBeUsed;
@@ -56,9 +58,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private async Task<bool> IsEntityObjectImportAsync(string configuration)
+        private bool IsDocumentImport(ImportSettings settings)
         {
-            ImportSettings settings = _serializer.Deserialize<ImportSettings>(configuration);
+            return settings.ArtifactTypeId == (int)ArtifactType.Document;
+        }
+
+        private async Task<bool> IsEntityObjectImportAsync(ImportSettings settings)
+        {
             var request = new QueryRequest()
             {
                 ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.ObjectType },
