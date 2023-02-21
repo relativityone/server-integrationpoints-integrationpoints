@@ -39,15 +39,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             try
             {
-                bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>().ConfigureAwait(false);
-                bool isEntityImport = await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
-
-                bool shouldBeUsed = isToggleEnabled && !isEntityImport;
-
-                _log.LogInformation("IAPI 2.0 should be used for Custom Provider flow: {shouldBeUsed}, because: is toggle enabled - {isToggleEnabled}; is Entity import - {isEntityImport}",
-                    shouldBeUsed, isToggleEnabled, isEntityImport);
-
-                return shouldBeUsed;
+                return await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>()
+                       && !await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
