@@ -38,18 +38,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             try
             {
-                bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>().ConfigureAwait(false);
-
-                ImportSettings settings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-                bool isEntityImport = await IsEntityObjectImportAsync(settings).ConfigureAwait(false);
-                bool isDocumentImport = IsDocumentImport(settings);
-
-                bool shouldBeUsed = isToggleEnabled && !isEntityImport && isDocumentImport;
-
-                _log.LogInformation("Checking if IAPI 2.0 should be used for Custom Provider flow: {shouldBeUsed}, because: is toggle enabled - {isToggleEnabled}; is Entity import - {isEntityImport}",
-                    shouldBeUsed, isToggleEnabled, isEntityImport);
-
-                return shouldBeUsed;
+                return await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>()
+                       && !await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -58,13 +48,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private bool IsDocumentImport(ImportSettings settings)
+        private async Task<bool> IsEntityObjectImportAsync(string configuration)
         {
-            return settings.ArtifactTypeId == (int)ArtifactType.Document;
-        }
-
-        private async Task<bool> IsEntityObjectImportAsync(ImportSettings settings)
-        {
+            ImportSettings settings = _serializer.Deserialize<ImportSettings>(configuration);
             var request = new QueryRequest()
             {
                 ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.ObjectType },

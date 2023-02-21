@@ -92,6 +92,7 @@ namespace kCura.IntegrationPoints.Common.Kepler
                     .Or<ServiceException>(ex => ex.Message.Contains("Create Failed")) // Thrown when the create call failed.
                     .Or<ServiceException>(ex => ex.Message.Contains("Bad Gateway"))
                     .Or<ConflictException>(ex => ex.Message.Contains("Create Ancestry Failed"))
+                    .Or<TaskCanceledException>() // Timeout
                     .Or<TimeoutException>() // Thrown when there is an infrastructure level timeout.
                     .Or<Exception>(HasInInnerExceptions<Exception>) // Thrown when there is an issue on networking layer
                     .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(_timeBetweenHttpRetriesBase, _MAX_NUMBER_OF_HTTP_RETRIES), (ex, waitTime, retryCount, context) =>

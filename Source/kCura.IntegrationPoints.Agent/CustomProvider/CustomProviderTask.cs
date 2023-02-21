@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
                 {
-                    JobID = jobId,
+                    ImportJobID = jobId,
                     Batches = batches
                 };
 
