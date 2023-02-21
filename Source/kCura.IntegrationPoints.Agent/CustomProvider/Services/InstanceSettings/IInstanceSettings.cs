@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
 {
     public interface IInstanceSettings
     {
-        Task<int> GetBatchSizeAsync();
+        Task<int> GetCustomProviderBatchSizeAsync();
 
         Task<T> GetAsync<T>(string name, string section, T defaultValue);
     }

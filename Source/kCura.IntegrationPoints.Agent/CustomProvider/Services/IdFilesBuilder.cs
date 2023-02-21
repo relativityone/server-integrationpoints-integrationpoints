@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint, string directoryPath)
         {
             IDataReader reader = await GetIdsReaderAsync(provider, integrationPoint).ConfigureAwait(false);
-            int batchSize = await _instanceSettings.GetBatchSizeAsync().ConfigureAwait(false);
+            int batchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
 
             _logger.LogInformation("Writing files with IDs using batch size: {batchSize}", batchSize);
 

@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
             _logger = logger;
         }
 
-        public async Task<int> GetBatchSizeAsync()
+        public async Task<int> GetCustomProviderBatchSizeAsync()
         {
             return await GetAsync<int>("CustomProviderBatchSize", _INTEGRATION_POINTS_SECTION, 10000);
         }

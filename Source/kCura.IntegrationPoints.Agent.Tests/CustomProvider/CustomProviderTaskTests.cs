@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private bool VerifyJob(Job job, int numberOfBatches)
         {
             CustomProviderJobDetails jobDetails = new JSONSerializer().Deserialize<CustomProviderJobDetails>(job.JobDetails);
-            jobDetails.JobID.Should().NotBe(Guid.Empty);
+            jobDetails.ImportJobID.Should().NotBe(Guid.Empty);
             jobDetails.Batches.Count.Should().Be(numberOfBatches);
             return true;
         }

@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void SetUp()
         {
             _instanceSettings = new Mock<IInstanceSettings>();
-            _instanceSettings.Setup(x => x.GetBatchSizeAsync()).ReturnsAsync(_BATCH_SIZE);
+            _instanceSettings.Setup(x => x.GetCustomProviderBatchSizeAsync()).ReturnsAsync(_BATCH_SIZE);
 
             _stream = new FakeStream();
 
