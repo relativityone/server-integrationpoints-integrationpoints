@@ -11,6 +11,7 @@ using Relativity.Import.V1.Models.Settings;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
+    /// <inheritdoc />
     internal class RdoImportSettingsBuilder : IRdoImportSettingsBuilder
     {
         private readonly IInstanceSettings _instanceSettings;
@@ -27,6 +28,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task<RdoImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
         {
             var configuration = _serializer.Deserialize<ImportSettings>(destinationConfiguration);

@@ -8,12 +8,26 @@ using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
+    /// <inheritdoc/>
     internal class DocumentImportApiRunner : IImportApiRunner
     {
         private readonly IDocumentImportSettingsBuilder _importSettingsBuilder;
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IAPILog _logger;
 
+        /// <summary>
+        /// Parameterless constructor for tests purposes only.
+        /// </summary>
+        public DocumentImportApiRunner()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DocumentImportApiRunner"/> class.
+        /// </summary>
+        /// <param name="importSettingsBuilder">The builder able to create desired IAPI configuration.></param>
+        /// <param name="serviceFactory">Factory for creating keppler services.</param>
+        /// <param name="logger">The logger.</param>
         public DocumentImportApiRunner(IDocumentImportSettingsBuilder importSettingsBuilder, IKeplerServiceFactory serviceFactory, IAPILog logger)
         {
             _importSettingsBuilder = importSettingsBuilder;
@@ -21,21 +35,22 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public async Task RunImportJobAsync(ImportJobContext importJobContext, string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
         {
             DocumentImportConfiguration configuration = await _importSettingsBuilder.BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
 
             Response createResponse = await CreateImportJobAsync(importJobContext).ConfigureAwait(false);
-            ValidateOrThrow(createResponse);
+            createResponse.ValidateOrThrow();
 
             Response docConfigurationResponse = await AttachImportSettingsToImportJobAsync(importJobContext, configuration.DocumentSettings).ConfigureAwait(false);
-            ValidateOrThrow(docConfigurationResponse);
+            docConfigurationResponse.ValidateOrThrow();
 
             Response advancedResponse = await AttachAdvancedImportSettingsToImportJobAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
-            ValidateOrThrow(advancedResponse);
+            advancedResponse.ValidateOrThrow();
 
             Response startResponse = await BeginImportJobAsync(importJobContext).ConfigureAwait(false);
-            ValidateOrThrow(startResponse);
+            startResponse.ValidateOrThrow();
         }
 
         private async Task<Response> CreateImportJobAsync(ImportJobContext importJobContext)
@@ -93,14 +108,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         importJobContext.DestinationWorkspaceId,
                         importJobContext.ImportJobId)
                     .ConfigureAwait(false);
-            }
-        }
-
-        private void ValidateOrThrow(Response response)
-        {
-            if (!response.IsSuccess)
-            {
-                throw new ImportApiResponseException(response);
             }
         }
     }

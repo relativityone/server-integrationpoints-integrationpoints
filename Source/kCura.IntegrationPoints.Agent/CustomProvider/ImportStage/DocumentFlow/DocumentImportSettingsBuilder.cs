@@ -13,6 +13,7 @@ using Relativity.Import.V1.Models.Settings;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
+    /// <inheritdoc />
     internal class DocumentImportSettingsBuilder : IDocumentImportSettingsBuilder
     {
         private readonly IInstanceSettings _instanceSettings;
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public async Task<DocumentImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
         {
             var configuration = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
