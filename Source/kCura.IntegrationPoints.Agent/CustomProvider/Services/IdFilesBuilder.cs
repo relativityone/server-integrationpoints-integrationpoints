@@ -77,16 +77,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private async Task<StorageStream> GetFileStreamAsync(string directoryPath, int batchIndex)
         {
+            string batchIDsFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.id";
+            string batchIDsFilePath = Path.Combine(directoryPath, batchIDsFileName);
+
             try
             {
-                string batchIDsFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.id";
-                string batchIDsFilePath = Path.Combine(directoryPath, batchIDsFileName);
                 StorageStream fileStream = await _storageService.CreateFileOrTruncateExistingAsync(batchIDsFilePath).ConfigureAwait(false);
                 return fileStream;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to open file stream");
+                _logger.LogError(ex, "Failed to open file stream: {path}", batchIDsFilePath);
                 throw;
             }
         }

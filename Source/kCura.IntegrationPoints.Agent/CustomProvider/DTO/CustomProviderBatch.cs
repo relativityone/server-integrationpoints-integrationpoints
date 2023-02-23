@@ -7,9 +7,7 @@
         public string IDsFilePath { get; set; }
 
         public string DataFilePath { get; set; }
-
-        public int NumberOfRecordsInDataFile { get; set; }
-
+        
         public bool IsAddedToImportQueue { get; set; }
     }
 }
