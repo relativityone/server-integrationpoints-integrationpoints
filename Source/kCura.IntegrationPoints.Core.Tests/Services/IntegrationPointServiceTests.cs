@@ -6,7 +6,6 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -23,6 +22,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Moq;
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
         private Data.IntegrationPoint _integrationPoint;
-        private DestinationConfiguration _destinationConfiguration;
+        private ImportSettings _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
         private int _WORKSPACE_ID;
         private int _USER_ID;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-            _destinationConfiguration = _fxt.Build<DestinationConfiguration>()
+            _destinationConfiguration = _fxt.Build<ImportSettings>()
                 .With(x => x.ArtifactTypeId, _fxt.Create<int>())
                 .Create();
             _sourceProvider = _fxt.Build<SourceProvider>()

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointProfileService _integrationPointProfileService;
         private Services.Repositories.IIntegrationPointAccessor _integrationPointAccessor;
-        private DestinationConfiguration _destinationConfiguration;
+        private ImportSettings _destinationConfiguration;
         private string _serializedDestinationConfiguration;
         private ICaseServiceContext _caseContext;
         private int _workspaceArtifactId = 100;
@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
         private void SetUpDestinationConfiguration(int? federatedInstanceArtifactId = null)
         {
-            _destinationConfiguration = new DestinationConfiguration()
+            _destinationConfiguration = new ImportSettings()
             {
                 FederatedInstanceArtifactId = federatedInstanceArtifactId
             };
@@ -108,7 +108,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _serializedDestinationConfiguration = new IntegrationPointSerializer(logger).Serialize(_destinationConfiguration);
 
             _serializer.Serialize(_destinationConfiguration).Returns(_serializedDestinationConfiguration);
-            _serializer.Deserialize<DestinationConfiguration>(_serializedDestinationConfiguration)
+            _serializer.Deserialize<ImportSettings>(_serializedDestinationConfiguration)
                 .Returns(_destinationConfiguration);
         }
 

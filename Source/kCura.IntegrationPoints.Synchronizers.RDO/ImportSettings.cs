@@ -188,6 +188,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         #region "Calculated Properties"
 
+        [JsonIgnore]
         public ImportOverlayBehaviorEnum ImportOverlayBehavior
         {
             get

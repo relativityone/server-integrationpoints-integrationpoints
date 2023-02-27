@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
         {
             var result = new ValidationResult();
 
-            var totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(ExportSettingsEx, DestinationSettingsEx.ArtifactTypeId);
+            var totalDocCount = _exportInitProcessService.CalculateDocumentCountToTransfer(ExportSettingsEx, DestinationSettings.ArtifactTypeId);
 
             var fileCountValidator = new FileCountValidator();
             result.Add(fileCountValidator.Validate(totalDocCount));

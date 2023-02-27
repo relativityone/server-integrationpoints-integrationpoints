@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,7 +15,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -93,7 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
 
             ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
-            DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
+            var destinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 
             long totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
 
@@ -106,7 +105,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return totalCount;
         }
 
-        private long GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
+        private long GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, ImportSettings destinationConfiguration, Job job)
         {
             try
             {
