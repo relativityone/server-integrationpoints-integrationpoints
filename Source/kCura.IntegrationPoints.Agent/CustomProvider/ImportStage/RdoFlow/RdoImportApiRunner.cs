@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             RdoImportConfiguration configuration = await _importSettingsBuilder.BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
 

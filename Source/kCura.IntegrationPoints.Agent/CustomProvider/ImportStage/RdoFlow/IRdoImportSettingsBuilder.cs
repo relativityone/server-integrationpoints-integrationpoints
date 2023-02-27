@@ -15,6 +15,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
         /// <returns>The ImportAPI v2.0 configuration object.</returns>
-        Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings);
+        Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings);
     }
 }

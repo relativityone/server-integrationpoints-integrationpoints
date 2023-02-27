@@ -26,13 +26,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        public async Task<DocumentImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
-            FieldMapWrapper identifier = GetIdentifierField(fieldMappings);
+            IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
             IWithNatives nativesSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
@@ -129,12 +129,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, List<FieldMapWrapper> fieldMappings)
+        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, List<IndexedFieldMap> fieldMappings)
         {
             _logger.LogInformation("Configuring FieldsMapping...");
             return fieldsMappingSettings.WithFieldsMapped(x =>
             {
-                foreach (FieldMapWrapper map in fieldMappings)
+                foreach (IndexedFieldMap map in fieldMappings)
                 {
                     _logger.LogInformation("Configure Field - {@field}", map);
 
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private ImportDocumentSettings ConfigureDestinationFolderStructure(
             IWithFolders withFolders,
-            List<FieldMapWrapper> fieldMappings,
+            List<IndexedFieldMap> fieldMappings,
             int destinationFolderArtifactId,
             bool useFolderPathInformation,
             string folderPathField)
@@ -173,13 +173,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private static int GetFieldIndex(List<FieldMapWrapper> fieldMappings, string fieldName)
+        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
         {
-            FieldMapWrapper field = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return field?.ColumnIndex ?? -1;
+            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
+            return indexedField?.ColumnIndex ?? -1;
         }
 
-        private static FieldMapWrapper GetIdentifierField(List<FieldMapWrapper> fieldMappings)
+        private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
         {
             return fieldMappings.FirstOrDefault(x => x.FieldMap.DestinationField.IsIdentifier);
         }

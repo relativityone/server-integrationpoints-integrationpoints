@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _settingsBuilderMock = new Mock<IRdoImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<ImportSettings>(), It.IsAny<List<FieldMapWrapper>>()))
+                .Setup(x => x.BuildAsync(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(_importConfiguration);
 
             _importJobControllerMock = new Mock<IImportJobController>();
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             var context = new ImportJobContext(_importJobId, _ripJobId, _workspaceId);
             var configuration = new ImportSettings();
-            var fieldMappings = new List<FieldMapWrapper>();
+            var fieldMappings = new List<IndexedFieldMap>();
 
             // Act
             await _sut.RunImportJobAsync(context, configuration, fieldMappings);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             var context = new ImportJobContext(_importJobId, _ripJobId, _workspaceId);
             var configuration = new ImportSettings();
-            var fieldMappings = new List<FieldMapWrapper>();
+            var fieldMappings = new List<IndexedFieldMap>();
 
             // Act
             await _sut.RunImportJobAsync(context, configuration, fieldMappings);
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             var context = new ImportJobContext(_importJobId, _ripJobId, _workspaceId);
             var configuration = new ImportSettings();
-            var fieldMappings = new List<FieldMapWrapper>();
+            var fieldMappings = new List<IndexedFieldMap>();
 
             var failedResponse = new Response(Guid.NewGuid(), false, "error-message", "error-code");
             if (createJobFailure)

@@ -23,13 +23,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public async Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        public async Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
-            FieldMapWrapper identifier = GetIdentifierField(fieldMappings);
+            IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
@@ -85,12 +85,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private IWithRdo ConfigureFieldsMappingSettings(IWithFields fieldsSettings, List<FieldMapWrapper> fieldMappings)
+        private IWithRdo ConfigureFieldsMappingSettings(IWithFields fieldsSettings, List<IndexedFieldMap> fieldMappings)
         {
             _logger.LogInformation("Configuring FieldsMapping...");
             return fieldsSettings.WithFieldsMapped(x =>
             {
-                foreach (FieldMapWrapper map in fieldMappings)
+                foreach (IndexedFieldMap map in fieldMappings)
                 {
                     _logger.LogInformation("Configure Field - {@field}", map);
                     x = x.WithField(map.ColumnIndex, map.DestinationFieldName);
@@ -110,13 +110,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 .WithoutParentColumnIndex());
         }
 
-        private static int GetFieldIndex(List<FieldMapWrapper> fieldMappings, string fieldName)
+        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
         {
-            FieldMapWrapper field = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return field?.ColumnIndex ?? -1;
+            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
+            return indexedField?.ColumnIndex ?? -1;
         }
 
-        private static FieldMapWrapper GetIdentifierField(List<FieldMapWrapper> fieldMappings)
+        private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
         {
             return fieldMappings.FirstOrDefault(x => x.FieldMap.DestinationField.IsIdentifier);
         }

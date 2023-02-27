@@ -121,9 +121,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private static List<FieldMapWrapper> WrapFieldMappings(List<FieldMap> fieldMappings)
+        private static List<IndexedFieldMap> WrapFieldMappings(List<FieldMap> fieldMappings)
         {
-            return fieldMappings.Select((map, i) => new FieldMapWrapper(map, i)).ToList();
+            return fieldMappings.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }
     }
 }
