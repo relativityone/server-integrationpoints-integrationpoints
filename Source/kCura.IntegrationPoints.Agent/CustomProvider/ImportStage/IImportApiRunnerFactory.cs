@@ -1,3 +1,5 @@
+using kCura.IntegrationPoints.Synchronizers.RDO;
+
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     /// <summary>
@@ -6,8 +8,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     internal interface IImportApiRunnerFactory
     {
         /// <summary>
-        /// Builds the ImportAPI runner based on the ImportAPI flow (transferred items type).
+        /// Builds the ImportAPI runner based on destination configuration.
         /// </summary>
-        IImportApiRunner BuildRunner(ImportApiFlowEnum importFlow);
+        IImportApiRunner BuildRunner(ImportSettings destinationConfiguration);
     }
 }

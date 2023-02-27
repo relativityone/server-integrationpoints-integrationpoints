@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
@@ -503,13 +502,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .Returns(_sourceConfiguration);
             _serializerFake.Setup(x => x.Deserialize<ImportSettings>(It.IsAny<string>()))
                 .Returns(_destinationConfiguration);
-            _serializerFake.Setup(x => x.Deserialize<FolderConf>(It.IsAny<string>()))
-                .Returns(new FolderConf
-                {
-                    UseDynamicFolderPath = _destinationConfiguration.UseDynamicFolderPath,
-                    UseFolderPathInformation = _destinationConfiguration.UseFolderPathInformation,
-                    FolderPathSourceField = _destinationConfiguration.FolderPathSourceField
-                });
             _serializerFake.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
                 .Returns(new TaskParameters { BatchInstance = It.IsAny<Guid>() });
 

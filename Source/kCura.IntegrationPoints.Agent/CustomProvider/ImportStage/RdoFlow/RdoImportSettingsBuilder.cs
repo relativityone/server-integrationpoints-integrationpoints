@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
@@ -15,24 +14,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     internal class RdoImportSettingsBuilder : IRdoImportSettingsBuilder
     {
         private readonly IInstanceSettings _instanceSettings;
-        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        public RdoImportSettingsBuilder(
-            IInstanceSettings instanceSettings,
-            ISerializer serializer,
-            IAPILog logger)
+        public RdoImportSettingsBuilder(IInstanceSettings instanceSettings, IAPILog logger)
         {
             _instanceSettings = instanceSettings;
-            _serializer = serializer;
             _logger = logger;
         }
 
         /// <inheritdoc />
-        public async Task<RdoImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        public async Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings)
         {
-            var configuration = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
@@ -40,15 +32,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             FieldMapWrapper identifier = GetIdentifierField(fieldMappings);
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
-                configuration.ImportOverwriteMode,
-                configuration.FieldOverlayBehavior,
+                destinationConfiguration.ImportOverwriteMode,
+                destinationConfiguration.FieldOverlayBehavior,
                 identifier.DestinationFieldName);
 
             IWithRdo withRdo = ConfigureFieldsMappingSettings(
                 fieldsSettings,
                 fieldMappings);
 
-            ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, configuration);
+            ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
 
             return new RdoImportConfiguration(importSettings, advancedSettings);
         }

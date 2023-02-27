@@ -1,9 +1,10 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
@@ -29,12 +30,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 new Mock<IAPILog>().Object);
         }
 
-        [TestCase(ImportApiFlowEnum.Document, typeof(DocumentImportApiRunner))]
-        [TestCase(ImportApiFlowEnum.Rdo, typeof(RdoImportApiRunner))]
-        public void BuildRunner_ShouldReturnProperRunnerType(ImportApiFlowEnum flow, Type expectedRunnerType)
+        [TestCase(true, typeof(DocumentImportApiRunner))]
+        [TestCase(false, typeof(RdoImportApiRunner))]
+        public void BuildRunner_ShouldReturnProperRunnerType(bool isDocumentTransfer, Type expectedRunnerType)
         {
+            // Arrange
+            var importSettings = new ImportSettings
+            {
+                ArtifactTypeId = isDocumentTransfer
+                    ? (int)ArtifactType.Document
+                    : 12345
+            };
+
             // Act
-            IImportApiRunner runner = _sut.BuildRunner(flow);
+            IImportApiRunner runner = _sut.BuildRunner(importSettings);
 
             // Assert
             Assert.IsInstanceOf(expectedRunnerType, runner);

@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Documents;
@@ -17,37 +15,31 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     internal class DocumentImportSettingsBuilder : IDocumentImportSettingsBuilder
     {
         private readonly IInstanceSettings _instanceSettings;
-        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
         public DocumentImportSettingsBuilder(
             IInstanceSettings instanceSettings,
-            ISerializer serializer,
             IAPILog logger)
         {
             _instanceSettings = instanceSettings;
-            _serializer = serializer;
             _logger = logger;
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        public async Task<DocumentImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings)
         {
-            var configuration = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-            var folderConf = _serializer.Deserialize<FolderConf>(destinationConfiguration);
-
-            IWithOverlayMode overlayModeSettings = global::Relativity.Import.V1.Builders.Documents.ImportDocumentSettingsBuilder.Create();
+            IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
             FieldMapWrapper identifier = GetIdentifierField(fieldMappings);
             IWithNatives nativesSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
-                configuration.ImportOverwriteMode,
-                configuration.FieldOverlayBehavior,
+                destinationConfiguration.ImportOverwriteMode,
+                destinationConfiguration.FieldOverlayBehavior,
                 identifier.DestinationFieldName);
 
-            IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, configuration.ImportNativeFileCopyMode);
+            IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, destinationConfiguration.ImportNativeFileCopyMode);
 
             IWithFolders withFolders = ConfigureFieldsMappingSettings(
                 fieldsMappingSettings,
@@ -56,15 +48,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
                 withFolders,
                 fieldMappings,
-                configuration.DestinationFolderArtifactId,
-                folderConf.UseFolderPathInformation,
-                configuration.FolderPathSourceFieldName);
+                destinationConfiguration.DestinationFolderArtifactId,
+                destinationConfiguration.UseFolderPathInformation,
+                destinationConfiguration.FolderPathSourceFieldName);
 
             ConfigureMoveExistingDocuments(
                 advancedSettings,
-                configuration.MoveExistingDocuments,
-                configuration.ImportOverwriteMode,
-                configuration.FolderPathSourceFieldName);
+                destinationConfiguration.MoveExistingDocuments,
+                destinationConfiguration.ImportOverwriteMode,
+                destinationConfiguration.FolderPathSourceFieldName);
 
             return new DocumentImportConfiguration(importSettings, advancedSettings);
         }

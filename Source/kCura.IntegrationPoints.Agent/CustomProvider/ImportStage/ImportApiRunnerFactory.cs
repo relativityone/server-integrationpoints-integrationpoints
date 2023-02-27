@@ -1,5 +1,7 @@
 using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
@@ -17,17 +19,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public IImportApiRunner BuildRunner(ImportApiFlowEnum importFlow)
+        public IImportApiRunner BuildRunner(ImportSettings destinationConfiguration)
         {
-            _logger.LogInformation("Creating ImportApiRunner based on import flow: {ImportFlow}", importFlow);
+            _logger.LogInformation("Creating ImportApiRunner based on destination configuration: {@destinationConfiguration}", destinationConfiguration);
 
-            switch (importFlow)
+            if (IsDocumentFlow(destinationConfiguration.ArtifactTypeId))
             {
-                case ImportApiFlowEnum.Document: return _container.Resolve<DocumentImportApiRunner>();
-                case ImportApiFlowEnum.Rdo: return _container.Resolve<RdoImportApiRunner>();
-
-                default: throw new NotSupportedException($"Unknown ImportApiFlowEnum: {importFlow}");
+                return _container.Resolve<DocumentImportApiRunner>();
             }
+            else
+            {
+                return _container.Resolve<RdoImportApiRunner>();
+            }
+        }
+
+        private bool IsDocumentFlow(int artifactTypeId)
+        {
+            return artifactTypeId == (int)ArtifactType.Document;
         }
     }
 }

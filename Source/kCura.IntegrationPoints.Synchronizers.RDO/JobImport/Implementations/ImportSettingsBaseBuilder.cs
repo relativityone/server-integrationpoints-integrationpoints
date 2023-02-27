@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
     public class ImportSettingsBaseBuilder<T> : IImportSettingsBaseBuilder<T> where T : ImportSettingsBase
     {
         protected IImportAPI _importApi;
+
         protected ImportSettingsBaseBuilder(IImportAPI importApi)
         {
             _importApi = importApi;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             target.MaximumErrorCount = int.MaxValue - 1; // Have to pass in MaxValue - 1 because of how the ImportAPI validation works -AJK 10-July-2012
             target.NativeFileCopyMode = importSettings.NativeFileCopyMode;
             target.ObjectFieldIdListContainsArtifactId = importSettings.ObjectFieldIdListContainsArtifactId;
-            target.OverwriteMode = importSettings.OverwriteMode;
+            target.OverwriteMode = (OverwriteModeEnum)importSettings.ImportOverwriteMode;
             target.OverlayBehavior = importSettings.OverlayBehavior;
             target.ParentObjectIdSourceFieldName = importSettings.ParentObjectIdSourceFieldName;
             target.SendEmailOnLoadCompletion = importSettings.SendEmailOnLoadCompletion;

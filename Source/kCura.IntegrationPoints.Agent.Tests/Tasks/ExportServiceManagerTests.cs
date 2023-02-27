@@ -294,19 +294,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         }
 
         [Test]
-        [TestCase(OverwriteModeNames.AppendOnlyModeName, OverwriteModeEnum.Append)]
-        [TestCase(OverwriteModeNames.AppendOverlayModeName, OverwriteModeEnum.AppendOverlay)]
-        [TestCase(OverwriteModeNames.OverlayOnlyModeName, OverwriteModeEnum.Overlay)]
-        public void Execute_EnsureToAssignCorrectOverwriteModeFromJobHistory(string initialOverwriteMode, OverwriteModeEnum expectedOverwriteSetting)
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, ImportOverwriteModeEnum.AppendOnly)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, ImportOverwriteModeEnum.AppendOverlay)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, ImportOverwriteModeEnum.OverlayOnly)]
+        public void Execute_EnsureToAssignCorrectOverwriteModeFromJobHistory(string initialOverwriteMode, ImportOverwriteModeEnum expectedOverwriteSetting)
         {
             // ARRANGE
-             _jobHistory.Overwrite = initialOverwriteMode;
+            _jobHistory.Overwrite = initialOverwriteMode;
 
             // ACT
             _instance.Execute(_job);
 
             // ASSERT
-            Assert.AreEqual(expectedOverwriteSetting, _importSettings.OverwriteMode);
+            Assert.AreEqual(expectedOverwriteSetting, _importSettings.ImportOverwriteMode);
         }
 
         [Test]

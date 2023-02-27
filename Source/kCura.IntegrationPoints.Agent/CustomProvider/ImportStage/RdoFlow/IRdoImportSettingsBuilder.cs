@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
@@ -11,9 +12,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <summary>
         /// Builds the ImportAPI v2.0 configuration object based on the destination configuration and the fields mappings.
         /// </summary>
-        /// <param name="destinationConfiguration">The object defining the destination configuration serialized to JSON.</param>
+        /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
         /// <returns>The ImportAPI v2.0 configuration object.</returns>
-        Task<RdoImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings);
+        Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<FieldMapWrapper> fieldMappings);
     }
 }
