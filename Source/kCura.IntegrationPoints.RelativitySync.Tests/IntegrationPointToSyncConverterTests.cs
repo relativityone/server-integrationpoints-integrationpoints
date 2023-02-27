@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         private Mock<IToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
-        private ExtendedImportSettings _destinationConfiguration;
+        private ImportSettings _destinationConfiguration;
         private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;
@@ -413,9 +413,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
 
-        private static ExtendedImportSettings CreateNativeDestinationConfiguration()
+        private static ImportSettings CreateNativeDestinationConfiguration()
         {
-            ImportSettings settings = new ImportSettings
+            return new ImportSettings
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -424,17 +424,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 FieldOverlayBehavior = "Use Field Settings"
             };
-
-            return new ExtendedImportSettings(settings);
         }
 
-        private static ExtendedImportSettings CreateImageDestinationConfiguration(
+        private static ImportSettings CreateImageDestinationConfiguration(
             ImportNativeFileCopyModeEnum importFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks,
             bool includeOriginalImages = true,
             string productionPrecedence = "0",
             IEnumerable<ProductionDTO> imagePrecedence = null)
         {
-            ImportSettings settings = new ImportSettings
+            return new ImportSettings
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -447,21 +445,17 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 ImagePrecedence = imagePrecedence ?? Array.Empty<ProductionDTO>(),
                 ProductionPrecedence = productionPrecedence
             };
-
-            return new ExtendedImportSettings(settings);
         }
 
-        private static ExtendedImportSettings CreateNonDocumentDestinationConfiguration()
+        private static ImportSettings CreateNonDocumentDestinationConfiguration()
         {
-            ImportSettings settings = new ImportSettings
+            return new ImportSettings
             {
                 ArtifactTypeId = _SOURCE_ARTIFACT_TYPE_ID,
                 DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 FieldOverlayBehavior = "Use Field Settings",
             };
-
-            return new ExtendedImportSettings(settings);
         }
 
         private static SourceConfiguration CreateSourceConfiguration()
@@ -541,15 +535,18 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             _documentSyncConfigurationBuilderMock.Setup(x => x.CreateSavedSearch(It.IsAny<CreateSavedSearchOptions>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
-            _documentSyncConfigurationBuilderMock.Setup(x => x.DestinationFolderStructure(It.IsAny<DestinationFolderStructureOptions>()))
+            _documentSyncConfigurationBuilderMock.Setup(x =>
+                    x.DestinationFolderStructure(It.IsAny<DestinationFolderStructureOptions>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
-            _documentSyncConfigurationBuilderMock.Setup(x => x.EmailNotifications(It.IsAny<EmailNotificationsOptions>()))
+            _documentSyncConfigurationBuilderMock
+                .Setup(x => x.EmailNotifications(It.IsAny<EmailNotificationsOptions>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
             _documentSyncConfigurationBuilderMock.Setup(x => x.IsRetry(It.IsAny<RetryOptions>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
             _documentSyncConfigurationBuilderMock.Setup(x => x.OverwriteMode(It.IsAny<OverwriteOptions>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
-            _documentSyncConfigurationBuilderMock.Setup(x => x.WithFieldsMapping(It.IsAny<Action<IFieldsMappingBuilder>>()))
+            _documentSyncConfigurationBuilderMock
+                .Setup(x => x.WithFieldsMapping(It.IsAny<Action<IFieldsMappingBuilder>>()))
                 .Returns(_documentSyncConfigurationBuilderMock.Object);
             _documentSyncConfigurationBuilderMock.Setup(x => x.DisableItemLevelErrorLogging());
 
@@ -561,13 +558,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .Returns(_imageSyncConfigurationBuilderMock.Object);
             _imageSyncConfigurationBuilderMock.Setup(x => x.OverwriteMode(It.IsAny<OverwriteOptions>()))
                 .Returns(_imageSyncConfigurationBuilderMock.Object);
-            _imageSyncConfigurationBuilderMock.Setup(x => x.ProductionImagePrecedence(It.IsAny<ProductionImagePrecedenceOptions>()))
+            _imageSyncConfigurationBuilderMock
+                .Setup(x => x.ProductionImagePrecedence(It.IsAny<ProductionImagePrecedenceOptions>()))
                 .Returns(_imageSyncConfigurationBuilderMock.Object);
             _imageSyncConfigurationBuilderMock.Setup(x => x.DisableItemLevelErrorLogging());
 
-            _nonDocumentSyncConfigurationBuilderMock.Setup(x => x.WithFieldsMapping(It.IsAny<Action<IFieldsMappingBuilder>>()))
+            _nonDocumentSyncConfigurationBuilderMock
+                .Setup(x => x.WithFieldsMapping(It.IsAny<Action<IFieldsMappingBuilder>>()))
                 .Returns(_nonDocumentSyncConfigurationBuilderMock.Object);
-            _nonDocumentSyncConfigurationBuilderMock.Setup(x => x.EmailNotifications(It.IsAny<EmailNotificationsOptions>()))
+            _nonDocumentSyncConfigurationBuilderMock
+                .Setup(x => x.EmailNotifications(It.IsAny<EmailNotificationsOptions>()))
                 .Returns(_nonDocumentSyncConfigurationBuilderMock.Object);
             _nonDocumentSyncConfigurationBuilderMock.Setup(x => x.OverwriteMode(It.IsAny<OverwriteOptions>()))
                 .Returns(_nonDocumentSyncConfigurationBuilderMock.Object);
@@ -588,36 +588,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .Returns(_configurationBuilderMock.Object);
 
             return syncOperations.Object;
-        }
-
-        private class ExtendedImportSettings : ImportSettings
-        {
-            public bool UseFolderPathInformation { get; set; }
-
-            public int FolderPathSourceField { get; set; }
-
-            public ExtendedImportSettings(ImportSettings baseSettings)
-            {
-                ArtifactTypeId = baseSettings.ArtifactTypeId;
-                DestinationArtifactTypeId = baseSettings.DestinationArtifactTypeId;
-                CaseArtifactId = baseSettings.CaseArtifactId;
-                Provider = baseSettings.Provider;
-                ImportOverwriteMode = baseSettings.ImportOverwriteMode;
-                ImportNativeFile = baseSettings.ImportNativeFile;
-                ImportNativeFileCopyMode = baseSettings.ImportNativeFileCopyMode;
-                ExtractedTextFieldContainsFilePath = baseSettings.ExtractedTextFieldContainsFilePath;
-                FieldOverlayBehavior = baseSettings.FieldOverlayBehavior;
-                RelativityUsername = baseSettings.RelativityUsername;
-                RelativityPassword = baseSettings.RelativityPassword;
-                DestinationProviderType = baseSettings.DestinationProviderType;
-                DestinationFolderArtifactId = baseSettings.DestinationFolderArtifactId;
-                FederatedInstanceArtifactId = baseSettings.FederatedInstanceArtifactId;
-                ExtractedTextFileEncoding = baseSettings.ExtractedTextFileEncoding;
-                ImageImport = baseSettings.ImageImport;
-                IncludeOriginalImages = baseSettings.IncludeOriginalImages;
-                ImagePrecedence = baseSettings.ImagePrecedence;
-                ProductionPrecedence = baseSettings.ProductionPrecedence;
-            }
         }
     }
 }
