@@ -45,19 +45,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
 
-                    while (sourceProviderDataReader.Read())
-                    {
-                        List<string> rowValues = new List<string>();
-
-                        foreach (IndexedFieldMap field in orderedFieldMap)
-                        {
-                            string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                            rowValues.Add(value);
-                        }
-
-                        string line = string.Join(settings.ColumnDelimiter.ToString(), rowValues);
-                        await dataFileWriter.WriteLineAsync(line).ConfigureAwait(false);
-                    }
+                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
 
                     _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
 
@@ -69,6 +57,28 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}", batch.BatchID);
                 throw;
             }
+        }
+
+        private static async Task WriteFileAsync(IDataReader sourceProviderDataReader, List<IndexedFieldMap> orderedFieldMap, DataSourceSettings settings, TextWriter dataFileWriter)
+        {
+            while (sourceProviderDataReader.Read())
+            {
+                List<string> rowValues = new List<string>();
+
+                foreach (IndexedFieldMap field in orderedFieldMap)
+                {
+                    string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                    rowValues.Add(value);
+                }
+
+                string line = FormatLine(settings, rowValues);
+                await dataFileWriter.WriteLineAsync(line).ConfigureAwait(false);
+            }
+        }
+
+        private static string FormatLine(DataSourceSettings settings, List<string> rowValues)
+        {
+            return string.Join(settings.ColumnDelimiter.ToString(), rowValues);
         }
 
         private DataSourceSettings CreateSettings(string batchPath)

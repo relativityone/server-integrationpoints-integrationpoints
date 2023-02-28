@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -7,14 +6,11 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Toggles;
-using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
@@ -25,7 +21,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     {
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<ISerializer> _serializerFake;
-        private Mock<IRelativityObjectManager> _objectManagerFake;
         private IFixture _fxt;
         private CustomProviderFlowCheck _sut;
 
@@ -37,14 +32,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _toggleProviderFake = new Mock<IToggleProvider>();
 
             _serializerFake = new Mock<ISerializer>();
-
-            _objectManagerFake = new Mock<IRelativityObjectManager>();
-
+            
             Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new CustomProviderFlowCheck(
                 _toggleProviderFake.Object,
-                _objectManagerFake.Object,
                 _serializerFake.Object,
                 log.Object);
         }
@@ -53,13 +45,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public async Task ShouldBeUsedAsync_ShouldReturnTrue_WhenCriteriaAreMet()
         {
             // Arrange
-            Guid notEntityGuid = new Guid("D338C2A3-1C4F-4031-B2F0-B58FC7FAA964");
-
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
 
             SetupNewCustomProviderToggle(true);
-
-            SetupObjectTypeReadFromConfiguration(notEntityGuid);
+            SetupManagersLinkingConfiguration(false);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
@@ -76,30 +65,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             SetupNewCustomProviderToggle(false);
 
-            SetupObjectTypeReadFromConfiguration(It.IsAny<Guid>());
+            SetupManagersLinkingConfiguration(false);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
 
             // Assert
             result.Should().BeFalse();
-
-            _objectManagerFake.Verify(
-                x => x.QueryAsync(
-                    It.IsAny<QueryRequest>(),
-                    It.IsAny<ExecutionIdentity>()),
-                Times.Never);
         }
 
         [Test]
-        public async Task ShouldBeUsedAsync_ShouldReturnFalse_WhenEntityImport()
+        public async Task ShouldBeUsedAsync_ShouldReturnFalse_WhenManagersLinking()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
 
             SetupNewCustomProviderToggle(true);
 
-            SetupObjectTypeReadFromConfiguration(ObjectTypeGuids.Entity);
+            SetupManagersLinkingConfiguration(true);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
@@ -131,20 +114,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(value);
         }
 
-        private void SetupObjectTypeReadFromConfiguration(Guid objectTypeGuid)
+        private void SetupManagersLinkingConfiguration(bool value)
         {
             ImportSettings settings = _fxt.Create<ImportSettings>();
+            settings.EntityManagerFieldContainsLink = value;
 
             _serializerFake.Setup(x => x.Deserialize<ImportSettings>(It.IsAny<string>()))
                 .Returns(settings);
-
-            _objectManagerFake.Setup(x => x.QueryAsync(
-                    It.Is<QueryRequest>(q => q.Condition.Contains(settings.ArtifactTypeId.ToString())),
-                    ExecutionIdentity.System))
-                .ReturnsAsync(new List<RelativityObject>()
-                {
-                    new RelativityObject { Guids = new List<Guid>() { objectTypeGuid } }
-                });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -121,6 +121,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     ex.Response.ImportJobID,
                     ex.Response.ErrorCode,
                     ex.Response.ErrorMessage);
+
+                throw;
             }
             catch (Exception ex)
             {
@@ -129,6 +131,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 // TODO REL-806942 Mark job as failed
                 // There is a newly created method IntegrationPointService.MarkJobAsFailed() (currently private)
                 // We can extract this method to the separate service and extend it with other JobHistory(Error) use cases
+
+                throw;
             }
             finally
             {
