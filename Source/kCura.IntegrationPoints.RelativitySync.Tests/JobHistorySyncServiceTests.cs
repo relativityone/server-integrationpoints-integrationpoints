@@ -18,16 +18,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
     public class JobHistorySyncServiceTests
     {
         private JobHistorySyncService _sut;
-
         private Mock<IExtendedJob> _jobFake;
         private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
         private Mock<IToggleProvider> _toggleProviderFake;
-
         private const int _JOB_ID = 1;
         private const int _JOB_HISTORY_ID = 10;
         private const int _WORKSPACE_ID = 100;
         private const int _INTEGRATION_POINT_ID = 110;
-
         private JobHistory _jobHistory;
         private List<JobHistory> _jobHistoryList;
 
@@ -199,7 +196,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _relativityObjectManagerFake.Verify(x => x.UpdateAsync(_JOB_HISTORY_ID,
                 It.Is<IList<FieldRefValuePair>>(r => r.Any(f =>
                                             f.Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
-                                            ((ChoiceRef)f.Value).Guid == expectedStatusGuid)), 
+                                            ((ChoiceRef)f.Value).Guid == expectedStatusGuid)),
                 ExecutionIdentity.System));
         }
 

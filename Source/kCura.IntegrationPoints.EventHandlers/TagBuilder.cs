@@ -5,11 +5,9 @@ using System.Web;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
-    
     public class TagBuilder : IDisposable
     {
         private const string NULL_OR_EMPTY = "Argument cannot be null or empty";
-
         private string _innerHtml;
 
         public TagBuilder(string tagName)
@@ -27,7 +25,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 
         public string InnerHtml
         {
-            get { return _innerHtml ?? String.Empty; }
+            get { return _innerHtml ?? string.Empty; }
             set { _innerHtml = value; }
         }
 
@@ -52,7 +50,7 @@ namespace kCura.IntegrationPoints.EventHandlers
             foreach (var attribute in Attributes)
             {
                 string key = attribute.Key;
-                if (String.Equals(key, "id", StringComparison.Ordinal /* case-sensitive */) && String.IsNullOrEmpty(attribute.Value))
+                if (String.Equals(key, "id", StringComparison.Ordinal /* case-sensitive */) && string.IsNullOrEmpty(attribute.Value))
                 {
                     continue; // DevDiv Bugs #227595: don't output empty IDs
                 }
@@ -113,7 +111,6 @@ namespace kCura.IntegrationPoints.EventHandlers
 
         public void Dispose()
         {
-            
         }
 
         public string ToString(TagRenderMode renderMode)
@@ -153,7 +150,6 @@ namespace kCura.IntegrationPoints.EventHandlers
         }
     }
 }
-
 public enum TagRenderMode
 {
     Normal,

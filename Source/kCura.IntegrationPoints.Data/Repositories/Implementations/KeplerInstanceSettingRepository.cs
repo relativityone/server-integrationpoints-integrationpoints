@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     public class KeplerInstanceSettingRepository : IInstanceSettingRepository
     {
         private readonly IServicesMgr _servicesMgr;
+
         public KeplerInstanceSettingRepository(IServicesMgr servicesMgr)
         {
             _servicesMgr = servicesMgr;

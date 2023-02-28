@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.Common.Metrics
     public class RipMetric
     {
         private Dictionary<string, object> _customData;
-
         private RipMetric(string name, RipMetricType type, string workflowId)
         {
             Name = name;

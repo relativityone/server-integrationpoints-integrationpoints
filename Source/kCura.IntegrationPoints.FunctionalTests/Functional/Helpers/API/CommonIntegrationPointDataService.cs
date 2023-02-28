@@ -87,7 +87,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             using (IFolderManager folderManager = _serviceFactory.GetServiceProxy<IFolderManager>())
             {
                 Folder rootFolder = await folderManager.GetWorkspaceRootAsync(_workspaceId).ConfigureAwait(false);
-                
+
                 return rootFolder.ArtifactID;
             }
         }

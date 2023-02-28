@@ -6,7 +6,9 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model
     public class InstrumentationJobContext
     {
         public long JobId { get; }
+
         public string CorrelationId { get; }
+
         public int WorkspaceId { get; }
 
         public InstrumentationJobContext(long jobId, string correlationId, int workspaceId)

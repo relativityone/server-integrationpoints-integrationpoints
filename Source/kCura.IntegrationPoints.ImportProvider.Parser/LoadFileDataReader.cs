@@ -43,8 +43,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void Init()
         {
-            //Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
-            //Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
+            // Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
+            // Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
             _columnCount = _loadFileReader.GetColumnNames(_config).Length;
             for (int i = 0; i < _columnCount; i++)
             {
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
         }
 
-        //Get a line stored for the current row, based on delimter settings in the _config
+        // Get a line stored for the current row, based on delimter settings in the _config
         private void ReadCurrentRecord()
         {
             _currentLine = new string[_columnCount];
@@ -67,8 +67,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     string artifactValue = artifact.ValueAsString;
                     if (((_extractedTextHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.ExtractedTextPathFieldIdentifier)
                     || (_nativeFileHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.NativeFilePathFieldIdentifier))
-                    && !string.IsNullOrEmpty(artifactValue) //If the path is empty, there is no native and we shouldn't attempt to join the paths
-                    && !Path.IsPathRooted(artifactValue)) //Do not rewrite paths if column contains full path info
+                    && !string.IsNullOrEmpty(artifactValue) // If the path is empty, there is no native and we shouldn't attempt to join the paths
+                    && !Path.IsPathRooted(artifactValue)) // Do not rewrite paths if column contains full path info
                     {
                         _currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
                     }
@@ -78,9 +78,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     }
                 }
             }
-            //This exception causes problems generating error file creation and can crash the ImportAPI job.
-            //Catching this exception and blanking _currentLine causes a "Identity value not set" error in Job History Errors tab,
-            //but the error file generation and document import proceeds correctly. 
+            // This exception causes problems generating error file creation and can crash the ImportAPI job.
+            // Catching this exception and blanking _currentLine causes a "Identity value not set" error in Job History Errors tab,
+            // but the error file generation and document import proceeds correctly.
             catch (kCura.WinEDDS.LoadFileBase.ColumnCountMismatchException)
             {
                 for (int i = 0; i < _currentLine.Length; i++)
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             throw new NotImplementedException("IDataReader.GetFieldType should not be called on LoadFileDataReader");
         }
 
-        //IArtifactReader implementation
+        // IArtifactReader implementation
 
         public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
         {

@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
         private Mock<IAPILog> _loggerMock;
         private Mock<IWorkspaceContext> _workspaceContextMock;
         private Mock<IUserContext> _userContextMock;
-
         private CorrelationIdHandlerMock _sut;
 
         /// <summary>

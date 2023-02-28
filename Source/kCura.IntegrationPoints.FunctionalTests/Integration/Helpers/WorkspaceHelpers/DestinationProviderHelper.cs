@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public DestinationProviderHelper(WorkspaceTest workspace) : base(workspace)
         {
         }
-        
+
         public DestinationProviderTest CreateRelativityProvider()
         {
             var provider =  new DestinationProviderTest()
@@ -17,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY_NAME
             };
-            
+
             Workspace.DestinationProviders.Add(provider);
 
             return provider;

@@ -3,10 +3,9 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
-
     /// <summary>
     /// This class extends ArtifactFieldDTO functionality by throw an exception during accessing time of the data
-    /// If null exception pass in, Value will return an actual value of the class. 
+    /// If null exception pass in, Value will return an actual value of the class.
     /// </summary>
     internal class LazyExceptArtifactFieldDto : ArtifactFieldDTO
     {

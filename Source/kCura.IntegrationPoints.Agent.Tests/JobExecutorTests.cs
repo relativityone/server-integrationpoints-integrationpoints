@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
     public class JobExecutorTests
     {
         private IJobExecutor _sut;
-
         private Mock<IAPILog> _logMock;
         private Mock<ITaskProvider> _taskProviderFake;
         private Mock<IJobService> _jobServiceFake;
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _logMock = new Mock<IAPILog>();
 
             Mock<ITask> task = new Mock<ITask>();
-            
+
             _taskProviderFake = new Mock<ITaskProvider>();
             _taskProviderFake.Setup(x => x.GetTask(It.IsAny<Job>()))
                 .Returns(task.Object);

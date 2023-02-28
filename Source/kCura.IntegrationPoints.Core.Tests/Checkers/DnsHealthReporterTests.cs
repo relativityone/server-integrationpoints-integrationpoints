@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Checkers
     public class DnsHealthReporterTests
     {
         private Mock<IDns> _dnsMock;
-
         private DnsHealthReporter _sut;
 
         [SetUp]

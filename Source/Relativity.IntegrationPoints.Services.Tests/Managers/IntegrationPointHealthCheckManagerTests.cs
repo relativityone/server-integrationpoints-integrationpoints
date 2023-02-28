@@ -19,7 +19,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         private IWindsorContainer _container;
         private IAPM _apmClient;
         private IHealthMeasure _healthMeasure;
-
         private const int _WORKSPACE_ID = 819434;
 
         public override void SetUp()

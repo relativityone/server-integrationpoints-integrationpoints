@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 {
     internal class SyncApiTestsImplementation : SyncApiTestsImplementationBase
     {
-        public SyncApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : 
+        public SyncApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) :
             base(testsImplementationTestFixture)
         {
         }

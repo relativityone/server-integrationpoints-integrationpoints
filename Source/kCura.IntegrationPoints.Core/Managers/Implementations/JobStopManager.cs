@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
     public class JobStopManager : IJobStopManager
     {
         private readonly TimeSpan _timerInterval = TimeSpan.FromSeconds(0.5);
-
         private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
         private readonly CancellationTokenSource _drainStopCancellationTokenSource;
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly IAPILog _logger;
         private readonly CancellationToken _token;
         private readonly Timer _timer;
-
         private bool _isTerminateInProgress;
         private bool _isCleanupJobDrainStopInProgress;
         private bool _isDrainStopping;

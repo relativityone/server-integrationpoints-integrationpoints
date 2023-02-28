@@ -34,11 +34,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
         {
             _serializerMock
                 .Setup(x => x.Deserialize<T>(It.IsAny<string>()))
-                .Returns((string serializedString) => 
+                .Returns((string serializedString) =>
                     _jsonSerializer.Deserialize<T>(serializedString));
         }
 
-//        public void ItShouldReturnProperResultWhenDeserializationSucceedsForChoiceArray()
+// public void ItShouldReturnProperResultWhenDeserializationSucceedsForChoiceArray()
 
         [TestCaseSource(nameof(ThrowExceptionWhenDeserializationFailsTestCasesForArray))]
         public void ItShouldThrowInvalidExportFieldValueExceptionWithTypeNamesWhenDeserializationFailsForChoiceArray(object initialValue)

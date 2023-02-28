@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     q => IsObjectTypeQuery(q)), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new QueryResultSlim
                 {
-                    Objects = new List<RelativityObjectSlim>() {new RelativityObjectSlim()},
+                    Objects = new List<RelativityObjectSlim>() { new RelativityObjectSlim() },
                     TotalCount = 1
                 });
 
@@ -55,12 +55,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     },
                     TotalCount = 1
                 });
-            
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(q => IsObjectTypeQuery(q) && IsArtifactTypeIdCondition(q.Condition)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                 {
-                    List<RelativityObject> foundObjects = GetObjectForArtifactTypeId(workspaceId, request); 
+                    List<RelativityObject> foundObjects = GetObjectForArtifactTypeId(workspaceId, request);
                     QueryResult result = new QueryResult();
                     result.Objects = foundObjects.Take(length).ToList();
                     result.TotalCount = result.ResultCount = result.Objects.Count;
@@ -72,7 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             return query.ObjectType.ArtifactTypeID == (int) ArtifactType.ObjectType;
         }
-        
+
         private bool IsArtifactTypeIdCondition(string condition)
         {
             var match = Regex.Match(condition, @"'Artifact[ ]?Type[ ]?ID' == (\d+)");
@@ -98,12 +98,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             if (IsArtifactTypeIdCondition(request.Condition, out int artifactTypeId))
             {
-                WorkspaceTest workspace = Relativity.Workspaces.Where(x => x.ArtifactId == workspaceId).FirstOrDefault(); 
+                WorkspaceTest workspace = Relativity.Workspaces.Where(x => x.ArtifactId == workspaceId).FirstOrDefault();
                 AddRelativityObjectsToResult(
                     workspace.ObjectTypes.Where(x => x.ArtifactTypeId == artifactTypeId)
                     , foundObjects);
             }
-            
+
             return foundObjects;
         }
     }

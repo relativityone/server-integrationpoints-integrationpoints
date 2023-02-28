@@ -48,14 +48,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [TestCase("AnyFileName", "test.host", "", "", "", 88888, true, HttpStatusCode.NoContent, null)]
         [TestCase("AnyFileName", "test.host", "", "", "", 88888, false, HttpStatusCode.Forbidden, "Cannot connect to specified host.")]
         public void ShouldValidateSettingsCorrectness(
-            string filename, 
-            string host, 
-            string username, 
-            string password, 
-            string protocol, 
-            int port, 
+            string filename,
+            string host,
+            string username,
+            string password,
+            string protocol,
+            int port,
             bool testConnectionResult,
-            HttpStatusCode expectedStatus, 
+            HttpStatusCode expectedStatus,
             string expectedDescription)
         {
             _testConnectionResult = testConnectionResult;

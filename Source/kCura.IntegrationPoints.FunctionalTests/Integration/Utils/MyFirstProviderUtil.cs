@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             _sourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//Name").Select(x => x.Value)
+            string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("// Name").Select(x => x.Value)
                 .ToArray();
 
             taskParameters.BatchParameters = recordsIds;
@@ -123,7 +123,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             JobTest job = PrepareJob(xmlPath, out jobHistory, registerJobContext, emailToAddress, integrationPoint);
 
             string[] recordsIds = XDocument.Load(xmlPath)
-                .XPathSelectElements("//UniqueID")
+                .XPathSelectElements("// UniqueID")
                 .Select(x => x.Value)
                 .ToArray();
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
@@ -164,7 +164,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             jobHistory = _sourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//Name").Select(x => x.Value).ToArray();
+            string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("// Name").Select(x => x.Value).ToArray();
 
             taskParameters.BatchParameters = recordsIds;
 

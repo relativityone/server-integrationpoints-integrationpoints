@@ -3,7 +3,9 @@
     public class SearchCriteria
     {
         public bool HasNatives { get; set; }
+
         public bool HasImages { get; set; }
+
         public bool HasFields { get; set; }
 
         public SearchCriteria()

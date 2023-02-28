@@ -12,7 +12,9 @@ namespace kCura.IntegrationPoints.Data.DTO
         }
 
         public Guid RunID { get; }
+
         public long RecordCount { get; }
+
         public string[] FieldNames { get; }
     }
 }

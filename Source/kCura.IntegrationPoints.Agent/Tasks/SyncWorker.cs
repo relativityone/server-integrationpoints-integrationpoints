@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IProviderTypeService _providerTypeService;
         private readonly IAPILog _logger;
         private readonly IJobStatisticsService _statisticsService;
-
         private IEnumerable<IBatchStatus> _batchStatus;
 
         public SyncWorker(

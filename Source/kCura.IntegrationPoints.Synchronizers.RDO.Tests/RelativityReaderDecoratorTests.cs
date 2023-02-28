@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     {
         IDataReader _reader;
         FieldMap[] _fieldMaps;
-
         private const string _Column0Name = "123";
         private const string _Column1Name = "546";
         private const string _Column2Name = "789";
@@ -207,7 +206,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             Assert.Throws<IndexOutOfRangeException>(() => { string x = (string)decorator[999]; });
         }
 
-
         [Test]
         public void ReaderDecoratorWillThrowIndexOutOfBoundExceptionWhenPassInInvalidColumnNameInGetOrdinal()
         {
@@ -256,6 +254,4 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             Assert.AreEqual(_ExpectFolderInformationPath, folderInformationPath);
         }
     }
-
-
 }

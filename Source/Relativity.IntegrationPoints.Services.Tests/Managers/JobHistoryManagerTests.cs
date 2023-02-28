@@ -89,7 +89,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             }
             catch (Exception)
             {
-                //Ignore as this test checks logging only
+                // Ignore as this test checks logging only
             }
 
             _logger.Received(1)
@@ -159,7 +159,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             }
             catch (Exception)
             {
-                //Ignore as this test checks logging only
+                // Ignore as this test checks logging only
             }
 
             _logger.Received(1).LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetJobHistoryAsync");

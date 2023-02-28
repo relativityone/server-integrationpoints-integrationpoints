@@ -21,12 +21,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
     class ExportNativeSettingsValidatorTests
     {
         private const int _RDO_ARTIFACT_TYPE_ID = 1;
-
         private readonly ISerializer _serializer = Substitute.For<ISerializer>();
         private readonly IExportSettingsBuilder _settingsBuilder = Substitute.For<IExportSettingsBuilder>();
         private readonly IExportFileBuilder _fileBuilder = Substitute.For<IExportFileBuilder>();
         private readonly IExportFieldsService _exportFieldsService = Substitute.For<IExportFieldsService>();
-
         private ExportNativeSettingsValidator _subjectUnderTests;
 
         [SetUp]
@@ -76,8 +74,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
             var model = new IntegrationPointProviderValidationModel()
             {
-                DestinationConfiguration = String.Empty,
-                SourceConfiguration = String.Empty,
+                DestinationConfiguration = string.Empty,
+                SourceConfiguration = string.Empty,
                 FieldsMap = new List<FieldMap>(),
             };
 

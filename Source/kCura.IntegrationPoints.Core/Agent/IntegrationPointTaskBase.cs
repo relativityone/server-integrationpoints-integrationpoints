@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             catch (Exception e)
             {
                 LogRetrievingRecipientEmailsError(e, logger);
-                //this property might be not loaded on RDO if it's null, so suppress exception
+                // this property might be not loaded on RDO if it's null, so suppress exception
             }
 
             var emailRecipientList = new List<string>();

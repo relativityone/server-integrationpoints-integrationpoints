@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         private const string _TENANT_ID_PREFIX = "92080CA4-4903-41B0-9E4C-4DC7DF961A8E";
         private const string _MIGRATION_FAILED_MESSAGE = "Migration of the secret failed";
-
         private readonly ISecretStoreMigrator _secretStoreMigrator;
         private readonly Lazy<IErrorService> _errorService;
         private readonly IAPILog _apiLog;
@@ -40,15 +39,15 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             catch (Exception ex)
             {
-                _apiLog.LogError(ex, 
+                _apiLog.LogError(ex,
                     $"{_MIGRATION_FAILED_MESSAGE} - CatalogTenantID: {{sourceSecretCatalogTenantID}} CatalogID: {{sourceSecretCatalogID}}, SecretPath: {{destinationSecretPath}}",
                     sourceSecretCatalogTenantID,
                     sourceSecretCatalogID,
                     destinationSecretPath
                 );
                 var errorModel = new ErrorModel(
-                    ex, 
-                    addToErrorTab: true, 
+                    ex,
+                    addToErrorTab: true,
                     message: _MIGRATION_FAILED_MESSAGE)
                 {
                     WorkspaceId = workspaceID

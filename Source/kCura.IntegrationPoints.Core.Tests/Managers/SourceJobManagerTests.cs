@@ -15,10 +15,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
     {
         private const int _SOURCE_WORKSPACE_ID = 629272;
         private const int _DESTINATION_WORKSPACE_ID = 326325;
-
         private ISourceJobRepository _sourceJobRepository;
         private IJobHistoryRepository _jobHistoryRepository;
-
         private SourceJobManager _instance;
 
         public override void SetUp()
@@ -47,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobHistoryRepository.GetJobHistoryName(jobHistoryArtifactId).Returns(jobHistoryName);
             _sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
-            //ACT
+            // ACT
             var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
 
             // ASSERT
@@ -68,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobHistoryRepository.GetJobHistoryName(jobHistoryArtifactId).Returns(jobHistoryName);
             _sourceJobRepository.Create(Arg.Any<SourceJobDTO>()).Returns(sourceJobId);
 
-            //ACT
+            // ACT
             var sourceJobDto = _instance.CreateSourceJobDto(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, jobHistoryArtifactId, sourceWorkspaceRdoInstanceArtifactId);
 
             // ASSERT

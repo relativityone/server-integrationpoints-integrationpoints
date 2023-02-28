@@ -24,17 +24,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IArtifactGuidManager> _artifactGuidManager;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
         private Mock<IHelper> _helper;
-
         private ObjectTypeRepository _sut;
-
         private const string _OBJECT_TYPE_NAME = "Fancy Object";
         private const int _OBJECT_TYPE_ARTIFACT_TYPE_ID = 1111;
         private const int _OBJECT_TYPE_ARTIFACT_ID = 2222;
         private const int _OBJECT_TYPE_PARENT_ARTIFACT_TYPE_ID = 3333;
         private const int _WORKSPACE_ID = 9999;
-
         private readonly Guid _objectTypeGuid = Guid.NewGuid();
-
 
         [SetUp]
         public void SetUp()
@@ -85,7 +81,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         public void CreateObjectType_ShouldThrowException_WhenArtifactGuidManagerFails()
         {
             // Arrange
-            _artifactGuidManager.Setup(x => 
+            _artifactGuidManager.Setup(x =>
                     x.CreateSingleAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<Guid>>()))
                 .Throws<InvalidOperationException>();
 
@@ -229,7 +225,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             };
             _relativityObjectManager.Setup(x => x.Query(It.Is<QueryRequest>(qr => qr.Condition.Contains(_OBJECT_TYPE_NAME)), It.IsAny<ExecutionIdentity>()))
                 .Returns(relativityObjects);
-            
+
             // Act
             int actualObjectTypeId = _sut.GetObjectTypeID(_OBJECT_TYPE_NAME);
 

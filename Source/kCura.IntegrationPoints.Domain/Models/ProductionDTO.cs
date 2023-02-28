@@ -1,7 +1,7 @@
 ﻿namespace kCura.IntegrationPoints.Domain.Models
 {
     /// <summary>
-    /// A data transfer object class used representing a Production. 
+    /// A data transfer object class used representing a Production.
     /// </summary>
     public class ProductionDTO
     {

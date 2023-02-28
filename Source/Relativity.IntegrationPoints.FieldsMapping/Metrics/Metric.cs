@@ -6,7 +6,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Metrics
     public class Metric
     {
         private IDictionary<string, object> _customData;
-
         private Metric(string name, MetricType type, string workflowId)
         {
             Name = name;

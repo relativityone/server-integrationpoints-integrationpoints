@@ -3,7 +3,9 @@
     public class ValidationErrorDTO
     {
         public string Code { get; }
+
         public string Message { get; }
+
         public string HelpUrl { get; }
 
         public ValidationErrorDTO(string code, string message, string helpUrl)

@@ -113,8 +113,11 @@ namespace kCura.IntegrationPoints.Domain.Tests.Extensions
         private class TestContextWithNonPublicProperties
         {
             public int Id { get; set; }
+
             public string PublicName { get; set; }
+
             protected string Name { get; set; }
+
             private DateTime Date { get; set; }
 
             public TestContextWithNonPublicProperties()
@@ -128,6 +131,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Extensions
         private class TestContextWithPublicField
         {
             public int Id { get; set; }
+
             public string Name;
         }
     }

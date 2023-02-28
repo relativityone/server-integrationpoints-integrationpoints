@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     public class TagSavedSearchTests : TestBase
     {
         private IKeywordSearchRepository _keywordSearchRepository;
-
         private TagSavedSearch _instance;
 
         public override void SetUp()
@@ -75,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         {
             return keywordSearch.ArtifactTypeID == (int) ArtifactType.Document
                     && keywordSearch.SearchContainer.ArtifactID == folderId
-                    && keywordSearch.Name == name 
+                    && keywordSearch.Name == name
                     && keywordSearch.Fields.Count == 3;
         }
     }

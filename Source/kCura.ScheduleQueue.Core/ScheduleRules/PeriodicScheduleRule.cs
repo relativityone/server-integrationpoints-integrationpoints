@@ -10,8 +10,8 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
     [DataContract]
     public class PeriodicScheduleRule : ScheduleRuleBase
     {
-        //* Due to Daylight Saving Time (DST) we have to store TimeToRun in local format
-        //* For example: if we want to run job always at 12:00pm local time, when converting and storing from CST to UTC in January it will be 6:00pm(UTC). Converting back to local in January it will be 12:00pm(CST) (UTC-6) local, but in July it would be 1:00pm(CST) (UTC-5) due to DST.
+        // * Due to Daylight Saving Time (DST) we have to store TimeToRun in local format
+        // * For example: if we want to run job always at 12:00pm local time, when converting and storing from CST to UTC in January it will be 6:00pm(UTC). Converting back to local in January it will be 12:00pm(CST) (UTC-6) local, but in July it would be 1:00pm(CST) (UTC-5) due to DST.
         [DataMember]
         private long? localTimeOfDayTicks { get; set; }
 
@@ -93,12 +93,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
             DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
 
-            //current client local date/time is required for correct calculation of DST change
+            // current client local date/time is required for correct calculation of DST change
             DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
             TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
             DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
 
-            //Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
+            // Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
             if (TimeZoneOffsetInMinute == null)
             {
                 endDateHelper = new LocalEndDate(TimeService);
@@ -154,7 +154,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             nextRunTimeUtc = nextRunTimeUtc.Value.AddMinutes(clientUtcOffset.TotalMinutes - nextRunTimeUtcOffSet.TotalMinutes);
             return nextRunTimeUtc;
         }
-
 
         private int? AdjustDayOfMonthsShiftBetweenLocalAndUtc(DateTime clientTime, DateTime clientTimeUtc)
         {

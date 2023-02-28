@@ -229,6 +229,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public class Payload
         {
             public int AppId { get; set; }
+
             public int ArtifactId { get; set; }
         }
 

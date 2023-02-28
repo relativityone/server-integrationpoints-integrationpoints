@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Mock.Setup(x => x.QueryGroupsByUserAsync(It.Is<QueryRequest>(q =>
                     q.Condition == "'Group Type' == 'System Admin'"), 0, 1, It.IsAny<int>()))
                 .ReturnsAsync(_user.IsAdmin
-                    ? new QueryResultSlim {Objects = new List<RelativityObjectSlim> {new RelativityObjectSlim()}}
+                    ? new QueryResultSlim {Objects = new List<RelativityObjectSlim> { new RelativityObjectSlim()}}
                     : new QueryResultSlim {Objects = new List<RelativityObjectSlim>()}
                 );
         }

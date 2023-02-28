@@ -17,11 +17,9 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySourceRdo
     public class RelativitySourceRdoFieldsTests : TestBase
     {
         private const int _WORKSPACE_ID = 216578;
-
         private IFieldQueryRepository _fieldQueryRepository;
         private IArtifactGuidRepository _artifactGuidRepository;
         private IFieldRepository _fieldRepository;
-
         private RelativitySourceRdoFields _instance;
 
         public override void SetUp()

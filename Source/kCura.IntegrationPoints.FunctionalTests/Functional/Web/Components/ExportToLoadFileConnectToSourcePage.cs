@@ -7,7 +7,7 @@ using Relativity.Testing.Framework.Web.Triggers;
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
     using _ = ExportToLoadFileConnectToSourcePage;
-    
+
     [UseExternalFrame]
     [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, AbsenceTimeout = 30, AppliesTo = TriggerScope.Children)]
     [WaitForJQueryAjax(TriggerEvents.Init)]

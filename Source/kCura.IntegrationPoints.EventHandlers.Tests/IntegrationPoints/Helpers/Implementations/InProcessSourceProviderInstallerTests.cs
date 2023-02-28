@@ -23,12 +23,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IRipProviderInstaller> _ripProviderInstallerMock;
         private Mock<IEHHelper> _helperMock;
         private Mock<IKubernetesMode> _kubernetesModeFake;
-
         private SourceProvider _sourceProvider;
         private SourceProvider[] _sourceProviders;
-
         private InProcessSourceProviderInstaller _sut;
-
         private const int _WORKSPACE_ID = 84221;
 
         [SetUp]
@@ -122,7 +119,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 _kubernetesModeFake.Object,
                 null,
                 ripProviderInstaller: null
-                
 
             );
 

@@ -16,7 +16,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
     public class MetricBucketNameGeneratorTests
     {
         private Mock<IObjectManager> _objectManagerFake;
-
         private MetricBucketNameGenerator _sut;
 
         [SetUp]

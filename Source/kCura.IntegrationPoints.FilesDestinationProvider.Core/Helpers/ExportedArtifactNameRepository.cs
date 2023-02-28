@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
         public string GetProductionName(int workspaceId, int productionId)
         {
-            using(var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.System))
+            using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.System))
             {
                 Production production = productionManager.ReadSingleAsync(workspaceId, productionId).GetAwaiter().GetResult();
 
-                if(production == null)
+                if (production == null)
                 {
                     throw new IntegrationPointsException($"Production {productionId} was not found.");
                 }
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
         {
             var query = new GetSavedSearchQuery(_servicesMgr, workspaceId, savedSearchId);
             KeywordSearchQueryResultSet queryResult = query.ExecuteQuery();
-            
+
             if (!queryResult.Success)
             {
                 throw new IntegrationPointsException($"Error occured when querying for saved search Artifact ID: {savedSearchId}. Message: {queryResult.Message}");

@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
     {
         private SecretStoreFacadeRetryDecorator _sut;
         private Mock<ISecretStoreFacade> _secretStoreFacadeMock;
-
         private const string _TEST_SECRET_STORE_PATH = "testPath/101/202";
 
         [SetUp]
@@ -30,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
             _secretStoreFacadeMock = new Mock<ISecretStoreFacade>();
 
             _sut = new SecretStoreFacadeRetryDecorator(
-                _secretStoreFacadeMock.Object, 
+                _secretStoreFacadeMock.Object,
                 retryHandlerFactory.Object
             );
         }

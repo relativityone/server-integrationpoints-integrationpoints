@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly IServicesMgr _serviceManager;
         private readonly IToggleProvider _toggleProvider;
         private readonly IAPILog _logger;
-
         private Guid _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
         public AgentLauncher(IServicesMgr serviceManager, IToggleProvider toggleProvider, IAPILog logger)

@@ -60,7 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             };
             RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(_workspaceArtifactId, keywordSearch);
 
-            // Act 
+            // Act
             var integrationPointListPage = Being.On<IntegrationPointListPage>(_workspaceArtifactId);
             var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
@@ -88,7 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             return integrationPointEditPage.ApplyModel(pageModel).ExportToLoadFileNext.ClickAndGo();
         }
-        
+
         private static ExportToLoadFileDestinationInformationPage FillOutIntegrationPointConnectToSourcePageForExportToLoadFileTest(
             ExportToLoadFileConnectToSourcePage webPage)
         {
@@ -97,7 +97,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 StartExportAtRecord = _startExportAtRecord,
                 SavedSearch = _savedSearch
             };
-            
+
             return webPage.ApplyModel(pageModel).Next.ClickAndGo();
         }
 

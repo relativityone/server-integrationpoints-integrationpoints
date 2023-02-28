@@ -18,7 +18,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 {
     [TestFixture, Category("Unit")]
-    public abstract class ExportTransferDataReaderTestsBase : TestBase 
+    public abstract class ExportTransferDataReaderTestsBase : TestBase
     {
         protected IExporterService _exportService;
         protected IDataReader _instance;
@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         protected const int _TARGET_WORKSPACE_ARTIFACTID = 930233;
         protected const string _SOURCE_WORKSPACE_NAME = "Source Workspace";
 
-
         protected abstract ExportTransferDataReaderBase CreateDataReaderTestInstance();
 
         protected abstract ExportTransferDataReaderBase CreateDataReaderTestInstanceWithParameters(
@@ -50,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         {
             ArtifactId = 409303,
             ArtifactTypeId = 4444,
-            Name = String.Format("{0} - {1}", _SOURCE_WORKSPACE_NAME, _SOURCE_WORKSPACE_ARTIFACTID),
+            Name = string.Format("{0} - {1}", _SOURCE_WORKSPACE_NAME, _SOURCE_WORKSPACE_ARTIFACTID),
             SourceCaseName = _SOURCE_WORKSPACE_NAME,
             SourceCaseArtifactId = _SOURCE_WORKSPACE_ARTIFACTID
         };
@@ -98,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
             _sourceWorkspaceManager.CreateSourceWorkspaceDto(_TARGET_WORKSPACE_ARTIFACTID, _SOURCE_WORKSPACE_ARTIFACTID, null)
                 .Returns(_sourceWorkspaceDto);
-            
+
         }
 
         #region Read
@@ -118,7 +117,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
             Assert.IsFalse(_instance.IsClosed, "The reader should be open");
         }
 
-    
 
         [Test]
         public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
@@ -651,8 +649,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
                 }
             };
 
@@ -673,7 +671,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                 {
                     new FieldMap()
                     {
-                        SourceField =   new FieldEntry() {FieldIdentifier = "123", DisplayName = "abc"},
+                        SourceField =   new FieldEntry() {FieldIdentifier = "123", DisplayName = "abc" },
                     },
                     new FieldMap()
                     {
@@ -694,8 +692,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
                 }
             };
 
@@ -726,8 +724,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
                 }
             };
 
@@ -757,8 +755,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
                     new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-                    //new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+                    // new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
                 }
             };
 
@@ -875,10 +873,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         }
 
         [Test]
-        public void GetInt32_GoldFlow()
+        public void Getint_GoldFlow()
         {
             // Arrange
-            Int32 value = Int32.MaxValue;
+            int value = int.MaxValue;
             // for retrieving all the documents
             _exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(new ArtifactDTO[]
             {
@@ -909,7 +907,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 
             // Act
             _instance.Read();
-            Int32 result = _instance.GetInt32(0);
+            int result = _instance.GetInt32(0);
 
             // Arrange
             Assert.AreEqual(value, result, "The result should be correct");

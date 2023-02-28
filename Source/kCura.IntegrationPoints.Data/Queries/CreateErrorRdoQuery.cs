@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Data.Queries
         private const int _MAX_ERROR_LENGTH = 2000;
         private const int _MAX_SOURCE_LENGTH = 255;
         private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
-
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
 

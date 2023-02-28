@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             _logger.LogInformation("FTP Settings: {settings}", synchronizerSettings.Settings);
             SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(synchronizerSettings.Credentials);
 
-            //immediately end if host value is non-standard
+            // immediately end if host value is non-standard
             if (settings.ValidateHost() == false)
             {
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME);

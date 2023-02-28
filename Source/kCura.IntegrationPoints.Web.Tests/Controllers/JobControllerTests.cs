@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private IRelativityAuditRepository _auditRepository;
         private JobController _instance;
         private JobController.Payload _payload;
-
         private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
         private const int _USERID = 9;
         private const int _WORKSPACE_ARTIFACT_ID = 1020530;
@@ -44,7 +43,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
         private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
         private const string _EMPTY_SECURED_CONFIG = "{}";
-
         private readonly string _userIdString = _USERID.ToString();
 
         [SetUp]

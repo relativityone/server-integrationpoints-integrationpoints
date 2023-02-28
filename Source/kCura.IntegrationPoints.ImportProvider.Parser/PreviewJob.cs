@@ -14,7 +14,6 @@ using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Logging;
 
-
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.ImportProvider.Parser.Tests")]
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -29,13 +28,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IsComplete = false;
             IsFailed = false;
             _errorsOnly = false;
-            _foldersAndChoices = false;       
+            _foldersAndChoices = false;
         }
 
         public void Init(LoadFile loadFile, ImportPreviewSettings settings)
         {
             _loadFile = loadFile;
-            //check if the user selected ExtractedText and set the current directory so that the extracted text files can be found via relative paths
+            // check if the user selected ExtractedText and set the current directory so that the extracted text files can be found via relative paths
             if (!String.IsNullOrEmpty(settings.ExtractedTextColumn))
             {
                 _loadFile.LongTextColumnThatContainsPathToFullText = settings.ExtractedTextColumn;
@@ -47,21 +46,21 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             {
                 _errorsOnly = true;
             }
-            else if(settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Folders)
-            {                
+            else if (settings.PreviewType == (int)PreviewType.PreviewTypeEnum.Folders)
+            {
                 _foldersAndChoices = true;
             }
 
-            //Create obj
+            // Create obj
             LoadFileReader temp = new LoadFileReader(_loadFile, false, () => string.Empty);
 
-            //set up field mapping to extract all fields with reader
+            // set up field mapping to extract all fields with reader
             string[] cols = temp.GetColumnNames(_loadFile);
             int colIdx = 0;
             foreach (string colName in cols)
             {
                 FieldMap currentField = settings.FieldMapping.Where(f => f.SourceField.DisplayName == colName).FirstOrDefault();
-                //Make sure that the current column exists in the fieldMapping object and has a destination mapped or is a folderInfo mapping
+                // Make sure that the current column exists in the fieldMapping object and has a destination mapped or is a folderInfo mapping
                 if (ShouldFieldBeIncludedInPreview(currentField))
                 {
                     string docFieldName;
@@ -75,7 +74,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     DocumentField newDocField = new DocumentField(docFieldName, docFieldIdentifier, fieldTypeId, fieldCategory, -1, -1, -1, false,
                         kCura.EDDS.WebAPI.DocumentManagerBase.ImportBehaviorChoice.LeaveBlankValuesUnchanged, false);
 
-                    //The column index we give here determines which column in the load file gets mapped to this Doc Field
+                    // The column index we give here determines which column in the load file gets mapped to this Doc Field
                     LoadFileFieldMap.LoadFileFieldMapItem newfieldMapItem = new LoadFileFieldMap.LoadFileFieldMapItem(newDocField, colIdx);
 
                     _loadFile.FieldMap.Add(newfieldMapItem);
@@ -128,25 +127,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void DisposePreviewJob()
         {
-            _loadFilePreviewer.OnEventRemove(OnPreviewerProgress);            
+            _loadFilePreviewer.OnEventRemove(OnPreviewerProgress);
         }
-        
+
         private ImportPreviewTable BuildPreviewTable(List<object> arrs)
         {
             ImportPreviewTable preview = new ImportPreviewTable();
             bool populatedHeaders = false;
-            //create header and default to one field w/ empty string in case we only return error rows and don't get any headers
+            // create header and default to one field w/ empty string in case we only return error rows and don't get any headers
             preview.Header.Add(string.Empty);
             int columnNumbers = 1;
-            int dataRowIndex = 1;//this will be used to populate the list of rows with an error
-                                 //using var in this foreach since we don't know the type of each item in the arraylist (can be ArtifactField[] or Exception)
+            int dataRowIndex = 1;// this will be used to populate the list of rows with an error
+                                 // using var in this foreach since we don't know the type of each item in the arraylist (can be ArtifactField[] or Exception)
             foreach (var item in arrs)
             {
                 List<string> row = new List<string>();
-                //check the type to see if we got back an array or an exception
+                // check the type to see if we got back an array or an exception
                 if (item.GetType() != typeof(kCura.WinEDDS.Api.ArtifactField[]))
                 {
-                    //if the item is not an ArtifactField array, it means we have an error
+                    // if the item is not an ArtifactField array, it means we have an error
                     row = new List<string>();
                     string errorString = ((Exception)item).Message;
                     for (int i = 0; i < columnNumbers; i++)
@@ -169,10 +168,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                         populatedHeaders = true;
                     }
 
-                    //use the httpUtility class to encode the string values before we display them. This prevents Cross Site Scripting attacks.
+                    // use the httpUtility class to encode the string values before we display them. This prevents Cross Site Scripting attacks.
                     row = ((kCura.WinEDDS.Api.ArtifactField[])item).Select(i => HttpUtility.HtmlEncode(i.Value.ToString())).ToList();
-                    //check to see if any of the cells have an error so we can highlight red in UI
-                    //we won't do this if the user has requested only errors to come back
+                    // check to see if any of the cells have an error so we can highlight red in UI
+                    // we won't do this if the user has requested only errors to come back
                     if (!_errorsOnly)
                     {
                         if (!string.IsNullOrEmpty(row.FirstOrDefault(r => r.StartsWith("Error: "))))
@@ -186,7 +185,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 dataRowIndex++;
             }
 
-            //update any error rows that were created before we hit a row that allowed us to populate the full header list
+            // update any error rows that were created before we hit a row that allowed us to populate the full header list
             if (populatedHeaders)
             {
                 foreach (List<string> dataRow in preview.Data)
@@ -209,7 +208,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             preview.Header.Add("Count");
 
             DataTable dt = previewHelper.BuildFoldersAndCodesDataSource(arrs, previewCodeCount);
-            //Convert from DataTable to the List<List<string>> that RIP preview uses
+            // Convert from DataTable to the List<List<string>> that RIP preview uses
             var dataTableQuery = from row in dt.AsEnumerable()
                     select row.ItemArray.Select(x => x.ToString()).ToList<string>();
 
@@ -221,7 +220,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private int GetFieldCategory(FieldMap currentField)
         {
             int fieldCat = -1;
-            //set as an identifier
+            // set as an identifier
             if (currentField.SourceField.IsIdentifier)
             {
                 fieldCat = (int)FieldCategory.Identifier;
@@ -255,7 +254,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             int docFieldIdentifier;
             if (fieldCategory == (int)FieldCategory.ParentArtifact)
             {
-                //fieldIdentifier needs to be -2 for a folderInformation field
+                // fieldIdentifier needs to be -2 for a folderInformation field
                 docFieldIdentifier = -2;
             }
             else
@@ -273,13 +272,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         }
 
         internal ILoadFilePreviewer _loadFilePreviewer;
+
         public ImportPreviewTable PreviewTable { get; private set; }
-        
+
         public bool IsComplete { get; internal set; }
+
         public bool IsFailed { get; internal set; }
+
         public string ErrorMessage { get; internal set;}
+
         public long TotalBytes { get; internal set; }
+
         public long BytesRead { get; internal set; }
+
         public long StepSize { get; internal set; }
     }
 }

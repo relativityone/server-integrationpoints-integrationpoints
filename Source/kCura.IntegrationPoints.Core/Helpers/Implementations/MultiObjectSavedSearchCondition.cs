@@ -11,18 +11,18 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         {
             var fieldIdentifier = new FieldRef(new List<Guid> {fieldGuid});
 
-            //Create main condition
+            // Create main condition
             var criteria = new Criteria
             {
                 Condition = new CriteriaCondition(fieldIdentifier, conditionEnum, values),
                 BooleanOperator = BooleanOperatorEnum.And
             };
 
-            //Aggregate condtion with CriteriaCollection
+            // Aggregate condtion with CriteriaCollection
             var criteriaCollection = new CriteriaCollection();
             criteriaCollection.Conditions.Add(criteria);
 
-            //MultiObjects require condition to be aggregated into additional CriteriaCondition
+            // MultiObjects require condition to be aggregated into additional CriteriaCondition
             var parentCriteria = new Criteria
             {
                 Condition = new CriteriaCondition(fieldIdentifier, CriteriaConditionEnum.In, criteriaCollection)

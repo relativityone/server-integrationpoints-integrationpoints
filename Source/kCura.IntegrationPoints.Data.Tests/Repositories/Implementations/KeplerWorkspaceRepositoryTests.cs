@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         [Test]
         public void ItShouldRetrieveAllActive()
         {
-            //Arrange 
+            // Arrange
             const int workspaceId = 0;
             const string workspaceName = "New Workspace";
             var workspaces = new List<WorkspaceRef>();
@@ -39,10 +39,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _servicesMgr.CreateProxy<IWorkspaceManager>(ExecutionIdentity.CurrentUser).Returns(_workspaceManagerProxy);
             var repository = new KeplerWorkspaceRepository(_helper, _servicesMgr, _relativityObjectManager);
 
-            //Act
+            // Act
             List<WorkspaceDTO> resultList = repository.RetrieveAllActive().ToList();
 
-            //Assert
+            // Assert
             Assert.AreEqual(resultList.Count, 1);
             Assert.AreEqual(resultList.First().Name, workspaceName);
             Assert.AreEqual(resultList.First().ArtifactId, workspaceId);

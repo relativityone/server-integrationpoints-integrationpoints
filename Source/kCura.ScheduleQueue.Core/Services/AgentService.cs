@@ -9,7 +9,6 @@ namespace kCura.ScheduleQueue.Core.Services
     {
         private bool _creationOfQTableHasRun;
         private AgentTypeInformation _agentTypeInformation;
-
         private readonly IQueueQueryManager _queryManager;
         private readonly IAPILog _logger;
 

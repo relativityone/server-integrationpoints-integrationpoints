@@ -9,7 +9,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class DeleteJob : ICommand
     {
         private readonly IEddsDBContext _dbContext;
-
         private readonly string _tableName;
         private readonly long _jobId;
 

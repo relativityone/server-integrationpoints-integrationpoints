@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         public override ValidationResult Validate(int productionId)
         {
             var result = new ValidationResult();
-            
+
             try
             {
                 ProductionDTO production = _productionManager.RetrieveProduction(_workspaceArtifactId, productionId);

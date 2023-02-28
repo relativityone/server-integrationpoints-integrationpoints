@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
         private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.2 There was an error in Import API when fetching workspace fields.";
         private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
             "EC: 4.2 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
-
         private readonly Lazy<IImportAPI> _importApi;
         private readonly IAPILog _logger;
 

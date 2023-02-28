@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
     {
         private Mock<IMetricsFactory> _metricsFactoryFake;
         private Mock<IMetric> _metricFake;
-    
         private SyncJobMetric _sut;
 
         [SetUp]

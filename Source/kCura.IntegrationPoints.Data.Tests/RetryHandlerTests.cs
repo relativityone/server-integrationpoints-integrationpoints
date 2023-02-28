@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Data.Tests
     public class RetryHandlerTests
     {
         private Mock<IAPILog> _logger;
-
         private const int _WAIT_TIME_BETWEEN_RETRIES = 0;
         private const string _EXPECTED_RESULT = "Result";
 
@@ -184,7 +183,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         {
             // arrange
             Func<Task> operationToExecute = CreateAsyncOperationMock<string, InvalidOperationException>(
-                _EXPECTED_RESULT, 
+                _EXPECTED_RESULT,
                 numberOfFailsBeforeSuccess
             );
             RetryHandler sut = CreateRetryHandler(numberOfRetries);
@@ -552,6 +551,7 @@ namespace kCura.IntegrationPoints.Data.Tests
                 )
             );
         }
+
         private RetryHandler CreateRetryHandler(ushort numberOfRetries)
         {
             return new RetryHandler(_logger.Object, numberOfRetries, _WAIT_TIME_BETWEEN_RETRIES);
@@ -576,7 +576,6 @@ namespace kCura.IntegrationPoints.Data.Tests
         {
             return CreateOperationMock<TResult, Exception>(successResult, numberOfFailsBeforeSuccess);
         }
-
 
         private Func<Task<TResult>> CreateAsyncOperationMock<TResult, TException>(TResult successResult, TException exception, int numberOfFailsBeforeSuccess = 0)
             where TResult : class

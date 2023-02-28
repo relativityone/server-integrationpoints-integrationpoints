@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
         protected abstract string[] DocumentFields { get; set; }
 
         public abstract void Verify(int workspaceId);
+
         public abstract SettingsObjects Prepare(int workspaceId);
 
         protected virtual SettingsObjects Prepare(int workspaceId, string resourceName, string loadFileName)

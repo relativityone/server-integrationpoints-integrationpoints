@@ -7,8 +7,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
     public class ConsoleLogger : IAPILog, ILog
     {
         public bool IsEnabled { get; }
+
         public string Application { get; }
+
         public string SubSystem { get; }
+
         public string System { get; }
 
         public void LogVerbose(string messageTemplate, params object[] propertyValues)

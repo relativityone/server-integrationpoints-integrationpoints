@@ -22,12 +22,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IAPM> _apmMock;
         private Mock<ICounterMeasure> _counterMeasure;
         private ITimerFactory _timerFactory;
-
         private HeartbeatReporter _sut;
-
         private readonly DateTime _EXPECTED_HEARTBEAT_TIME = DateTime.Today;
         private readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
-
         private const long _JOB_ID = 10;
 
         [SetUp]
@@ -126,12 +123,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void Execute_ShouldSendMetric_WhenRunningJobTimeThresholdTimeIsExceeded()
         {
-            //Arrange
+            // Arrange
             TimeSpan timeToExceedThreshold = TimeSpan.FromHours(10);
             _configFake.Setup(x => x.HeartbeatInterval).Returns(TimeSpan.FromMilliseconds(10));
             _configFake.Setup(x => x.LongRunningJobsTimeThreshold).Returns(TimeSpan.FromHours(8));
 
-            //Act
+            // Act
             using (_sut.ActivateHeartbeat(_JOB_ID))
             {
                 Thread.Sleep(100);
@@ -139,7 +136,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 Thread.Sleep(100);
             }
 
-            //Assert
+            // Assert
             _apmMock.Verify(x => x.CountOperation(
                 _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME,
                 It.IsAny<Guid>(),

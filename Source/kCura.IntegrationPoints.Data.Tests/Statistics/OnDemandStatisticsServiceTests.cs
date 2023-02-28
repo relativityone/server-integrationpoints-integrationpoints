@@ -20,11 +20,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     public class OnDemandStatisticsServiceTests
     {
         private readonly int _INTEGRATION_POINT_ID = -10;
-
         private Mock<IAPILog> _loggerMock;
         private Mock<IDateTime> _dateTimeMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
-
         private OnDemandStatisticsService _sut;
 
         [SetUp]

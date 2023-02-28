@@ -423,7 +423,6 @@ namespace kCura.ScheduleQueue.Core.Services
                 string.Join(",", jobIds), state, nameof(JobService));
         }
 
-
         private void LogCompletedUpdatedJobStopState(IList<long> jobIds, StopState state, int updatedCount)
         {
             _log.LogInformation("Jobs {count} count have been updated with StopState {stopState}. Updated Jobs: {jobs}. AllJobsWereUpdated: {wereAllUpdated}",
@@ -445,7 +444,6 @@ namespace kCura.ScheduleQueue.Core.Services
         private void LogOnCreatedScheduledJobBasedOnOldJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
             string taskType, int submittedBy, long? rootJobID, long? parentJobID, DateTime? nextRunTime)
         {
-
             _log.LogInformation("New scheduled job has been created based on OldJobId {oldJobId} with parameters:" +
                                 "WorkspaceId: {workspaceId}, " +
                                 "Integration Point: {relatedObjectArtifactId}, " +

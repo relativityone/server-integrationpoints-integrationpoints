@@ -16,9 +16,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private const int _WORKSPACE_ID = 118503;
         private IKeywordSearchManager _keywordSearchManager;
         private ISearchContainerManager _searchContainerManager;
-
         private KeplerKeywordSearchRepository _instance;
-
 
         public override void SetUp()
         {
@@ -119,7 +117,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 }));
 
             Assert.That(() => _instance.QuerySearchContainer(_WORKSPACE_ID, name), Throws.Exception);
-            
+
             _searchContainerManager
                 .Received(1)
                 .QueryAsync(_WORKSPACE_ID, Arg.Is<Query>(x => x.Condition == GetQuerySearchContainerCondition(name)));

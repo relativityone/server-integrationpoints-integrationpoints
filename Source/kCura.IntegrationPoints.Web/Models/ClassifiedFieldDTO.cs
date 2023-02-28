@@ -9,13 +9,19 @@ namespace kCura.IntegrationPoints.Web.Models
     public class ClassifiedFieldDTO
     {
         public ClassificationLevel ClassificationLevel { get; set; }
+
         public string ClassificationReason { get; set; }
 
         public string FieldIdentifier { get; set; }
+
         public string Name { get; set; }
+
         public string Type { get; set; }
+
         public int Length { get; set; }
+
         public bool IsIdentifier { get; set; }
+
         public bool IsRequired { get; set; }
 
         // to be compatible with old JS code

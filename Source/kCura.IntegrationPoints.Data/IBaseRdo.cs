@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Data
     {
         T GetField<T>(Guid fieldGuid);
         string GetFieldName(Guid fieldGuid);
+
         void SetField<T>(Guid fieldGuid, T fieldValue, bool markAsUpdated = true);
         int ArtifactId { get; set; }
         int? ParentArtifactId { get; set; }

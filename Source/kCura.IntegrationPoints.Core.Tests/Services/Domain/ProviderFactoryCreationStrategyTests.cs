@@ -39,15 +39,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
             _windsorContainer = Substitute.For<IWindsorContainer>();
             _windsorContainerSetup = Substitute.For<IWindsorContainerSetup>();
             _windsorContainerSetup.SetUpCastleWindsor(_helper).Returns(_windsorContainer);
-            
+
             _kubernetesModeMock = Substitute.For<IKubernetesMode>();
             _kubernetesModeMock.IsEnabled().Returns(false);
 
             _creationStrategy = new ProviderFactoryLifecycleStrategy(_helper, _domainHelperMock, _windsorContainerSetup,
                 _kubernetesModeMock);
         }
-
-
 
         [Test]
         public void CreateProviderFactory_InternalAppGuid_ReturnsInternalProviderFactory()
@@ -74,13 +72,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 
             _domainHelperMock.Received().SetupDomainAndCreateManager(_appDomainMock, _thirdPartyApplicationGuid);
         }
-        
+
         [Test]
         public void CreateProviderFactory_CallsSetupDomainAndCreateManager_InKubernetesMode()
         {
             // Arrange
             _kubernetesModeMock.IsEnabled().Returns(true);
-            
+
             // Act
             _creationStrategy.CreateProviderFactory(_thirdPartyApplicationGuid);
 

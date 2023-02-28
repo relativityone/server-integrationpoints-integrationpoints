@@ -6,6 +6,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class AddCustomColumnsToQueueTable : ICommand
     {
         private readonly IQueueDBContext _queueDbContext;
+
         public AddCustomColumnsToQueueTable(IQueueDBContext queueDbContext)
         {
             _queueDbContext = queueDbContext;

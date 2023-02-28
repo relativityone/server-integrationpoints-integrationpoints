@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             BatesNumberField = "BatesNumber"
         };
 
-        public SyncImageApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : 
+        public SyncImageApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) :
             base(testsImplementationTestFixture)
         {
         }
@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             void ImportAction()
             {
                 const int imagesCount = 10;
-                
+
                 string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
                 RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath
                     , _imageImportOptions, imagesCount);

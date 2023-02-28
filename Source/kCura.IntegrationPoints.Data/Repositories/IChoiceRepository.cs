@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
     public interface IChoiceRepository
     {
         Task<IList<ChoiceWithParentInfoDto>> QueryChoiceWithParentInfoAsync(
-            ICollection<ChoiceDto> choicesToQuery, 
+            ICollection<ChoiceDto> choicesToQuery,
             ICollection<ChoiceDto> allChoices);
     }
 }

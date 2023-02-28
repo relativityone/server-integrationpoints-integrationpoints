@@ -45,7 +45,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
         public Select2<string, _> Quote { get; set; }
 
-
         [FindByXPath("ul[contains(@class,'jstree-container-ul')]", Visibility = Visibility.Visible)]
         [SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
         public UnorderedList<TreeItemControl<_>, _> TreeItems { get; private set; }

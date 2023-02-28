@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             // arrange
             var savedSearch = new SavedSearchDTO();
-            
+
             var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
             savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
                 .Returns(savedSearch);

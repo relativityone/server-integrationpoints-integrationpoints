@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId);
 
             _serializer.Received(1).Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), String.Empty, _userId, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _userId, null, null);
         }
 
         [Test]
@@ -127,32 +127,32 @@ namespace kCura.IntegrationPoints.Core.Tests
             _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId);
 
             _serializer.Received(1).Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), String.Empty, _context.UserID, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _context.UserID, null, null);
         }
 
         [Test]
         public void GetRootJobId_RootJobIDIsNull_ParentJobID()
         {
-            //ARRANGE
+            // ARRANGE
             Job parentJob = GetJob(222, null);
 
-            //ACT
+            // ACT
             long? rootJobID = AgentJobManager.GetRootJobId(parentJob);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(222, rootJobID);
         }
 
         [Test]
         public void GetRootJobId_RootJobIDIsNotNull_ParentRootJobID()
         {
-            //ARRANGE
+            // ARRANGE
             Job parentJob = GetJob(222, 101);
 
-            //ACT
+            // ACT
             long? rootJobID = AgentJobManager.GetRootJobId(parentJob);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(101, rootJobID);
         }
 
@@ -206,7 +206,6 @@ namespace kCura.IntegrationPoints.Core.Tests
             Assert.IsTrue(batchInstanceToJob[parameter.BatchInstance].Contains(job));
         }
 
-
         [Test]
         public void GetScheduledAgentJobMapedByBatchInstance_MultiJobsOnOneBatchInstanceId()
         {
@@ -247,7 +246,6 @@ namespace kCura.IntegrationPoints.Core.Tests
             _jobService.GetJobs(_integrationPointId).Returns(new List<Job>() { job, job2 });
             _serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(jobOneParameters);
             _serializer.Deserialize<TaskParameters>(job2.JobDetails).Returns(jobTwoParameters);
-
 
             // act
             IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
@@ -293,7 +291,6 @@ namespace kCura.IntegrationPoints.Core.Tests
             return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "",
                 0, new DateTime(), 1, null, null);
         }
-
 
     }
 }

@@ -2,7 +2,6 @@
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
 
-
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
     using _ = ImportFromLDAPMapFieldsPage;

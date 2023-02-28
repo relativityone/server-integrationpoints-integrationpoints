@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 catch
                 {
                     // invalid IDs will cause the request to except
-                    // suppress these errors and do not give the user access    
+                    // suppress these errors and do not give the user access
                 }
 
                 return hasPermission;

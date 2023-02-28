@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Domain
 
         protected string _baseInstallDir = null;
         private bool _newRegistryStructure = false;
+
         public bool NewRegistryStructure
         {
             get
@@ -40,6 +41,7 @@ namespace kCura.IntegrationPoints.Domain
         }
 
         private string _webProcessingPath;
+
         public string WebProcessingPath
         {
             get
@@ -61,6 +63,7 @@ namespace kCura.IntegrationPoints.Domain
         }
 
         private string _eddsPath;
+
         public string EddsPath
         {
             get
@@ -82,6 +85,7 @@ namespace kCura.IntegrationPoints.Domain
         }
 
         private string _agentPath;
+
         public string AgentPath
         {
             get
@@ -103,6 +107,7 @@ namespace kCura.IntegrationPoints.Domain
         }
 
         private string _libraryPath;
+
         public string LibraryPath
         {
             get
@@ -121,7 +126,7 @@ namespace kCura.IntegrationPoints.Domain
 
                 if (string.IsNullOrWhiteSpace(_libraryPath))
                 {
-                    _libraryPath = GetDevEnvironmentLibPath(); //HACK: copied from Relativity Core
+                    _libraryPath = GetDevEnvironmentLibPath(); // HACK: copied from Relativity Core
                     if (!Directory.Exists(_libraryPath))
                     {
                         throw new Exception("Could not retrieve LibraryPath.");

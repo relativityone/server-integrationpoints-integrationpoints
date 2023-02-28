@@ -11,7 +11,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
     public class RipFieldsClassifierTests
     {
         private RipFieldsClassifier _sut;
-
         private readonly IEnumerable<string> _ripFields = new[]
         {
             "Relativity Source Case",

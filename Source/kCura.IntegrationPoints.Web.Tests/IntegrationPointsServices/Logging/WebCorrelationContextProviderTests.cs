@@ -11,11 +11,9 @@ namespace kCura.IntegrationPoints.Web.Tests.IntegrationPointsServices.Logging
     {
         private WebActionContextProvider _subjectUnderTests;
         private WebActionContext _webActionContext;
-
         private ICacheHolder _cacheHolder;
         private const int _USER_ID = 1234;
         private const string _ACTION_NAME = "ActionName";
-
         private static readonly Guid _actionGuid = Guid.NewGuid();
 
         public override void SetUp()

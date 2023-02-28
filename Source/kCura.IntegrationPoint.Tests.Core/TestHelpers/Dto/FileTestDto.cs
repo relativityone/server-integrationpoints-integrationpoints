@@ -3,8 +3,11 @@
     public class FileTestDto
     {
         public string Filename { get; }
+
         public string Location { get; }
+
         public string Identifier { get; }
+
         public bool InRepository { get; }
 
         public FileTestDto(

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         [Test]
         public void ItShouldReturnFieldParser()
         {
-            //Assert
+            // Assert
             Assert.That(_instance.GetFieldParser(null) is IFieldParser);
         }
     }

@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
         public void Close()
         {
             _readerOpen = false;
-            //TODO: is there anything to do?
+            // TODO: is there anything to do?
             return;
         }
 
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
             _currentItem = null;
             if (_readerOpen)
             {
-                //TODO: possible optimization to retrieve multiple items per single call
+                // TODO: possible optimization to retrieve multiple items per single call
                 while (_currentItem == null && _readerOpen)
                 {
                     _readerOpen = _entryIds.MoveNext();

@@ -29,6 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
         private class FileRow
         {
             public bool InRepository { get; set; }
+
             public bool Billable { get; set; }
         }
     }

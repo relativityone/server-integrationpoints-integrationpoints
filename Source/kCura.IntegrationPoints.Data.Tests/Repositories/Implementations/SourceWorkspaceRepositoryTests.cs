@@ -19,9 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private IFieldRepository _fieldRepository;
         private IRelativityObjectManager _relativityObjectManager;
         private IHelper _helper;
-
         private IAPILog _logApi;
-
         private SourceWorkspaceRepository _instance;
 
         public override void SetUp()

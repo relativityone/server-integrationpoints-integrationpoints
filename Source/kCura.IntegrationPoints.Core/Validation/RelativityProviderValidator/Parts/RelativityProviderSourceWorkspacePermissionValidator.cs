@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
                 result.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
             }
 
-            if (!_permissionManager.UserHasArtifactTypePermissions(sourceWorkspaceId, artifactTypeId, new [] { ArtifactPermission.View }))
+            if (!_permissionManager.UserHasArtifactTypePermissions(sourceWorkspaceId, artifactTypeId, new[] { ArtifactPermission.View }))
             {
                 result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_SOURCE_RDO_PERMISSIONS);
             }
@@ -38,4 +38,3 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
         }
     }
 }
-

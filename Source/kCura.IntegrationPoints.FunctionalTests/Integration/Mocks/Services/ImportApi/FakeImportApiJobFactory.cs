@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         {
             _jobImportToCreate = jobImportToCreate;
         }
-        
+
         public IJobImport Create(IImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
         {
             if (_jobImportToCreate is FakeJobImport fakeJobImport)

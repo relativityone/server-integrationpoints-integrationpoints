@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
             {
                 new FieldValuePair
                 {
-                    Field = new Field {Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME},
+                    Field = new Field {Name = Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME },
                     Value = sourceWorkspaceArtifactId
                 }
             };
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
             {
                 new FieldValuePair
                 {
-                    Field = new Field {Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME},
+                    Field = new Field {Name = Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME },
                     Value = sourceWorkspaceName
                 }
             };
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
             {
                 new FieldValuePair
                 {
-                    Field = new Field {Name = Constants.SOURCEWORKSPACE_NAME_FIELD_NAME},
+                    Field = new Field {Name = Constants.SOURCEWORKSPACE_NAME_FIELD_NAME },
                     Value = name
                 }
             };
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
             {
                 new FieldValuePair
                 {
-                    Field = new Field {Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME},
+                    Field = new Field {Name = Constants.SOURCEWORKSPACE_INSTANCENAME_FIELD_NAME },
                     Value = sourceInstanceName
                 }
             };
@@ -111,7 +111,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
             };
 
             var fields = dto.FieldRefValuePairs;
-
 
             AssertValueExistInFieldsList(fields, Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceId);
             AssertValueExistInFieldsList(fields, Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, name);

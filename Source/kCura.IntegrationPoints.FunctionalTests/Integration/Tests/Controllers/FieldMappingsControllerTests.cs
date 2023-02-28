@@ -20,18 +20,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
     {
         private WorkspaceTest _destinationWorkspace;
         private List<FieldTest> _fields;
-
         private const string _FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
         private const string _LONG_TEXT_NAME = "Long Text";
         private const string _DESTINATION_PROVIDER_GUID = "D2E10795-3A47-47C2-A457-7E54C2A5DD90";
-
         private const int _SOURCE_ARTIFACT_TYPE_ID = 111;
         private const int _DESTINATION_ARTIFACT_TYPE_ID = 222;
 
         public override void SetUp()
         {
             base.SetUp();
-            
+
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(ArtifactProvider.NextId());
             _fields = CreateFieldsWithSpecialCharactersAsync(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, _FIXED_LENGTH_TEXT_NAME).ToList();
         }
@@ -121,7 +119,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             fieldsMaps.Select(x => x.SourceField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
             fieldsMaps.Select(x => x.DestinationField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
         }
-        
+
         [IdentifiedTest("0FAE85FC-227D-40DD-9028-0C434C8389FA")]
         public async Task AutoMapFields_ShouldMatchOnlyIdentifiersWhenRequired()
         {
@@ -488,7 +486,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         private ClaimsPrincipal GetUserClaimsPrincipal()
         {
             return new ClaimsPrincipal(new[]
-                {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
+                { new ClaimsIdentity(new[] { new Claim("rel_uai", User.ArtifactId.ToString())})});
         }
 
         private FieldsMapping.FieldInfo[] ConvertFieldTestListToFieldInfoArray(List<FieldTest> fields)

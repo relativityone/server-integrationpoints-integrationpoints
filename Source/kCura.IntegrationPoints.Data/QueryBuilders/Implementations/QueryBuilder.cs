@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
     public abstract class QueryBuilder
     {
         protected IList<string> Conditions { get; }
+
         protected List<FieldRef> Fields { get; set; }
 
         protected QueryBuilder()

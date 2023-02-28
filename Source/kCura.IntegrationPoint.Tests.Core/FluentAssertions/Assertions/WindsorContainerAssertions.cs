@@ -188,7 +188,6 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
             }
         }
 
-
         public Type GetImplementationType<TInterface>() where TInterface : class
         {
             try

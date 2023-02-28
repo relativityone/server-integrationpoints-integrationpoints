@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                         int sort = x.Icon.GetValue<JsTreeItemIconEnum>().CompareTo(y.Icon.GetValue<JsTreeItemIconEnum>());
                         if (sort == 0)
                         {
-                            sort = String.Compare(x.Text, y.Text, StringComparison.Ordinal);
+                            sort = string.Compare(x.Text, y.Text, StringComparison.Ordinal);
                         }
 
                         return sort;

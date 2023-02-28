@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
                         {
                             isIdentifierFieldValue = Convert.ToInt32(field.Value);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             LogReceivingParsedFieldsError(fieldArtifacts, ex);
                             // suppress error for invalid casts

@@ -89,7 +89,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
             _fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, DocumentFieldsConstants.POPUP_FILTER_TYPE_NAME);
         }
 
-
         private void SetOverlayBehavior(int fieldArtifactId)
         {
             _fieldRepository.SetOverlayBehavior(fieldArtifactId, true);

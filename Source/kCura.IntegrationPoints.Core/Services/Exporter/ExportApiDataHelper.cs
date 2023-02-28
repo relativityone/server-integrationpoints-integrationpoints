@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
     public static class ExportApiDataHelper
     {
-        private const String MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
+        private const string MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
         private static readonly Lazy<XmlSerializer> MultiObjectFieldSerializer = new Lazy<XmlSerializer>(() => new XmlSerializer(typeof(XmlSerializerRoot)));
         private const string TempRootGuid = "e7913be0-cd0a-4833-a432-f2d67a2f1349";
 
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                     }
                 }
                 value = builder.ToString();
-                value = value.Replace("&#x0B;", String.Empty);
+                value = value.Replace("&#x0B;", string.Empty);
                 return value;
             }
             return rawValue;
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 string value = rawValue as string;
                 if (String.IsNullOrEmpty(value) == false)
                 {
-                    string tempValue = String.Format("<{0}>{1}</{0}>", TempRootGuid, value);
+                    string tempValue = string.Format("<{0}>{1}</{0}>", TempRootGuid, value);
 
                     using (XmlReader reader = XmlReader.Create(new StringReader(tempValue)))
                     {
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                         }
                         else
                         {
-                            value = String.Join(IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER.ToString(), data.Object);
+                            value = string.Join(IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER.ToString(), data.Object);
                         }
                     }
                     return value;

@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
     public class FakeAuditRepository : IRelativityAuditRepository
     {
         private List<AuditRecord> _auditHistory = new List<AuditRecord>();
-        
+
         public void CreateAuditRecord(int artifactID, AuditElement auditElement)
         {
             _auditHistory.Add(new AuditRecord
@@ -21,6 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         private struct AuditRecord
         {
             public int IntegrationPointId { get; set; }
+
             public string AuditMessage { get; set; }
         }
     }

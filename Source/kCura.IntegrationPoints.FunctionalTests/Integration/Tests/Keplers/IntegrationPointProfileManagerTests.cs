@@ -33,13 +33,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task CreateIntegrationPointProfileAsync_ShouldReturnCorrectProfile(bool importNativeFile, bool logErrors,
             string emailNotificationRecipients, string fieldOverlayBehavior, ImportOverwriteModeEnum overwriteMode)
         {
-            //Arrange         
+            // Arrange
             CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.Create, importNativeFile, logErrors, emailNotificationRecipients, fieldOverlayBehavior, overwriteMode);
 
-            //Act
+            // Act
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             testedProfile.Should().NotBeNull();
             AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
@@ -48,13 +48,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("6CD0B0CB-0EB2-4291-A22C-4EFFBAC614D6")]
         public async Task CreateIntegrationPointProfileFromIntegrationPointAsync_ShouldReturnCorrectProfile()
         {
-            //Arrange         
+            // Arrange
             CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.CreateFromIntegrationPoint);
             string profileName = $"Test profile from Integration Point {request.IntegrationPoint.ArtifactId}";
-            //Act
+            // Act
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspace.ArtifactId, request.IntegrationPoint.ArtifactId, profileName).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             IntegrationPointTest existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
             IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
 
@@ -64,22 +64,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             testedProfile.DestinationProvider.Should().Be(existingIntegrationPoint.DestinationProvider);
             testedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(existingIntegrationPoint.EmailNotificationRecipients);
             testedProfile.Type.Should().Be(existingIntegrationPoint.Type);
-            testedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);           
-            Const.Choices.OverwriteFields.Where(x => x.ArtifactID == testedProfile.OverwriteFields.ArtifactID).FirstOrDefault().Name.Should().Be(existingIntegrationPoint.OverwriteFields.Name);            
+            testedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);
+            Const.Choices.OverwriteFields.Where(x => x.ArtifactID == testedProfile.OverwriteFields.ArtifactID).FirstOrDefault().Name.Should().Be(existingIntegrationPoint.OverwriteFields.Name);
             existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(testedProfile.DestinationConfiguration);
         }
 
         [IdentifiedTest("EC4158B6-785B-42BD-9779-CA8851F6CA03")]
         public async Task UpdateIntegrationPointProfileAsync_ShouldChangeProfileCorrectly()
         {
-            //Arrange
+            // Arrange
             CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.Update, importNativeFile: false,
                 logErrors: true, emailNotificationRecipients: "test@test.com", fieldOverlayBehavior: Const.FieldOverlayBehaviorName.REPLACE_VALUES, overwriteMode: ImportOverwriteModeEnum.OverlayOnly);
 
-            //Act
+            // Act
             IntegrationPointModel result = await _sut.UpdateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             testedProfile.Should().NotBeNull();
             AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
@@ -88,11 +88,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("C994A507-5495-42D3-BE10-62A56B971C78")]
         public async Task GetOverwriteFieldsChoicesAsync_ShouldReturnCorrectSetOfValues()
         {
-            //Arrange
+            // Arrange
             List<Relativity.Services.ChoiceQuery.Choice> expectedChoices = Const.Choices.OverwriteFields;
-            //Act
+            // Act
             IList<OverwriteFieldsModel> results = await _sut.GetOverwriteFieldsChoicesAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
-            //Assert
+            // Assert
             results.Should().NotBeNull();
             results.Should().HaveSameCount(expectedChoices);
 
@@ -108,13 +108,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("BB68F9F2-A8BD-49D6-AAF7-0AFBE748F24A")]
         public async Task GetIntegrationPointProfileAsync_ShouldReturnCorrectObject()
         {
-            //Arrange           
+            // Arrange
             IntegrationPointProfileTest expectedProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
 
-            //Act
+            // Act
             IntegrationPointModel result = await _sut.GetIntegrationPointProfileAsync(SourceWorkspace.ArtifactId, expectedProfile.ArtifactId).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             AssertObtainedIntegrationPointProfile(result, expectedProfile);
         }
@@ -122,15 +122,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("6DD5E1C4-F767-4BBB-B336-56216464846F")]
         public async Task GetAllIntegrationPointProfilesAsync_ShouldReturnCorrectObjectSet()
         {
-            //Arrange           
+            // Arrange
             List<IntegrationPointProfileTest> expectedProfiles = new List<IntegrationPointProfileTest>();
             expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
             expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
 
-            //Act
+            // Act
             IList<IntegrationPointModel> results = await _sut.GetAllIntegrationPointProfilesAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             results.Should().NotBeNull();
             results.Should().NotBeEmpty();
             results.Should().HaveSameCount(expectedProfiles);
@@ -298,5 +298,3 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         }
     }
 }
-
-

@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
     {
         private Mock<IQueueQueryManager> _queueQueryManagerFake;
         private Mock<IJobTrackerQueryManager> _jobTrackerQueryManagerFake;
-
         private IJobResourceTracker _sut;
 
         [SetUp]

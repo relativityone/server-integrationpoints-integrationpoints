@@ -9,10 +9,11 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             this.DBHelper = dbHelper;
             this.TableName = tableNameName;
-            
+
         }
 
         public IHelper DBHelper { get; private set; }
+
         public string TableName { get; private set; }
 
         public IEddsDBContext EddsDBContext

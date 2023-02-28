@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     {
         private ICaseServiceContext _workspaceTemplateServiceContext;
         private IAPILog _loggerValue;
-
         private const string _ACTION_NAME = "Post Workspace Create";
         private readonly Lazy<IErrorService> _errorService;
 
@@ -65,8 +64,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         protected abstract void Run();
 
         protected abstract string SuccessMessage { get; }
-        protected abstract string GetFailureMessage(Exception ex);
 
+        protected abstract string GetFailureMessage(Exception ex);
         private EhCorrelationContext CreateCorrelationContext()
         {
             Guid ehGuid = GetEventHandlerGuid();

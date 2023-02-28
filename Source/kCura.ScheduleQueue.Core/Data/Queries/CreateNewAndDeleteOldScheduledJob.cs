@@ -11,7 +11,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class CreateNewAndDeleteOldScheduledJob : ICommand
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly long _oldScheduledJobId;
         private readonly int _workspaceId;
         private readonly int _relatedObjectArtifactId;

@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             IFederatedInstanceManager instanceManager = Substitute.For<IFederatedInstanceManager>();
             instanceManager.RetrieveAll().Returns(new List<FederatedInstanceDto>
             {
-                new FederatedInstanceDto {ArtifactId = 65432, Name = "Other name 1"},
+                new FederatedInstanceDto {ArtifactId = 65432, Name = "Other name 1" },
                 new FederatedInstanceDto { ArtifactId = 12345, Name = "Federated instance" },
                 new FederatedInstanceDto {ArtifactId = 98765, Name = "Other name 2"}
             });
@@ -79,9 +79,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             IFederatedInstanceManager instanceManager = Substitute.For<IFederatedInstanceManager>();
             instanceManager.RetrieveAll().Returns(new List<FederatedInstanceDto>
             {
-                new FederatedInstanceDto {ArtifactId = 65432, Name = "Other name 1"},
+                new FederatedInstanceDto {ArtifactId = 65432, Name = "Other name 1" },
                 new FederatedInstanceDto { ArtifactId = 12345, Name = instanceName },
-                new FederatedInstanceDto {ArtifactId = 98765, Name = "Other name 2"},
+                new FederatedInstanceDto {ArtifactId = 98765, Name = "Other name 2" },
             });
             var parser = new JobHistoryDestinationWorkspaceParser(_LOCAL_WORKSPACE_ID, instanceManager, _workspaceManager);
 

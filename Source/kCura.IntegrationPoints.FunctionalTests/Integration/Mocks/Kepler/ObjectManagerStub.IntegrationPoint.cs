@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     object fieldValue = obj.FieldValues.Single(x => x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value;
                     return Task.FromResult<IKeplerStream>(new KeplerResponseStream(new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        Content = new StringContent((fieldValue ?? String.Empty).ToString())
+                        Content = new StringContent((fieldValue ?? string.Empty).ToString())
                     }));
                 });
         }
@@ -67,8 +67,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                }
            );
         }
-        private bool IsIntegrationPointQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid;
 
+        private bool IsIntegrationPointQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid;
         private bool IsProviderCondition(string condition, out int sourceProviderId, out int destinationProviderId)
         {
             Match match = Match.Empty;

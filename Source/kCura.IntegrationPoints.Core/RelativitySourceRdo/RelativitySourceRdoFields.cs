@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
         private IFieldQueryRepository _fieldQueryRepository;
         private IArtifactGuidRepository _artifactGuidRepository;
         private IFieldRepository _fieldRepository;
-
         private readonly IRepositoryFactory _repositoryFactory;
 
         public RelativitySourceRdoFields(IRepositoryFactory repositoryFactory)

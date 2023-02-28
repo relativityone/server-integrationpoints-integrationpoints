@@ -36,24 +36,28 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
     {
         private readonly string JobName = "Name";
         private readonly DateTime _jobStart = new DateTime(2020, 1, 1, 10, 30, 30);
-
         private class BatchReporterMock : IBatchReporter, ILoggingMediator
         {
             public event StatisticsUpdate OnStatisticsUpdate { add { } remove { } }
+
             public event BatchCompleted OnBatchComplete { add { } remove { } }
+
             public event BatchSubmitted OnBatchSubmit { add { } remove { } }
+
             public event BatchCreated OnBatchCreate { add { } remove { } }
+
             public event StatusUpdate OnStatusUpdate { add { } remove { } }
+
             public event JobError OnJobError { add { } remove { } }
+
             public event RowError OnDocumentError { add { } remove { } }
 
             public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
                 ICoreExporterStatusNotification exporterStatusNotification)
             {
-
             }
         }
-        
+
         private IWebApiLoginService _credentialProvider;
         private IExtendedExporterFactory _exporterFactory;
         private ExtendedExportFile _exportFile;
@@ -66,21 +70,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         private IServiceFactory _serviceFactory;
         private IRepositoryFactory _repositoryFactory;
         private IExportFieldsService _exportFieldsService;
-
         private ExportProcessBuilder _sut;
-
         private Job _job;
-
         private Dictionary<int, FieldEntry> AllExportableAvfIds => new Dictionary<int, FieldEntry>
         {
-            { 1234, new FieldEntry { DisplayName = "Field1"}},
-            { 5678, new FieldEntry { DisplayName = "Field2"}}
+            { 1234, new FieldEntry { DisplayName = "Field1" } },
+            { 5678, new FieldEntry { DisplayName = "Field2" } }
         };
+
         private Dictionary<int, FieldEntry> SelectedAvfIds => new Dictionary<int, FieldEntry>
         {
-            { 1234, new FieldEntry { DisplayName = "Field1"}},
+            { 1234, new FieldEntry { DisplayName = "Field1" } },
         };
-        
+
         [SetUp]
         public override void SetUp()
         {
@@ -156,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             };
             _exportFileBuilder.Create(_exportDataContext.Settings).ReturnsForAnyArgs(_exportFile);
         }
-        
+
         [Test]
         public void ItShouldPerformLogin()
         {
@@ -188,7 +190,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             {
                 SelViewFieldIds = SelectedAvfIds
             }, _job);
-            
+
             // Assert
             _exportFile.AllExportableFields.ShouldAllBeEquivalentTo(expectedExportableFields);
         }
@@ -270,15 +272,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         {
             var expectedFilteredFields = new Dictionary<int, FieldEntry>
             {
-                { 1, new FieldEntry()},
-                { 2, new FieldEntry()},
-                { 3, new FieldEntry()}
+                { 1, new FieldEntry() },
+                { 2, new FieldEntry() },
+                { 3, new FieldEntry() }
             };
             var notExpectedFilteredFields = new Dictionary<int, FieldEntry>
             {
-                { 4, new FieldEntry()},
-                { 5, new FieldEntry()},
-                { 6, new FieldEntry()}
+                { 4, new FieldEntry() },
+                { 5, new FieldEntry() },
+                { 6, new FieldEntry() }
             };
             var settings = new ExportSettings
             {
@@ -354,7 +356,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         [Test]
         public void ItShouldSubscribeBatchRepoertToJobStatsService()
         {
-            //Arrange
+            // Arrange
             var exporter = Substitute.For<IExporter>();
             var batchReporterMock = new BatchReporterMock();
             var job = _job;
@@ -364,13 +366,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             _loggingMediator.LoggingMediators.Returns(
                 new List<ILoggingMediator>(new[] { batchReporterMock }));
 
-            //Act
+            // Act
             _sut.Create(new ExportSettings()
             {
                 SelViewFieldIds = SelectedAvfIds
             }, job);
 
-            //Assert
+            // Assert
             _loggingMediator.Received().RegisterEventHandlers(_userMessageNotification, exporter);
             exporter.Received().InteractionManager = _userNotification;
             _jobStatisticsService.Received().Subscribe(batchReporterMock, job);
@@ -385,9 +387,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
             var expectedFieldIds = new Dictionary<int, FieldEntry>
             {
-                { 2, new FieldEntry()},
-                { 3, new FieldEntry()},
-                { 1, new FieldEntry()}
+                { 2, new FieldEntry() },
+                { 3, new FieldEntry() },
+                { 1, new FieldEntry() }
             };
 
             var settings = new ExportSettings

@@ -51,7 +51,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public IList<ProductionTest> Productions { get; } = new List<ProductionTest>();
 
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
-
         private IList<ArtifactTest> GetAllArtifacts()
         {
             IEnumerable<ArtifactTest> GetArtifacts(IEnumerable<RdoTestBase> rdos) => rdos.Select(x => x.Artifact);

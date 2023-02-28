@@ -6,7 +6,9 @@ namespace kCura.IntegrationPoints.Domain
     public class ApplicationBinary : IComparer<ApplicationBinary>
     {
         public int ArtifactID { get; set; }
+
         public string Name { get; set; }
+
         public byte[] FileData { get; set; }
 
         public int Compare(ApplicationBinary x, ApplicationBinary y)
@@ -17,7 +19,7 @@ namespace kCura.IntegrationPoints.Domain
             }
             else if (String.Compare(x.Name, y.Name, StringComparison.Ordinal) != 0)
             {
-                return String.Compare(x.Name, y.Name, StringComparison.Ordinal);
+                return string.Compare(x.Name, y.Name, StringComparison.Ordinal);
             }
             else
             {

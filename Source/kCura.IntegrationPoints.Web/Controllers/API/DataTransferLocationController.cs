@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IRelativePathDirectoryTreeCreator<JsTreeItemDTO> _relativePathDirectoryTreeCreator;
         private readonly IDataTransferLocationService _dataTransferLocationService;
 
-        public DataTransferLocationController(IRepositoryFactory respositoryFactory, 
+        public DataTransferLocationController(IRepositoryFactory respositoryFactory,
             IRelativePathDirectoryTreeCreator<JsTreeItemDTO> relativePathDirectoryTreeCreator, IDataTransferLocationService dataTransferLocationService)
         {
             _respositoryFactory = respositoryFactory;

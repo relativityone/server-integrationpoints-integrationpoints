@@ -7,13 +7,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping
     public class FieldsClassifyRunnerFactory : IFieldsClassifyRunnerFactory
     {
         private const int DocumentArtifactTypeID = (int)ArtifactType.Document;
-
         private readonly IImportApiFacade _importApiFacade;
         private readonly IFieldsRepository _fieldsRepository;
-
         private readonly IList<IFieldsClassifier> _defaultDocumentSourceFieldsClassifiers;
         private readonly IList<IFieldsClassifier> _defaultDocumentDestinationFieldsClassifiers;
-
         private readonly IList<IFieldsClassifier> _defaultNonDocumentSourceFieldsClassifiers;
         private readonly IList<IFieldsClassifier> _defaultNonDocumentDestinationFieldsClassifiers;
 

@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
         {
             _workspaceManager = workspaceManager;
         }
+
         public ValidationResult Validate(SourceConfiguration sourceConfiguration)
         {
             var result = new ValidationResult();

@@ -22,10 +22,9 @@ namespace Relativity.IntegrationPoints.Services
     public class IntegrationPointAgentManager : KeplerServiceBase, IIntegrationPointsAgentManager
     {
         private Installer _installer;
-
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
-        //Agent default container count based on Workload Discovery t-shirt response. Notes: 1. Global default (S:2, M:4, L:8, XL:12, XXL:16)
+        // Agent default container count based on Workload Discovery t-shirt response. Notes: 1. Global default (S:2, M:4, L:8, XL:12, XXL:16)
         private readonly List<WorkloadSizeDefinition> _workloadSizeDefaultSettings = new List<WorkloadSizeDefinition>()
         {
             new WorkloadSizeDefinition(minJobsCount: 0, maxJobsCount: 0, workloadSize: WorkloadSize.None),
@@ -93,7 +92,7 @@ namespace Relativity.IntegrationPoints.Services
 
                 queueInfo.TotalWorkloadCount = jobsWithoutSyncEntityManagerWorkers.Count();
 
-                // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.                
+                // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.
                 queueInfo.BlockedJobsCount = allQueueRecords.Count(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID);
                 queueInfo.AllQueuedItemsCount = allQueueRecords.Count;
                 queueInfo.JobsExcludedByTimeConditionCount = queueInfo.AllQueuedItemsCount - jobsReadyForProcessingByTimeCondition.Count;
@@ -186,7 +185,9 @@ namespace Relativity.IntegrationPoints.Services
             }
 
             public int MinJobsCount { get; set; }
+
             public int MaxJobsCount { get; set; }
+
             public WorkloadSize WorkloadSize { get; set; }
         }
     }

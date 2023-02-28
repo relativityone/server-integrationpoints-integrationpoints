@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IScratchTableRepository[] _scratchTable;
         private readonly List<string> _erroredDocumentIds;
         private static readonly object _lock = new Object();
+
         public int FlushErrorBatchSize
         {
             get

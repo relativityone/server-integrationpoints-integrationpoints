@@ -37,16 +37,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase(10)]
         public void ItShouldReturnAllFieldMaps(int numberOfElements)
         {
-            //Arrange
+            // Arrange
             const int fieldMapId = 1234;
             List<FieldMap> expectedFieldMap = GenerateDefaultFieldMapList(numberOfElements, FieldMapTypeEnum.None);
             _integrationPointReader.GetFieldMap(fieldMapId).Returns(expectedFieldMap);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.Get(fieldMapId);
             List<FieldMap> actualResult = ExtractFieldMapListFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.AreEqual(expectedFieldMap.Count, actualResult.Count);
             CollectionAssert.AreEqual(expectedFieldMap, actualResult);
         }
@@ -57,17 +57,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase(10, 5)]
         public void ItShouldReturnFieldMapsWithoutFolderPathInformation(int numOfElements, int numOfFolderPathInfoFieldMaps)
         {
-            //Arrange
+            // Arrange
             const int fieldMapId = 1234;
             List<FieldMap> expectedFieldMap = GenerateDefaultFieldMapList(numOfElements, FieldMapTypeEnum.None);
             List<FieldMap> extendedFieldMap = AppendFolderPathInformationFieldMaps(expectedFieldMap, numOfFolderPathInfoFieldMaps);
             _integrationPointReader.GetFieldMap(fieldMapId).Returns(extendedFieldMap);
 
-            //Act
+            // Act
             HttpResponseMessage response = _instance.Get(fieldMapId);
             List<FieldMap> actualResult = ExtractFieldMapListFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.AreEqual(numOfElements, actualResult.Count);
             CollectionAssert.AreEqual(expectedFieldMap, actualResult);
         }

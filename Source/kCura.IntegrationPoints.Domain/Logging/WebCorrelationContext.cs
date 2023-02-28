@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Domain.Logging
     public class WebCorrelationContext : BaseCorrelationContext
     {
         public Guid? CorrelationId { get; set; }
+
         public Guid? WebRequestCorrelationId { get; set; }
 
         public override Dictionary<string, object> ToDictionary()

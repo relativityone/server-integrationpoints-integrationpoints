@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
     public abstract class UpdateIntegrationPointConfigurationCommandBase : IEHCommand
     {
         private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
-
         private readonly IRelativityObjectManager _relativityObjectManager;
 
         protected readonly IAPILog _log;
@@ -40,10 +39,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             _relativityObjectManager = relativityObjectManager;
             _log = _helper.GetLoggerFactory().GetLogger().ForContext<UpdateIntegrationPointConfigurationCommandBase>();
         }
+
         public virtual void Execute()
         {
             SourceProvider sourceProvider = GetSourceProvider();
-            if(sourceProvider == null)
+            if (sourceProvider == null)
             {
                 _log.LogInformation("SourceProvider for Guid {provderGuid} does not exist. No Integration Points have been updated", SourceProviderGuid);
                 return;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                 }
                 while (results.Any());
 
-                if(start == 0)
+                if (start == 0)
                 {
                     _log.LogInformation("No Integration Points for SourceProvider {provderGuid} has been found.", SourceProviderGuid);
                 }
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             {
                 Condition = $"'{SourceProviderFields.Identifier}' == '{SourceProviderGuid}'"
             };
-            
+
             return _relativityObjectManager.Query<SourceProvider>(query, ExecutionIdentity.System).FirstOrDefault();
         }
 
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                 {
                     MassUpdatePerObjectsRequest updateRequest = GetIntegrationPointsUpdateRequest(values);
                     MassUpdateResult result = proxy.UpdateAsync(_helper.GetActiveCaseID(), updateRequest).Result;
-                    
+
                     _log.LogInformation("Update Status - Success: {status} Message: {message} TotalObjectsUpdate: {count} ",
                         result.Success, result.Message, result.TotalObjectsUpdated);
                 }

@@ -11,9 +11,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
     [TestFixture, Category("Unit")]
     public class HealthCheckTests : TestBase
     {
-
         private Dictionary<int, IList<JobHistory>> _wkspToJobHistoryRecs;
-
         private const int _WKSP_ID = 1234;
         private const long _JOB_ID_1 = 1;
         private const long _JOB_ID_2 = 2;
@@ -61,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             ValidateHealthCheck(results, HealthCheck.InvalidJobMessage);
-            
+
         }
 
         private void ValidateHealthCheck(HealthCheckOperationResult results, string expectedMsg)

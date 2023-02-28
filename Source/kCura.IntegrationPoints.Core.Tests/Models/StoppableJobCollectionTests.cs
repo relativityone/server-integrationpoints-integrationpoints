@@ -40,8 +40,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Models
             // Arrange
             var sut = new StoppableJobHistoryCollection()
             {
-                PendingJobHistory = new [] { new Data.JobHistory { ArtifactId = 231 } },
-                ProcessingJobHistory = new [] { new Data.JobHistory { ArtifactId = 95403 } }
+                PendingJobHistory = new[] { new Data.JobHistory { ArtifactId = 231 } },
+                ProcessingJobHistory = new[] { new Data.JobHistory { ArtifactId = 95403 } }
             };
 
             // Act & Assert

@@ -14,9 +14,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.RestoreJobHistoryParser
         {
             _stateTransitions = new Dictionary<ParserStateEnum, IParserStateTransition>
             {
-                {ParserStateEnum.Initial, new CheckForInputNullPath(workspaceId, workspaceManager, _THIS_INSTANCE_NAME)},
+                {ParserStateEnum.Initial, new CheckForInputNullPath(workspaceId, workspaceManager, _THIS_INSTANCE_NAME) },
                 {ParserStateEnum.NeedsWorkspaceIdParsing, new ExtractWorkspaceIdFromInput(_SEPARATOR) },
-                {ParserStateEnum.WorkspaceIdParsed, new CheckSeparatorsAmount(_SEPARATOR, _THIS_INSTANCE_NAME)},
+                {ParserStateEnum.WorkspaceIdParsed, new CheckSeparatorsAmount(_SEPARATOR, _THIS_INSTANCE_NAME) },
                 {ParserStateEnum.NeedsLocalInstanceCheck, new CheckIfHasLocalInstance(_SEPARATOR, _THIS_INSTANCE_NAME) },
                 {
                     ParserStateEnum.NeedsFederatedInstanceNameParsing,

@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
     public class CollectionFieldValueTestCase
     {
         public ICollection Value { get; }
+
         public string Name { get; }
 
         public CollectionFieldValueTestCase(ICollection value, string name)

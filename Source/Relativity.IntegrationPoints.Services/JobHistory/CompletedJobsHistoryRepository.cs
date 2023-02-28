@@ -25,14 +25,14 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
             IList<kCura.IntegrationPoints.Data.JobHistory> queryResult =
                 _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager
                     .Query<kCura.IntegrationPoints.Data.JobHistory>(queryRequest);
-            
+
             return queryResult.Select(x => new JobHistoryModel
             {
                 ItemsTransferred = x.ItemsTransferred ?? 0,
                 DestinationWorkspace = x.DestinationWorkspace,
                 DestinationInstance = x.DestinationInstance,
                 EndTimeUTC = x.EndTimeUTC.GetValueOrDefault(),
-                FilesSize =  x.FilesSize, 
+                FilesSize =  x.FilesSize,
                 Overwrite = x.Overwrite
             }).ToList();
         }

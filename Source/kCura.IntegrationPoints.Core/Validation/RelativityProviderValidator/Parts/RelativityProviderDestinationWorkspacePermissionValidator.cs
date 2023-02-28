@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
     public class RelativityProviderDestinationWorkspacePermissionValidator : IRelativityProviderDestinationWorkspacePermissionValidator
     {
         private readonly ArtifactPermission[] _expectedArtifactPermissions = { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create };
+
         private readonly IPermissionManager _permissionManager;
         private readonly IRepositoryFactory _repositoryFactory;
 

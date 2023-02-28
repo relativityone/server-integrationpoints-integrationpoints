@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     identifier = match.Groups[1].Value;
                     return true;
                 }
-            }    
+            }
             return false;
         }
 

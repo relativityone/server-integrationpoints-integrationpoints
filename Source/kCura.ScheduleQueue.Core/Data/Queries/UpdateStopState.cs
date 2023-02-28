@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         public UpdateStopState(IQueueDBContext qDbContext, IList<long> jobIds, StopState state)
         {
             this._qDbContext = qDbContext;
-            
+
             _jobIds = jobIds;
             _state = state;
         }

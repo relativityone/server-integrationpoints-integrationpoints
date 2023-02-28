@@ -10,10 +10,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
     internal class ExportServiceFactory : IExportServiceFactory
     {
         private readonly IInstanceSettingRepository _instanceSettingRepository;
-
         private readonly CreateWebApiServiceFactoryDelegate _createWebApiServiceFactoryDelegate;
         private readonly CreateCoreServiceFactoryDelegate _createCoreServiceFactoryDelegate;
-
         private readonly IAPILog _logger;
 
         internal delegate WebApiServiceFactory CreateWebApiServiceFactoryDelegate(ExportFile exportFile);

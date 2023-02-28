@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Domain.Extensions
         {
             if (exception == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var aggregateException = exception as AggregateException;

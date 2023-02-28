@@ -59,7 +59,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
             };
         }
 
-
         public abstract ValidationResult Validate(
             IntegrationPointDtoBase model,
             SourceProvider sourceProvider,

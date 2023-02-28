@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
         [SetUp]
         public void SetUp(){
-
             _jobHistoryErrorServiceMock = Substitute.For<IJobHistoryErrorService>();
             _jobHistoryServiceMock = Substitute.For<IJobHistoryService>();
             _jobServiceMock = Substitute.For<IJobService>();
@@ -38,15 +37,15 @@ namespace kCura.IntegrationPoints.Agent.Tests
         [Test]
         public void ItShould_EndTaskWithError_ForITaskWithHistory()
         {
-            //Arange
+            // Arange
             var task = Substitute.For<ITaskWithJobHistory>();
             task.JobHistory.Returns(_jobHistoryDto);
             var exception = new IntegrationPointsException("Job failed miserably.");
 
-            //Act
+            // Act
             _subjectUnderTest.EndTaskWithError(task, exception);
 
-            //Assert
+            // Assert
             Assert.AreEqual(JobStatusChoices.JobHistoryErrorJobFailed.Name, _jobHistoryDto.JobStatus.Name);
             _jobHistoryErrorServiceMock.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, exception.Message, exception.StackTrace );
             _jobHistoryServiceMock.Received(1).UpdateRdo(_jobHistoryDto);

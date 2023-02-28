@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             const string id = "123";
             Task<ArtifactDTO[]> task = new Task<ArtifactDTO[]>(() => new ArtifactDTO[]
             {
-                new ArtifactDTO(0, 0, String.Empty, new List<ArtifactFieldDTO>()
+                new ArtifactDTO(0, 0, string.Empty, new List<ArtifactFieldDTO>()
                 {
                     new ArtifactFieldDTO() { Value = id },
                     new ArtifactFieldDTO() { Value = id },
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         public void FetchArtifactDTOs_NoDataToRead()
         {
             // arrange
-            _reader.Read().Returns(false); // 
+            _reader.Read().Returns(false); //
 
             // act
             Assert.IsFalse(_instance.Read());

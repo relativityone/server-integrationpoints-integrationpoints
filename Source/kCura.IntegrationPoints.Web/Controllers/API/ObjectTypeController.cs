@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public async Task<HttpResponseMessage> GetViews(int workspaceId, int artifactTypeId, string search = "", int page = 1, int pageSize = _DEFAULT_PAGE_SIZE)
         {
             _logger.LogInformation("Retrieving views for Artifact Type ID {artifactTypeId} in workspace {workspaceId}", artifactTypeId, workspaceId);
-            
+
             try
             {
                 using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))

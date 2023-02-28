@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private Mock<IRdoFilter> _rdoFilter;
         private Mock<IObjectTypeRepository> _objectTypeRepository;
         private Mock<IHelper> _helper;
-
         private RdoFilterController _sut;
 
         [SetUp]
@@ -57,15 +56,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase(5)]
         public void GetAllViewableRdos_ShouldReturnAllViewableRdos(int numOfViewableRdos)
         {
-            //Arrange 
+            // Arrange
             List<ObjectTypeDTO> expectedViewableRdos = GenerateDefaultViewableRdosList(numOfViewableRdos);
             _rdoFilter.Setup(x => x.GetAllViewableRdosAsync()).ReturnsAsync(expectedViewableRdos);
 
-            //Act
+            // Act
             HttpResponseMessage response = _sut.GetAllViewableRdos();
             List<ObjectTypeDTO> actualViewableRdos = ExtractViewableRdosListFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.AreEqual(expectedViewableRdos.Count, actualViewableRdos.Count);
             for (var i = 0; i < numOfViewableRdos; i++)
             {
@@ -77,25 +76,25 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void GetAllViewableRdos_ShouldReturnFromCache()
         {
-            //Arrange 
+            // Arrange
             int workspaceId = 2;
             int userId = 3;
 
             _caseServiceContext.SetupGet(x => x.WorkspaceID).Returns(workspaceId);
             _caseServiceContext.SetupGet(x => x.WorkspaceUserID).Returns(userId);
 
-            //Act
+            // Act
             _sut.GetAllViewableRdos();
             _sut.GetAllViewableRdos();
 
-            //Assert
+            // Assert
             _rdoFilter.Verify(x => x.GetAllViewableRdosAsync(), Times.Once);
         }
 
         [Test]
         public async Task GetAllViewableRdos_ShouldNotReturnFromCache_WhenCacheIsExpired()
         {
-            //Arrange 
+            // Arrange
             int workspaceId = 2;
             int userId = 3;
 
@@ -104,19 +103,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _sut.ViewableRdosCacheSlidingExpirationTimeout = TimeSpan.FromMilliseconds(1);
 
-            //Act
+            // Act
             _sut.GetAllViewableRdos();
             await Task.Delay(TimeSpan.FromMilliseconds(5));
             _sut.GetAllViewableRdos();
 
-            //Assert
+            // Assert
             _rdoFilter.Verify(x => x.GetAllViewableRdosAsync(), Times.Exactly(2));
         }
 
         [Test]
         public void GetAllViewableRdos_ShouldNotReturnFromCache_WhenWorkspaceIsDifferent()
         {
-            //Arrange 
+            // Arrange
             int firstWorkspaceId = 2;
             int secondWorkspaceId = 3;
             int userId = 9;
@@ -124,19 +123,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _caseServiceContext.SetupGet(x => x.WorkspaceID).Returns(firstWorkspaceId);
             _caseServiceContext.SetupGet(x => x.WorkspaceUserID).Returns(userId);
 
-            //Act
+            // Act
             _sut.GetAllViewableRdos();
             _caseServiceContext.SetupGet(x => x.WorkspaceID).Returns(secondWorkspaceId);
             _sut.GetAllViewableRdos();
 
-            //Assert
+            // Assert
             _rdoFilter.Verify(x => x.GetAllViewableRdosAsync(), Times.Exactly(2));
         }
 
         [Test]
         public void GetAllViewableRdos_ShouldNotReturnFromCache_WhenUserIdIsDifferent()
         {
-            //Arrange 
+            // Arrange
             int workspaceId = 2;
             int firstUserId = 9;
             int secondUserId = 10;
@@ -144,19 +143,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _caseServiceContext.SetupGet(x => x.WorkspaceID).Returns(workspaceId);
             _caseServiceContext.SetupGet(x => x.WorkspaceUserID).Returns(firstUserId);
 
-            //Act
+            // Act
             _sut.GetAllViewableRdos();
             _caseServiceContext.SetupGet(x => x.WorkspaceUserID).Returns(secondUserId);
             _sut.GetAllViewableRdos();
 
-            //Assert
+            // Assert
             _rdoFilter.Verify(x => x.GetAllViewableRdosAsync(), Times.Exactly(2));
         }
 
         [Test]
         public void Get_ShouldReturnRdoFilter()
         {
-            //Arrange
+            // Arrange
             const int id = 1234;
             var expectedObject = new ObjectTypeDTO
             {
@@ -165,11 +164,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             };
             _objectTypeRepository.Setup(x => x.GetObjectType(id)).Returns(expectedObject);
 
-            //Act
+            // Act
             HttpResponseMessage response = _sut.Get(id);
             ObjectTypeDTO actualResult = ExtractObjectTypeFromResponse(response);
 
-            //Assert
+            // Assert
             Assert.NotNull(actualResult);
             Assert.AreEqual(expectedObject.Name, actualResult.Name);
             Assert.AreEqual(expectedObject.DescriptorArtifactTypeId, actualResult.DescriptorArtifactTypeId);
@@ -178,10 +177,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void GetDefaultRdoTypeId_ShouldReturnDefaultRdoTypeId()
         {
-            //Act
+            // Act
             HttpResponseMessage response = _sut.GetDefaultRdoTypeId();
-            
-            //Assert
+
+            // Assert
             var objectContent = response.Content as ObjectContent;
             Assert.NotNull(objectContent?.Value);
             var result = (int)objectContent?.Value;
@@ -219,7 +218,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         {
             var objectContent = response.Content as ObjectContent;
             dynamic value = objectContent?.Value;
-            if(value == null) { return null;}
+            if (value == null) { return null;}
             string name = value.name;
             var descriptorArtifactTypeId = (int)value.value;
 

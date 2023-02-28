@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
     {
         private const int _WORKSPACE_ID = 100;
         private const int _INTEGRATION_POINT_ID = 200;
-
         private IViewErrorsPermissionValidator _permissionValidator;
         private IIntegrationPointService _integrationPointService;
         private IJobHistoryManager _jobHistoryManager;

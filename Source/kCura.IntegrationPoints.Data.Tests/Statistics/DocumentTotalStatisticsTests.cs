@@ -14,11 +14,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     public class DocumentTotalStatisticsTests : TestBase
     {
         private const int _WORKSPACE_ID = 237273;
-
         private IAPILog _logger;
         private IHelper _helper;
         private IRelativityObjectManager _relativityObjectManager;
-
         private DocumentTotalStatistics _instance;
 
         public override void SetUp()

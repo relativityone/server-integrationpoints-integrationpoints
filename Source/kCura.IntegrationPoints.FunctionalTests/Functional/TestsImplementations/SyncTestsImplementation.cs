@@ -6,7 +6,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
     internal class SyncTestsImplementation
     {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-
         private SyncTestsImplementationTemplate _testImplementation;
 
         public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)

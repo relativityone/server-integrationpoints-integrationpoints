@@ -17,11 +17,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
     public class ProductionManagerTests
     {
         private kCura.IntegrationPoints.Core.Managers.IProductionManager _sut;
-
         private IRepositoryFactory _repositoryFactory;
         private IProductionRepository _productionRepository;
         private IAPILog _logger;
-
         private const int _WORKSPACE_ARTIFACT_ID = 101810;
         private const int _PRODUCTION_ARTIFACT_ID = 987654;
 
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void ItShouldRetrieveProduction()
         {
-            // Arange 
+            // Arange
             const string expectedArtifactId = "123456";
             const string expectedDisplayName = "expectedDisplayName";
             var production = new ProductionDTO()
@@ -51,14 +49,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             };
             _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
 
-            // Act 
+            // Act
             ProductionDTO actual = _sut.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
             // Assert
             Assert.That(actual.ArtifactID, Is.EqualTo(expectedArtifactId));
             Assert.That(actual.DisplayName, Is.EqualTo(expectedDisplayName));
         }
-
 
         [Test]
         public void ItShouldNotRetrieveAndThrowException()
@@ -96,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             Assert.Throws<Exception>(() => _sut.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
                 "Unable to create production");
         }
-        
+
         [Test]
         public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerThrowsException()
         {
@@ -108,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             // assert
             Assert.IsFalse(result);
         }
-        
+
         [Test]
         public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProduction()
         {
@@ -139,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             // assert
             Assert.IsFalse(result);
         }
-        
+
         [Test]
         public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerReturnsEmptyList()
         {
@@ -235,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             // Assert
             Assert.IsTrue(result);
         }
-        
+
         private List<ProductionDTO> GetProductionDtos()
         {
             List<ProductionDTO> productionsDtos = new List<ProductionDTO>

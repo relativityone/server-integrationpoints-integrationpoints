@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
             {
                 ArtifactID = artifactID,
                 FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
-                    WorkspaceFieldsConstants.NAME_FIELD, 
+                    WorkspaceFieldsConstants.NAME_FIELD,
                     nameFieldValue)
             };
 
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
             {
                 ArtifactID = artifactID,
                 FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
-                    WorkspaceFieldsConstants.NAME_FIELD, 
+                    WorkspaceFieldsConstants.NAME_FIELD,
                     value: 12412)
             };
 
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Converters
             {
                 ArtifactID = artifactID,
                 FieldValues = CreateFieldValuePairsWithGivenFieldInTheMiddle(
-                    WorkspaceFieldsConstants.NAME_FIELD, 
+                    WorkspaceFieldsConstants.NAME_FIELD,
                     value: null)
             };
 

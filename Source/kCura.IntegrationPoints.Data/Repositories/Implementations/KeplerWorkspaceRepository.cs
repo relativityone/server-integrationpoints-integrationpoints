@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public KeplerWorkspaceRepository(IHelper helper, IServicesMgr servicesMgr, IRelativityObjectManager relativityObjectManager)
         {
-
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<KeplerWorkspaceRepository>();
             _relativityObjectManager = relativityObjectManager;
             _servicesMgr = servicesMgr;

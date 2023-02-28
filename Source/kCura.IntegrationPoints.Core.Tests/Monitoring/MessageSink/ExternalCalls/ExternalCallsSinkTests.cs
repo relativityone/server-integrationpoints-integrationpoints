@@ -17,17 +17,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
         private IAPILog _logger;
         private ExternalCallsSink _sut;
         private IMetricsManager _apmManager;
-
         private const string _BUCKET_EXTERNALL_CALL = "IntegrationPoints.Performance.ExternalCall";
         private const string _BUCKET_EXTERNALL_CALL_JOB_SUMMARY = "IntegrationPoints.Performance.ExternalCall.Summary";
-
         private readonly InstrumentationServiceCallContext _firstCallContextForFirstService = new InstrumentationServiceCallContext("st", "sn", "on");
         private readonly InstrumentationServiceCallContext _secondCallContextForFirstService = new InstrumentationServiceCallContext("st", "sn2", "on2");
         private readonly InstrumentationServiceCallContext _firstCallContextForSecondService = new InstrumentationServiceCallContext("st3", "sn", "on");
-
         private readonly InstrumentationJobContext _firstJobContext = new InstrumentationJobContext(35454, Guid.NewGuid().ToString(), 4342);
         private readonly InstrumentationJobContext _secondJobContext = new InstrumentationJobContext(5435435, Guid.NewGuid().ToString(), 312321);
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -52,8 +49,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
 
             // assert
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL, 
-                callMessage.Duration, 
+                _BUCKET_EXTERNALL_CALL,
+                callMessage.Duration,
                 Arg.Is<IMetricMetadata>(x => ValidateSuccessMetricMessage(x, callMessage)));
         }
 
@@ -184,8 +181,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
 
             // assert
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY, 
-                callMessage.Duration, 
+                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
+                callMessage.Duration,
                 Arg.Is<IMetricMetadata>(x => ValidateMessageCorrelationId(x, callMessage.CorrelationID)));
         }
 
@@ -208,12 +205,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
 
             // assert
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL, 
-                firstCallMessage.Duration, 
+                _BUCKET_EXTERNALL_CALL,
+                firstCallMessage.Duration,
                 Arg.Is<IMetricMetadata>(x => ValidateSuccessMetricMessage(x, firstCallMessage)));
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL, 
-                secondCallMessage.Duration, 
+                _BUCKET_EXTERNALL_CALL,
+                secondCallMessage.Duration,
                 Arg.Is<IMetricMetadata>(x => ValidateSuccessMetricMessage(x, secondCallMessage)));
         }
 
@@ -243,8 +240,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
 
             // assert
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY, 
-                callMessage.Duration, 
+                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
+                callMessage.Duration,
                 Arg.Is<IMetricMetadata>(x => ValidateMessageCorrelationId(x, callMessage.CorrelationID)));
         }
 
@@ -384,8 +381,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
             // assert
             int expectedDuration = firstCallDuration + thirdCallDuration;
             _apmManager.Received().LogCount(
-                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY, 
-                expectedDuration, 
+                _BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
+                expectedDuration,
                 Arg.Is<IMetricMetadata>(x=>ValidateSummaryMessage(x, _firstCallContextForFirstService.ServiceType, 2, expectedDuration)));
         }
 

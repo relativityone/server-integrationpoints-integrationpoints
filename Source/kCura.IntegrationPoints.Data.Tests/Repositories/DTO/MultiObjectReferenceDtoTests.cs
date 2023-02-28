@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
         [TestCase(new[] { 1, 2, 3, 4, 5 })]
         public void ObjectReferences_ShouldReturnArrayWhenCollectionConstructorWasUsed(IReadOnlyCollection<int> identifiers)
         {
-            // arrange 
+            // arrange
             var sut = new MultiObjectReferenceDto(identifiers);
 
             // act
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.DTO
         [TestCase(new[] { 1, 2, 3, 4, 5 })]
         public void Value_ShouldReturnArrayWhenCollectionConstructorWasUsed(IReadOnlyCollection<int> identifiers)
         {
-            // arrange 
+            // arrange
             var sut = new MultiObjectReferenceDto(identifiers);
 
             // act

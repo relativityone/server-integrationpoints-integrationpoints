@@ -21,10 +21,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private readonly IAPILog _logger;
 
         public FieldRepository(
-            IServicesMgr servicesMgr, 
+            IServicesMgr servicesMgr,
             IHelper helper,
             IFoundationRepositoryFactory foundationRepositoryFactory,
-            IExternalServiceInstrumentationProvider instrumentationProvider, 
+            IExternalServiceInstrumentationProvider instrumentationProvider,
             int workspaceArtifactId)
         {
             _instrumentationProvider = instrumentationProvider;
@@ -54,7 +54,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public int CreateMultiObjectFieldOnDocument(string name, int associatedObjectTypeDescriptorId)
         {
-
             try
             {
                 using (var fieldManager = _servicesMgr.CreateProxy<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser))

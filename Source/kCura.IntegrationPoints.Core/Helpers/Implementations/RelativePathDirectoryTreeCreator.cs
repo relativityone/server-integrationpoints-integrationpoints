@@ -13,10 +13,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
         private readonly IDirectoryTreeCreator<TTreeItem> _directoryTreeCreator;
         private readonly IDataTransferLocationService _dataTransferLocationService;
-
         public const string FILESHARE_PLACEHOLDER_PREFIX = @".\";
 
-        #endregion //Fields
+        #endregion // Fields
 
         #region Constructors
 
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _dataTransferLocationService = dataTransferLocationService;
         }
 
-        #endregion //Constructors
+        #endregion // Constructors
 
         #region Methods
 
@@ -36,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             string rootPath = _dataTransferLocationService.GetWorkspaceFileLocationRootPath(workspaceId);
             string defaultRelativePathForProviderType = _dataTransferLocationService.GetDefaultRelativeLocationFor(integrationPointTypeIdentifier);
 
-            string path = Path.Combine(rootPath, String.IsNullOrWhiteSpace(relativePath) ? defaultRelativePathForProviderType : relativePath);
+            string path = Path.Combine(rootPath, string.IsNullOrWhiteSpace(relativePath) ? defaultRelativePathForProviderType : relativePath);
 
             List<TTreeItem> treeItems = _directoryTreeCreator.GetChildren(path, isRoot, includeFiles);
             // we need to remove workspace fileshare uri path part and leave only relative path
@@ -66,6 +65,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             return url.Replace(rootPath, string.Empty).TrimStart('\\');
         }
 
-        #endregion //Methods
+        #endregion // Methods
     }
 }

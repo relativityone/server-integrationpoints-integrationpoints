@@ -28,13 +28,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTestCase("a548b672-bf83-4fe7-acf9-da3c6b836707", SourceProviders.IMPORTLOADFILE)]
         public async Task GetSourceProviderArtifactIdAsync_ShouldReturnCorrectValues(string sourceProviderGuidIdentifier)
         {
-            //Arrange           
+            // Arrange
             Models.SourceProviderTest expectedArtifactId = SourceWorkspace.SourceProviders.Where(x => x.Identifier == sourceProviderGuidIdentifier).First();
 
-            //Act
+            // Act
             int result = await _sut.GetSourceProviderArtifactIdAsync(SourceWorkspace.ArtifactId, sourceProviderGuidIdentifier).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().Be(expectedArtifactId.ArtifactId);
 
         }
@@ -43,13 +43,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTestCase("166f7a42-e511-4e49-ae14-361410afc4e8", DestinationProviders.RELATIVITY)]
         public async Task GetDestinationProviderArtifactIdAsync_ShouldReturnCorrectValues(string destinationProviderGuidIdentifier)
         {
-            //Arrange           
+            // Arrange
             Models.DestinationProviderTest expectedArtifactId = SourceWorkspace.DestinationProviders.Where(x => x.Identifier == destinationProviderGuidIdentifier).First();
 
-            //Act
+            // Act
             int result = await _sut.GetDestinationProviderArtifactIdAsync(SourceWorkspace.ArtifactId, destinationProviderGuidIdentifier).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().Be(expectedArtifactId.ArtifactId);
 
         }
@@ -57,9 +57,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("5bd58099-643c-4244-948f-b630e13881f1")]
         public async Task GetSourceProviders_ShouldReturnCorrectValues()
         {
-            //Arrange
+            // Arrange
             IList<ProviderModel> expected = new List<ProviderModel>();
-            foreach(var x in SourceWorkspace.SourceProviders)
+            foreach (var x in SourceWorkspace.SourceProviders)
             {
                 expected.Add(new ProviderModel
                 {
@@ -68,10 +68,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 });
             }
 
-            //Act
+            // Act
             IList<ProviderModel> result = await _sut.GetSourceProviders(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(expected.Count);
             result.ShouldAllBeEquivalentTo(expected);

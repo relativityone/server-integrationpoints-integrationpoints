@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
     public class NameValidator : IValidator
     {
         private readonly INonValidCharactersValidator _nonValidCharactersValidator;
+
         public string Key => Constants.IntegrationPointProfiles.Validation.NAME;
 
         public NameValidator(INonValidCharactersValidator nonValidCharactersValidator)

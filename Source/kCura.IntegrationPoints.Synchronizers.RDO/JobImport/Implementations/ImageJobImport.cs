@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         private readonly IAPILog _logger;
         private readonly IImportSettingsBaseBuilder<ImageSettings> _builder;
         private readonly IDataReader _sourceData;
+
         public IDataTransferContext Context { get; set; }
 
         public ImageJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<ImageSettings> builder, IDataTransferContext context, IHelper helper) :
@@ -40,6 +41,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         }
 
         public override event OnErrorEventHandler OnError;
+
         public override event OnMessageEventHandler OnMessage;
 
         protected internal override ImageImportBulkArtifactJob CreateJob()

@@ -7,7 +7,7 @@ namespace Relativity.IntegrationPoints.Tests.Common.LDAP.TestData
     {
         public JumpCloudUsersTestData() : base(nameof(JumpCloudUsersTestData), "uid")
         {
-            AllProperties = new []
+            AllProperties = new[]
             {
                 "cn",
                 "gidnumber",

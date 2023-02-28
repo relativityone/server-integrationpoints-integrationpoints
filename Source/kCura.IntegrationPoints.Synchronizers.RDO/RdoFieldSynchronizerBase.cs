@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private HashSet<string> _ignoredList;
         private IImportAPI _api;
         private string _webApiPath;
-
         private readonly IAPILog _logger;
         private readonly IImportApiFactory _factory;
         protected readonly IRelativityFieldQuery FieldQuery;
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             get
             {
-                // fields don't have any space in between words 
+                // fields don't have any space in between words
                 if (_ignoredList == null)
                 {
                     _ignoredList = new HashSet<string>
@@ -58,6 +57,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 }
                 return _webApiPath;
             }
+
             protected set { _webApiPath = value; }
         }
 
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             _logger.LogInformation("Attempting to retrieve Relativity fields.");
         }
-        
+
         #endregion
     }
 }

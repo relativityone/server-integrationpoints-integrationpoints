@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         private Mock<IDocumentRepository> _documentRepositoryMock;
         private Mock<IMassUpdateHelper> _massUpdateHelperMock;
         private Mock<IScratchTableRepository> _documentsToTagRepositoryMock;
-
         private SourceDocumentsTagger _sut;
         private const int _DESTINATION_WORKSPACE_INSTANCE_ID = 1357475;
         private const int _JOB_HISTORY_INSTANCE_ID = 1357475;
@@ -45,46 +44,46 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         [Test]
         public void Constructor_ShouldThrowWhenDocumentRepositoryIsNull()
         {
-            //act
+            // act
             Action action = () => new SourceDocumentsTagger(
                 documentRepository: null,
                 logger: _loggerMock.Object,
                 massUpdateHelper: _massUpdateHelperMock.Object);
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
         public void Constructor_ShouldThrowWhenLoggerIsNull()
         {
-            //act
+            // act
             Action action = () => new SourceDocumentsTagger(
                 _documentRepositoryMock.Object,
                 logger: null,
                 massUpdateHelper: _massUpdateHelperMock.Object);
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
         public void Constructor_ShouldThrowWhenMassUpdateHelperIsNull()
         {
-            //act
+            // act
             Action action = () => new SourceDocumentsTagger(
                 _documentRepositoryMock.Object,
                 _loggerMock.Object,
                 massUpdateHelper: null);
 
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>();
         }
 
         [Test]
         public void ShouldRethrowMassUpdateHelperException()
         {
-            //arrange
+            // arrange
             var massUpdateException = new InvalidOperationException();
             _massUpdateHelperMock
                 .Setup(
@@ -93,22 +92,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                         It.IsAny<FieldUpdateRequestDto[]>(),
                         It.IsAny<IDocumentRepository>()))
                 .Throws(massUpdateException);
-            
-            //act
+
+            // act
             Func<Task> action = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                 _documentsToTagRepositoryMock.Object,
                 _DESTINATION_WORKSPACE_INSTANCE_ID,
                 _JOB_HISTORY_INSTANCE_ID);
-            
-            //assert
+
+            // assert
             action.ShouldThrow<InvalidOperationException>().Which.Should().Be(massUpdateException);
         }
 
         [Test]
         public async Task ShouldCallMassUpdateHelperWithProperArguments()
         {
-
-            //act
+            // act
             await _sut
                 .TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                     _documentsToTagRepositoryMock.Object,
@@ -116,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                     _JOB_HISTORY_INSTANCE_ID)
                 .ConfigureAwait(false);
 
-            //assert
+            // assert
             _massUpdateHelperMock
                 .Verify(
                     h => h.UpdateArtifactsAsync(
@@ -129,15 +127,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         [Test]
         public void ShouldThrowWhenDocumentsToTagRepositoryIsNull()
         {
-            //act
+            // act
             Func<Task> action = () => _sut.TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(
                 documentsToTagRepository: null,
                 destinationWorkspaceInstanceID: _DESTINATION_WORKSPACE_INSTANCE_ID,
                 jobHistoryInstanceID: _JOB_HISTORY_INSTANCE_ID);
-            //assert
+            // assert
             action.ShouldThrow<ArgumentNullException>();
         }
-
 
         private bool AreFieldsValid(FieldUpdateRequestDto[] fieldUpdateRequestDtos)
         {
@@ -146,7 +143,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                 return false;
             }
 
-            
             bool isFieldUpdateRequestValidForJobHistoryGuid = IsFieldUpdateRequestValid(
                 fieldUpdateRequestDtos,
                 DocumentFieldGuids.JobHistoryGuid,

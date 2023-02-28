@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Email.Tests.Extensions
             // assert
             string expectedError = $"{_ERROR_HEADER}. Errors: {validationError}";
             either.Match(
-                Right: x => Assert.Fail("because it should be left when validation has failed"), 
+                Right: x => Assert.Fail("because it should be left when validation has failed"),
                 Left: error => error.Should().Be(expectedError)
             );
         }

@@ -17,9 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.SecretStore.Implementation
         private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
         private Mock<IExternalServiceInstrumentation> _instrumentationMock;
         private Mock<IExternalServiceInstrumentationStarted> _startedInstrumentationMock;
-
         private SecretStoreFacadeInstrumentationDecorator _sut;
-
         private const string _TEST_SECRET_STORE_PATH = "testPath/101/202";
 
         [SetUp]

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNami
                 [ExportNativeWithFilenameFrom.Identifier] = new IdentifierExportFileNameProvider(exportContext.ExportFile) ,
                 [ExportNativeWithFilenameFrom.Production] = new ProductionExportFileNameProvider(exportContext.ExportFile, nameTextAndNativesAfterBegBates) ,
                 [ExportNativeWithFilenameFrom.Custom] = new CustomFileNameProvider(
-                    exportContext.Settings.FileNameParts, 
+                    exportContext.Settings.FileNameParts,
                     fileNamePartNameContainer: new FileNamePartProviderContainer(),
                     appendOriginalFileName: false)
             };

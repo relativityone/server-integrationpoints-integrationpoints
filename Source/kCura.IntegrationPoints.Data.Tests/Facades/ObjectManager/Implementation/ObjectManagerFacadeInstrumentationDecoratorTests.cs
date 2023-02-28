@@ -24,7 +24,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Facades.ObjectManager.Implementatio
         private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
         private Mock<IExternalServiceInstrumentation> _instrumentationMock;
         private Mock<IExternalServiceInstrumentationStarted> _startedInstrumentationMock;
-
         private ObjectManagerFacadeInstrumentationDecorator _sut;
 
         [SetUp]

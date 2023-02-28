@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
         private readonly Guid _progressObjectType = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
         private readonly Guid _batchObjectType = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
         private readonly Guid _syncConfigurationObjectType = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
-
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
 

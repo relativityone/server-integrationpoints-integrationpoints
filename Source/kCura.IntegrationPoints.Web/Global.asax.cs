@@ -24,7 +24,7 @@ using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web
 {
-    // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
+    // Note: For instructions on enabling IIS6 or IIS7 classic mode,
     // visit http://go.microsoft.com/?LinkId=9394801
 
     public class MvcApplication : HttpApplication
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Web
 
             _container.Install(
                 FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory,
-                    "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
+                    "kCura.IntegrationPoints*.dll"))); // <--- DO NOT CHANGE THIS LINE
 
             ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
             GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator),

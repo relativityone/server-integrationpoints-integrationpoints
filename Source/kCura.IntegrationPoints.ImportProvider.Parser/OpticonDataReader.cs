@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             _opticonFileReader = reader;
             _jobStopManager = jobStopManager;
-            
+
             _isClosed = false;
             _documentId = 0;
 
@@ -120,13 +120,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override bool Read()
         {
-            if(!_opticonFileReader.HasMoreRecords)
+            if (!_opticonFileReader.HasMoreRecords)
             {
                 return false;
             }
 
             ImageRecord record = ReadCurrentRecord();
-            if(_jobStopManager?.ShouldDrainStop == true && record.IsNewDoc)
+            if (_jobStopManager?.ShouldDrainStop == true && record.IsNewDoc)
             {
                 return false;
             }

@@ -22,12 +22,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             return new ActionCommand(() =>
             {
-                if(!_relativity.JobTrackerResourceTables.ContainsKey(tableName))
+                if (!_relativity.JobTrackerResourceTables.ContainsKey(tableName))
                 {
                     _relativity.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
                 }
 
-                if(!_relativity.JobTrackerResourceTables[tableName].Exists(x => x.JobId == jobId))
+                if (!_relativity.JobTrackerResourceTables[tableName].Exists(x => x.JobId == jobId))
                 {
                     _relativity.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = jobId });
                 }
@@ -61,8 +61,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             {
                 return new ValueReturnQuery<int>(0);
             }
-            
-            if(isBatchFinished)
+
+            if (isBatchFinished)
             {
                 JobTrackerTest jobBatch = _relativity.JobTrackerResourceTables[tableName].Single(x => x.JobId == jobId);
                 jobBatch.Completed = true;
@@ -72,7 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             {
                 result = 1;
             }
-            
+
             return new ValueReturnQuery<int>(result);
         }
     }

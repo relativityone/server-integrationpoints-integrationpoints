@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private List<int> _relativityDestinationProviders;
         private List<int> _integrationPointTypesList;
         private const int _WORKSPACE_ID = 100111;
-
         private const int _RELATIVITY_DESTINATION_PROVIDER_ID = 500111;
         private const int _RELATIVITY_SOURCE_PROVIDER_ID = 500222;
         private const int _NON_RELATIVITY_DESTINATION_PROVIDER_ID = 600111;
@@ -59,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
                 .Setup(x => x.QueryAsync<IntegrationPointProfile>(
                     It.IsAny<QueryRequest>(), false, It.IsAny<ExecutionIdentity>()))
                 .ReturnsAsync(_allProfiles);
-            
+
             _relativityObjectManagerMock
                 .Setup(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(),
                     It.IsAny<ExecutionIdentity>()))
@@ -218,7 +217,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             // Assert
             AssertNoArtifactIDsInCollection(action);
         }
-        
+
         [Test]
         public void GetIntegrationPointExportTypeArtifactIDAsync_ShouldFail_WhenOneOrMoreIntegrationPointExportTypeArtifactID([Values(1, 2)] int integrationPointTypesCount)
         {

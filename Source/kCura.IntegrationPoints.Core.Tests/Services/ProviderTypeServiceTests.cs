@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Mock<IRelativityObjectManager> objectManagerFake = new Mock<IRelativityObjectManager>();
             objectManagerFake.Setup(x => x.Read<SourceProvider>(It.IsAny<int>(), It.IsAny<ExecutionIdentity>()))
                 .Returns(new SourceProvider() { Identifier = sourceProviderGuid, Name = sourceProviderName });
-            
+
             objectManagerFake.Setup(x => x.Read<DestinationProvider>(It.IsAny<int>(), It.IsAny<ExecutionIdentity>()))
                 .Returns(new DestinationProvider() { Identifier = destinationProviderGuid, Name = destinationProviderName });
 

@@ -4,7 +4,7 @@ using Relativity;
 namespace kCura.IntegrationPoints.Domain.Models
 {
     /// <summary>
-    /// A data transfer object class used representing a Relativity field. 
+    /// A data transfer object class used representing a Relativity field.
     /// </summary>
     [Serializable]
     public class ArtifactFieldDTO

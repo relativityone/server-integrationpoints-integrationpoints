@@ -6,9 +6,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     public class AgentTest
     {
         public int ArtifactId { get; set; }
+
         public int AgentTypeId { get; set; }
+
         public string Name { get; set; }
+
         public string FullNamespace { get; set; }
+
         public Guid AgentGuid { get; set; }
 
         public AgentTest()

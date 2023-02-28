@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         {
             IDataTransferLocationService dtService;
 
-            //if the IServiceContextHelper has not been registered, create a mostly empty one that just has the workspaceID
+            // if the IServiceContextHelper has not been registered, create a mostly empty one that just has the workspaceID
             if (!_container.Kernel.HasComponent(typeof(IServiceContextHelper)))
             {
                 _container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(

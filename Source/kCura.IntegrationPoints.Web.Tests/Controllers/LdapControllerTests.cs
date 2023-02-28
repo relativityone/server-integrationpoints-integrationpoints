@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private const string _SERIALIZED_MODEL = "{ConnectionPath:'oiler.corp/OU=Employees,OU=Accounts,OU=oiler,DC=oiler,DC=oiler', ConnectionAuthenticationType:32}";
         private const string _CONNECTION_PATH = "oiler.corp/OU=Employees,OU=Accounts,OU=oiler,DC=oiler,DC=oiler";
 
-        private ICPHelper _helperMock; 
+        private ICPHelper _helperMock;
         private ISerializer _serializerMock;
         private ILDAPSettingsReader _reader;
         private ILDAPServiceFactory _ldapServiceFactory;
@@ -37,10 +37,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [Test]
         public void ItShouldGetViewFields()
         {
-            //ARRANGE
+            // ARRANGE
             ILDAPSettingsReader readerMock = Substitute.For<ILDAPSettingsReader>();
             _subjectUnderTest = new LdapController(_helperMock, _reader, _serializerMock, _ldapServiceFactory);
-
 
             var settings = new LDAPSettings()
             {
@@ -52,10 +51,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             readerMock.GetSettings(_SERIALIZED_MODEL).Returns(settings);
             _serializerMock.Serialize(Arg.Any<LdapProviderSummaryPageSettingsModel>()).Returns(_SERIALIZED_MODEL);
 
-            //ACT
+            // ACT
             var result = _subjectUnderTest.GetViewFields(_SERIALIZED_MODEL) as OkNegotiatedContentResult<string>;
 
-            //ASSERT
+            // ASSERT
             string value = result.Content;
             Assert.AreEqual(_SERIALIZED_MODEL, value);
             _serializerMock.Received(1).Serialize(Arg.Is<LdapProviderSummaryPageSettingsModel>(arg =>

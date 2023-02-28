@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
     {
         T Execute<T>(Func<T> functionToExecute);
         Task<T> ExecuteAsync<T>(Func<Task<T>> functionToExecute);
+
         void Execute(Action actionToExecute);
     }
 }

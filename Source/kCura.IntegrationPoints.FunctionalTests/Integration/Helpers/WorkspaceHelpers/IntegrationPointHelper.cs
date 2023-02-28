@@ -77,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 DestinationArtifactTypeId = (int) ArtifactType.Document,
                 DestinationFolderArtifactId = destinationFolder.ArtifactId,
                 CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"//some/service/url/relativity"
+                WebServiceURL = @"// some/service/url/relativity"
             });
             integrationPoint.LogErrors = false;
             integrationPoint.EmailNotificationRecipients = string.Empty;
@@ -126,7 +126,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 ArtifactTypeId = artifactTypeId,
                 DestinationArtifactTypeId = artifactTypeId,
                 CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"//some/service/url/relativity"
+                WebServiceURL = @"// some/service/url/relativity"
             });
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
             integrationPoint.EnableScheduler = true;
@@ -184,7 +184,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 ArtifactTypeId = (int) ArtifactType.Document,
                 DestinationFolderArtifactId = destinationFolder.ArtifactId,
                 CaseArtifactId = Workspace.ArtifactId,
-                WebServiceURL = @"//some/service/url/relativity"
+                WebServiceURL = @"// some/service/url/relativity"
             });
 
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
@@ -274,7 +274,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 : Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
-
             SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP);
 
@@ -305,7 +304,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 EntityManagerFieldContainsLink = linkEntityManagers,
                 CaseArtifactId = Workspace.ArtifactId,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                WebServiceURL = @"//some/service/url/relativity"
+                WebServiceURL = @"// some/service/url/relativity"
             };
 
             integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);

@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             IExternalServiceSimpleInstrumentation simpleInstrumentation =
                 _instrumentationProvider.CreateSimple(
-                    ExternalServiceTypes.KEPLER, 
+                    ExternalServiceTypes.KEPLER,
                     nameof(IResourceServerManager),
                     nameof(IResourceServerManager.ReadCaseInfo));
             try

@@ -80,33 +80,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetFields_FieldsContainsFirstName_MakesFieldRequired()
         {
-            //ARRANGE
+            // ARRANGE
             List<RelativityObject> fields = PrepareFields("Test1", EntityFieldGuids.FirstName);
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
-            //ACT
+            // ACT
             RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
             IEnumerable<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
-
-            //ASSERT
+            // ASSERT
             FieldEntry field = actualFields.First(x => x.DisplayName.Equals("Test1"));
             Assert.AreEqual(true, field.IsRequired);
         }
 
-
         [Test]
         public void GetFields_FieldsContainsLastName_MakesFieldRequired()
         {
-            //ARRANGE
+            // ARRANGE
             List<RelativityObject> fields = PrepareFields("Test1", EntityFieldGuids.LastName);
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
-            //ACT
+            // ACT
             RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
             IEnumerable<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
-            
-            //ASSERT
+
+            // ASSERT
             FieldEntry field = actualFields.First(x => x.DisplayName.Equals("Test1"));
             Assert.AreEqual(true, field.IsRequired);
         }
@@ -114,15 +112,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetFields_FieldsContainsUniqueID_OnlyUniqueIDSetForIdentifier()
         {
-            //ARRANGE
+            // ARRANGE
             List<RelativityObject> fields = PrepareFields("Test1", EntityFieldGuids.UniqueID);
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
-            //ACT
+            // ACT
             RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
             List<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings)).ToList();
-            
-            //ASSERT
+
+            // ASSERT
             int idCount = actualFields.Count(x => x.IsIdentifier);
             Assert.AreEqual(1, idCount);
             FieldEntry field = actualFields.Single(x => x.DisplayName.Equals("Test1"));

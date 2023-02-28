@@ -16,7 +16,9 @@ namespace kCura.IntegrationPoints.Domain.Models
         }
 
         public List<string> Header { get; private set; }
+
         public List<List<string>> Data { get; private set; }
+
         public List<int> ErrorRows { get; private set; }
     }
 }

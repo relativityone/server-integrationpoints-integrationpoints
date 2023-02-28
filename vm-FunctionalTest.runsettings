@@ -1,0 +1,23 @@
+<RunSettings>
+  <TestRunParameters>
+    <Parameter name="SystemTestData" value="SystemTests\SystemTestData" />
+    <Parameter name="PerformRelativityVersionCheck" value="false" />
+    <Parameter name="DocumentImportEnforceWebMode" value="false" />
+    <Parameter name="DocumentImportTimeout" value="300" />
+    <Parameter name="ServerBindingType" value="https" />
+    <Parameter name="SqlServer" value="p-dv-vm-cue3con\EDDSINSTANCE001" />
+    <Parameter name="SqlUsername" value="eddsdbo" />
+    <Parameter name="SqlPassword" value="M@y0rQu1mby2!F0r3v3r" />
+    <Parameter name="RelativityHostAddress" value="p-dv-vm-cue3con" />
+    <Parameter name="AdminUsername" value="relativity.admin@kcura.com" />
+    <Parameter name="AdminPassword" value="Test1234!" />
+    <Parameter name="RestServicesHostAddress" value="p-dv-vm-cue3con" />
+    <Parameter name="RsapiServicesHostAddress" value="p-dv-vm-cue3con" />
+    <Parameter name="WebApiHostAddress" value="p-dv-vm-cue3con" />
+    <Parameter name="RAPDirectory" value="C:\repos\integrationpoints\DevelopmentScripts\..\Artifacts" />
+    <Parameter name="BuildToolsDirectory" value="C:\repos\integrationpoints\DevelopmentScripts\..\buildtools" />
+    <Parameter name="ChromeBinaryLocation" value="C:\repos\integrationpoints\DevelopmentScripts\..\buildtools\Relativity.Chromium.Portable\tools" />
+    <Parameter name="ResultsLocation" value="C:\repos\integrationpoints\DevelopmentScripts\..\Artifacts\Logs" />
+	<Parameter name="web:headless" value="false" />
+  </TestRunParameters>
+</RunSettings>

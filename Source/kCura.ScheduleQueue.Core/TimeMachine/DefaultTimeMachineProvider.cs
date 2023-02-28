@@ -9,6 +9,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
     public class DefaultAgentTimeMachineProvider : AgentTimeMachineProvider
     {
         private string agentKey = string.Empty;
+
         public DefaultAgentTimeMachineProvider()
         {
             Guid agentGuid = Guid.Empty;
@@ -56,20 +57,22 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
             agentKey = string.Format("TimeMachineAgent_{0}", agentGuid.ToString().ToUpperInvariant());
         }
 
-
         private bool _enabled = false;
+
         public override bool Enabled
         {
             get { GetTimeMachineData(); return _enabled; }
         }
 
         private int _workspaceID = -1;
+
         public override int WorkspaceID
         {
             get { GetTimeMachineData(); return _workspaceID; }
         }
 
         private DateTime _utcNow = DateTime.UtcNow;
+
         public override DateTime UtcNow
         {
             get { GetTimeMachineData(); return _utcNow; }
@@ -79,6 +82,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
     public class TimeMachineStruct
     {
         public int CaseID { get; set; }
+
         public DateTime? Date { get; set; }
     }
 }

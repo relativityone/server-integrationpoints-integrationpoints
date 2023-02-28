@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             {
                 return name.Replace(" ", "").ToLowerInvariant();
             }
-            
+
             if (!type.IsAssignableTo<RdoTestBase>())
             {
                 Debugger.Break();

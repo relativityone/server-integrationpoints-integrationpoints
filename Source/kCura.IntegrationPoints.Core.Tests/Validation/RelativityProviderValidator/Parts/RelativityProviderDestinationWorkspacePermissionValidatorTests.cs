@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
         [Test]
         public void ItShouldValidateSavedSearchPermission_WhenDestinationWorkspaceIsAccessible(
-            [Values(true, false)] bool createSavedSearch, 
+            [Values(true, false)] bool createSavedSearch,
             [Values(true, false)] bool canCreateSavedSearch)
         {
             _permissionManager.UserHasArtifactTypePermission(_WORKSPACE_ID, (int)ArtifactType.Search, ArtifactPermission.Create).Returns(canCreateSavedSearch);

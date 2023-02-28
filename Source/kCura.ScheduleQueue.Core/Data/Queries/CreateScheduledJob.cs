@@ -10,7 +10,6 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
     public class CreateScheduledJob : IQuery<DataTable>
     {
         private readonly IQueueDBContext _dbContext;
-
         private readonly int _workspaceId;
         private readonly int _relatedObjectArtifactId;
         private readonly string _taskType;
@@ -24,7 +23,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         private readonly long? _rootJobId;
         private readonly long? _parentJobId;
 
-        public CreateScheduledJob(IQueueDBContext dbContext, 
+        public CreateScheduledJob(IQueueDBContext dbContext,
             int workspaceID,
             int relatedObjectArtifactID,
             string taskType,
@@ -81,7 +80,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             sqlParams.Add(!_parentJobId.HasValue || _parentJobId.Value == 0
                 ? new SqlParameter("@ParentJobID", DBNull.Value)
                 : new SqlParameter("@ParentJobID", _parentJobId.Value));
-            
+
             return _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
         }
     }

@@ -131,7 +131,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 rule = ConvertModelToScheduleRule(dto);
 
-
                 SourceProvider sourceProvider = GetSourceProvider(dto.SourceProvider);
                 DestinationProvider destinationProvider = GetDestinationProvider(dto.DestinationProvider);
                 IntegrationPointType integrationPointType = GetIntegrationPointType(dto.Type);
@@ -143,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     integrationPointType,
                     ObjectTypeGuids.IntegrationPointProfileGuid);
 
-                //save RDO
+                // save RDO
                 profile = ToRdo(dto, choices, rule);
                 if (profile.ArtifactId > 0)
                 {
@@ -270,7 +269,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 ArtifactId = dto.ArtifactId,
                 Name = dto.Name,
-                OverwriteFields = new ChoiceRef(choice.ArtifactID) {Name = choice.Name},
+                OverwriteFields = new ChoiceRef(choice.ArtifactID) {Name = choice.Name },
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,

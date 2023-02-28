@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private List<string> _headers;
         private LDAPSettings _ldapSettings;
         private LDAPDataReader _reader;
-        
+
         [SetUp]
         public void CreateProvider()
         {
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             _reader.GetFloat(7).Should().Be(3.2f);
 
             _reader.GetByte(8).Should().Be(255);
-            
+
             _reader.GetDataTypeName(0).Should().Be("String");
             _reader.GetDataTypeName(8).Should().Be("String");
             _reader.GetFieldType(10).Should().Be(typeof(string));
@@ -277,7 +277,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             _reader.IsClosed.Should().BeTrue();
             _reader.Read().Should().BeFalse();
         }
-
 
         /// <summary>Creates collection of SearchResults used in <see cref="LDAPDataReader"/> constructor</summary>
         /// <remarks>

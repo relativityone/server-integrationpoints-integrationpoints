@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly IObjectTypeRepository _objectTypeRepository;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly ITabService _tabService;
-
         private readonly IWorkspaceContext _workspaceIdProvider;
         private readonly IUserContext _userContext;
 
@@ -35,7 +34,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
         }
 
         protected abstract string ObjectTypeGuid { get; }
+
         protected abstract string ObjectType { get; }
+
         protected abstract string APIControllerName { get; }
 
         public ActionResult Edit(int? artifactId)

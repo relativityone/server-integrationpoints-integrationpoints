@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
     public class ExternalServiceInstrumentationProviderWithJobContext : IExternalServiceInstrumentationProvider
     {
         private InstrumentationJobContext _currentJobContext;
-
         private const bool _DEFAULT_MEASURE_DURATION_OF_EXTERNAL_CALLS = false;
         private readonly IAPILog _logger;
         private readonly IMessageService _messageService;

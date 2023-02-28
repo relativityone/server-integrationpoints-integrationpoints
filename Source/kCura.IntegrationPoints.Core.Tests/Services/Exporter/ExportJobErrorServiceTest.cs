@@ -38,34 +38,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [Test]
         public void OneError_SmallerThanBatchSize_AutoBatchSize1000()
         {
-            //Arrange
+            // Arrange
             _instanceSettingRepository.GetConfigurationValue(_sectionName, _settingName).Returns(String.Empty);
 
-            //Act
+            // Act
             _instance.OnRowError("docIdentifier", "Message");
-            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); //job done
+            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); // job done
 
-            //Assert
+            // Assert
             _scratchTable.Received(1).RemoveErrorDocuments(Arg.Is(_documentIds));
             _instanceSettingRepository.Received(1)
                 .GetConfigurationValue(_sectionName, _settingName);
         }
 
         [Test]
-        public void MultipleErrors_SmallerThanBatchSize_SetBatchSize3000() //do this
+        public void MultipleErrors_SmallerThanBatchSize_SetBatchSize3000() // do this
         {
-            //Arrange
+            // Arrange
             _instanceSettingRepository.GetConfigurationValue(_sectionName, _settingName).Returns("3000");
 
-            //Act
+            // Act
             for (int numErrors = 0; numErrors < 2999; numErrors++)
             {
                 _instance.OnRowError("docIdentifier", "Message");
             }
 
-            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); //job done
+            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); // job done
 
-            //Assert
+            // Assert
             _scratchTable.Received(1).RemoveErrorDocuments(Arg.Is(_documentIds));
             _instanceSettingRepository.Received(1)
                 .GetConfigurationValue(_sectionName, _settingName);
@@ -74,18 +74,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [Test]
         public void MultipleErrors_EqualToBatchSize_SetBatchSize5000()
         {
-            //Arrange
+            // Arrange
             _instanceSettingRepository.GetConfigurationValue(_sectionName, _settingName).Returns("5000");
 
-            //Act
+            // Act
             for (int numErrors = 0; numErrors < 5000; numErrors++)
             {
                 _instance.OnRowError("docIdentifier", "Message");
             }
 
-            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); //job done, should not trigger a flush
+            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); // job done, should not trigger a flush
 
-            //Assert
+            // Assert
             _scratchTable.Received(1).RemoveErrorDocuments(Arg.Is(_documentIds));
             _instanceSettingRepository.Received(1)
                 .GetConfigurationValue(_sectionName, _settingName);
@@ -94,18 +94,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [Test]
         public void MultipleErrors_EqualToBatchSize_ManuallySetMissingBatchSize()
         {
-            //Arrange
+            // Arrange
             _instanceSettingRepository.GetConfigurationValue(_sectionName, _settingName).Returns(String.Empty);
 
-            //Act
+            // Act
             for (int numErrors = 0; numErrors < 1000; numErrors++)
             {
                 _instance.OnRowError("docIdentifier", "Message");
             }
 
-            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); //job done, should not trigger a flush
+            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); // job done, should not trigger a flush
 
-            //Assert
+            // Assert
             _scratchTable.Received(1).RemoveErrorDocuments(Arg.Is(_documentIds));
             _instanceSettingRepository.Received(1)
                 .GetConfigurationValue(_sectionName, _settingName);
@@ -114,18 +114,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [Test]
         public void MultipleErrors_GreaterThanBatchSize_AutoBatchSize()
         {
-            //Arrange
+            // Arrange
             _instanceSettingRepository.GetConfigurationValue(_sectionName, _settingName).Returns("1000");
 
-            //Act
+            // Act
             for (int numErrors = 0; numErrors < 1001; numErrors++)
             {
                 _instance.OnRowError("docIdentifier", "Message");
             }
 
-            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); //job done, errors leftover so a flush is triggered
+            _instance.OnBatchComplete(_dummyDate, _dummyDate, 5, 1); // job done, errors leftover so a flush is triggered
 
-            //Assert
+            // Assert
             _scratchTable.Received(2).RemoveErrorDocuments(Arg.Is(_documentIds));
             _instanceSettingRepository.Received(1)
                 .GetConfigurationValue(_sectionName, _settingName);

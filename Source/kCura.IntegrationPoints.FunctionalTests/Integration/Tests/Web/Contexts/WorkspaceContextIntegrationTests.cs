@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
             _container = CreateIoCContainer();
         }
 
-        [IdentifiedTest("12512dc1-e99d-4585-84e0-a547dfb34df5")]        
+        [IdentifiedTest("12512dc1-e99d-4585-84e0-a547dfb34df5")]
         public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
         {
             // arrange
@@ -55,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
             actualWorkspaceID.Should().Be(requestContextWorkspaceID, "because workspaceId was present in RequestContext");
         }
 
-        [IdentifiedTest("4708e9c8-7e28-414c-815a-db16ffb2e8d2")]        
+        [IdentifiedTest("4708e9c8-7e28-414c-815a-db16ffb2e8d2")]
         public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
         {
             // arrange
@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
             actualWorkspaceID.Should().Be(sessionWorkspaceID, "because session contains this value and RequestContext was empty.");
         }
 
-        [IdentifiedTest("afe02d71-d42b-4db7-96d8-e5f084aa16e7")]        
+        [IdentifiedTest("afe02d71-d42b-4db7-96d8-e5f084aa16e7")]
         public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
         {
             // arrange

@@ -12,10 +12,8 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
     public class TaskParametersBuilderTests
     {
         private TaskParametersBuilder _sut;
-
         private const long _LOAD_FILE_SIZE = 1000;
         private readonly DateTime _LOAD_FILE_MODIFIED_DATE = new DateTime(2020, 1, 1);
-
         private readonly Guid _BATCH_INSTANCE_ID = Guid.NewGuid();
 
         [SetUp]

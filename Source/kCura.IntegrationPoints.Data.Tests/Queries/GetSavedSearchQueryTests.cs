@@ -17,9 +17,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
         private Mock<IServicesMgr> _servicesMgrFake;
         private const int _WORKSPACE_ID = 111;
         private const int _SAVED_SEACH_ID = 222;
-
         private GetSavedSearchQuery _sut;
-        
+
         [SetUp]
         public void SetUp()
         {

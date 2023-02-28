@@ -31,7 +31,5 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             return systemHealthStatistics;
         }
 
-
-
     }
 }

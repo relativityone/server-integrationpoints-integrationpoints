@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private IChoiceService _choiceService;
         private IWorkspaceContext _workspaceIdProvider;
         private IImportApiFacade _importApiFacade;
-
         private HttpConfiguration _configuration;
         private FolderPathController _instance;
 
@@ -64,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [Test]
         public void GetFields_Success()
         {
-            //ARRANGE
+            // ARRANGE
             GetFieldsSharedSetup();
 
             HttpResponseMessage response = _instance.GetFields();
@@ -75,7 +74,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [Test]
         public void GetLongTextFields_Success()
         {
-            //ARRANGE
+            // ARRANGE
             GetFieldsSharedSetup();
 
             HttpResponseMessage response = _instance.GetLongTextFields();
@@ -86,7 +85,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         [Test]
         public void GetChoiceFields_Success()
         {
-            //ARRANGE
+            // ARRANGE
             GetFieldsSharedSetup();
 
             HttpResponseMessage response = _instance.GetChoiceFields();
@@ -102,9 +101,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             var settings = new ImportSettings { WebServiceURL = webServiceUrl };
 
-            var listOfFields = new List<FieldEntry> {new FieldEntry()};
+            var listOfFields = new List<FieldEntry> { new FieldEntry()};
             _choiceService.GetChoiceFields(workspaceId, Arg.Any<int>()).Returns(listOfFields);
-         
+
             IImportAPI importApi = Substitute.For<IImportAPI>();
 
             _config.WebApiPath.Returns(webServiceUrl);
@@ -118,6 +117,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _fieldService.GetAllTextFields(Arg.Any<int>(), Arg.Any<int>()).Returns(new List<FieldEntry>());
             _fieldService.GetLongTextFields(Arg.Any<int>(), Arg.Any<int>()).Returns(new List<FieldEntry>());
         }
-        
+
     }
 }

@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         private readonly IHelper _helper;
 
-        #endregion //Fields
+        #endregion // Fields
 
         #region Constructors
 
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _helper = helper;
         }
 
-        #endregion //Constructors
+        #endregion // Constructors
 
         #region Methods
 

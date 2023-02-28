@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _randomRdoGuid = new Guid("b73de172-aa9c-4f9a-bd1a-947112804f82");
             Dictionary<Guid, int> guidToTypeId = new Dictionary<Guid, int>()
             {
-                {_documentObjectGuid, 10},
+                {_documentObjectGuid, 10 },
                 {_randomRdoGuid, 789456 }
             };
 
@@ -74,8 +74,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _instance.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
 
         }
-
-
 
         [Test]
         public void Get_GoldFlow()

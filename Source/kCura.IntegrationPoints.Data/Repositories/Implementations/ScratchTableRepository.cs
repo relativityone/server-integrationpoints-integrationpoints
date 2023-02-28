@@ -15,16 +15,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
     {
         private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
         private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
-
         private readonly IDocumentRepository _documentRepository;
         private readonly IFieldQueryRepository _fieldQueryRepository;
         private readonly int _workspaceId;
         private readonly IResourceDbProvider _resourceDbProvider;
-
         private readonly IWorkspaceDBContext _caseContext;
         private readonly string _tablePrefix;
         private readonly string _tableSuffix;
-
         private IDataReader _reader;
         private string _docIdentifierFieldName;
         private string _tempTableName;
@@ -184,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             string resourceDBPrepend = GetResourceDBPrepend();
             string sql =
             $@"
-            IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{fullTableName}') 
+            IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{fullTableName}')
             DROP TABLE {resourceDBPrepend}.[{fullTableName}]
             ";
 
@@ -332,7 +329,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             string resourceDBPrepend = GetResourceDBPrepend();
             string sql =
             $@"
-            IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}') 
+            IF EXISTS (SELECT * FROM {schemalessResourceDataBasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{fullTableName}')
             SELECT [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] FROM {resourceDBPrepend}.[{fullTableName}]
             ";
             return sql;

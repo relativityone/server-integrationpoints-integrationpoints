@@ -34,10 +34,10 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanImport_UserHasPermissionToImport_UserPermissionIsTrue()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
-                Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() {new PermissionRef() {PermissionID = 158} }, x)))
+                Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() {PermissionID = 158} }, x)))
                 .Returns(Task.FromResult(new List<PermissionValue>()
                 {
                     new PermissionValue()
@@ -47,21 +47,21 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsTrue(userCanImport, "The user should have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(
-                    x => this.PermissionValuesMatch(new List<PermissionRef>() {new PermissionRef() {PermissionID = 158}}, x)));
+                    x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() {PermissionID = 158}}, x)));
         }
 
         [Test]
         public void UserCanImport_UserDoesNotHavePermissionToImport_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = 158 } }, x)))
@@ -74,10 +74,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanImport, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithSuccess_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = 158 } }, x)))
@@ -101,10 +101,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanImport, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = 158 } }, x)))
@@ -128,10 +128,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanImport, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -142,16 +142,16 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanImport_ServiceReturnsNoPermissions_UserPermissionsIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = 158 } }, x)))
                 .Returns(Task.FromResult(new List<PermissionValue>() {}));
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanImport, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -162,17 +162,17 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanImport_ServiceThrowsException_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(
-                    x => this.PermissionValuesMatch(new List<PermissionRef>() {new PermissionRef() {PermissionID = 158}}, x)))
+                    x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() {PermissionID = 158}}, x)))
                 .Throws(new Exception());
 
-            //ACT
+            // ACT
             bool userCanImport = _instance.UserCanImport();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanImport, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_UserHasPermission_UserPermissionIsTrue()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
@@ -196,10 +196,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsTrue(userCanEditDocuments, "The user should have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_UserDoesNotHavePermission_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
@@ -223,10 +223,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -237,7 +237,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithSuccess_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
@@ -250,10 +250,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
@@ -277,10 +277,10 @@ namespace kCura.IntegrationPoints.Data.Tests
                     }
                 }));
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -291,16 +291,16 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_ServiceReturnsNoPermissions_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
                 .Returns(Task.FromResult(new List<PermissionValue>() { }));
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),
@@ -311,17 +311,17 @@ namespace kCura.IntegrationPoints.Data.Tests
         [Test]
         public void UserCanEditDocuments_ServiceThrowsException_UserPermissionIsFalse()
         {
-            //ARRANGE
+            // ARRANGE
             _permissionManager.GetPermissionSelectedAsync(
                 Arg.Is(WORKSPACE_ID),
                 Arg.Is<List<PermissionRef>>(
                     x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
                 .Throws(new Exception());
 
-            //ACT
+            // ACT
             bool userCanEditDocuments = _instance.UserCanEditDocuments();
 
-            //ASSERT 
+            // ASSERT
             Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
             _helper.GetServicesManager().Received().CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser));
             _permissionManager.Received().GetPermissionSelectedAsync(Arg.Is(WORKSPACE_ID),

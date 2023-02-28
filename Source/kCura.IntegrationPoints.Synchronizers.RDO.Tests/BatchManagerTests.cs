@@ -19,10 +19,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void Add_RaisesOnBatchCreateEvent()
         {
-            //ARRANGE
+            // ARRANGE
             BatchManager batchManager = new BatchManager();
             bool eventFired = false;
-            
+
             batchManager.OnBatchCreate += delegate ( int batchSize )
             {
                 eventFired = true;
@@ -31,10 +31,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             var fileDataToAdd = new Dictionary<string, object>();
             fileDataToAdd.Add("F1", 111);
 
-            //ACT
+            // ACT
             batchManager.Add(fileDataToAdd);
 
-            //ASSERT
+            // ASSERT
             Assert.IsTrue( eventFired );
             Assert.AreEqual(1, batchManager.CurrentSize );
         }
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             BatchManager batchManager = new BatchManager(2);
 
-            //less than 2
+            // less than 2
             batchManager.Add(new Dictionary<string, object>());
             Assert.IsFalse(batchManager.IsBatchFull());
 
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetBatchData_ReturnsDataReaderEquivalentToConfigureTable()
         {
-            //ARRANGE
+            // ARRANGE
             HashSet<string> columnNamesSet = new HashSet<string>() { "F1","F2","F3" };
             IEnumerable<string> columnNames = columnNamesSet;
             var fileData = new Dictionary<string, object>()
@@ -73,24 +73,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             BatchManager batchManager = new BatchManager() { ColumnNames = columnNamesSet };
             batchManager.Add(fileData);
 
-            //ACT
+            // ACT
             var result = batchManager.GetBatchData();
             var expected = batchManager.ConfigureTable(columnNames, new List<IDictionary<string, object>> {fileData})
                 .CreateDataReader();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(expected.FieldCount, result.FieldCount);
             Assert.AreEqual(expected.Read(), result.Read());
-            Assert.AreEqual(expected.GetValue(0), result.GetValue(0)); 
-            Assert.AreEqual(expected.GetValue(1), result.GetValue(1)); 
-            Assert.AreEqual(expected.GetValue(2), result.GetValue(2)); 
+            Assert.AreEqual(expected.GetValue(0), result.GetValue(0));
+            Assert.AreEqual(expected.GetValue(1), result.GetValue(1));
+            Assert.AreEqual(expected.GetValue(2), result.GetValue(2));
             Assert.IsFalse(result.Read());
         }
 
         [Test]
         public void ClearDataSource_Pass()
         {
-            //ARRANGE
+            // ARRANGE
             var fileData = new Dictionary<string, object>()
             {
                 {"F1", 111},
@@ -101,17 +101,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             BatchManager batchManager = new BatchManager();
             batchManager.Add(fileData);
 
-            //ACT
+            // ACT
             batchManager.ClearDataSource();
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(0, batchManager.CurrentSize);
         }
 
         [Test]
         public void ConfigureTable_Pass()
         {
-            //ARRANGE
+            // ARRANGE
             HashSet<string> columnNamesSet = new HashSet<string>() { "F1", "F2", "F3" };
             IEnumerable<string> columnNames = columnNamesSet;
             List<IDictionary<string, object>> dataSource = new List<IDictionary<string, object>>()
@@ -138,10 +138,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             BatchManager batchManager = new BatchManager() { ColumnNames = columnNamesSet };
 
-            //ACT
+            // ACT
             DataTable dataTable = batchManager.ConfigureTable(columnNames, dataSource);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(3, dataTable.Rows.Count);
             Assert.AreEqual("111", dataTable.Rows[0]["F1"]);
             Assert.AreEqual(DateTime.Parse("11/22/2014 11:22:33").ToString(), dataTable.Rows[0]["F2"]);
@@ -157,24 +157,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ConfigureTable_NoRecords_ReturnsNull()
         {
-            //ARRANGE
+            // ARRANGE
             HashSet<string> columnNamesSet = new HashSet<string>() { "F1", "F2", "F3" };
             IEnumerable<string> columnNames = columnNamesSet;
             List<IDictionary<string, object>> dataSource = new List<IDictionary<string, object>>();
 
             BatchManager batchManager = new BatchManager() { ColumnNames = columnNamesSet };
 
-            //ACT
+            // ACT
             DataTable dataTable = batchManager.ConfigureTable(columnNames, dataSource);
 
-            //ASSERT
+            // ASSERT
             Assert.IsNull(dataTable);
         }
 
         [Test]
         public void ConfigureTable_NoNativeFilePathInColumnNames_ColumnIsAdded()
         {
-            //ARRANGE
+            // ARRANGE
             HashSet<string> columnNamesSet = new HashSet<string>() { "F1", "F2", "F3" };
             IEnumerable<string> columnNames = columnNamesSet;
             List<IDictionary<string, object>> dataSource = new List<IDictionary<string, object>>()
@@ -204,10 +204,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             BatchManager batchManager = new BatchManager() { ColumnNames = columnNamesSet };
 
-            //ACT
+            // ACT
             DataTable dataTable = batchManager.ConfigureTable(columnNames, dataSource);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(3, dataTable.Rows.Count);
             Assert.AreEqual("111", dataTable.Rows[0]["F1"]);
             Assert.AreEqual(DateTime.Parse("11/22/2014 11:22:33").ToString(), dataTable.Rows[0]["F2"]);
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void ConfigureTable_NativeFilePathInColumnNames_ColumnIsNotAddedTwice()
         {
-            //ARRANGE
+            // ARRANGE
             HashSet<string> columnNamesSet = new HashSet<string>() { "F1", "F2", "F3", kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME };
             IEnumerable<string> columnNames = columnNamesSet;
             List<IDictionary<string, object>> dataSource = new List<IDictionary<string, object>>()
@@ -265,10 +265,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             BatchManager batchManager = new BatchManager() { ColumnNames = columnNamesSet };
 
-            //ACT
+            // ACT
             DataTable dataTable = batchManager.ConfigureTable(columnNames, dataSource);
 
-            //ASSERT
+            // ASSERT
             Assert.AreEqual(3, dataTable.Rows.Count);
             Assert.AreEqual("111", dataTable.Rows[0]["F1"]);
             Assert.AreEqual(DateTime.Parse("11/22/2014 11:22:33").ToString(), dataTable.Rows[0]["F2"]);

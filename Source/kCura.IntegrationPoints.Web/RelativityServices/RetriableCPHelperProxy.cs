@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Web.RelativityServices
 
         private const int _RETRY_LIMIT = 2;
         private readonly ICPHelper _baseCpHelper;
-
         private IAPILog Logger =>
             _logger
             ?? (_logger = GetLoggerFactory().GetLogger().ForContext<RetriableCPHelperProxy>());

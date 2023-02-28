@@ -18,14 +18,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.KeplerSecurity
         [Test]
         public void GetOverwriteFieldsChoicesAsync_ShouldNotThrow_WhenAllPermissionsAreGranted()
         {
-            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointTypes>(() => 
+            ShouldPassWithAllPermissions<PermissionsForGetIntegrationPointTypes>(() =>
                 _sut.GetIntegrationPointTypes(WorkspaceId));
         }
-        
+
         [TestCaseSource(typeof(PermissionsForGetIntegrationPointTypes))]
         public void GetOverwriteFieldsChoicesAsync_ShouldThrowInsufficientPermissions(PermissionSetup[] permissionSetups)
         {
-            ShouldThrowInsufficientPermissions(permissionSetups,() => 
+            ShouldThrowInsufficientPermissions(permissionSetups,() =>
                 _sut.GetIntegrationPointTypes(WorkspaceId));
         }
 

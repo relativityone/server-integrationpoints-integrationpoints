@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
     {
         private Mock<ITabManager> _tabManager;
         private const int _WORKSPACE_ID = 1111;
-
         private TabRepository _sut;
 
         [SetUp]

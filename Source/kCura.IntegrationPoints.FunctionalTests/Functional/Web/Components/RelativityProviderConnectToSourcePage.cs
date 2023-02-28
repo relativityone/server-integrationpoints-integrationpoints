@@ -67,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         [FindByPrecedingDivContent]
         [SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
-        public RadioButtonList<YesNo, _> EnableTagging { get; private set; }
+        public RadioButtonList<YesNo, _> TagDocumentsWithJobName { get; private set; }
 
         private void WaitForListToLoad()
         {

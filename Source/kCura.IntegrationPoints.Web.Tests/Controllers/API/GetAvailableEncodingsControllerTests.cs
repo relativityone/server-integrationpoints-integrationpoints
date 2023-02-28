@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private GetAvailableEncodingsController _subjectUnderTest;
         private EncodingInfo[] _allEncodings;
 
-        #endregion //Fields
+        #endregion // Fields
 
         [SetUp]
         public override void SetUp()

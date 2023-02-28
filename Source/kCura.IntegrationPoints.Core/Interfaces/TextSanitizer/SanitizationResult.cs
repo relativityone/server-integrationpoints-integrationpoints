@@ -3,6 +3,7 @@
     public class SanitizationResult
     {
         public string SanitizedText { get; }
+
         public bool HasErrors { get; }
 
         public SanitizationResult(string sanitizedText, bool hasErrors)

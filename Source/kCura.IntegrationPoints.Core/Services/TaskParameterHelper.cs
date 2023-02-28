@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
         private readonly IGuidService _guidService;
+
         public TaskParameterHelper(Apps.Common.Utils.Serializers.ISerializer serializer, IGuidService guidService)
         {
             _serializer = serializer;
@@ -30,7 +31,6 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             return newBatchInstance;
         }
-
 
     }
 }

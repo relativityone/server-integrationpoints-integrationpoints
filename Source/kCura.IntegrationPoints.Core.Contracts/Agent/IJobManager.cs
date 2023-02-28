@@ -9,9 +9,11 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
     public interface IJobManager
     {
         Job CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null) where T : class;
+
         void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null) where T : class;
         Job CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class;
         Job CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class;
+
         void DeleteJob(long jobID);
         Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
         Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T : class;

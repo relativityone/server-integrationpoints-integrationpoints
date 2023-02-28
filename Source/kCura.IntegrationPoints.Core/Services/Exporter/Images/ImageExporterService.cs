@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             ILookup<int, ImageFile> imageLocationsForDocuments = GetImageLocationsForDocumentsFromProduction(
                 documentsWithoutImages.ToArray(),
                 productionsArtifactId);
-            
+
             int documentsWithImagesCount = MarkDocumentsWithImages(documentsWithImages, imageLocationsForDocuments, documentsWithoutImages);
 
             Logger.LogInformation("Found {documentsWithImagesCount} images in production {productionArtifactId}",
@@ -163,7 +163,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             Logger.LogInformation("Documents found in production {productionId}: [{documentsIds}]", productionsArtifactId,
                 string.Join(", ", imageLocationsForDocuments.Where(x => x.Any()).Select(x => x.Key)));
         }
-
 
         private IEnumerable<ArtifactFieldDTO> GetBaseFields(IDictionary<string, object> fieldValues)
         {

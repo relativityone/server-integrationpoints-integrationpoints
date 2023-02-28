@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
     public class ExportSettingsBuilderTests : TestBase
     {
         private ExportSettingsBuilder _exportSettingsBuilder;
-
         private const bool _EXPORT_FULL_TEXT_AS_FILE = true;
 
         [SetUp]
@@ -64,7 +63,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
                 Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown DataFileFormat ({incorrectEnumValue})"));
         }
 
-
         [Test]
         public void ItShouldThrowExceptionForUnknownImageDataFileFormat()
         {
@@ -72,11 +70,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
             var sourceSettings = CreateSourceSettings();
             sourceSettings.SelectedImageDataFileFormat = ((int)incorrectEnumValue).ToString();
-            
+
             Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
                 Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ImageDataFileFormat ({incorrectEnumValue})"));
         }
-
 
         [Test]
         public void ItShouldReturnNullForUnknownNativeFilenameFromType()
@@ -108,7 +105,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         {
             var fields = new List<FieldMap>()
             {
-                new FieldMap() {DestinationField = new FieldEntry() {FieldIdentifier = "1"}},
+                new FieldMap() {DestinationField = new FieldEntry() {FieldIdentifier = "1"} },
                 new FieldMap() {DestinationField = new FieldEntry() {FieldIdentifier = "2"}}
             };
 
@@ -122,7 +119,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         {
             var fields = new List<FieldEntry>()
             {
-                 new FieldEntry() {FieldIdentifier = "1"},
+                 new FieldEntry() {FieldIdentifier = "1" },
                  new FieldEntry() {FieldIdentifier = "2"}
             };
 

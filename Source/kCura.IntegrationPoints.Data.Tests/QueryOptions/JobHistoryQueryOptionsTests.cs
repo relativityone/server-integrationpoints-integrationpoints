@@ -35,45 +35,45 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
         [Test]
         public void All_ShouldSetAllFieldsIdsToFieldGuids()
         {
-            //act
+            // act
             JobHistoryQueryOptions sut = JobHistoryQueryOptions.All();
 
-            //assert
+            // assert
             sut.FieldGuids.ShouldBeEquivalentTo(_jobHistoryFieldsGuids.Values);
         }
 
         [Test]
         public void AllExcept_ShouldSetAllFieldsIdsToFieldGuidsExceptOne()
         {
-            //arrange
+            // arrange
             Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
 
-            //act
+            // act
             JobHistoryQueryOptions sut = JobHistoryQueryOptions
                 .All()
                 .Except(exceptOne.ToString());
 
-            //assert
+            // assert
             sut.FieldGuids
                 .ShouldBeEquivalentTo(
-                    _jobHistoryFieldsGuids.Values.Except(new [] { exceptOne })
+                    _jobHistoryFieldsGuids.Values.Except(new[] { exceptOne })
                 );
         }
 
         [Test]
         public void AllExcept_ShouldSetAllFieldsIdsToFieldGuidsExceptTwo()
         {
-            //arrange
+            // arrange
             Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
             Guid exceptTwo = _jobHistoryFieldsGuids["Name"];
 
-            //act
+            // act
             JobHistoryQueryOptions sut = JobHistoryQueryOptions
                 .All()
                 .Except(exceptOne.ToString())
                 .Except(exceptTwo.ToString());
 
-            //assert
+            // assert
             sut.FieldGuids
                 .ShouldBeEquivalentTo(
                     _jobHistoryFieldsGuids.Values.Except(new[]
@@ -87,29 +87,29 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
         [Test]
         public void ConstainsAll_ShouldReturnTrueIfAllFieldsGuidsAreSet()
         {
-            //arrange
+            // arrange
             JobHistoryQueryOptions options = JobHistoryQueryOptions.All();
-            
-            //act
+
+            // act
             bool sut = options.ContainsAll();
 
-            //assert
+            // assert
             sut.Should().BeTrue();
         }
 
         [Test]
         public void ContainsAll_ShouldReturnFalseIfNotAllFieldsGuidsAreSet()
         {
-            //arrange
+            // arrange
             Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
             JobHistoryQueryOptions options = JobHistoryQueryOptions
                 .All()
                 .Except(exceptOne.ToString());
 
-            //act
+            // act
             bool sut = options.ContainsAll();
 
-            //assert
+            // assert
             sut.Should().BeFalse();
         }
     }

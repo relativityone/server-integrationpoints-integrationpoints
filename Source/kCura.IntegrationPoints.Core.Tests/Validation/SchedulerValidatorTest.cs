@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
     public class SchedulerValidatorTest
     {
         private IValidator _instance;
-
         public const string VALID_START_DATE = "11/11/2016";
         public const string VALID_SCHEDULED_TIME = "11:00";
         public const string VALID_SENDON = "{\"selectedDays\":[\"Monday\",\"Wednesday\"]}";
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("13/01/2016", "12:0", "Daily")]
         [TestCase("13/40/2016", "12:0", "Daily")]
         [TestCase("02/31/2016", "12:0", "Daily")]
-        [TestCase("//2016", "12:0", "Daily")]
+        [TestCase("// 2016", "12:0", "Daily")]
         [TestCase("0/0/2016", "12:0", "Daily")]
         [TestCase("18/01/2016", "12:0", "Daily")]
         [TestCase("0/0/2016", "AM", "Daily")]
@@ -90,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [TestCase("1/1/2015", "13/01/2016", "12:0", "Daily")]
         [TestCase("1/1/2015", "13/40/2016", "12:0", "Daily")]
         [TestCase("1/1/2015", "02/31/2016", "12:0", "Daily")]
-        [TestCase("1/1/2015", "//2016", "12:0", "Daily")]
+        [TestCase("1/1/2015", "// 2016", "12:0", "Daily")]
         [TestCase("1/1/2015", "0/0/2016", "12:0", "Daily")]
         [TestCase("1/1/2015", "18/01/2016", "12:0", "Daily")]
         [TestCase("1/1/2015", "0/0/2016", "AM", "Daily")]

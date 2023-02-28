@@ -11,7 +11,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
     public class SystemFieldsClassifierTests
     {
         private SystemFieldsClassifier _sut;
-
         private readonly List<string> _systemFields = new List<string>()
         {
             "Is System Artifact",

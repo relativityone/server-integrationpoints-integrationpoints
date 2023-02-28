@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
             _sut = new WindsorContainer();
             _sut.AddWebApiLoginService();
         }
-        
+
         [Test]
         public void WebApiLoginService_ShouldBeResolvedWithoutThrowing()
         {

@@ -18,10 +18,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             return list;
         }
-        
+
         private void SetupIntegrationPointProfile()
         {
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                 It.Is<QueryRequest>(r => IsIntegrationPointProfileQueryRequest(r)), It.IsAny<int>(), It.IsAny<int>()))
             .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
@@ -33,10 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private void SetupIntegrationPointProfileLongTextStreaming()
         {
-            List<Guid> possibleFiledsGuids = new List<Guid> { 
-                IntegrationPointProfileFieldGuids.DestinationConfigurationGuid, 
-                IntegrationPointProfileFieldGuids.SourceConfigurationGuid, 
-                IntegrationPointProfileFieldGuids.FieldMappingsGuid 
+            List<Guid> possibleFiledsGuids = new List<Guid> {
+                IntegrationPointProfileFieldGuids.DestinationConfigurationGuid,
+                IntegrationPointProfileFieldGuids.SourceConfigurationGuid,
+                IntegrationPointProfileFieldGuids.FieldMappingsGuid
             };
 
             Mock.Setup(x => x.StreamLongTextAsync(
@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         Content = new StringContent(obj.FieldValues.Single(x =>
                             x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value.ToString())
                     }));
-                });     
+                });
         }
 
         private bool IsIntegrationPointProfileQueryRequest(QueryRequest x)

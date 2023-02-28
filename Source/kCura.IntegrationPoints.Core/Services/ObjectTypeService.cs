@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Core.Services
     public class ObjectTypeService
     {
         private readonly IObjectTypeRepository _objectTypeRepository;
+
         public ObjectTypeService(IObjectTypeRepository objectTypeRepository)
         {
             _objectTypeRepository = objectTypeRepository;

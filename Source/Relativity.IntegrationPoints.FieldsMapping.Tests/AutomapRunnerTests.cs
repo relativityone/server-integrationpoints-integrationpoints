@@ -20,7 +20,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
     {
         private const string DestinationProviderGuid = "6C486C1B-9AEA-4809-B4F8-7123A27A0D6E";
         private const int WorkspaceArtifactId = 1234;
-
         private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
         private Mock<IViewManager> _viewManagerFake;
         private Mock<IServicesMgr> _servicesMgrFake;
@@ -151,7 +150,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
             mappedFields[0].SourceField.Type.Should().Be("Fixed-Length Text(250)");
             mappedFields[0].DestinationField.Type.Should().Be("Long Text");
         }
-
 
         [Test]
         public void MapFields_ShouldNotMapFixedLengthTextToFixedLentghText_WhenSourceIsGreaterThanDestination()

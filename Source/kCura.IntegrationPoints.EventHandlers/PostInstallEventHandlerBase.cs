@@ -21,13 +21,13 @@ namespace kCura.IntegrationPoints.EventHandlers
     public abstract class PostInstallEventHandlerBase : PostInstallEventHandler
     {
         private const string _ACTION_NAME = "Install";
-
         private readonly Lazy<IErrorService> _errorService;
         private readonly Lazy<IAPILog> _log;
         private readonly Lazy<IRelativityObjectManager> _objectManager;
         private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
 
         protected abstract string SuccessMessage { get; }
+
         protected abstract string GetFailureMessage(Exception ex);
 
         protected IAPILog Logger => _log.Value;

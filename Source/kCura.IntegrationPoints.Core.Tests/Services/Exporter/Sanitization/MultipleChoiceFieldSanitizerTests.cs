@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
         private Mock<IChoiceTreeToStringConverter> _choiceTreeToStringConverter;
         private Mock<ISanitizationDeserializer> _sanitizationHelper;
         private MultipleChoiceFieldSanitizer _sut;
-
         private const char _NESTED_VALUE = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
         private const char _MULTI_VALUE = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
 
@@ -38,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
                 .Returns((object serializedObject) =>
                     jsonSerializer.Deserialize<ChoiceDto[]>(serializedObject.ToString()));
             _sut = new MultipleChoiceFieldSanitizer(
-                _choiceCache.Object, 
+                _choiceCache.Object,
                 _choiceTreeToStringConverter.Object,
                 _sanitizationHelper.Object);
         }

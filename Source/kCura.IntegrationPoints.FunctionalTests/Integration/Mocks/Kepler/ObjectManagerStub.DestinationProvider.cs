@@ -41,7 +41,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsDestinationProviderQuery(QueryRequest query) =>
             query.ObjectType.Guid == ObjectTypeGuids.DestinationProviderGuid;
-
         private bool IsDestinationIdentifierCondition(string condition, out string identifierValue)
         {
             if (condition != null)

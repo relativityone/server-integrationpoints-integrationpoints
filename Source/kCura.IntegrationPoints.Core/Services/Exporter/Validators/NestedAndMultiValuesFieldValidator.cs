@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
     public class NestedAndMultiValuesFieldValidator
     {
         private readonly IAPILog _logger;
+
         public NestedAndMultiValuesFieldValidator(IAPILog logger)
         {
             _logger = logger.ForContext<NestedAndMultiValuesFieldValidator>();
@@ -55,9 +56,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
             char multiValueDelimiter = IntegrationPoints.Domain.Constants.MULTI_VALUE_DELIMITER;
             char nestedValueDelimiter = IntegrationPoints.Domain.Constants.NESTED_VALUE_DELIMITER;
 
-            _logger.LogError("Invalid field '{fieldArtifactId}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}", 
-                fieldArtifactId, 
-                multiValueDelimiter, 
+            _logger.LogError("Invalid field '{fieldArtifactId}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}",
+                fieldArtifactId,
+                multiValueDelimiter,
                 nestedValueDelimiter);
 
             string message = $"Invalid field '{fieldName}' found. Please remove invalid character(s) - {multiValueDelimiter} or {nestedValueDelimiter}";

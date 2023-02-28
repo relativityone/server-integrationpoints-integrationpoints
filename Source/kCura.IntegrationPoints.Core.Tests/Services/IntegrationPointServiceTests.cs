@@ -41,9 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
     public class IntegrationPointServiceTests
     {
         private IFixture _fxt;
-
         private IntegrationPointService _sut;
-
         private Mock<ICaseServiceContext> _contextFake;
         private Mock<IRelativityObjectManager> _objectManagerFake;
         private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
@@ -58,14 +56,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IRelativitySyncConstrainsChecker> _relativitySyncConstrainsCheckerFake;
         private Mock<IRelativitySyncAppIntegration> _relativitySyncAppIntegrationMock;
         private Mock<IAgentLauncher> _agentLauncherMock;
-
         private SourceProvider _sourceProvider;
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
         private Data.IntegrationPoint _integrationPoint;
         private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
-
         private int _WORKSPACE_ID;
         private int _USER_ID;
 
@@ -94,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
                 .With(x => x.FieldMappings, string.Empty)
                 .Create();
-
 
             _integrationPointDto = _fxt.Build<IntegrationPointDto>()
                 .With(x => x.ArtifactId, _integrationPoint.ArtifactId)
@@ -226,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 It.IsAny<ChoiceRef>(),
                 It.IsAny<DateTime?>()));
 
-            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Once()); 
+            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Once());
         }
 
         [Test]

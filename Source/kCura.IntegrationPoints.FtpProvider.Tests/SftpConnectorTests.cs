@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
     {
         private Mock<IHostValidator> _hostValidatorMock;
         private Mock<IAPILog> _loggerFake;
-
         private const string _HOST = "1.2.3.4";
         private const int _PORT = 22;
         private const string _USER = "User";

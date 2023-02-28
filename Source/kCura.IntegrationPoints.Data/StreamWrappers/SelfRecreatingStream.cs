@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.StreamWrappers
     internal sealed class SelfRecreatingStream : Stream
     {
         private const int _MAX_RETRY_ATTEMPTS = 3;
-        private const int _WAIT_INTERVAL_IN_SECONDS = 1; 
+        private const int _WAIT_INTERVAL_IN_SECONDS = 1;
 
         private readonly Func<Stream> _getStreamFunction;
         private readonly IAPILog _logger;
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Data.StreamWrappers
             return Policy
                 .HandleResult<Stream>(s => s == null || !s.CanRead)
                 .Or<Exception>()
-                .WaitAndRetry(_MAX_RETRY_ATTEMPTS, i => TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS), 
+                .WaitAndRetry(_MAX_RETRY_ATTEMPTS, i => TimeSpan.FromSeconds(_WAIT_INTERVAL_IN_SECONDS),
                     onRetry: (outcome, timespan, retryAttempt, context) =>
             {
                 DisposeInnerStream();

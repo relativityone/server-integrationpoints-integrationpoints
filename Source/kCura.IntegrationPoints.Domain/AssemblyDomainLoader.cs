@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Domain
     internal class AssemblyDomainLoader : MarshalByRefObject
     {
         private bool _isDisposed;
-
         private readonly Dictionary<string, Assembly> _assemblies =
             new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase);
 
@@ -153,7 +152,6 @@ namespace kCura.IntegrationPoints.Domain
             }
             return returnedAssembly;
         }
-
 
         public System.Reflection.Assembly ResolveMergedAssembly(string dllName, string searchDirectory)
         {

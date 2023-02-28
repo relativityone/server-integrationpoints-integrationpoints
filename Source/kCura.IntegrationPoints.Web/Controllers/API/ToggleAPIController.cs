@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (MissingFeatureException)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, false);//Expected behavior for missing toggle
+                return Request.CreateResponse(HttpStatusCode.OK, false);// Expected behavior for missing toggle
             }
         }
     }

@@ -22,6 +22,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using Relativity.Toggles;
 using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
+        private readonly IToggleProvider _toggleProvider;
         private readonly IAPILog _logger;
 
         public IntegrationPointToSyncConverter(
@@ -40,6 +42,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             IJobHistoryService jobHistoryService,
             IJobHistorySyncService jobHistorySyncService,
             ISyncOperationsWrapper syncOperations,
+            IToggleProvider toggleProvider,
             IAPILog logger)
         {
             _serializer = serializer;
@@ -47,6 +50,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
             _logger = logger;
+            _toggleProvider = toggleProvider;
         }
 
         public async Task<int> CreateSyncConfigurationAsync(int workspaceId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
@@ -82,6 +86,11 @@ namespace kCura.IntegrationPoints.RelativitySync
                 Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
+
+            if (!_toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle"))
+            {
+                importSettings.EnableTagging = true;
+            }
 
             if (importSettings.ArtifactTypeId != (int)ArtifactType.Document)
             {

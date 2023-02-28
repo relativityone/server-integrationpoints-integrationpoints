@@ -70,7 +70,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 batchIds.Add(i.ToString());
             }
             return batchIds;
-        } 
+        }
 
         private class BatchManagerTest : BatchManagerBase<string>
         {

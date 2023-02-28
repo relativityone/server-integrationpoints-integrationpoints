@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     {
         private ArtifactValidator _destinationFolderValidatorMock;
         private FieldsMappingValidator _fieldMappingValidatorMock;
-
         private IAPILog _logger;
         private IArtifactService _artifactServiceMock;
         private IFieldManager _sourceFieldManager;
@@ -48,10 +47,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
         private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
         private const int _VIEW_ARTIFACT_ID = 10235456;
-
         private readonly string _sourceConfiguration =
             "{\"SavedSearchArtifactId\":" + _SAVED_SEARCH_ARTIFACT_ID + ",\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\",\"TypeOfExport\":\"3\"}";
-
         private static IEnumerable ConfigurationTestsData()
         {
             yield return new TestCaseData(true, 0, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642, \"ProductionArtifactId\":\"" + _PRODUCTION_ARTIFACT_ID + "\"}");

@@ -23,14 +23,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         private IntegrationPointDto _dto;
         private IntegrationPointType _integrationPointType;
         private SourceProvider _sourceProvider;
-
         private ValidationContext _validationContex;
-
         private ValidationExecutor _subjectUnderTest;
         private const int _USER_ID = 1;
         private const int _ZERO_USER_ID = 0;
         private readonly Guid _objectTypeGuid = Guid.NewGuid();
-
 
         #endregion // Fields
 
@@ -184,7 +181,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             Assert.That(permissionException.ValidationResult.MessageTexts.Any(msg => msg.Contains(expectedMessage)));
 
-            // we expect permission will be checked 
+            // we expect permission will be checked
             _providerValidatorMock.Received(1).Validate(_dto, _sourceProvider,
                 _destinationProvider, _integrationPointType, _objectTypeGuid, _USER_ID);
 
@@ -282,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
             Assert.That(providerValidationException.ValidationResult.MessageTexts.Any(msg => msg.Contains(expectedMessage)));
 
-            // we expect permission will be checked 
+            // we expect permission will be checked
             _providerValidatorMock.Received(1).Validate(_dto, _sourceProvider,
                 _destinationProvider, _integrationPointType, _objectTypeGuid, _USER_ID);
 
@@ -305,8 +302,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             _permissionValidatorMock.ValidateStop(_dto, _sourceProvider,
                 _destinationProvider, _integrationPointType, _objectTypeGuid, _USER_ID).Returns(new ValidationResult());
 
-            //_providerValidatorMock.Validate(_model, _sourceProvider,
-            //    _destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
+            // _providerValidatorMock.Validate(_model, _sourceProvider,
+            // _destinationProvider, _integrationPointType, _OBJECT_TYPE_GUID).Returns(new ValidationResult());
 
             // ACT
 
@@ -360,6 +357,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
                 Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>());
         }
 
-        #endregion //Tests
+        #endregion // Tests
     }
 }

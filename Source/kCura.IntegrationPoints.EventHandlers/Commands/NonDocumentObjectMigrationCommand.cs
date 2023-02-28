@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
     public class NonDocumentObjectMigrationCommand : UpdateIntegrationPointConfigurationCommandBase
     {
         private const string _DESTINATION_CONFIGURATION = IntegrationPointFields.DestinationConfiguration;
-
         private readonly string _sourceProviderGuid = Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY;
         private readonly string _destinationProviderGuid = Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY;
 

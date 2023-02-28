@@ -24,16 +24,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
     public class MetricsFactoryTests
     {
         private IMetricsFactory _sut;
-
         private Mock<ISerializer> _serializerFake;
         private Mock<IIntegrationPointService> _integrationPointServiceFake;
         private Mock<IScheduleRuleFactory> _scheduleRuleFactoryFake;
         private Mock<IServicesMgr> _servicesMgrFake;
-
         private Mock<IMetricsManager> _metricsManagerMock;
-
         private Mock<IScheduleRule> _scheduleRuleFake;
-
         private readonly IntegrationPointDto _integrationPoint = new IntegrationPointDto
         {
             ArtifactId = 100,

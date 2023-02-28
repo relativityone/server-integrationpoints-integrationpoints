@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoint.Tests.Core
     {
         private const string _INTEGRATION_POINT_AGENT_TYPE_NAME = "Integration Points Agent";
         private const int _MAX_NUMBER_OF_AGENTS_TO_CREATE = 6;
-
         private static ITestHelper Helper => new TestHelper();
 
         public static async Task<bool> CreateMaxIntegrationPointAgentsAsync()
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             for (int i = 0; i < agentsToCreate; ++i)
             {
                 bool success = await CreateIntegrationPointAgentInternalAsync().ConfigureAwait(false);
-                if(!success)
+                if (!success)
                 {
                     return false;
                 }
@@ -34,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
             return true;
         }
-        
+
         private static async Task<global::Relativity.Services.Agent.Agent[]> GetIntegrationPointsAgentsAsync()
         {
             AgentTypeRef agentTypeRef = await GetAgentTypeByNameAsync(_INTEGRATION_POINT_AGENT_TYPE_NAME).ConfigureAwait(false);

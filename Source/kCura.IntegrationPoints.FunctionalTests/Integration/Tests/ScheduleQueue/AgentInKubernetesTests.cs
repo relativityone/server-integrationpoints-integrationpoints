@@ -101,7 +101,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             sut.Execute();
 
             // Assert
-            sut.VerifyJobsWereProcessed(new long[] 
+            sut.VerifyJobsWereProcessed(new long[]
             {
                 jobWithSameRootId1.JobId,
             });

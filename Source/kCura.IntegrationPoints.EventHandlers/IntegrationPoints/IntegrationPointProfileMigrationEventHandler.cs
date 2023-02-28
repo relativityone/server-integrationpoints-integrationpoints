@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
         internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion = @"Following profiles could not be deleted, because they don't exist in created workspace ({workspaceId}): {profiles}";
 
-
         public IntegrationPointProfileMigrationEventHandler()
         {
             _relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
@@ -73,7 +72,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 .GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
             var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExistAsync(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
-
 
             profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);
             profilesToDelete = CheckProfilesExistInWorkspace(profilesToDelete, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion);
@@ -274,7 +272,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
             _relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
-
         private int WorkspaceID => Helper.GetActiveCaseID();
     }
 }

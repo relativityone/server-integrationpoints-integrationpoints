@@ -22,14 +22,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Filters
         private Mock<Func<ITextSanitizer>> _textSanitizerFactoryMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<Func<IAPILog>> _loggerFactoryMock;
-
         private const string _CONTACT_ADMIN_SUFFIX = " Please check Error tab for more details";
-
         private readonly LogApiExceptionFilterAttribute _attribute = new LogApiExceptionFilterAttribute
         {
             IsUserMessage = true,
             Message = "User message"
         };
+
         private readonly CancellationToken _cancellationToken = new CancellationToken();
 
         [SetUp]
@@ -216,7 +215,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Filters
 
             var exception = new ArgumentNullException();
             HttpActionExecutedContext actionExecutedContext = CreateDummyActionExecutedContext(exception);
-            
+
             // act
             await sut.ExecuteExceptionFilterAsync(actionExecutedContext, _cancellationToken).ConfigureAwait(false);
 

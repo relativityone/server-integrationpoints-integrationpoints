@@ -45,7 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace, 
+        public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace,
             IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
@@ -66,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             return ScheduleJob(job);
         }
-        
+
         private JobBuilder CreateBasicJob(WorkspaceTest workspace)
         {
             IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
@@ -80,8 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 .WithIntegrationPoint(integrationPoint)
                 .WithSubmittedBy(Relativity.TestContext.User.ArtifactId);
         }
-        
-    
+
 
         #region Verification
 

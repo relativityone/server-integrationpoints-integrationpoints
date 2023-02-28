@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
     {
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IMetricsManager> _metricsManagerMock;
-
         private Mock<IScheduleRule> _scheduleRuleFake;
 
         [SetUp]

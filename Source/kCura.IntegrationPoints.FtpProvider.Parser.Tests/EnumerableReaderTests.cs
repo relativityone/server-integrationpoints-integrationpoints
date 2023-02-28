@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         [SetUp]
         public override void SetUp()
         {
-
         }
 
         private static IEnumerable<string> GetSampleData()

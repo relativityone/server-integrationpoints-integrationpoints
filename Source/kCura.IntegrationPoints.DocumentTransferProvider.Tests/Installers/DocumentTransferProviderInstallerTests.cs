@@ -44,10 +44,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
         [Test]
         public void IExtendedImportApiFactory_ShouldBeResolvedAndNotThrow()
         {
-            //arrange
+            // arrange
             RegisterInstallerDependencies(_sut);
 
-            //act & assert
+            // act & assert
             _sut.Should().ResolveWithoutThrowing<IImportApiFactory>();
         }
 
@@ -69,10 +69,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
         [Test]
         public void IExtendedImportApiFacade_ShouldBeResolvedAndNotThrow()
         {
-            //arrange
+            // arrange
             RegisterInstallerDependencies(_sut);
 
-            //act & assert
+            // act & assert
             _sut.Should().ResolveWithoutThrowing<IImportApiFacade>();
         }
 
@@ -88,11 +88,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
         [Test]
         public void IDataSourceProvider_ShouldBeRegisteredWithProperName()
         {
-            //arrange
+            // arrange
             string expectedComponentName = new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID)
                 .ToString();
 
-            //act & assert
+            // act & assert
             _sut.Should()
                 .HaveRegisteredSingleComponent<IDataSourceProvider>()
                 .Which.Should()
@@ -108,10 +108,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
         [Test]
         public void IDataSourceProvider_ShouldBeResolvedAndNotThrow()
         {
-            //arrange
+            // arrange
             RegisterInstallerDependencies(_sut);
 
-            //act & assert
+            // act & assert
             _sut.Should().ResolveWithoutThrowing<IDataSourceProvider>();
         }
 

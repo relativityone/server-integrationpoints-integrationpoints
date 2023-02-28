@@ -8,10 +8,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
         FieldTypeHelper.FieldType SupportedType { get; }
 
         Task<object> SanitizeAsync(
-            int workspaceArtifactID, 
-            string itemIdentifierSourceFieldName, 
+            int workspaceArtifactID,
+            string itemIdentifierSourceFieldName,
             string itemIdentifier,
-            string sanitizingSourceFieldName, 
+            string sanitizingSourceFieldName,
             object initialValue);
     }
 }

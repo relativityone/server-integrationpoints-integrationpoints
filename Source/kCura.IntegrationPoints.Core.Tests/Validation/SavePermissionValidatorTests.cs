@@ -10,11 +10,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
     [TestFixture, Category("Unit")]
     public class SavePermissionValidatorTests : PermissionValidatorTestsBase
     {
-        //CREATE
+        // CREATE
         [TestCase(true, true, true, true, true)]
         [TestCase(true, false, false, true, true)]
         [TestCase(true, true, true, false, false)]
-        //EDIT
+        // EDIT
         [TestCase(false, true, true, true, true)]
         [TestCase(false, true, true, false, true)]
         [TestCase(false, false, true, true, false)]

@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.Domain.Tests.Models
 
             var fields = dto.FieldRefValuePairs;
 
-
             AssertValueExistInFieldsList(fields, Constants.SOURCEJOB_NAME_FIELD_NAME, name);
             AssertValueExistInFieldsList(fields, Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, jobHistoryArtifactId);
             AssertValueExistInFieldsList(fields, Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, jobHistoryName);
