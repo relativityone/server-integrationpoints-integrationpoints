@@ -178,14 +178,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 errorMessage = exception.Message;
             }
 
-            return Request.CreateResponse(HttpStatusCode.BadRequest, errorMessage);
+            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+            }
+
+            return response;
         }
 
         private HttpResponseMessage CreateResponseForFailedValidation(IntegrationPointValidationException exception)
         {
             var validationResultMapper = new ValidationResultMapper();
             ValidationResultDTO validationResultDto = validationResultMapper.Map(exception.ValidationResult);
-            return Request.CreateResponse(HttpStatusCode.Unauthorized, validationResultDto);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, validationResultDto);
         }
 
         private void AuditAction(Payload payload, string auditMessage)
@@ -219,7 +225,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 Message = message,
                 FullText = fullText,
-                Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+                Source = APPLICATION_NAME,
                 WorkspaceId = workspaceArtifactId
             };
 

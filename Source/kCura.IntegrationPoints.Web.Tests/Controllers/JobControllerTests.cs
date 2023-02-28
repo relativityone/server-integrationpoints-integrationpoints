@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private IManagerFactory _managerFactory;
         private IRepositoryFactory _repositoryFactory;
         private IRelativityAuditRepository _auditRepository;
+        private IPermissionRepository _permissionRepository;
         private JobController _instance;
         private JobController.Payload _payload;
         private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
@@ -59,6 +61,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _helper.GetActiveCaseID().Returns(_WORKSPACE_ARTIFACT_ID);
             _managerFactory.CreateAuditManager(_WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
             _auditManager.RelativityAuditRepository.Returns(_auditRepository);
+
+            _permissionRepository = Substitute.For<IPermissionRepository>();
+            _permissionRepository.UserHasArtifactTypePermissions(Arg.Any<Guid>(), Arg.Any<IEnumerable<ArtifactPermission>>()).Returns(true);
+            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), Arg.Any<ArtifactPermission>()).Returns(true);
+
+            _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _repositoryFactory.GetPermissionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_permissionRepository);
 
             IAPILog log = Substitute.For<IAPILog>();
 
