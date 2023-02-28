@@ -167,6 +167,38 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
+        [Test]
+        public void Run_ShouldCheckRdoPermissions()
+        {
+            // Arrange
+            var integrationPoint = new IntegrationPointSlimDto();
+
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+            // Act
+            _instance.Run(_payload);
+
+            // Assert
+            AssertRDOsPermissions();
+        }
+
+        [Test]
+        public void Retry_ShouldCheckRdoPermissions()
+        {
+            // Arrange
+            var integrationPoint = new IntegrationPointSlimDto();
+
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+            // Act
+            _instance.Run(_payload);
+
+            // Assert
+            AssertRDOsPermissions();
+        }
+
         [TestCase(null)]
         [TestCase(1000)]
         public void NonRelativityProviderCall(int? federatedInstanceArtifactId)
@@ -353,6 +385,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
 
             errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
+        }
+
+        private void AssertRDOsPermissions()
+        {
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.IntegrationPointGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryErrorGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.IntegrationPointTypeGuid, Arg.Any<ArtifactPermission>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.SourceProviderGuid, Arg.Any<ArtifactPermission>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.DestinationProviderGuid, Arg.Any<ArtifactPermission>());
+
         }
     }
 }

@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             if (!permissionRepository.UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryErrorGuid, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
             {
-                validationResult.Add(PermissionErrors.INTEGRATION_POINT_RUN_RDO_PERMISSION);
+                validationResult.Add(PermissionErrors.JOB_HISTORY_ERROR_RUN_RDO_PERMISSION);
             }
 
             if (!permissionRepository.UserHasArtifactTypePermission(ObjectTypeGuids.IntegrationPointTypeGuid, ArtifactPermission.View))

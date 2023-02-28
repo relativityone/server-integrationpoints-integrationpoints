@@ -26,7 +26,11 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise
-                                .then(result => result.json())
+                                .then(function (result) {
+                                    if (!result.ok) {
+                                        return result.json();
+                                    }
+                                })
                                 .then(function (result) {
                                     if (result) {
                                         let header = "Failed to submit integration point job.";
