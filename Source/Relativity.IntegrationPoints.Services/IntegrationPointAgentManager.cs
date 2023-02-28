@@ -30,8 +30,10 @@ namespace Relativity.IntegrationPoints.Services
             new WorkloadSizeDefinition(minJobsCount: 0, maxJobsCount: 0, workloadSize: WorkloadSize.None),
             new WorkloadSizeDefinition(minJobsCount: 1, maxJobsCount: 1, workloadSize: WorkloadSize.One),
             new WorkloadSizeDefinition(minJobsCount: 2, maxJobsCount: 3, workloadSize: WorkloadSize.S),
-            new WorkloadSizeDefinition(minJobsCount: 4, maxJobsCount: 7, workloadSize: WorkloadSize.M),
-            new WorkloadSizeDefinition(minJobsCount: 8, maxJobsCount: int.MaxValue, workloadSize: WorkloadSize.L)
+            new WorkloadSizeDefinition(minJobsCount: 4, maxJobsCount: 6, workloadSize: WorkloadSize.M),
+            new WorkloadSizeDefinition(minJobsCount: 7, maxJobsCount: 9, workloadSize: WorkloadSize.L),
+            new WorkloadSizeDefinition(minJobsCount: 10, maxJobsCount: 12, workloadSize: WorkloadSize.XL),
+            new WorkloadSizeDefinition(minJobsCount: 13, maxJobsCount: int.MaxValue, workloadSize: WorkloadSize.XXL)
         };
 
         protected override Installer Installer => _installer ?? (_installer = new IntegrationPointAgentManagerInstaller());
