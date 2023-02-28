@@ -8,6 +8,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -15,6 +16,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity;
 using Relativity.API;
+using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -27,6 +30,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISourceProviderService _sourceProviderService;
         private readonly IIdFilesBuilder _idFilesBuilder;
+        private readonly ILoadFileBuilder _loadFileBuilder;
         private readonly IRelativityStorageService _relativityStorageService;
         private readonly ISerializer _serializer;
         private readonly IJobService _jobService;
@@ -37,6 +41,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             IIntegrationPointService integrationPointService,
             ISourceProviderService sourceProviderService,
             IIdFilesBuilder idFilesBuilder,
+            ILoadFileBuilder loadFileBuilder,
             IRelativityStorageService relativityStorageService,
             ISerializer serializer,
             IJobService jobService,
@@ -51,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _jobService = jobService;
             _importApiRunnerFactory = importApiRunnerFactory;
             _logger = logger;
+            _loadFileBuilder = loadFileBuilder;
         }
 
         public void Execute(Job job)
@@ -84,6 +90,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     jobDetails = await CreateBatchesAsync(jobId, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
                 }
 
+                ImportApiFlowEnum importApiFlowEnum = GetImportApiFlow(integrationPointDto.DestinationConfiguration);
+                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(importApiFlowEnum);
+                var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
+
+                List<FieldMapWrapper> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
+
+                await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, fieldMapping);
+
                 foreach (CustomProviderBatch batch in jobDetails.Batches)
                 {
                     if (batch.IsAddedToImportQueue)
@@ -91,19 +105,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                         continue;
                     }
 
-                    batch.DataFilePath = await CreateDataFileAsync(storage, batch, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
-
+                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(storage, batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
+                    
                     // TODO add file to import
 
                     batch.IsAddedToImportQueue = true;
                     UpdateJobDetails(job, jobDetails);
                 }
-
-                ImportApiFlowEnum importApiFlowEnum = GetImportApiFlow(integrationPointDto.DestinationConfiguration);
-                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(importApiFlowEnum);
-                var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
-                
-                await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, WrapFieldMappings(integrationPointDto.FieldMappings));
             }
             catch (ImportApiResponseException ex)
             {
@@ -153,92 +161,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             job.JobDetails = _serializer.Serialize(jobDetails);
             _jobService.UpdateJobDetails(job);
-        }
-
-        private async Task<string> CreateDataFileAsync(IStorageAccess<string> storage, CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory)
-        {
-            try
-            {
-                _logger.LogInformation("Creating data file for batch index: {batchIndex}", batch.BatchID);
-
-                IEnumerable<FieldEntry> fields = integrationPointDto.FieldMappings.Select(x => x.SourceField);
-                DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointDto.SourceConfiguration, integrationPointDto.SecuredConfiguration);
-                IList<string> entryIds = await ReadLinesAsync(storage, batch.IDsFilePath).ConfigureAwait(false);
-
-                using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIds, providerConfig))
-                using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch.BatchID).ConfigureAwait(false))
-                using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
-                {
-                    while (sourceProviderDataReader.Read())
-                    {
-                        List<string> rowValues = new List<string>();
-
-                        for (int i = 0; i < sourceProviderDataReader.FieldCount; i++)
-                        {
-                            string value = sourceProviderDataReader[i]?.ToString() ?? string.Empty;
-                            rowValues.Add(value);
-                        }
-
-                        string line = string.Join($",", rowValues);
-                        await dataFileWriter.WriteLineAsync(line).ConfigureAwait(false);
-                    }
-
-                    _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
-
-                    return dataFileStream.StoragePath;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}", batch.BatchID);
-                throw;
-            }
-        }
-
-        private async Task<IList<string>> ReadLinesAsync(IStorageAccess<string> storage, string filePath)
-        {
-            try
-            {
-                _logger.LogInformation("Reading all lines from file: {path}", filePath);
-
-                List<string> lines = new List<string>();
-
-                using (StorageStream storageStream = await storage.OpenFileAsync(filePath, OpenBehavior.OpenExisting, ReadWriteMode.ReadOnly).ConfigureAwait(false))
-                using (TextReader reader = new StreamReader(storageStream))
-                {
-                    string line;
-                    while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
-                    {
-                        lines.Add(line);
-                    }
-                }
-
-                _logger.LogInformation("Successfully read {lines} lines from file: {path}", lines.Count, filePath);
-
-                return lines;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to read lines from file: {path}", filePath);
-                throw;
-            }
-        }
-
-        private async Task<StorageStream> GetDataFileStreamAsync(string directoryPath, int batchIndex)
-        {
-            string batchDataFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.data";
-            string batchDataFilePath = Path.Combine(directoryPath, batchDataFileName);
-
-            try
-            {
-                StorageStream fileStream = await _relativityStorageService.CreateFileOrTruncateExistingAsync(batchDataFilePath).ConfigureAwait(false);
-                return fileStream;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to open file stream: {path}", batchDataFilePath);
-                throw;
-            }
         }
 
         private ImportApiFlowEnum GetImportApiFlow(string destinationConfiguration)

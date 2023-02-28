@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<ISourceProviderService> _sourceProviderService;
         private Mock<IIdFilesBuilder> _idFilesBuilder;
+        private Mock<ILoadFileBuilder> _loadFileBuilder;
         private Mock<IRelativityStorageService> _relativityStorageService;
         private Mock<IStorageAccess<string>> _storageAccess;
         private Mock<IJobService> _jobService;
@@ -37,6 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _integrationPointService = new Mock<IIntegrationPointService>();
             _sourceProviderService = new Mock<ISourceProviderService>();
             _idFilesBuilder = new Mock<IIdFilesBuilder>();
+            _loadFileBuilder = new Mock<ILoadFileBuilder>();
 
             _relativityStorageService = new Mock<IRelativityStorageService>();
             _relativityStorageService
@@ -119,6 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _integrationPointService.Object,
                 _sourceProviderService.Object,
                 _idFilesBuilder.Object,
+                _loadFileBuilder.Object,
                 _relativityStorageService.Object,
                 new JSONSerializer(),
                 _jobService.Object,

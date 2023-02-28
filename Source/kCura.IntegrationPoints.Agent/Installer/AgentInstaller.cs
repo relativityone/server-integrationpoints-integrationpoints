@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -142,6 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
             container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
             container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
+            container.Register(Component.For<ILoadFileBuilder>().ImplementedBy<LoadFileBuilder>().LifestyleTransient());
             container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
             container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>().LifestyleSingleton());
             container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());

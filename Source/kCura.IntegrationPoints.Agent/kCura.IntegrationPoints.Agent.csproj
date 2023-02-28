@@ -62,6 +62,7 @@
   <ItemGroup>
     <Folder Include="CustomProvider\DTO\" />
     <Folder Include="CustomProvider\Services\FileShare\" />
+    <Folder Include="CustomProvider\Services\LoadFileBuilding\" />
   </ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

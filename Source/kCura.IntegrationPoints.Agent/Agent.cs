@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent
             }
             finally
             {
-                Container.Dispose();
+                Container?.Dispose();
                 Container = null;
             }
         }
