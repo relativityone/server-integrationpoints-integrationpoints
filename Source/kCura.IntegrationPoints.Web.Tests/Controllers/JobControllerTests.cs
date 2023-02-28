@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private ICPHelper _helper;
         private IIntegrationPointService _integrationPointService;
         private IManagerFactory _managerFactory;
+        private IRepositoryFactory _repositoryFactory;
         private IRelativityAuditRepository _auditRepository;
         private JobController _instance;
         private JobController.Payload _payload;
@@ -63,6 +65,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             IAPILog log = Substitute.For<IAPILog>();
 
             _instance = new JobController(
+                _repositoryFactory,
                 _managerFactory,
                 _integrationPointService,
                 log)

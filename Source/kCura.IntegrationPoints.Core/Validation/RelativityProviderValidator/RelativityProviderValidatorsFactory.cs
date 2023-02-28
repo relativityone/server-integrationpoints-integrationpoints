@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
@@ -85,7 +86,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
         public IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials)
         {
             IPermissionManager destinationWorkspacePermissionManager = CreatePermissionManager();
-            return new RelativityProviderDestinationWorkspacePermissionValidator(destinationWorkspacePermissionManager);
+
+            return new RelativityProviderDestinationWorkspacePermissionValidator(destinationWorkspacePermissionManager, _repositoryFactory);
         }
 
         public IRelativityProviderDestinationFolderPermissionValidator CreateDestinationFolderPermissionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials)

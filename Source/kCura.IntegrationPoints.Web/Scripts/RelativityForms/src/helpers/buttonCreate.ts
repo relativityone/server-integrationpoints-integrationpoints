@@ -25,22 +25,30 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             model.actions = [];
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
-                            promise.then( async function (result) {
-                                if (!result.ok) {
-                                    let errorMessage = await result.text();
-                                    var message = `["Failed to submit integration point job.", "${errorMessage}"]`;
-                                    createMessageContainer(message, "error", lqMessageContainer, "");
+                            promise
+                                .then(result => result.json())
+                                .then(function (result) {
+                                    if (result) {
+                                        let header = "Failed to submit integration point job.";
+                                        let messages = '[';
+                                        result.errors.forEach(x => {
+                                            messages += '"' + x.message + '",';
+                                        })
 
-                                    // @ts-ignore
-                                    model.close("Close model");                                   
+                                        messages = messages.slice(0, -1) + ']';
 
-                                } else {
-                                    createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
+                                        createMessageContainer(messages, "error", lqMessageContainer, header);
 
-                                    // @ts-ignore
-                                    model.accept("Accept run");
-                                }
-                            })
+                                        // @ts-ignore
+                                        model.close("Close model");
+
+                                    } else {
+                                        createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
+
+                                        // @ts-ignore
+                                        model.accept("Accept run");
+                                    }
+                                })
                                 .catch(err => {
                                     console.log(err);
                                     // @ts-ignore
@@ -67,9 +75,8 @@ function createMessageContainer(message: string, theme: string, lqMessageContain
     let messageContainer = document.createElement("rwc-message-container");
     messageContainer.setAttribute("class", "RIPCustomMessageBar");
     messageContainer.setAttribute("theme", theme);
-    if (theme === "error") {
-        messageContainer.setAttribute("message-collection-title-prefix", title);
-    }
+
+    messageContainer.title = title;
     messageContainer.setAttribute("messages", message);
     lqMessageContainer.appendChild(messageContainer);
 }
