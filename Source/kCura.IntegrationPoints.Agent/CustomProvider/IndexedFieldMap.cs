@@ -5,9 +5,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
     /// <summary>
     /// Wraps FieldMap class from IntegrationPoint.FieldMappings by properties needed for import process with ImportAPI 2.0
     /// </summary>
-    internal class FieldMapWrapper
+    internal class IndexedFieldMap
     {
-        public FieldMapWrapper(FieldMap fieldMap, int columnIndex)
+        public IndexedFieldMap(FieldMap fieldMap, int columnIndex)
         {
             FieldMap = fieldMap;
             ColumnIndex = columnIndex;

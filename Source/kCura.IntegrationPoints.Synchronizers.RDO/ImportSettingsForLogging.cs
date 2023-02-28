@@ -153,16 +153,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         internal OverlayBehavior OverlayBehavior => _settings.OverlayBehavior;
 
-        internal OverwriteModeEnum OverwriteMode => _settings.OverwriteMode;
-
         internal ImportAuditLevel AuditLevel => _settings.AuditLevel;
 
         public bool MoveDocumentsInAnyOverlayMode => _settings.MoveDocumentsInAnyOverlayMode;
+
         private string RemoveIfNotEmpty(string toSanitize)
         {
             const string sensitiveDataRemoved = "[Sensitive data has been removed]";
 
-            return string.IsNullOrEmpty(toSanitize) ? "" : sensitiveDataRemoved;
+            return string.IsNullOrEmpty(toSanitize) ? string.Empty : sensitiveDataRemoved;
         }
     }
 }

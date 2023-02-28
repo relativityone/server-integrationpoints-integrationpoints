@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -62,8 +62,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         {
             var settings = new Dictionary<string, object>
             {
-                {nameof(DestinationConfiguration.ArtifactTypeId), _ARTIFACT_TYPE_ID },
-                {nameof(DestinationConfiguration.FederatedInstanceArtifactId), _FEDERATED_INSTANCE_ID}
+                {nameof(ImportSettings.ArtifactTypeId), _ARTIFACT_TYPE_ID },
+                {nameof(ImportSettings.FederatedInstanceArtifactId), _FEDERATED_INSTANCE_ID}
             };
 
             return settings;

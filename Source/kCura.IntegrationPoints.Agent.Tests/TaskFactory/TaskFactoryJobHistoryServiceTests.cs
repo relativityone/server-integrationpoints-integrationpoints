@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             IAPILog logger = Substitute.For<IAPILog>();
             ISerializer serializer = Substitute.For<ISerializer>();
-            serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
+            serializer.Deserialize<ImportSettings>(Arg.Any<string>()).Returns(new ImportSettings());
             serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 
             _jobHistoryService = Substitute.For<IJobHistoryService>();

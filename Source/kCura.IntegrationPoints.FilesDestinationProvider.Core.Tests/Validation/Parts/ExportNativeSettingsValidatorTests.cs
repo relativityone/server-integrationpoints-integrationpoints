@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS;
 using NSubstitute;
 using NUnit.Framework;
@@ -33,8 +32,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             _serializer.Deserialize<ExportUsingSavedSearchSettings>(Arg.Any<string>())
                 .Returns(new ExportUsingSavedSearchSettings());
 
-            _serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>())
-                .Returns(new DestinationConfiguration());
+            _serializer.Deserialize<ImportSettings>(Arg.Any<string>())
+                .Returns(new ImportSettings());
 
             _serializer.Deserialize<IEnumerable<FieldMap>>(Arg.Any<string>())
                 .Returns(new List<FieldMap>());

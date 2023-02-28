@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Documents;
@@ -13,39 +11,35 @@ using Relativity.Import.V1.Models.Settings;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
+    /// <inheritdoc />
     internal class DocumentImportSettingsBuilder : IDocumentImportSettingsBuilder
     {
         private readonly IInstanceSettings _instanceSettings;
-        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
         public DocumentImportSettingsBuilder(
             IInstanceSettings instanceSettings,
-            ISerializer serializer,
             IAPILog logger)
         {
             _instanceSettings = instanceSettings;
-            _serializer = serializer;
             _logger = logger;
         }
 
-        public async Task<DocumentImportConfiguration> BuildAsync(string destinationConfiguration, List<FieldMapWrapper> fieldMappings)
+        /// <inheritdoc />
+        public async Task<DocumentImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
-            var configuration = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-            var folderConf = _serializer.Deserialize<FolderConf>(destinationConfiguration);
-
-            IWithOverlayMode overlayModeSettings = global::Relativity.Import.V1.Builders.Documents.ImportDocumentSettingsBuilder.Create();
+            IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
-            FieldMapWrapper identifier = GetIdentifierField(fieldMappings);
+            IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
             IWithNatives nativesSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
-                configuration.ImportOverwriteMode,
-                configuration.FieldOverlayBehavior,
+                destinationConfiguration.ImportOverwriteMode,
+                destinationConfiguration.FieldOverlayBehavior,
                 identifier.DestinationFieldName);
 
-            IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, configuration.ImportNativeFileCopyMode);
+            IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, destinationConfiguration.ImportNativeFileCopyMode);
 
             IWithFolders withFolders = ConfigureFieldsMappingSettings(
                 fieldsMappingSettings,
@@ -54,15 +48,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
                 withFolders,
                 fieldMappings,
-                configuration.DestinationFolderArtifactId,
-                folderConf.UseFolderPathInformation,
-                configuration.FolderPathSourceFieldName);
+                destinationConfiguration.DestinationFolderArtifactId,
+                destinationConfiguration.UseFolderPathInformation,
+                destinationConfiguration.FolderPathSourceFieldName);
 
             ConfigureMoveExistingDocuments(
                 advancedSettings,
-                configuration.MoveExistingDocuments,
-                configuration.ImportOverwriteMode,
-                configuration.FolderPathSourceFieldName);
+                destinationConfiguration.MoveExistingDocuments,
+                destinationConfiguration.ImportOverwriteMode,
+                destinationConfiguration.FolderPathSourceFieldName);
 
             return new DocumentImportConfiguration(importSettings, advancedSettings);
         }
@@ -135,12 +129,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, List<FieldMapWrapper> fieldMappings)
+        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, List<IndexedFieldMap> fieldMappings)
         {
             _logger.LogInformation("Configuring FieldsMapping...");
             return fieldsMappingSettings.WithFieldsMapped(x =>
             {
-                foreach (FieldMapWrapper map in fieldMappings)
+                foreach (IndexedFieldMap map in fieldMappings)
                 {
                     _logger.LogInformation("Configure Field - {@field}", map);
 
@@ -159,7 +153,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private ImportDocumentSettings ConfigureDestinationFolderStructure(
             IWithFolders withFolders,
-            List<FieldMapWrapper> fieldMappings,
+            List<IndexedFieldMap> fieldMappings,
             int destinationFolderArtifactId,
             bool useFolderPathInformation,
             string folderPathField)
@@ -179,13 +173,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private static int GetFieldIndex(List<FieldMapWrapper> fieldMappings, string fieldName)
+        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
         {
-            FieldMapWrapper field = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return field?.ColumnIndex ?? -1;
+            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
+            return indexedField?.ColumnIndex ?? -1;
         }
 
-        private static FieldMapWrapper GetIdentifierField(List<FieldMapWrapper> fieldMappings)
+        private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
         {
             return fieldMappings.FirstOrDefault(x => x.FieldMap.DestinationField.IsIdentifier);
         }

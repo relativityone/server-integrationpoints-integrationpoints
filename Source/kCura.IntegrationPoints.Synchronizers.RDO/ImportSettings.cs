@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
             NestedValueDelimiter = Constants.NESTED_VALUE_DELIMITER;
             ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
+            ErrorFilePath = string.Empty;
+            EnableTagging = true;
         }
 
         #region "Public Properties"
@@ -69,10 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool DisableUserSecurityCheck { get; set; }
 
-        public string ErrorFilePath { get; set; } = string.Empty;
-
-        [JsonIgnore]
-        public Encoding ExtractedTextEncoding => string.IsNullOrWhiteSpace(ExtractedTextFileEncoding) ? Encoding.Default : Encoding.GetEncoding(ExtractedTextFileEncoding);
+        public string ErrorFilePath { get; set; }
 
         public bool ExtractedTextFieldContainsFilePath { get; set; }
 
@@ -111,26 +110,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public bool ImportNativeFile { get; set; }
 
         public ImportNativeFileCopyModeEnum ImportNativeFileCopyMode { get; set; }
-
-        public ImportOverlayBehaviorEnum ImportOverlayBehavior
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(FieldOverlayBehavior) || FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_DEFAULT)
-                {
-                    return ImportOverlayBehaviorEnum.UseRelativityDefaults;
-                }
-                if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_MERGE)
-                {
-                    return ImportOverlayBehaviorEnum.MergeAll;
-                }
-                if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_REPLACE)
-                {
-                    return ImportOverlayBehaviorEnum.ReplaceAll;
-                }
-                throw new IntegrationPointsException($"Unable to determine Import Overlay Behavior : {FieldOverlayBehavior}");
-            }
-        }
 
         public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
 
@@ -199,11 +178,39 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool LoadImportedFullTextFromServer { get; set; }
 
-        public bool EnableTagging { get; set; } = true;
+        public bool EnableTagging { get; set; }
+
+        public bool UseFolderPathInformation { get; set; }
+
+        public int FolderPathSourceField { get; set; }
 
         #endregion "Public Properties"
 
-        #region "Internal Properties"
+        #region "Calculated Properties"
+
+        [JsonIgnore]
+        public ImportOverlayBehaviorEnum ImportOverlayBehavior
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FieldOverlayBehavior) || FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_DEFAULT)
+                {
+                    return ImportOverlayBehaviorEnum.UseRelativityDefaults;
+                }
+                if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_MERGE)
+                {
+                    return ImportOverlayBehaviorEnum.MergeAll;
+                }
+                if (FieldOverlayBehavior == FIELDOVERLAYBEHAVIOR_REPLACE)
+                {
+                    return ImportOverlayBehaviorEnum.ReplaceAll;
+                }
+                throw new IntegrationPointsException($"Unable to determine Import Overlay Behavior : {FieldOverlayBehavior}");
+            }
+        }
+
+        [JsonIgnore]
+        internal Encoding ExtractedTextEncoding => string.IsNullOrWhiteSpace(ExtractedTextFileEncoding) ? Encoding.Default : Encoding.GetEncoding(ExtractedTextFileEncoding);
 
         [JsonIgnore]
         internal NativeFileCopyModeEnum NativeFileCopyMode => (NativeFileCopyModeEnum)ImportNativeFileCopyMode;
@@ -212,19 +219,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         internal EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior OverlayBehavior => (EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)ImportOverlayBehavior;
 
         [JsonIgnore]
-        internal OverwriteModeEnum OverwriteMode
-        {
-            get { return (OverwriteModeEnum)ImportOverwriteMode; }
-
-            set { ImportOverwriteMode = (ImportOverwriteModeEnum)value; }
-        }
-
-        [JsonIgnore]
         internal EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel AuditLevel => (EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)ImportAuditLevel;
 
         [JsonIgnore]
-        public bool MoveDocumentsInAnyOverlayMode => OverwriteMode != OverwriteModeEnum.Append &&
-            MoveExistingDocuments && !string.IsNullOrEmpty(FolderPathSourceFieldName);
+        public bool MoveDocumentsInAnyOverlayMode => ImportOverwriteMode != ImportOverwriteModeEnum.AppendOnly &&
+                                                     MoveExistingDocuments && !string.IsNullOrEmpty(FolderPathSourceFieldName);
 
         #endregion "Internal Properties"
 

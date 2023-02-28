@@ -1,9 +1,9 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
         protected ExportUsingSavedSearchSettings ExportSettingsEx { get; private set; }
 
-        protected DestinationConfiguration DestinationSettingsEx { get; private set; }
+        protected ImportSettings DestinationSettings { get; private set; }
 
         protected ExportFileValidatorBase(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder)
         {
@@ -37,9 +37,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
         protected ExportFile PrepareExportFileForValidation(IntegrationPointProviderValidationModel value)
         {
             ExportSettingsEx = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
-            DestinationSettingsEx = _serializer.Deserialize<DestinationConfiguration>(value.DestinationConfiguration);
+            DestinationSettings = _serializer.Deserialize<ImportSettings>(value.DestinationConfiguration);
 
-            var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, value.FieldsMap, DestinationSettingsEx.ArtifactTypeId);
+            var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, value.FieldsMap, DestinationSettings.ArtifactTypeId);
             var exportFile = _exportFileBuilder.Create(exportSettings);
             // WinEDDS code expects this flag to be set for validation
             exportFile.ExportFullText = exportFile.ExportFullTextAsFile;

@@ -90,8 +90,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     jobDetails = await CreateBatchesAsync(jobId, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
                 }
 
-                ImportApiFlowEnum importApiFlowEnum = GetImportApiFlow(integrationPointDto.DestinationConfiguration);
-                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(importApiFlowEnum);
+                var destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
+                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
                 var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
 
                 List<FieldMapWrapper> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
@@ -165,15 +165,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private ImportApiFlowEnum GetImportApiFlow(string destinationConfiguration)
         {
-            ImportSettings settings = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
-            return settings.ArtifactTypeId == (int)ArtifactType.Document
-                ? ImportApiFlowEnum.Document
-                : ImportApiFlowEnum.Rdo;
+            return fieldMappings.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }
-
-        private static List<FieldMapWrapper> WrapFieldMappings(List<FieldMap> fieldMappings)
-        {
-            return fieldMappings.Select((map, i) => new FieldMapWrapper(map, i)).ToList();
         }
-    }
 }
