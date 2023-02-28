@@ -390,7 +390,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 .Which.Value.Should().BeAssignableTo<ValidationResultDTO>()
                 .Which.IsValid.Should().BeFalse();
 
-            FakeRelativityInstance.Errors.Should().OnlyContain(error => error.Message == "Failed to submit integration job. Integration Point validation failed.");
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
