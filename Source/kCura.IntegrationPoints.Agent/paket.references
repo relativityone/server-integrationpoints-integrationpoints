@@ -10,4 +10,6 @@ Relativity.Telemetry.APM
 Relativity.DataTransfer.MessageService
 Relativity.Platform.Agent.WorkloadDiscovery.SDK
 Relativity.AutomatedWorkflows.SDK
+Relativity.Storage
+Relativity.Storage.Extensions
 iTextSharp

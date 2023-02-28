@@ -208,10 +208,9 @@
                 self.locationSelector.toggle(false);
             }
         });
-
-        self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
-               
-        self.EnableTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).EnableTagging || "true");        
+        
+        self.CreateSavedSearchForTagging = ko.observable(state.CreateSavedSearchForTagging || "false");       
+        self.EnableTagging = ko.observable(state.EnableTagging || "true");
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
             if (value == "true") {

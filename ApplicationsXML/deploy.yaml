@@ -7,8 +7,8 @@ agents:
       cpu: 4
     workload_scaling: # Control how agent scales based on Workload Discovery response
       default: # Agent default container count based on Workload Discovery t-shirt response. Notes: 1. Global default (S:2, M:4, L:8, XL:12, XXL:16) is used if not specified here 2. Max count is 128 3. Values must be increasing or equal
-        s: 2
-        m: 4
-        l: 6
+        s: 3
+        m: 6
+        l: 9
         xl: 12
         xxl: 16
