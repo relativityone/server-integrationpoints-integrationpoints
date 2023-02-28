@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -38,8 +39,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             try
             {
-                return _toggleProvider.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>()
-                    && !await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
+                return await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>()
+                       && !await IsEntityObjectImportAsync(integrationPoint.DestinationConfiguration).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

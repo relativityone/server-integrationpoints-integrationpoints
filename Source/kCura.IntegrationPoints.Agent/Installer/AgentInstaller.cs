@@ -7,6 +7,9 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -15,6 +18,7 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
@@ -135,6 +139,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
 
+            container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
+            container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
+            container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
+            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
+            container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>().LifestyleSingleton());
+            container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
+
             container.Register(
                 Component
                     .For<IExportServiceObserversFactory>()
@@ -175,6 +186,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IMonitoringConfig>().ImplementedBy<MonitoringConfig>().LifestyleTransient());
             container.Register(Component.For<IDateTime>().ImplementedBy<DateTimeWrapper>().LifestyleTransient());
             container.Register(Component.For<ITimerFactory>().ImplementedBy<TimerFactory>().LifestyleTransient());
+            container.Register(Component.For<IStopwatch>().ImplementedBy<StopwatchWrapper>().LifestyleTransient());
 
             container.Register(Component.For<IAppDomainMonitoringEnabler>().ImplementedBy<AppDomainMonitoringEnabler>().LifestyleTransient());
             container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<SystemAndApplicationUsageReporter>().LifestyleTransient());

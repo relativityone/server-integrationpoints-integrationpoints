@@ -126,8 +126,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private void SetupNewCustomProviderToggle(bool value)
         {
-            _toggleProviderFake.Setup(x => x.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>())
-                .Returns(value);
+            _toggleProviderFake
+                .Setup(x => x.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>())
+                .ReturnsAsync(value);
         }
 
         private void SetupObjectTypeReadFromConfiguration(Guid objectTypeGuid)
