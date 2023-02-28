@@ -27,13 +27,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             _logger = logger;
         }
 
-        public async Task<DataSourceSettings> CreateDataFileAsync(IStorageAccess<string> storage, CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<FieldMapWrapper> fieldMap)
+        public async Task<DataSourceSettings> CreateDataFileAsync(IStorageAccess<string> storage, CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<IndexedFieldMap> fieldMap)
         {
             try
             {
                 _logger.LogInformation("Creating data file for batch index: {batchIndex}", batch.BatchID);
 
-                List<FieldMapWrapper> orderedFieldMap = fieldMap.OrderBy(x => x.ColumnIndex).ToList();
+                List<IndexedFieldMap> orderedFieldMap = fieldMap.OrderBy(x => x.ColumnIndex).ToList();
 
                 IEnumerable<FieldEntry> fields = integrationPointDto.FieldMappings.Select(x => x.SourceField);
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointDto.SourceConfiguration, integrationPointDto.SecuredConfiguration);
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     {
                         List<string> rowValues = new List<string>();
 
-                        foreach (FieldMapWrapper field in orderedFieldMap)
+                        foreach (IndexedFieldMap field in orderedFieldMap)
                         {
                             string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
                             rowValues.Add(value);

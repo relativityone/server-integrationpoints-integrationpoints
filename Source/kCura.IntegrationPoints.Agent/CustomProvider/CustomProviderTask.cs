@@ -94,9 +94,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
                 var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
 
-                List<FieldMapWrapper> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
+                List<IndexedFieldMap> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
 
-                await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, fieldMapping);
+                await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
 
                 foreach (CustomProviderBatch batch in jobDetails.Batches)
                 {
@@ -163,9 +163,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _jobService.UpdateJobDetails(job);
         }
 
-        private ImportApiFlowEnum GetImportApiFlow(string destinationConfiguration)
+        private static List<IndexedFieldMap> WrapFieldMappings(List<FieldMap> fieldMappings)
         {
             return fieldMappings.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }
-        }
+    }
 }
