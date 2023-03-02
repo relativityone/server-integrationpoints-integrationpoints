@@ -89,6 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
                 Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
                 {
                     { "r1.team.id", "PTCI-2456712" },
+                    { "service.name", "integrationpoints-repo" },
                     { "r1.job.id", jobId.ToString() }
                 };
 
