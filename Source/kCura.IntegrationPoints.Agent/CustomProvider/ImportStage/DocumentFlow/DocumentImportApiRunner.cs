@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
-using Relativity.Import.V1;
-using Relativity.Import.V1.Models.Settings;
-using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
@@ -13,7 +9,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     internal class DocumentImportApiRunner : IImportApiRunner
     {
         private readonly IDocumentImportSettingsBuilder _importSettingsBuilder;
-        private readonly IKeplerServiceFactory _serviceFactory;
+        private readonly IImportApiService _importApiService;
         private readonly IAPILog _logger;
 
         /// <summary>
@@ -26,90 +22,29 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentImportApiRunner"/> class.
         /// </summary>
-        /// <param name="importSettingsBuilder">The builder able to create desired IAPI configuration.></param>
-        /// <param name="serviceFactory">Factory for creating keppler services.</param>
+        /// <param name="importSettingsBuilder">The builder able to create desired ImportAPI configuration.></param>
+        /// <param name="importApiService">The service responsible for ImportAPI calls.</param>
         /// <param name="logger">The logger.</param>
-        public DocumentImportApiRunner(IDocumentImportSettingsBuilder importSettingsBuilder, IKeplerServiceFactory serviceFactory, IAPILog logger)
+        public DocumentImportApiRunner(IDocumentImportSettingsBuilder importSettingsBuilder, IImportApiService importApiService, IAPILog logger)
         {
             _importSettingsBuilder = importSettingsBuilder;
-            _serviceFactory = serviceFactory;
+            _importApiService = importApiService;
             _logger = logger;
         }
 
         /// <inheritdoc/>
         public async Task RunImportJobAsync(ImportJobContext importJobContext, ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
-            DocumentImportConfiguration configuration = await _importSettingsBuilder.BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
+            _logger.LogInformation("ImportApiRunner for document flow started. ImportJobId: {jobId}", importJobContext.ImportJobId);
 
-            Response createResponse = await CreateImportJobAsync(importJobContext).ConfigureAwait(false);
-            createResponse.ValidateOrThrow();
+            DocumentImportConfiguration configuration = await _importSettingsBuilder
+                .BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
 
-            Response docConfigurationResponse = await AttachImportSettingsToImportJobAsync(importJobContext, configuration.DocumentSettings).ConfigureAwait(false);
-            docConfigurationResponse.ValidateOrThrow();
+            await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 
-            Response advancedResponse = await AttachAdvancedImportSettingsToImportJobAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
-            advancedResponse.ValidateOrThrow();
+            await _importApiService.ConfigureDocumentImportApiJobAsync(importJobContext, configuration).ConfigureAwait(false);
 
-            Response startResponse = await BeginImportJobAsync(importJobContext).ConfigureAwait(false);
-            startResponse.ValidateOrThrow();
-        }
-
-        private async Task<Response> CreateImportJobAsync(ImportJobContext importJobContext)
-        {
-            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation("Creating ImportJob with ID: {importJobId}", importJobContext.ImportJobId);
-
-                return await importJobController.CreateAsync(
-                        workspaceID: importJobContext.DestinationWorkspaceId,
-                        importJobID: importJobContext.ImportJobId,
-                        applicationName: Core.Constants.IntegrationPoints.APPLICATION_NAME,
-                        correlationID: importJobContext.RipJobId.ToString())
-                    .ConfigureAwait(false);
-            }
-        }
-
-        private async Task<Response> AttachImportSettingsToImportJobAsync(ImportJobContext importJobContext, ImportDocumentSettings importSettings)
-        {
-            using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory.CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation("Attaching ImportDocumentsSettings to ImportJob {jobId}... - ImportDocumentSettings: {@documentSettings}", importJobContext.ImportJobId, importSettings);
-
-                return await documentConfigurationController.CreateAsync(
-                    importJobContext.DestinationWorkspaceId,
-                    importJobContext.ImportJobId,
-                    importSettings).ConfigureAwait(false);
-            }
-        }
-
-        private async Task<Response> AttachAdvancedImportSettingsToImportJobAsync(ImportJobContext importJobContext, AdvancedImportSettings importSettings)
-        {
-            using (IAdvancedConfigurationController configurationController = await _serviceFactory.CreateProxyAsync<IAdvancedConfigurationController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation(
-                    "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@importSettings}",
-                    importJobContext.ImportJobId,
-                    importSettings);
-
-                return await configurationController.CreateAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId,
-                        importSettings)
-                    .ConfigureAwait(false);
-            }
-        }
-
-        private async Task<Response> BeginImportJobAsync(ImportJobContext importJobContext)
-        {
-            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation("Starting ImportJob {jobId} and wait for DataSources...", importJobContext.ImportJobId);
-
-                return await importJobController.BeginAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId)
-                    .ConfigureAwait(false);
-            }
+            await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
         }
     }
 }

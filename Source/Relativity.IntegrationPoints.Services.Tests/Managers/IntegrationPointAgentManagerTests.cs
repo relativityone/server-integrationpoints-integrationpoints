@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using FluentAssertions;
@@ -8,19 +9,18 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
-using System.Linq;
-using kCura.ScheduleQueue.Core.Interfaces;
 using WorkloadDiscovery;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class IntegrationPointAgentManagerTests : TestBase
     {
         private int _AGENT_TYPE_ID = 123;
@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         [TestCase(5, 0, 1, WorkloadSize.M)]
         [TestCase(10, 1, 4, WorkloadSize.M)]
         [TestCase(10, 1, 1, WorkloadSize.L)]
-        [TestCase(30, 0, 2, WorkloadSize.L)]
+        [TestCase(30, 0, 2, WorkloadSize.XXL)]
         public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenExcludedJobsAreInQueue(int queueCount,  int jobsExcludedByPriority, int excludedFromProcessingByTimeCondition, WorkloadSize expectedWorkloadSize)
         {
             // Arrange
@@ -75,9 +75,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         [TestCase(2, WorkloadSize.S)]
         [TestCase(3, WorkloadSize.S)]
         [TestCase(4, WorkloadSize.M)]
-        [TestCase(7, WorkloadSize.M)]
+        [TestCase(7, WorkloadSize.L)]
         [TestCase(8, WorkloadSize.L)]
-        [TestCase(30, WorkloadSize.L)]
+        [TestCase(11, WorkloadSize.XL)]
+        [TestCase(30, WorkloadSize.XXL)]
         public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenUsingDefaultSettings(int pendingJobsCount, WorkloadSize expectedWorkloadSize)
         {
             // Arrange

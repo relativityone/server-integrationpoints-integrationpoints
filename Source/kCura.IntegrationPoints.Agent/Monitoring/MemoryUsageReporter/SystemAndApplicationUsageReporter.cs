@@ -82,6 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
                     { "r1.team.id", "PTCI-2456712" },
+                    { "service.name", "integrationpoints-repo" },
                     { "r1.job.id", jobId.ToString() },
                     { "JobType", jobType },
                     { "WorkflowId", workflowId }
