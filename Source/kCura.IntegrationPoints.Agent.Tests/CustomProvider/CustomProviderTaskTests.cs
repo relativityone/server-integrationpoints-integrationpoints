@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IRelativityStorageService> _relativityStorageService;
         private Mock<IStorageAccess<string>> _storageAccess;
         private Mock<IJobService> _jobService;
+        private Mock<IImportApiRunnerFactory> _importApiRunnerFactory;
 
         [SetUp]
         public void SetUp()
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(_storageAccess.Object);
 
             _jobService = new Mock<IJobService>();
+            _importApiRunnerFactory = new Mock<IImportApiRunnerFactory>();
 
             IntegrationPointDto dto = new IntegrationPointDto();
             _integrationPointService.Setup(x => x.Read(It.IsAny<int>())).Returns(dto);
@@ -114,9 +116,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private CustomProviderTask PrepareSut()
         {
             return new CustomProviderTask(
-                _integrationPointService.Object, _sourceProviderService.Object,
-                _idFilesBuilder.Object, _relativityStorageService.Object, new JSONSerializer(),
-                _jobService.Object, Mock.Of<IAPILog>());
+                _integrationPointService.Object,
+                _sourceProviderService.Object,
+                _idFilesBuilder.Object,
+                _relativityStorageService.Object,
+                new JSONSerializer(),
+                _jobService.Object,
+                _importApiRunnerFactory.Object,
+                Mock.Of<IAPILog>());
         }
     }
 }

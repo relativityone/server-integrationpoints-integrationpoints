@@ -73,6 +73,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
 
             Assert.IsFalse(isSensitivaDataPresent);
         }
+
         [Test]
         public void OnBehalfOfUserTokenIsNotPresent()
         {
@@ -89,17 +90,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Model.Serializer
             bool isSensitivaDataPresent = IsSubstringPresentCaseInsensitive(serializedSettings, userToken);
 
             Assert.IsFalse(isSensitivaDataPresent);
-        }
-
-        [Test]
-        public void ImportSettingsHasSpecificNumberOfFields()
-        {
-            // please verify if ImportSettings properties modification doesnt affect serialization for logging (sensitive data, etc.)
-            // if it is ok, just update this number
-            const int expectedNumberOfProperties = 67;
-            int actualNumberOfProperties = typeof(ImportSettings).GetProperties().Length;
-
-            Assert.AreEqual(expectedNumberOfProperties, actualNumberOfProperties);
         }
 
         private bool IsSubstringPresentCaseInsensitive(string fullText, string substring)

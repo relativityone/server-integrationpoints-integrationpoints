@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -10,6 +9,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -82,8 +82,8 @@ namespace kCura.IntegrationPoint.Tests.Core
                     TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID
                 });
 
-            _serializer.Deserialize<DestinationConfiguration>(_validationModel.DestinationConfiguration)
-                .Returns(new DestinationConfiguration
+            _serializer.Deserialize<ImportSettings>(_validationModel.DestinationConfiguration)
+                .Returns(new ImportSettings
                 {
                     ArtifactTypeId = _ARTIFACT_TYPE_ID,
                 });

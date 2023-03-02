@@ -6,7 +6,6 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -23,6 +22,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Moq;
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
         private Data.IntegrationPoint _integrationPoint;
-        private DestinationConfiguration _destinationConfiguration;
+        private ImportSettings _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
         private int _WORKSPACE_ID;
         private int _USER_ID;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-            _destinationConfiguration = _fxt.Build<DestinationConfiguration>()
+            _destinationConfiguration = _fxt.Build<ImportSettings>()
                 .With(x => x.ArtifactTypeId, _fxt.Create<int>())
                 .Create();
             _sourceProvider = _fxt.Build<SourceProvider>()
@@ -89,6 +89,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.ScheduleRule, (string)null)
                 .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
                 .With(x => x.FieldMappings, string.Empty)
+                .With(x => x.EnableScheduler, false)
+                .With(x => x.HasErrors, false)
+                .With(x => x.LogErrors, true)
+                .With(x => x.PromoteEligible, false)
                 .Create();
 
             _integrationPointDto = _fxt.Build<IntegrationPointDto>()
@@ -99,13 +103,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.DestinationProvider, _destinationProvider.ArtifactId)
                 .With(x => x.DestinationConfiguration, JsonConvert.SerializeObject(_destinationConfiguration))
                 .With(x => x.Type, _integrationPointType.ArtifactId)
-                .With(x => x.Scheduler, new Scheduler(false, null))
+                .With(x => x.Scheduler, new Scheduler(_integrationPoint.EnableScheduler.Value, null))
                 .With(x => x.SelectedOverwrite, OverwriteFieldsChoices.IntegrationPointAppendOnly.Name)
                 .With(x => x.EmailNotificationRecipients, _integrationPoint.EmailNotificationRecipients)
                 .With(x => x.LastRun, _integrationPoint.LastRuntimeUTC)
                 .With(x => x.NextRun, _integrationPoint.NextScheduledRuntimeUTC)
                 .With(x => x.SecuredConfiguration, _integrationPoint.SecuredConfiguration)
                 .With(x => x.FieldMappings, new List<FieldMap>())
+                .With(x => x.HasErrors, _integrationPoint.HasErrors)
+                .With(x => x.LogErrors, _integrationPoint.LogErrors)
+                .With(x => x.PromoteEligible, _integrationPoint.PromoteEligible)
                 .Create();
 
             _contextFake = _fxt.Freeze<Mock<ICaseServiceContext>>();
@@ -929,7 +936,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             IntegrationPointDto result = _sut.Read(_integrationPointDto.ArtifactId);
 
             // Assert
-            MatchHelper.Matches(_integrationPointDto, result);
+            Assert.True(MatchHelper.Matches(_integrationPointDto, result));
         }
 
         [Test]
@@ -939,7 +946,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             IntegrationPointDto result = _sut.Read(_integrationPointDto.ArtifactId);
 
             // assert
-            MatchHelper.Matches(_integrationPointDto, result);
+            Assert.True(MatchHelper.Matches(_integrationPointDto, result));
         }
 
         [Test]

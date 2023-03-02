@@ -20,18 +20,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             // ARRANGE
             var serializer = new JSONSerializer();
-            var settings = new ImportSettings {ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay};
+            var settings = new ImportSettings { ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay };
 
             // ACT
             string serializedString = serializer.Serialize(settings);
-            serializer.Deserialize<ImportSettings>(serializedString);
+            var deserializedSettings = serializer.Deserialize<ImportSettings>(serializedString);
 
             // ASSERT
             Assert.IsFalse(serializedString.Contains("\"AuditLevel\""));
             Assert.IsFalse(serializedString.Contains("\"NativeFileCopyMode\""));
             Assert.IsFalse(serializedString.Contains("\"OverwriteMode\""));
             Assert.IsFalse(serializedString.Contains("\"OverlayBehavior\""));
-            Assert.AreEqual(OverwriteModeEnum.AppendOverlay, (OverwriteModeEnum)GetPropertyValue(settings, "OverwriteMode"));
+
+            Assert.AreEqual(ImportOverwriteModeEnum.AppendOverlay, deserializedSettings.ImportOverwriteMode);
         }
 
         [TestCase(null, ImportOverlayBehaviorEnum.UseRelativityDefaults)]
@@ -73,13 +74,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             bool isRelativityProvider = importSettings.IsRelativityProvider();
 
             Assert.IsFalse(isRelativityProvider);
-        }
-
-        private object GetPropertyValue(object o, string propertyName)
-        {
-            const BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-            PropertyInfo property = o.GetType().GetProperty(propertyName, bindFlags);
-            return property?.GetValue(o);
         }
     }
 }
