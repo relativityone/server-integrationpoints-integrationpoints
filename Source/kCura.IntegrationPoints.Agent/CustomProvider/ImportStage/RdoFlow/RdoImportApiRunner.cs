@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             Response docConfigurationResponse = await AttachImportSettingsToImportJobAsync(importJobContext, configuration.RdoSettings).ConfigureAwait(false);
             docConfigurationResponse.ValidateOrThrow();
 
-            Response advancedResponse = await AttachAdvancedImportSettingsToImportJobAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
-            advancedResponse.ValidateOrThrow();
+            //Response advancedResponse = await AttachAdvancedImportSettingsToImportJobAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
+            //advancedResponse.ValidateOrThrow();
 
             Response startResponse = await BeginImportJobAsync(importJobContext).ConfigureAwait(false);
             startResponse.ValidateOrThrow();

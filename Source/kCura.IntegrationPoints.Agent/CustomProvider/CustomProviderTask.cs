@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,16 +8,16 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
-using Relativity;
 using Relativity.API;
-using Relativity.DataExchange.Export.VolumeManagerV2.Metadata.Natives;
+using Relativity.Import.V1;
 using Relativity.Import.V1.Models.Sources;
-using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.Import.V1.Services;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Storage;
@@ -27,6 +26,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
     internal class CustomProviderTask : ICustomProviderTask
     {
+        private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISourceProviderService _sourceProviderService;
         private readonly IIdFilesBuilder _idFilesBuilder;
@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly IAPILog _logger;
 
         public CustomProviderTask(
+            IKeplerServiceFactory serviceFactory,
             IIntegrationPointService integrationPointService,
             ISourceProviderService sourceProviderService,
             IIdFilesBuilder idFilesBuilder,
@@ -48,6 +49,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             IImportApiRunnerFactory importApiRunnerFactory,
             IAPILog logger)
         {
+            _serviceFactory = serviceFactory;
             _integrationPointService = integrationPointService;
             _sourceProviderService = sourceProviderService;
             _idFilesBuilder = idFilesBuilder;
@@ -66,83 +68,108 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private async Task ExecuteAsync(Job job)
         {
-            Guid jobId = Guid.NewGuid();
+            ImportSettings destinationConfiguration;
+            CustomProviderJobDetails jobDetails;
 
-            IStorageAccess<string> storage = null;
-            DirectoryInfo importDirectory = null;
-
-            try
+            using (IImportSourceController importSourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
             {
-                storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
+                IStorageAccess<string> storage = null;
+                DirectoryInfo importDirectory = null;
 
-                string workspaceDirectoryPath = await _relativityStorageService.GetWorkspaceDirectoryPathAsync(job.WorkspaceID).ConfigureAwait(false);
-                importDirectory = new DirectoryInfo(Path.Combine(workspaceDirectoryPath, "RIP", "Import", jobId.ToString()));
-                await storage.CreateDirectoryAsync(importDirectory.FullName).ConfigureAwait(false);
-
-                IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
-
-                IDataSourceProvider provider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
-
-                CustomProviderJobDetails jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(job.JobDetails);
-
-                if (jobDetails?.Batches == null || !jobDetails.Batches.Any())
+                try
                 {
-                    jobDetails = await CreateBatchesAsync(jobId, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
-                }
+                    jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(job.JobDetails);
 
-                var destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
-                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
-                var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
+                    storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
 
-                List<IndexedFieldMap> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
+                    string workspaceDirectoryPath = await _relativityStorageService.GetWorkspaceDirectoryPathAsync(job.WorkspaceID).ConfigureAwait(false);
+                    importDirectory = new DirectoryInfo(Path.Combine(workspaceDirectoryPath, "RIP", "Import", jobId.ToString()));
+                    await storage.CreateDirectoryAsync(importDirectory.FullName).ConfigureAwait(false);
 
-                await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
+                    IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
-                foreach (CustomProviderBatch batch in jobDetails.Batches)
-                {
-                    if (batch.IsAddedToImportQueue)
+                    IDataSourceProvider provider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
+
+                    if (jobDetails?.Batches == null || !jobDetails.Batches.Any())
                     {
-                        continue;
+                        jobDetails = await CreateBatchesAsync(jobId, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
                     }
 
-                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(storage, batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
-                    
-                    // TODO add file to import
+                    destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
 
-                    batch.IsAddedToImportQueue = true;
-                    UpdateJobDetails(job, jobDetails);
+                    IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
+
+                    List<IndexedFieldMap> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
+
+                    var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
+                    await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
+
+                    foreach (CustomProviderBatch batch in jobDetails.Batches)
+                    {
+                        if (batch.IsAddedToImportQueue)
+                        {
+                            continue;
+                        }
+
+                        DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(storage, batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
+
+                        Response response = await importSourceController.AddSourceAsync(destinationWorkspaceId, jobDetails.ImportJobID, batch.BatchGuid, dataSourceSettings).ConfigureAwait(false);
+                        response.ValidateOrThrow();
+
+                        batch.IsAddedToImportQueue = true;
+                        UpdateJobDetails(job, jobDetails);
+                    }
+                }
+                catch (ImportApiResponseException ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Failed to run import job: {importJobId}. Error code: {errorCode}. Error message: {errorMessage}",
+                        ex.Response.ImportJobID,
+                        ex.Response.ErrorCode,
+                        ex.Response.ErrorMessage);
+
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to execute Custom Provider job");
+
+                    // TODO REL-806942 Mark job as failed
+                    // There is a newly created method IntegrationPointService.MarkJobAsFailed() (currently private)
+                    // We can extract this method to the separate service and extend it with other JobHistory(Error) use cases
+
+                    throw;
+                }
+                finally
+                {
+                    if (storage != null && importDirectory != null)
+                    {
+                        //await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
+                        //{
+                        //    Recursive = true
+                        //}).ConfigureAwait(false);
+                    }
+
+                    await EndImportJobAsync(destinationWorkspaceId, ).ConfigureAwait(false);
                 }
             }
-            catch (ImportApiResponseException ex)
+        }
+        
+        private async Task EndImportJobAsync(int workspaceId, Guid importJobId)
+        {
+            try
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to run import job: {importJobId}. Error code: {errorCode}. Error message: {errorMessage}",
-                    ex.Response.ImportJobID,
-                    ex.Response.ErrorCode,
-                    ex.Response.ErrorMessage);
-
-                throw;
+                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                {
+                    Response response = await jobController.EndAsync(workspaceId, importJobId).ConfigureAwait(false);
+                    response.ValidateOrThrow();
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to execute Custom Provider job");
-
-                // TODO REL-806942 Mark job as failed
-                // There is a newly created method IntegrationPointService.MarkJobAsFailed() (currently private)
-                // We can extract this method to the separate service and extend it with other JobHistory(Error) use cases
-
+                _logger.LogError(ex, "Failed to end import job ID: {importJobId}", importJobId);
                 throw;
-            }
-            finally
-            {
-                if (storage != null && importDirectory != null)
-                {
-                    await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
-                    {
-                        Recursive = true
-                    }).ConfigureAwait(false);
-                }
             }
         }
 

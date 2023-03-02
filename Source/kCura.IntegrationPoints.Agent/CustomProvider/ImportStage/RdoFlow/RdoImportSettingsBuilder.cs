@@ -27,9 +27,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
-            AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
-
             IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
+
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
@@ -39,22 +38,26 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IWithRdo withRdo = ConfigureFieldsMappingSettings(
                 fieldsSettings,
                 fieldMappings);
-
+            
             ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
+
+            AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
             return new RdoImportConfiguration(importSettings, advancedSettings);
         }
 
         private async Task<AdvancedImportSettings> CreateAdvancedImportSettingsAsync()
         {
+            int batchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
+
             var advancedSettings = new AdvancedImportSettings()
             {
-                Folder = new AdvancedFolderSettings(),
-                Other = new AdvancedOtherSettings()
+                Other = new AdvancedOtherSettings
+                {
+                    AuditLevel = AuditLevel.FullAudit,
+                    BatchSize = batchSize
+                }
             };
-
-            advancedSettings.Other.AuditLevel = AuditLevel.FullAudit;
-            advancedSettings.Other.BatchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
 
             return advancedSettings;
         }
@@ -76,6 +79,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     return overlayModeSettings.WithAppendOverlayMode(
                         x => x.WithKeyField(identifierFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
+
                 case ImportOverwriteModeEnum.OverlayOnly:
                     return overlayModeSettings.WithOverlayMode(
                         x => x.WithKeyField(identifierFieldName)
@@ -105,15 +109,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IWithRdo withRdo,
             ImportSettings importSettings)
         {
-            return withRdo.WithRdo(f => f
-                .WithArtifactTypeId(importSettings.ArtifactTypeId)
-                .WithoutParentColumnIndex());
-        }
-
-        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
-        {
-            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return indexedField?.ColumnIndex ?? -1;
+            return withRdo
+                .WithRdo(f => f
+                    .WithArtifactTypeId(importSettings.ArtifactTypeId)
+                    .WithoutParentColumnIndex());
         }
 
         private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
