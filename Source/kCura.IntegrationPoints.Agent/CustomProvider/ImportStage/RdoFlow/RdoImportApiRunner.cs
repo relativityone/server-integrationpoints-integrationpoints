@@ -45,5 +45,5 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
             await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
         }
-            }
+    }
 }

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
@@ -24,6 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [TestFixture]
     public class CustomProviderTaskTests
     {
+        private Mock<IKeplerServiceFactory> _serviceFactory;
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<ISourceProviderService> _sourceProviderService;
         private Mock<IIdFilesBuilder> _idFilesBuilder;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         [SetUp]
         public void SetUp()
         {
+            _serviceFactory = new Mock<IKeplerServiceFactory>();
             _integrationPointService = new Mock<IIntegrationPointService>();
             _sourceProviderService = new Mock<ISourceProviderService>();
             _idFilesBuilder = new Mock<IIdFilesBuilder>();
@@ -119,6 +122,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private CustomProviderTask PrepareSut()
         {
             return new CustomProviderTask(
+                _serviceFactory.Object,
                 _integrationPointService.Object,
                 _sourceProviderService.Object,
                 _idFilesBuilder.Object,
