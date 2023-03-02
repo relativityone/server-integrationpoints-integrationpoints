@@ -14,13 +14,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IAPILog _logger;
 
         /// <summary>
-        /// Parameterless constructor for tests purposes only.
-        /// </summary>
-        public ImportApiService()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="DocumentImportApiRunner"/> class.
         /// </summary>
         /// <param name="serviceFactory">Factory for creating kepler services.</param>

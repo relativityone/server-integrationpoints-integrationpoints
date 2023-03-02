@@ -22,9 +22,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private ImportJobContext _importJobContext;
         private Response _successResponse;
         private Response _failedResponse;
-
-        private readonly DocumentImportConfiguration _documentConfiguration = new DocumentImportConfiguration(new ImportDocumentSettings(), new AdvancedImportSettings());
-        private readonly RdoImportConfiguration _rdoConfiguration = new RdoImportConfiguration(new ImportRdoSettings(), new AdvancedImportSettings());
+        private DocumentImportConfiguration _documentConfiguration;
+        private RdoImportConfiguration _rdoConfiguration;
 
         private Mock<IKeplerServiceFactory> _keplerServiceFactoryMock;
         private Mock<IImportJobController> _importJobControllerMock;
@@ -41,6 +40,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importJobContext = _fxt.Create<ImportJobContext>();
             _successResponse = new Response(_fxt.Create<Guid>(), true, null, null);
             _failedResponse = new Response(_fxt.Create<Guid>(), false, _fxt.Create<string>(), _fxt.Create<string>());
+            _documentConfiguration = _fxt.Create<DocumentImportConfiguration>();
+            _rdoConfiguration = _fxt.Create<RdoImportConfiguration>();
 
             _importJobControllerMock = new Mock<IImportJobController>();
             _importJobControllerMock
