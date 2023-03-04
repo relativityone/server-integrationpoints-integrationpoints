@@ -134,12 +134,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-            jobHistoryService.CreateRdo(
-                _integrationPoint,
-                _taskParams.BatchInstance,
-                JobTypeChoices.JobHistoryRun,
-                Arg.Any<DateTime>())
-                .Returns(_jobHistory);
+            jobHistoryService.GetRdo(_taskParams.BatchInstance).Returns(_jobHistory);
 
             jobHistoryService.GetRdo(Guid.Empty).Returns(_jobHistory);
 

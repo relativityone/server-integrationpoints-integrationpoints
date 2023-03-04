@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     /// <summary>
-    /// The interface describing the ImportAPI settings builder, independent of the ImportAPI flow.
+    /// The interface describing the ImportAPI settings builder for rdo flow.
     /// </summary>
     internal interface IRdoImportSettingsBuilder
     {

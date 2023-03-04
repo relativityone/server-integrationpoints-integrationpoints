@@ -30,13 +30,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public JobHistoryService(
             IRelativityObjectManager relativityObjectManager,
-            IFederatedInstanceManager federatedInstanceManager,
             IWorkspaceManager workspaceManager,
             IAPILog logger,
             ISerializer serializer)
         {
             _relativityObjectManager = relativityObjectManager;
-            _federatedInstanceManager = federatedInstanceManager;
             _workspaceManager = workspaceManager;
             _logger = logger.ForContext<JobHistoryService>();
             _serializer = serializer;
@@ -45,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         public Data.JobHistory GetRdo(Guid batchInstance)
         {
             JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
-            return GetRdo(batchInstance, queryOptions);
+            return GetRdo(GetBatchInstanceQueryCondition(batchInstance), queryOptions);
         }
 
         public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
@@ -53,7 +51,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
                 .All()
                 .Except(JobHistoryFieldGuids.Documents);
-            return GetRdo(batchInstance, queryOptions);
+
+            return GetRdo(GetBatchInstanceQueryCondition(batchInstance), queryOptions);
         }
 
         public Data.JobHistory GetRdoWithoutDocuments(int artifactId)
@@ -62,12 +61,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 .All()
                 .Except(JobHistoryFieldGuids.Documents);
 
-            return GetRdo(artifactId, queryOptions);
+            return GetRdo(GetArtifactIdQueryCondition(artifactId), queryOptions);
         }
 
         public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
         {
-            _logger.LogInformation("Getting JobHistory for [{jobHistoryArtifactIds}]",
+            _logger.LogInformation("Getting JobHistory list for [{jobHistoryArtifactIds}]",
                 string.Join(",", jobHistoryArtifactIds?.ToList() ?? new List<int>()));
 
             var request = new QueryRequest
@@ -80,23 +79,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return jobHistories;
         }
 
-        public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(
-            IntegrationPointDto integrationPointDto,
-            Guid batchInstance,
-            DateTime? startTimeUtc)
+        public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = null;
-
-            try
-            {
-                jobHistory = GetRdo(batchInstance);
-            }
-            catch (Exception e)
-            {
-                LogHistoryNotFoundError(integrationPointDto, e);
-                // ignored
-            }
-
+            Data.JobHistory jobHistory = GetRdo(batchInstance);
             if (jobHistory == null)
             {
                 _logger.LogInformation("JobHistory {batchInstance} doesn't exist. Create new...", batchInstance);
@@ -105,30 +90,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
 
             _logger.LogInformation("Read JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
-
             return jobHistory;
         }
 
-        public Data.JobHistory CreateRdo(
-            IntegrationPointDto integrationPointDto,
-            Guid batchInstance,
-            ChoiceRef jobType,
-            DateTime? startTimeUtc)
+        public Data.JobHistory CreateRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = null;
-
-            try
-            {
-                jobHistory = GetRdo(batchInstance);
-            }
-            catch (Exception e)
-            {
-                LogCreatingHistoryRdoError(e);
-                // ignored
-            }
-
+            Data.JobHistory jobHistory = GetRdo(batchInstance);
             if (jobHistory != null)
             {
+                _logger.LogWarning("JobHistory already exists. Withdrawn from creating the new one: {jobHistoryDetails}", jobHistory.Stringify());
                 return jobHistory;
             }
 
@@ -159,13 +129,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             catch (Exception ex)
             {
                 jobHistory.DestinationWorkspace = "[Unable to retrieve workspace name]";
-                LogGettingWorkspaceNameError(ex);
-            }
-
-            FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(importSettings.FederatedInstanceArtifactId);
-            if (federatedInstanceDto != null)
-            {
-                jobHistory.DestinationInstance = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(federatedInstanceDto.Name, federatedInstanceDto.ArtifactId);
+                _logger.LogWarning(ex, "Unable to get workspace name from destination workspace");
             }
 
             if (startTimeUtc.HasValue)
@@ -177,7 +141,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             jobHistory.ArtifactId = artifactId;
 
             _logger.LogInformation("Created JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
-
             return jobHistory;
         }
 
@@ -226,50 +189,26 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _relativityObjectManager.Update(jobHistory.ArtifactId, fieldValues);
         }
 
-        private Data.JobHistory GetRdo(
-            Guid batchInstance,
-            JobHistoryQueryOptions queryOptions)
+        private Data.JobHistory GetRdo(string queryCondition, JobHistoryQueryOptions queryOptions)
         {
             var request = new QueryRequest
             {
-                Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
+                Condition = queryCondition,
                 Fields = MapToFieldRefs(queryOptions?.FieldGuids)
             };
 
-            IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
+            List<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
             if (jobHistories.Count > 1)
             {
-                LogMoreThanOneHistoryInstanceWarning(batchInstance);
-            }
-            Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); // there should only be one!
-
-            _logger.LogInformation("Read JobHistory for BatchInstanceId: {batchInstanceId}. JobHistory: {@jobHistoryDetails}",
-                batchInstance, jobHistory.Stringify());
-
-            return jobHistory;
-        }
-
-        private Data.JobHistory GetRdo(
-            int artifactId,
-            JobHistoryQueryOptions queryOptions)
-        {
-            var request = new QueryRequest
-            {
-                Condition = $"'Artifact ID' == '{artifactId}'",
-                Fields = MapToFieldRefs(queryOptions?.FieldGuids)
-            };
-
-            IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
-
-            if (jobHistories.Count > 1)
-            {
-                LogMoreThanOneHistoryInstanceWarning(artifactId);
+                _logger.LogWarning("More than one job history instance found for query condition: {queryCondition}", queryCondition);
             }
 
-            Data.JobHistory jobHistory = jobHistories.SingleOrDefault();
+            Data.JobHistory jobHistory = jobHistories.OrderBy(x => x.ArtifactId).FirstOrDefault(); // there should only be one, but in case of multiple records we are resilient for many job histories
 
-            _logger.LogInformation("Read JobHistory Artifact ID: {artifactId}. JobHistory: {@jobHistoryDetails}",
-                artifactId, jobHistory?.Stringify());
+            if (jobHistory == null)
+            {
+                _logger.LogWarning("No job history instance found for query condition: {queryCondition}", queryCondition);
+            }
 
             return jobHistory;
         }
@@ -292,33 +231,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 : fieldValues.Where(fv => rdoFieldGuids.Contains(fv.Field.Guid.Value));
         }
 
-        #region Logging
+        private string GetBatchInstanceQueryCondition(Guid batchInstance) => $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'";
 
-        private void LogGettingWorkspaceNameError(Exception exception)
-        {
-            _logger.LogWarning(exception, "Unable to get workspace name from destination workspace");
-        }
-
-        private void LogMoreThanOneHistoryInstanceWarning(Guid batchInstance)
-        {
-            _logger.LogWarning("More than one job history instance found for BatchInstance: {BatchInstance}", batchInstance.ToString());
-        }
-
-        private void LogMoreThanOneHistoryInstanceWarning(int jobHistoryArtifactId)
-        {
-            _logger.LogWarning("More than one job history instance found for Artifact ID: {ArtifactID}", jobHistoryArtifactId);
-        }
-
-        private void LogHistoryNotFoundError(IntegrationPointDto integrationPointDto, Exception e)
-        {
-            _logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPointDto.ArtifactId);
-        }
-
-        private void LogCreatingHistoryRdoError(Exception e)
-        {
-            _logger.LogError(e, "Failed to create History RDO.");
-        }
-
-        #endregion
+        private string GetArtifactIdQueryCondition(int artifactId) => $"'Artifact ID' == '{artifactId}'";
     }
 }

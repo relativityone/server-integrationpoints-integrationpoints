@@ -80,14 +80,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
         {
             var caseContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
             IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-            var federatedInstanceManager = new FederatedInstanceManager();
             IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
             ISerializer serializer = new IntegrationPointSerializer(Logger);
             IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
             IMessageService messageService = new MessageService();
             return new JobHistoryService(
                 caseContext.RelativityObjectManagerService.RelativityObjectManager,
-                federatedInstanceManager,
                 workspaceManager,
                 Logger,
                 serializer);
