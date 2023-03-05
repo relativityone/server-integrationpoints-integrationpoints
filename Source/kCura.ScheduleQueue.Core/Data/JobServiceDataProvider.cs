@@ -7,16 +7,16 @@ namespace kCura.ScheduleQueue.Core.Data
 {
     public class JobServiceDataProvider : IJobServiceDataProvider
     {
-        private readonly IQueueQueryManager _queryManager;
+        private readonly IQueueQueryManager _queueManager;
 
-        public JobServiceDataProvider(IQueueQueryManager queryManager)
+        public JobServiceDataProvider(IQueueQueryManager queueManager)
         {
-            _queryManager = queryManager;
+            _queueManager = queueManager;
         }
 
         public DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resourceGroupIdsArray)
         {
-            using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId, resourceGroupIdsArray).Execute())
+            using (DataTable dataTable = _queueManager.GetNextJob(agentId, agentTypeId, resourceGroupIdsArray).Execute())
             {
                 return GetFirstRowOrDefault(dataTable);
             }
@@ -24,7 +24,7 @@ namespace kCura.ScheduleQueue.Core.Data
 
         public DataRow GetNextQueueJob(int agentId, int agentTypeId, long? rootJobId = null)
         {
-            using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId, rootJobId).Execute())
+            using (DataTable dataTable = _queueManager.GetNextJob(agentId, agentTypeId, rootJobId).Execute())
             {
                 return GetFirstRowOrDefault(dataTable);
             }
@@ -37,21 +37,21 @@ namespace kCura.ScheduleQueue.Core.Data
 
         public void UnlockScheduledJob(int agentId)
         {
-            _queryManager
+            _queueManager
                 .UnlockScheduledJob(agentId)
                 .Execute();
         }
 
         public void UnlockJob(long jobID, StopState state)
         {
-            _queryManager
+            _queueManager
                 .UnlockJob(jobID, state)
                 .Execute();
         }
 
         public void UpdateJobDetails(long jobId, string jobDetails)
         {
-            _queryManager
+            _queueManager
                 .UpdateJobDetails(jobId, jobDetails)
                 .Execute();
         }
@@ -60,7 +60,7 @@ namespace kCura.ScheduleQueue.Core.Data
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
-            _queryManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID,
+            _queueManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID,
                     taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
                     jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute();
@@ -70,7 +70,7 @@ namespace kCura.ScheduleQueue.Core.Data
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
-            using (DataTable dataTable = _queryManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
+            using (DataTable dataTable = _queueManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
                     taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
                     jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute())
@@ -81,21 +81,21 @@ namespace kCura.ScheduleQueue.Core.Data
 
         public DataTable GetJobsByIntegrationPointId(long integrationPointId)
         {
-            return _queryManager
+            return _queueManager
                 .GetJobsByIntegrationPointId(integrationPointId)
                 .Execute();
         }
 
         public void DeleteJob(long jobId)
         {
-            _queryManager
+            _queueManager
                 .DeleteJob(jobId)
                 .Execute();
         }
 
         public DataRow GetJob(long jobId)
         {
-            using (DataTable dataTable = _queryManager.GetJob(jobId).Execute())
+            using (DataTable dataTable = _queueManager.GetJob(jobId).Execute())
             {
                 return GetFirstRowOrDefault(dataTable);
             }
@@ -108,35 +108,35 @@ namespace kCura.ScheduleQueue.Core.Data
 
         public DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
         {
-            return _queryManager
+            return _queueManager
                 .GetJobByRelatedObjectIdAndTaskType(workspaceId, relatedObjectArtifactId, taskTypes)
                 .Execute();
         }
 
         public DataTable GetAllJobs()
         {
-            return _queryManager
+            return _queueManager
                 .GetAllJobs()
                 .Execute();
         }
 
         public int UpdateStopState(IList<long> jobIds, StopState state)
         {
-            return _queryManager
+            return _queueManager
                 .UpdateStopState(jobIds, state)
                 .Execute();
         }
 
         public void CleanupJobQueueTable()
         {
-            _queryManager
+            _queueManager
                 .CleanupJobQueueTable()
                 .Execute();
         }
 
         public void CleanupScheduledJobsQueue()
         {
-            _queryManager
+            _queueManager
                 .CleanupScheduledJobsQueue()
                 .Execute();
         }

@@ -130,14 +130,14 @@ var ExportSourceViewModel = function (state, savedSearchService) {
 	};
 
 	self.UpdateViews = function (viewId) {
-		self.AvailableViews(self.Cache.ViewsResult[0]);
+		self.AvailableViews(self.Cache.ViewsResult);
 		self.UpdateSelectedView(viewId || self.ViewId());
 	};
 
 	// productions
 
 	self.ProductionSets = ko.observableArray();
-	
+
 	self.IsProductionSelected = function () {
 		return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
 	};

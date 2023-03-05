@@ -38,9 +38,20 @@ namespace kCura.IntegrationPoints.Common.Metrics
         /// </summary>
         public Dictionary<string, object> CustomData
         {
-            get { return _customData ?? (_customData = new Dictionary<string, object>()); }
+            get
+            {
+                return _customData ??
+                    (_customData = new Dictionary<string, object>()
+                    {
+                        { "r1.team.id", "PTCI-2456712" },
+                        { "service.name", "integrationpoints-repo" },
+                    });
+            }
 
-            set { _customData = value; }
+            set
+            {
+                _customData = value;
+            }
         }
 
         public static RipMetric TimedOperation(string name, TimeSpan duration, string workflowId)
