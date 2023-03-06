@@ -1,6 +1,7 @@
 /*SELECT2*/
 .select2-drop {
-  box-shadow: none; }
+  box-shadow: none;
+  min-width: fit-content; }
 
 /*Shared Select2 Styles*/
 .select2-container,
