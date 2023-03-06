@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             CustomProviderJobDetails jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(job.JobDetails);
 
-            if (jobDetails.ImportJobID == Guid.Empty)
+            if (jobDetails == null || jobDetails.ImportJobID == Guid.Empty)
             {
                 jobDetails = new CustomProviderJobDetails()
                 {
