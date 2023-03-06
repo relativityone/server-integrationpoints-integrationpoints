@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             _logger = logger;
         }
 
-        public async Task<DataSourceSettings> CreateDataFileAsync(IStorageAccess<string> storage, CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<IndexedFieldMap> fieldMap)
+        public async Task<DataSourceSettings> CreateDataFileAsync(CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<IndexedFieldMap> fieldMap)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 
                 IEnumerable<FieldEntry> fields = integrationPointDto.FieldMappings.Select(x => x.SourceField);
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointDto.SourceConfiguration, integrationPointDto.SecuredConfiguration);
-                IList<string> entryIds = await ReadLinesAsync(storage, batch.IDsFilePath).ConfigureAwait(false);
+                IList<string> entryIds = await _relativityStorageService.ReadAllLinesAsync(batch.IDsFilePath).ConfigureAwait(false);
 
                 using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIds, providerConfig))
                 using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch.BatchID).ConfigureAwait(false))
@@ -97,36 +97,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 .WithDefaultEncoding()
                 .WithDefaultCultureInfo();
         }
-
-        private async Task<IList<string>> ReadLinesAsync(IStorageAccess<string> storage, string filePath)
-        {
-            try
-            {
-                _logger.LogInformation("Reading all lines from file: {path}", filePath);
-
-                List<string> lines = new List<string>();
-
-                using (StorageStream storageStream = await storage.OpenFileAsync(filePath, OpenBehavior.OpenExisting, ReadWriteMode.ReadOnly).ConfigureAwait(false))
-                using (TextReader reader = new StreamReader(storageStream))
-                {
-                    string line;
-                    while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
-                    {
-                        lines.Add(line);
-                    }
-                }
-
-                _logger.LogInformation("Successfully read {lines} lines from file: {path}", lines.Count, filePath);
-
-                return lines;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to read lines from file: {path}", filePath);
-                throw;
-            }
-        }
-
+        
         private async Task<StorageStream> GetDataFileStreamAsync(string directoryPath, int batchIndex)
         {
             string batchDataFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.data";

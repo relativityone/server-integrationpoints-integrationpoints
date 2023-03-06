@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
 
-                List<IndexedFieldMap> fieldMapping = WrapFieldMappings(integrationPointDto.FieldMappings);
+                List<IndexedFieldMap> fieldMapping = IndexFieldMappings(integrationPointDto.FieldMappings);
 
                 var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
                 await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                         continue;
                     }
 
-                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(storage, batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
+                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
 
                     using (IImportSourceController importSourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                     {
@@ -151,10 +151,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 if (storage != null && importDirectory != null)
                 {
-                    //await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
-                    //{
-                    //    Recursive = true
-                    //}).ConfigureAwait(false);
+                    await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
+                    {
+                        Recursive = true
+                    }).ConfigureAwait(false);
                 }
             }
         }
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _jobService.UpdateJobDetails(job);
         }
 
-        private static List<IndexedFieldMap> WrapFieldMappings(List<FieldMap> fieldMappings)
+        private static List<IndexedFieldMap> IndexFieldMappings(List<FieldMap> fieldMappings)
         {
             return fieldMappings.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }

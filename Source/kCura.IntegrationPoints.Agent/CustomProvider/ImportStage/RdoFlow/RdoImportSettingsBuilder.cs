@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Rdos;
@@ -13,12 +12,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     /// <inheritdoc />
     internal class RdoImportSettingsBuilder : IRdoImportSettingsBuilder
     {
-        private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
-        public RdoImportSettingsBuilder(IInstanceSettings instanceSettings, IAPILog logger)
+        public RdoImportSettingsBuilder(IAPILog logger)
         {
-            _instanceSettings = instanceSettings;
             _logger = logger;
         }
 
@@ -48,14 +45,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private async Task<AdvancedImportSettings> CreateAdvancedImportSettingsAsync()
         {
-            int batchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
-
             var advancedSettings = new AdvancedImportSettings()
             {
                 Other = new AdvancedOtherSettings
                 {
                     AuditLevel = AuditLevel.FullAudit,
-                    BatchSize = batchSize
+                    BatchSize = 1000
                 }
             };
 

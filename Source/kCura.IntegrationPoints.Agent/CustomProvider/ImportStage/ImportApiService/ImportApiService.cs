@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         {
             await CreateRdoConfigurationAsync(importJobContext, configuration.RdoSettings).ConfigureAwait(false);
 
-            //await CreateAdvancedConfigurationAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
+            await CreateAdvancedConfigurationAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
         }
 
         private async Task CreateDocumentConfigurationAsync(ImportJobContext importJobContext, ImportDocumentSettings settings)
