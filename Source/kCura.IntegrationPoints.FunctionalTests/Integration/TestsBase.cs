@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
@@ -20,7 +21,6 @@ using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -188,6 +188,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         {
             Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
             Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
         }
 
         private void RegisterScheduleAgentBase()

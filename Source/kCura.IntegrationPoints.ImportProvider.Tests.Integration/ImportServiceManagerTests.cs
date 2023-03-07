@@ -27,7 +27,6 @@ using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.IntegrationPoints.Common;
