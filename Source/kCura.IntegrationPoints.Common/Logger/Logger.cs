@@ -89,9 +89,9 @@ namespace kCura.IntegrationPoints.Common
         }
 
         /// <inheritdoc/>
-        public ILogger<T> ForContext<T>()
+        public ILogger<TContext> ForContext<TContext>()
         {
-            return new Logger<T>(_logger);
+            return new Logger<TContext>(_logger);
         }
     }
 }

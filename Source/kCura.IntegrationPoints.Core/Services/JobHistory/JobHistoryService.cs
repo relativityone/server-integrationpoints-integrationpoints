@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -23,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     public class JobHistoryService : IJobHistoryService
     {
         private readonly IRelativityObjectManager _relativityObjectManager;
-        private readonly IFederatedInstanceManager _federatedInstanceManager;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IAPILog _logger;
         private readonly ISerializer _serializer;

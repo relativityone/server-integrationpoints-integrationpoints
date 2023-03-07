@@ -86,9 +86,8 @@ namespace kCura.IntegrationPoints.Common
         /// <param name="propertyValues">params for each brace'd item in the messageTemplate.</param>
         void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues);
 
-        /// <summary>Adds the full name of Type T to the log information.</summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        ILogger<T> ForContext<T>();
+        /// <summary>Returns the logger with the full name of Type T added to the log information.</summary>
+        /// <typeparam name="TContext">The logger owner type, helpful to set proper SourceContext field in logs.</typeparam>
+        ILogger<TContext> ForContext<TContext>();
     }
 }
