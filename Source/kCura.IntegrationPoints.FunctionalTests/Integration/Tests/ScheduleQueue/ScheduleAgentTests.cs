@@ -55,40 +55,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
         }
 
-        [IdentifiedTest("2D67D0B5-73E6-4D57-B0F9-4AC118A835B3")]
-        public void Agent_ShouldPickUpJob_AndCreateJobHistoryIfAbsent()
-        {
-            // Arrange
-            MyFirstProviderUtil myFirstProviderUtil = new MyFirstProviderUtil(Container, FakeRelativityInstance,
-                SourceWorkspace, Serializer);
-
-            string xmlPath = myFirstProviderUtil.PrepareRecords(100);
-
-            SourceProviderTest provider =
-                SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
-
-            IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
-                    identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
-
-            integrationPoint.SourceProvider = provider.ArtifactId;
-            integrationPoint.SourceConfiguration = xmlPath;
-
-            JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
-
-            FakeAgent sut = FakeAgent.Create(this.FakeRelativityInstance, this.Container);
-
-            long[] jobsInQueue = { job.JobId };
-
-            // Act
-            sut.Execute();
-
-            // Assert
-            sut.VerifyJobsWereProcessed(jobsInQueue);
-
-            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
-        }
-
         [IdentifiedTest("B3BFE442-1A05-4B4A-89FD-ABB6AC35B60A")]
         public void Agent_ShouldProcessTwoJobs_InOneExecutionTrigger()
         {

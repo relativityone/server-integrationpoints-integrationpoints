@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -16,8 +15,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class FileRepository : IFileRepository
     {
-        private const ushort _MAX_NUMBER_OF_RETRIES = 3;
-        private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
         private const string _DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
         private const string _FILE_NAME_COLUMN = "Filename";
         private const string _LOCATION_COLUMN = "Location";
@@ -33,10 +30,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
         private readonly IRetryHandler _retryHandler;
 
-        public FileRepository(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory)
+        public FileRepository(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandler retryHandler)
         {
             _servicesMgr = servicesMgr;
-            _retryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC);
+            _retryHandler = retryHandler;
             _instrumentationProvider = instrumentationProvider;
         }
 

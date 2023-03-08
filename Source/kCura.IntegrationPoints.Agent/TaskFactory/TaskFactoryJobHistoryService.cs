@@ -82,13 +82,9 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 return null;
             }
             LogGetJobHistoryStart(job);
+
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = _jobHistoryService.CreateRdo(
-                _integrationPoint,
-                taskParameters.BatchInstance,
-                string.IsNullOrEmpty(job.ScheduleRuleType)
-                    ? JobTypeChoices.JobHistoryRun
-                    : JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
+            JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
             LogGetJobHistorySuccessfulEnd(job, jobHistory);
             return jobHistory;

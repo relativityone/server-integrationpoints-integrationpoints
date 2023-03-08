@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
     {
         private IRelativityObjectManager _relativityObjectManager;
         private IWorkspaceManager _workspaceManager;
-        private IFederatedInstanceManager _federatedInstanceManager;
         private IAPILog _logger;
         private JobHistoryService _instance;
         private ISerializer _serializer;
@@ -41,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _workspaceManager = Substitute.For<IWorkspaceManager>();
-            _federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
             _logger = Substitute.For<IAPILog>();
             _serializer = Substitute.For<ISerializer>();
 
@@ -67,7 +65,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _jobHistoryArtifactId = 987465;
             _instance = new JobHistoryService(
                 _relativityObjectManager,
-                _federatedInstanceManager,
                 _workspaceManager,
                 _logger,
                 _serializer);
@@ -254,25 +251,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
             _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
             _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-            _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId).Returns(new FederatedInstanceDto());
-            _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
-
-            // ACT
-            Data.JobHistory jobHistory = _instance.CreateRdo(_integrationPoint, _batchGuid, JobTypeChoices.JobHistoryRun, DateTime.Now);
-
-            // ASSERT
-            ValidateJobHistory(jobHistory, JobTypeChoices.JobHistoryRun);
-        }
-
-        [Test]
-        public void CreateRdo_WhenGetRdoThrowsException_NewJobHistoryCreated()
-        {
-            // ARRANGE
-            _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
-            _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-            _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-            _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
-                .Returns(new FederatedInstanceDto());
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
             // ACT
@@ -304,26 +282,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
             _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
             _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-            _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
-                .Returns(new FederatedInstanceDto());
-            _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
-
-            // ACT
-            Data.JobHistory returnedJobHistory = _instance.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchGuid, DateTime.Now);
-
-            // ASSERT
-            ValidateJobHistory(returnedJobHistory, JobTypeChoices.JobHistoryScheduledRun);
-        }
-
-        [Test]
-        public void GetOrCreateScheduleRunHistoryRdo_ErrorOnGetRdo()
-        {
-            // ARRANGE
-            _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Throws(new Exception("blah blah"));
-            _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
-            _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
-            _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(_settings.FederatedInstanceArtifactId)
-                .Returns(new FederatedInstanceDto());
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
             // ACT

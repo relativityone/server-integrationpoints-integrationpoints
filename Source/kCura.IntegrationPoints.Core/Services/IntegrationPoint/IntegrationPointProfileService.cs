@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -22,18 +21,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
     public class IntegrationPointProfileService : IntegrationPointServiceBase, IIntegrationPointProfileService
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<IntegrationPointProfileService> _logger;
         private readonly IRetryHandler _retryHandler;
 
         public IntegrationPointProfileService(
-            IHelper helper,
             ICaseServiceContext context,
             ISerializer serializer,
             IChoiceQuery choiceQuery,
             IManagerFactory managerFactory,
             IValidationExecutor validationExecutor,
-            IRelativityObjectManager objectManager)
-            : base(helper,
+            IRelativityObjectManager objectManager,
+            IRetryHandler retryHandler,
+            ILogger<IntegrationPointProfileService> logger)
+            : base(
                 context,
                 choiceQuery,
                 serializer,
@@ -41,8 +41,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 validationExecutor,
                 objectManager)
         {
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
-            _retryHandler = new RetryHandlerFactory(_logger).Create();
+            _logger = logger;
+            _retryHandler = retryHandler;
         }
 
         protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
