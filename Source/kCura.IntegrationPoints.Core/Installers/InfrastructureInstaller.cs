@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using Relativity.API;
 
@@ -14,6 +15,8 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IAPILog>()
                 .UsingFactoryMethod(CreateLogger)
                 .IsFallback().LifestyleSingleton());
+            container.Register(Component.For(typeof(ILogger<>))
+                .ImplementedBy(typeof(Logger<>)));
             container.Register(Component.For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
                 .IsFallback().LifestyleSingleton());

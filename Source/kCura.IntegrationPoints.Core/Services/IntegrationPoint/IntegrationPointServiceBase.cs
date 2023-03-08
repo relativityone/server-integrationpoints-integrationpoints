@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         protected abstract string UnableToSaveFormat { get; }
 
         protected IntegrationPointServiceBase(
-            IHelper helper,
             ICaseServiceContext context,
             IChoiceQuery choiceQuery,
             ISerializer serializer,
@@ -50,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ChoiceQuery = choiceQuery;
             ManagerFactory = managerFactory;
             _validationExecutor = validationExecutor;
-            _helper = helper;
             ObjectManager = objectManager;
         }
 

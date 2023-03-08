@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private Mock<IExternalServiceInstrumentationProvider> _instrumentationProviderMock;
         private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
         private Mock<IRetryHandler> _retryHandlerMock;
-        private Mock<IRetryHandlerFactory> _retryHandlerFactoryMock;
         private FileRepository _sut;
         private const int _WORKSPACE_ID = 1001000;
         private const string _KEPLER_SERVICE_TYPE = "Kepler";
@@ -148,10 +147,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _servicesMgr = new Mock<IServicesMgr>();
             _servicesMgr.Setup(x => x.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser)).Returns(_searchServiceMock.Object);
             _retryHandlerMock = new Mock<IRetryHandler>();
-            _retryHandlerFactoryMock = new Mock<IRetryHandlerFactory>();
-            _retryHandlerFactoryMock
-                .Setup(x => x.Create(It.IsAny<ushort>(), It.IsAny<ushort>()))
-                .Returns(_retryHandlerMock.Object);
             _instrumentationProviderMock = new Mock<IExternalServiceInstrumentationProvider>();
             _instrumentationSimpleProviderMock = new Mock<IExternalServiceSimpleInstrumentation>();
             _instrumentationProviderMock
@@ -161,7 +156,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                     It.IsAny<string>()))
                 .Returns(_instrumentationSimpleProviderMock.Object);
 
-            _sut = new FileRepository(_servicesMgr.Object, _instrumentationProviderMock.Object, _retryHandlerFactoryMock.Object );
+            _sut = new FileRepository(_servicesMgr.Object, _instrumentationProviderMock.Object, _retryHandlerMock.Object );
         }
 
         [Test]
