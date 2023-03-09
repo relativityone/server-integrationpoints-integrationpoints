@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
 	}
-	
+
 	public static class JobHistoryErrorErrors
 	{
 		public const string JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE = "Unable to create temp table for Error Status updates.";
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid ImageCountFieldGuid = new Guid("D92B5B06-CDF0-44BA-B365-A2396F009C73");
 		public static readonly Guid DocumentFieldGuid = new Guid("1CAA97BA-1D77-40C6-9F9A-F5EA9CEFAF38");
 	}
-	
+
 	public static class DocumentFieldsConstants
 	{
 		public static readonly Guid HasNativeFieldGuid = new Guid("E09E18F3-D0C8-4CFC-96D1-FBB350FAB3E1");
@@ -80,8 +80,6 @@ namespace kCura.IntegrationPoints.Data
 		public static readonly Guid FileIconGuid = new Guid("861295b5-5b1d-4830-89e7-77e0a7ef1c30");
 
 		public const string EDIT_FIELD_NAME = "Edit";
-
-		public const int HAS_IMAGES_YES_ARTIFACT_ID = 1034243;
 
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}

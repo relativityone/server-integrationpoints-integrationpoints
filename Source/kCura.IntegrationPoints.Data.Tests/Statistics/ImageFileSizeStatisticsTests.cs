@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
@@ -39,7 +38,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			repositoryFactory.CreateRelativityObjectManager(_WORKSPACE_ID).Returns(_rdoRepository);
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageFileSizeStatistics>().Returns(_logger);
 
-			_instance = new ImageFileSizeStatistics(_helper, repositoryFactory);
+			var choiceService = Substitute.For<IChoiceService>();
+
+			_instance = new ImageFileSizeStatistics(_helper, repositoryFactory, choiceService);
 		}
 
 		[Test]

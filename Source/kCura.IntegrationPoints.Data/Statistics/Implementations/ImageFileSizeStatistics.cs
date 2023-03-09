@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
@@ -24,20 +23,23 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
+		private readonly IChoiceService _choiceService;
 
-		public ImageFileSizeStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
+		public ImageFileSizeStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory, IChoiceService choiceService)
 		{
 			_helper = helper;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImageFileSizeStatistics>();
 			_relativityObjectManagerFactory = relativityObjectManagerFactory;
+			_choiceService = choiceService;
 		}
 
 		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
 		{
 			try
 			{
+				int choiceArtifactId = _choiceService.GetGuidOfYesChoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult();
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition().NoFields().Build();
+				var query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition(choiceArtifactId).NoFields().Build();
 				var queryResult = ExecuteQuery(query, workspaceArtifactId);
 				var artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
@@ -66,8 +68,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
+				int choiceArtifactId = _choiceService.GetGuidOfYesChoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult();
 				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition().NoFields().Build();
+				var query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition(choiceArtifactId).NoFields().Build();
 				var queryResult = ExecuteQuery(query, workspaceArtifactId);
 				var artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);

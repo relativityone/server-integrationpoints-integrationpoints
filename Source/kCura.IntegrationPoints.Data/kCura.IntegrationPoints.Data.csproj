@@ -170,6 +170,8 @@
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
+    <Compile Include="Statistics\ChoiceService\ChoiceService.cs" />
+    <Compile Include="Statistics\ChoiceService\IChoiceService.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />
     <Compile Include="Statistics\Implementations\DocumentTotalStatistics.cs" />
     <Compile Include="Statistics\IDocumentTotalStatistics.cs" />

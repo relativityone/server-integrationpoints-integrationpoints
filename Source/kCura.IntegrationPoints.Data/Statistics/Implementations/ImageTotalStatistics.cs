@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using Relativity.API;
-using Relativity.Data.Cache.Field;
 using Relativity.Services.Objects.DataContracts;
 using FieldMetadata = Relativity.Services.Field.FieldMetadata;
 
@@ -23,19 +22,22 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
 		private readonly IAPILog _logger;
 		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
+		private readonly IChoiceService _choiceService;
 
-		public ImageTotalStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
+		public ImageTotalStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory, IChoiceService choiceService)
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>();
 			_relativityObjectManagerFactory = relativityObjectManagerFactory;
+			_choiceService = choiceService;
 		}
 
 		public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
 		{
 			try
 			{
+				int choiceArtifactId = _choiceService.GetGuidOfYesChoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult();
 				var queryBuilder = new DocumentQueryBuilder();
-				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddFolderCondition(folderId, viewId, includeSubFoldersTotals).AddHasImagesCondition(choiceArtifactId)
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
 				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
 				return sum;
@@ -68,8 +70,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
+				int choiceArtifactId = _choiceService.GetGuidOfYesChoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult();
 				var queryBuilder = new DocumentQueryBuilder();
-				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition()
+				QueryRequest query = queryBuilder.AddSavedSearchCondition(savedSearchId).AddHasImagesCondition(choiceArtifactId)
 					.AddField(DocumentFieldsConstants.RelativityImageCount).Build();
 				long sum = ExecuteQuery(query, workspaceArtifactId, SumDocumentImages);
 				return sum;
