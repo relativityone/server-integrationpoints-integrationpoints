@@ -48,13 +48,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             FieldMap[] mappedFields,
             string serializedSourceConfiguration,
             int savedSearchArtifactID,
-            string userImportApiSettings,
+            ImportSettings settings,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer)
         {
-            LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, userImportApiSettings);
+            LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, settings);
 
-            ImportSettings settings = _serializer.Deserialize<ImportSettings>(userImportApiSettings);
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
 
             IExporterService exporter = settings.ImageImport ?
@@ -146,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             FieldMap[] mappedFields,
             string config,
             int savedSearchArtifactId,
-            string userImportApiSettings)
+            ImportSettings userImportApiSettings)
         {
             IEnumerable<FieldMap> mappedFieldsWithoutFieldNames = mappedFields.Select(mf => new FieldMap
             {

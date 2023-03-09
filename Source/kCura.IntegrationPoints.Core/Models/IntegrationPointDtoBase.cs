@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Models
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public int Type { get; set; }
 
-        public string DestinationConfiguration { get; set; }
+        public ImportSettings DestinationConfiguration { get; set; }
 
         public Scheduler Scheduler { get; set; }
 

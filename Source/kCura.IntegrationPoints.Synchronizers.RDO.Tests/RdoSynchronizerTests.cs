@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -257,13 +258,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
-            string options = JsonConvert.SerializeObject(new ImportSettings
+            var options = new ImportSettings
             {
                 ArtifactTypeId = 1111111,
                 CaseArtifactId = 2222222,
                 ImportNativeFile = false,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles
-            });
+            };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
             // ACT
@@ -303,7 +304,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 ImportNativeFile = false,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks
             };
-            string options = JsonConvert.SerializeObject(importSettings);
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
             rdoSynchronizer.SourceProvider = new Data.SourceProvider()
             {
@@ -314,7 +314,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+            ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, importSettings, nativeFileImportService);
 
             // ASSERT
             Assert.AreEqual(1111111, result.ArtifactTypeId);
@@ -351,11 +351,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 ImportNativeFile = true,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles
             };
-            string options = JsonConvert.SerializeObject(importSettings);
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
             // ACT
-            ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+            ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, importSettings, nativeFileImportService);
 
             // ASSERT
             Assert.AreEqual(1111111, result.ArtifactTypeId);
@@ -384,7 +383,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
-            string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+            var options = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
             // ACT
@@ -408,7 +407,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 };
 
             NativeFileImportService nativeFileImportService = new NativeFileImportService();
-            string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+            var options = new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 };
             TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
             // ACT
@@ -605,7 +604,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<string>()))
                 .Returns(new ImportApiFacade(_importApiFactoryMock.Object, string.Empty, new Mock<ILogger<ImportApiFacade>>().Object));
 
-            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object);
+            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object, Serializer);
 
             // Act
             IEnumerable<FieldEntry> results = sut.GetFields(new DataSourceProviderConfiguration(options));
@@ -659,10 +658,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                     RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
                     _importJobFactory.Object,
                     _helper.Object,
-                    _diagnosticLogMock.Object));
+                    _diagnosticLogMock.Object,
+                    Serializer));
         }
 
-        private (IEnumerable<IDictionary<FieldEntry, object>> data, List<FieldMap> fieldsMaps, string serializedOptions) PrepareDataForSynchronization(Exception exception = null)
+        private (IEnumerable<IDictionary<FieldEntry, object>> data, List<FieldMap> fieldsMaps, ImportSettings serializedOptions) PrepareDataForSynchronization(Exception exception = null)
         {
             List<FieldMap> fieldsMap = new List<FieldMap>
             {
@@ -694,20 +694,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             const int dataSize = 10;
             IEnumerable<IDictionary<FieldEntry, object>> data = GetSyncData(fieldsMap, dataSize, exception);
 
-            var options = new
+            var importSettings = new ImportSettings
             {
                 ArtifactTypeId = 1111111,
                 DestinationArtifactTypeId = 1111111,
                 CaseArtifactId = 2222222,
                 DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
-                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings.ToString(),
                 CorrelationId = Guid.NewGuid(),
                 JobID = 850,
                 ImportNativeFile = false,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
-                ImportOverlayBehavior = ImportOverlayBehaviorEnum.MergeAll,
-                ImportOverwriteMode = ImportOverwriteMode.AppendOverlay,
-                MaximumErrorCount = 0,
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay,
                 MultiValueDelimiter = ';',
                 NestedValueDelimiter = '/',
                 Provider = "FTP",
@@ -715,26 +713,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 StartRecordNumber = 0,
             };
 
-            string serializedOptions = JsonConvert.SerializeObject(options);
-
             _loggerFake = new Mock<IAPILog>();
             _helper = MockHelper(_loggerFake);
 
             _importApiFacadeMock
-                .Setup(x => x.GetWorkspaceFieldsNames(options.CaseArtifactId, options.ArtifactTypeId))
+                .Setup(x => x.GetWorkspaceFieldsNames(importSettings.CaseArtifactId, importSettings.ArtifactTypeId))
                 .Returns(fieldsMap.Select(x => x.DestinationField)
                     .ToDictionary(x => int.Parse(x.FieldIdentifier), x => x.DisplayName));
 
             _importJobFactory.Setup(x => x.Create(
                     _importApiMock.Object,
                     It.Is<ImportSettings>(xx =>
-                        xx.ArtifactTypeId == options.ArtifactTypeId &&
-                        xx.JobID == options.JobID),
+                        xx.ArtifactTypeId == importSettings.ArtifactTypeId &&
+                        xx.JobID == importSettings.JobID),
                     It.IsAny<IDataTransferContext>(),
                     _helper.Object))
                 .Returns(_importJobMock.Object);
 
-            return (data, fieldsMap, serializedOptions);
+            return (data, fieldsMap, importSettings);
         }
 
         private IEnumerable<IDictionary<FieldEntry, object>> GetSyncData(List<FieldMap> fieldsMap, int dataSize, Exception exception)
@@ -758,7 +754,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             TestRdoSynchronizer sut,
             IEnumerable<IDictionary<FieldEntry, object>> data,
             List<FieldMap> fieldsMap,
-            string serializedOptions)
+            ImportSettings serializedOptions)
         {
             Task syncDataTask = Task.Run(() => sut.SyncData(data, fieldsMap, serializedOptions, _jobStopManagerMock.Object, _diagnosticLogMock.Object));
             Type rdoSynchronizerType = sut.GetType().BaseType;
@@ -787,22 +783,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     public class TestRdoSynchronizer : RdoSynchronizer
     {
         public TestRdoSynchronizer()
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
         {
-            WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
+            WebAPIPath = Constants.WEB_API_PATH;
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
         }
 
         public TestRdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory importApiFactory, IImportJobFactory importJobFactory, IHelper helper, IDiagnosticLog logger)
-            : base(fieldQuery, importApiFactory, importJobFactory, helper, logger)
+            : base(fieldQuery, importApiFactory, importJobFactory, helper, logger, new JSONSerializer())
         {
-            WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
+            WebAPIPath = Constants.WEB_API_PATH;
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
         }
 
-        public new ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
+        public new ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, ImportSettings options, NativeFileImportService nativeFileImportService)
         {
             return base.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
         }
@@ -818,7 +814,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private readonly WorkspaceRef _workspaceRef;
 
         public MockSynchronizer(WorkspaceRef workspaceRef)
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
         {
             WebAPIPath = "WebAPIPath";
             DisableNativeLocationValidation = false;

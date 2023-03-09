@@ -16,7 +16,6 @@ using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using Choice = Relativity.Services.ChoiceQuery.Choice;
 

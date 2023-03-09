@@ -9,12 +9,10 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
-    public class IntegrationPointProfileHelper: WorkspaceHelperBase
+    public class IntegrationPointProfileHelper : WorkspaceHelperBase
     {
         private readonly ISerializer _serializer;
 
@@ -58,16 +56,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
                 SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
             });
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
-            {
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                ArtifactTypeId = (int)ArtifactType.Document,
-                DestinationArtifactTypeId = (int)ArtifactType.Document,
-                DestinationFolderArtifactId = destinationFolder.ArtifactId,
-                CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"// some/service/url/relativity"
-            });
+
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: destinationWorkspace.ArtifactId,
+                destinationFolderArtifactId: destinationFolder.ArtifactId);
+
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
             integrationPoint.EnableScheduler = true;
             integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
@@ -110,16 +103,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         {
             IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             FolderTest destinationFolder = destinationWorkspace.Folders.First();
-            integrationPointProfile.DestinationConfiguration = _serializer.Serialize(new
-            {
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                ArtifactTypeId = (int)ArtifactType.Document,
-                DestinationFolderArtifactId = destinationFolder.ArtifactId,
-                CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"// some/service/url/relativity",
-                Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
-            });
+            integrationPointProfile.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: destinationWorkspace.ArtifactId,
+                destinationFolderArtifactId: destinationFolder.ArtifactId);
 
             return integrationPointProfile;
         }
@@ -132,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 Name = integrationPointProfile.Name,
                 SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
                 SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = integrationPointProfile.DestinationConfiguration,
+                DestinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration),
                 SourceConfiguration = integrationPointProfile.SourceConfiguration,
                 DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
                 Type = integrationPointProfile.Type,
@@ -145,6 +131,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
             return integrationPointProfileDto;
+        }
+
+        private string CreateDestinationConfiguration(
+            int caseArtifactId,
+            int destinationFolderArtifactId = 0,
+            int artifactTypeId = (int)ArtifactType.Document,
+            string destinationProviderType = null,
+            bool entityManagerFieldContainsLink = false)
+        {
+            return _serializer.Serialize(new ImportSettings
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+
+                CaseArtifactId = caseArtifactId,
+                ArtifactTypeId = artifactTypeId,
+                DestinationArtifactTypeId = artifactTypeId,
+                DestinationFolderArtifactId = destinationFolderArtifactId,
+                DestinationProviderType = destinationProviderType,
+                EntityManagerFieldContainsLink = entityManagerFieldContainsLink,
+                WebServiceURL = "https://fake.uri"
+            });
         }
     }
 }

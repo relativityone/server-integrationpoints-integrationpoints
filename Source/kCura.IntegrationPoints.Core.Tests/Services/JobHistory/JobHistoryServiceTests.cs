@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             {
                 ArtifactId = 98475,
                 Name = "RIP RIP",
-                DestinationConfiguration = "dest config",
+                DestinationConfiguration = new ImportSettings(),
                 SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.ToString(),
                 JobHistory = new List<int> { 4543, 443 },
                 SourceProvider = 0,
@@ -200,7 +200,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // ARRANGE
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
-            _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
             _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
@@ -231,7 +230,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // ARRANGE
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
-            _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_settings);
             _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 

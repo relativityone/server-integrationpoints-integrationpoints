@@ -4,6 +4,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class FieldTest : RdoTestBase
     {
         public string Name { get; set; }

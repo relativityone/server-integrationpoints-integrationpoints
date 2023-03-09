@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -13,19 +12,16 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Api;
 using Newtonsoft.Json.Linq;
@@ -141,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         DiagnosticLog.LogDiagnostic("Context: {@context}", context);
 
                         DiagnosticLog.LogDiagnostic("Synchronizing...");
-                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, Serializer.Serialize(settings), JobStopManager, DiagnosticLog);
+                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager, DiagnosticLog);
                         DiagnosticLog.LogDiagnostic("Finished synchronizing.");
                     }
                 }
@@ -327,7 +323,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogGetImportApiSettingsObjectForUserStart(job);
             ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-            ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
+            ImportSettings importSettings = IntegrationPointDto.DestinationConfiguration;
             importSettings.CorrelationId = ImportSettings.CorrelationId;
             importSettings.JobID = ImportSettings.JobID;
             importSettings.Provider = nameof(ProviderType.ImportLoadFile);

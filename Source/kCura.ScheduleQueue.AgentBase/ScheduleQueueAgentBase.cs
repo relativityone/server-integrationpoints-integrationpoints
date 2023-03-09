@@ -6,7 +6,6 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
@@ -19,11 +18,10 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.Telemetry.APM;
@@ -182,7 +180,7 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_taskParameterHelper == null)
             {
                 _taskParameterHelper = new TaskParameterHelper(
-                    new IntegrationPointSerializer(Logger),
+                    new RipJsonSerializer(Logger),
                     new DefaultGuidService());
             }
 

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
-using kCura.IntegrationPoints.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class SourceProviderTest : RdoTestBase
     {
         public string Name { get; set; }

@@ -9,6 +9,7 @@ using Relativity.Services.ResourceServer;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class WorkspaceTest : RdoTestBase
     {
         public string Name { get; set; }

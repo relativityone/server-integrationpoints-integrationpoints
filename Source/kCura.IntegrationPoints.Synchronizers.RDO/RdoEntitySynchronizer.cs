@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -33,8 +33,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IImportJobFactory jobFactory,
             IHelper helper,
             IEntityManagerLinksSanitizer entityManagerLinksSanitizer,
-            IDiagnosticLog diagnosticLog)
-            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
+            IDiagnosticLog diagnosticLog,
+            ISerializer serializer)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, serializer)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public override IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
             LogRetrievingFields();
-            List<RelativityObject> relativityFields = GetAllRdoFields(GetSettings(providerConfiguration.Configuration));
+            List<RelativityObject> relativityFields = GetAllRdoFields(EnsureWebServiceUrl(Serializer.Deserialize<ImportSettings>(providerConfiguration.Configuration)));
             IEnumerable<FieldEntry> fields = base.GetFields(providerConfiguration);
             Dictionary<string, RelativityObject> fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 

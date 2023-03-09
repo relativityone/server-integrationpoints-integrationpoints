@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

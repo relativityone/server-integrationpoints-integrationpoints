@@ -12,16 +12,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
     internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {
         private readonly IRipToggleProvider _toggleProvider;
-        private readonly ISerializer _serializer;
         private readonly IAPILog _log;
 
-        public CustomProviderFlowCheck(
-            IRipToggleProvider toggleProvider,
-            ISerializer serializer,
-            IAPILog log)
+        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IAPILog log)
         {
             _toggleProvider = toggleProvider;
-            _serializer = serializer;
             _log = log;
         }
 
@@ -30,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>();
-                bool isManagersLinkingEnabled = IsManagersLinkingEnabled(integrationPoint.DestinationConfiguration);
+                bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
 
                 bool result = isToggleEnabled && !isManagersLinkingEnabled;
 
@@ -44,12 +39,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 _log.LogError(ex, "Error occurred during New Custom Provider flow usage checking.");
                 return false;
             }
-        }
-
-        private bool IsManagersLinkingEnabled(string configuration)
-        {
-            ImportSettings settings = _serializer.Deserialize<ImportSettings>(configuration);
-            return settings.EntityManagerFieldContainsLink;
         }
     }
 }

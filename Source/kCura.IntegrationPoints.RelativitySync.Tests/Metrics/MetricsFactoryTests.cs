@@ -1,22 +1,20 @@
 ﻿using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Telemetry;
 using kCura.IntegrationPoints.RelativitySync.Metrics;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
 using System;
-using System.IO.Packaging;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 {

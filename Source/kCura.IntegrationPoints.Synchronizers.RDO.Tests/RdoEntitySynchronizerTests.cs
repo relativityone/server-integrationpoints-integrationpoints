@@ -161,7 +161,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 _importJobFactory,
                 _helper.Object,
                 entityManagerLinksSanitizer.Object,
-                _diagnosticLogMock.Object);
+                _diagnosticLogMock.Object,
+                Serializer);
         }
     }
 }

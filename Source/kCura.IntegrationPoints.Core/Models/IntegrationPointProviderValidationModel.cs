@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Models
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public int DestinationProviderArtifactId { get; set; }
 
-        public string DestinationConfiguration { get; set; }
+        public ImportSettings DestinationConfiguration { get; set; }
 
         public string IntegrationPointTypeIdentifier { get; set; }
 

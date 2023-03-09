@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
             {
                 if (_serializer == null)
                 {
-                    _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+                    _serializer = RipJsonSerializer.CreateWithoutLogger();
                 }
                 return _serializer;
             }

@@ -103,7 +103,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         {
             return new ImportSettings
             {
-                FederatedInstanceArtifactId = 123,
                 ImportNativeFileCopyMode = (ImportNativeFileCopyModeEnum)int.MinValue,
                 ImportNativeFile = importNativeFileFlagValue
             };

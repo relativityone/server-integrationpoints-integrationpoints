@@ -10,6 +10,7 @@ using SystemInterface.IO;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -32,17 +33,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         private IDirectory _directoryHelper;
         private IFileInfoFactory _fileInfoFactory;
         private ImportProviderSettings _providerSettings;
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private Mock<IFileInfo> _loadFileInfo;
 
         [SetUp]
         public override void SetUp()
         {
-            _integrationPoint = new Data.IntegrationPoint();
+            _integrationPoint = new IntegrationPointDto();
             _integrationPoint.Name = _IP_NAME;
             _integrationPoint.ArtifactId = _IP_ARTIFACT_ID;
             _integrationPoint.SourceConfiguration = string.Empty;
-            _integrationPoint.DestinationConfiguration = string.Empty;
+            _integrationPoint.DestinationConfiguration = new ImportSettings();
 
             _providerSettings = new ImportProviderSettings();
             ImportSettings importApiSettings = new ImportSettings();

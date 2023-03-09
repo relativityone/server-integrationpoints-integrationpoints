@@ -54,11 +54,6 @@ namespace kCura.IntegrationPoints.Core.Validation
             shortMessage: $"Verify if a Production Set used as the location in destination workspace is in New status."
         );
 
-        public static ValidationMessage FederatedInstanceNotSupported => new ValidationMessage(
-            errorCode: $"20.014",
-            shortMessage: $"Federated instance transfers are currently not supported. Please update the Integration Point job to use a destination workspace within the same instance."
-        );
-
         public static ValidationMessage ViewNoAccess => new ValidationMessage(
             errorCode: $"20.015",
             shortMessage: $"View is not available or has been secured from this user. Contact your system administrator."

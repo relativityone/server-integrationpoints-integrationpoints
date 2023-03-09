@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -25,7 +26,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
         private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
         private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
-        private readonly string DestinationConfiguration = "{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Use Field Settings\"}";
+
+        private readonly ImportSettings DestinationConfiguration = new ImportSettings
+        {
+            ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+            UseFolderPathInformation = false,
+            FieldOverlayBehavior = "Use Field Settings",
+        };
+
         private readonly int[] _fieldsArtifactId = new int[] { 1000186, 1003667, 1035368, 1038073, 1038074, 1038389, 1035395 };
 
         private readonly JSONSerializer _serializer = new JSONSerializer();
@@ -149,12 +157,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
         [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
         [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
-        public void ItShouldValidateValidSettings(string destinationConfig)
+        public void ItShouldValidateValidSettings(string destinationConfigString)
         {
+            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(destinationConfigString);
+
             // Arrange
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
-            integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+            integrationPointProviderValidationModel.DestinationConfiguration = importSettings;
             MockFieldRepository();
 
             // Act
@@ -165,14 +175,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             Assert.IsNull(result.MessageTexts.FirstOrDefault());
         }
 
-        [TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Replace Values\"}")]
-        [TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
-        public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOnly(string destinationConfig)
+        [TestCase("Replace Values")]
+        [TestCase("Merge Values")]
+        public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOnly(string fieldOverlayBehavior)
         {
             // Arrange
+            var configuration = new ImportSettings
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                UseFolderPathInformation = false,
+                FieldOverlayBehavior = fieldOverlayBehavior
+            };
+
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
-            integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+            integrationPointProviderValidationModel.DestinationConfiguration = configuration;
             MockFieldRepository();
 
             // Act
@@ -183,14 +200,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             Assert.IsTrue(result.MessageTexts.Contains(RelativityProviderValidationMessages.FIELD_MAP_APPEND_ONLY_INVALID_OVERLAY_BEHAVIOR));
         }
 
-        [TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
-        [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"INVALID_FieldOverlayBehavior\"}")]
-        public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOverlayAndOverlayOnly(string destinationConfig)
+        [TestCase(ImportOverwriteModeEnum.OverlayOnly)]
+        [TestCase(ImportOverwriteModeEnum.AppendOverlay)]
+        public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOverlayAndOverlayOnly(ImportOverwriteModeEnum importOverwriteMode)
         {
             // Arrange
+            var configuration = new ImportSettings
+            {
+                ImportOverwriteMode = importOverwriteMode,
+                UseFolderPathInformation = false,
+                FieldOverlayBehavior = "INVALID_FieldOverlayBehavior"
+            };
+
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
-            integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+            integrationPointProviderValidationModel.DestinationConfiguration = configuration;
             MockFieldRepository();
 
             // Act
@@ -201,13 +225,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             Assert.IsTrue(result.MessageTexts.Any(x => x.Contains(RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_INVALID)));
         }
 
-        [TestCase("{\"ImportOverwriteMode\":\"OverlayOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"1000186\"}")]
-        public void ItShouldValidateAsValidSettingsForFolderPathInformation_With_OverlayOnly(string destinationConfig)
+        [Test]
+        public void ItShouldValidateAsValidSettingsForFolderPathInformation_With_OverlayOnly()
         {
             // Arrange
+            var configuration = new ImportSettings
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly,
+                UseFolderPathInformation = true,
+                FieldOverlayBehavior = "Use Field Settings",
+                FolderPathSourceField = 1000186
+            };
+
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
-            integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+            integrationPointProviderValidationModel.DestinationConfiguration = configuration;
             MockFieldRepository();
 
             // Act
@@ -217,14 +249,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             Assert.IsTrue(result.IsValid);
         }
 
-        [TestCase("{\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
-        [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\",\"FolderPathSourceField\":\"-1\"}")]
-        public void ItShouldValidateInvalidSettingsFolderPathInformation(string destinationConfig)
+        [TestCase(ImportOverwriteModeEnum.AppendOnly)]
+        [TestCase(ImportOverwriteModeEnum.AppendOverlay)]
+        public void ItShouldValidateInvalidSettingsFolderPathInformation(ImportOverwriteModeEnum importOverwriteMode)
         {
             // Arrange
+            var configuration = new ImportSettings
+            {
+                ImportOverwriteMode = importOverwriteMode,
+                UseFolderPathInformation = true,
+                FieldOverlayBehavior = "Use Field Settings",
+                FolderPathSourceField = -1
+            };
+
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
             IntegrationPointProviderValidationModel integrationPointProviderValidationModel = GetFieldMapValidationObject(fieldMap);
-            integrationPointProviderValidationModel.DestinationConfiguration = destinationConfig;
+            integrationPointProviderValidationModel.DestinationConfiguration = configuration;
             MockFieldRepository();
 
             // Act
@@ -239,7 +279,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldNotAllowForUseFolderPathInformationAndUseDynamicFolderPathTogether()
         {
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Path\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":null,\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"FolderPathInformation\"}]";
-            const string destinationConfig = "{\"UseDynamicFolderPath\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}"; ;
+            var destinationConfig = new ImportSettings
+            {
+                UseDynamicFolderPath = true,
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                UseFolderPathInformation = true,
+                FieldOverlayBehavior =
+                "{\"UseDynamicFolderPath\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"UseFolderPathInformation\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}",
+            };
 
             var validationModel = GetFieldMapValidationObject(fieldMap);
             validationModel.DestinationConfiguration = destinationConfig;

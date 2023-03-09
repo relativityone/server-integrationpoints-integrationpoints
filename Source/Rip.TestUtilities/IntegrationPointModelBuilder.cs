@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -27,7 +26,7 @@ namespace Rip.TestUtilities
         private int _sourceProvider;
         private int _destinationProvider;
         private string _sourceConfiguration;
-        private string _destinationConfiguration;
+        private ImportSettings _destinationConfiguration;
         private List<FieldMap> _fieldMapping;
         private string _overwriteMode = _APPEND_ONLY;
 
@@ -71,7 +70,7 @@ namespace Rip.TestUtilities
 
         public IntegrationPointModelBuilder WithDestinationConfiguration(ImportSettings destinationConfiguration)
         {
-            _destinationConfiguration = _serializer.Serialize(destinationConfiguration);
+            _destinationConfiguration = destinationConfiguration;
             return this;
         }
 

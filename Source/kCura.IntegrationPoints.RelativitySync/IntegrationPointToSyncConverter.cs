@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Utility.Extensions;
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)
         {
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointDto.SourceConfiguration);
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointDto.DestinationConfiguration);
+            ImportSettings importSettings = job.IntegrationPointDto.DestinationConfiguration;
 
             ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
                 Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
@@ -111,12 +112,16 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
         }
 
-        private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateImageSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            JobHistory jobHistory,
+            SourceConfiguration sourceConfiguration,
+            ImportSettings importSettings)
         {
-            IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
-                importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)) :
-                Enumerable.Empty<int>();
+            IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == (int)ExportSettings.ProductionPrecedenceType.Produced
+                ? importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID))
+                : Enumerable.Empty<int>();
 
             IImageSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())

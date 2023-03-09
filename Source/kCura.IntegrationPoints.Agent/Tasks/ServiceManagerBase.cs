@@ -15,16 +15,12 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.Services.Choice;
@@ -172,7 +168,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogFinalizeServiceEnd(job);
         }
 
-        protected IDataSynchronizer CreateDestinationProvider(string configuration)
+        protected IDataSynchronizer CreateDestinationProvider(ImportSettings configuration)
         {
             // if you want to create add another synchronizer aka exporter, you may add it here.
             // RDO synchronizer
@@ -196,7 +192,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
             catch (Exception e)
             {
-                throw LogCreateDestinationProviderError(e, configuration);
+                throw LogCreateDestinationProviderError(e);
             }
         }
 
@@ -304,7 +300,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             IntegrationPointDto = LoadIntegrationPointDto(job);
             SourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-            ImportSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
+            ImportSettings = IntegrationPointDto.DestinationConfiguration;
             JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
         }
 
@@ -509,7 +505,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             Logger.LogInformation("Started configuring batch exceptions for job: {JobId}", job.JobId);
         }
 
-        private IntegrationPointsException LogCreateDestinationProviderError(Exception e, string configuration)
+        private IntegrationPointsException LogCreateDestinationProviderError(Exception e)
         {
             string message = "Error occurred when creating destination provider";
             var exc = new IntegrationPointsException(message, e);

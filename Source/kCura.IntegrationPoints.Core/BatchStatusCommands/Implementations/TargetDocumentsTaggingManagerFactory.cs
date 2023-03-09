@@ -1,12 +1,10 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -39,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             ISerializer serializer,
             FieldMap[] fields,
             SourceConfiguration sourceConfig,
-            string destinationConfig,
+            ImportSettings destinationConfig,
             int jobHistoryArtifactId,
             string uniqueJobId,
             IDiagnosticLog diagnosticLog)
@@ -57,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _uniqueJobId = uniqueJobId;
             _diagnosticLog = diagnosticLog;
 
-            _destinationConfig = CreateDestinationConfig(serializer, destinationConfig);
+            _destinationConfig = destinationConfig;
+            AdjustDestinationConfig(_destinationConfig);
         }
 
         public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
@@ -82,27 +81,24 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
         private Tagger CreateTagger(SourceConfiguration settings)
         {
-            string serializedDestinationConfig = _serializer.Serialize(_destinationConfig); // TODO REL-322556
-
             IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(
                 Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID,
-                serializedDestinationConfig);
-            var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer);
+                _destinationConfig);
+            var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer, _serializer);
 
             var tagger = new Tagger(
                 _documentRepository,
                 tagsSynchronizer,
                 _helper,
                 _fields,
-                serializedDestinationConfig,
+                _destinationConfig,
                 _diagnosticLog);
             return tagger;
         }
 
-        private ImportSettings CreateDestinationConfig(ISerializer serializer, string destinationConfig)
+        private void AdjustDestinationConfig(ImportSettings importSettings)
         {
             // specify settings to tag
-            ImportSettings importSettings = serializer.Deserialize<ImportSettings>(destinationConfig);
             importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
             importSettings.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
             importSettings.CopyFilesToDocumentRepository = false;
@@ -111,7 +107,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             importSettings.FolderPathSourceFieldName = null;
             importSettings.Provider = string.Empty;
             importSettings.ImportNativeFile = false;
-            return importSettings;
         }
     }
 }

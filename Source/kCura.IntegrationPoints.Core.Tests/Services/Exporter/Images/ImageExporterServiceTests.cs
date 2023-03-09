@@ -117,10 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         {
             // Arrange
             SourceConfiguration config = GetConfig(SourceConfiguration.ExportType.SavedSearch);
-            ImportSettings settings = new ImportSettings
-            {
-                ProductionPrecedence = string.Empty
-            };
+            ImportSettings settings = new ImportSettings();
             const int documentArtifactID = 10000;
 
             _documentRepository
@@ -169,8 +166,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
             ImportSettings _settings = new ImportSettings()
             {
-                ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Original.ToString(),
-                ImagePrecedence = new[] { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
+                ProductionPrecedence = (int)ExportSettings.ProductionPrecedenceType.Original,
+                ImagePrecedence = new List<ProductionDTO> { new ProductionDTO() { ArtifactID = productionArtifactID.ToString() } },
             };
 
             _documentRepository
@@ -218,8 +215,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
             ImportSettings _settings = new ImportSettings()
             {
-                ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-                ImagePrecedence = Enumerable.Range(1, 3).Select(x => new ProductionDTO() { ArtifactID = x.ToString() }).ToArray(),
+                ProductionPrecedence = (int)ExportSettings.ProductionPrecedenceType.Produced,
+                ImagePrecedence = Enumerable.Range(1, 3).Select(x => new ProductionDTO() { ArtifactID = x.ToString() }).ToList(),
                 IncludeOriginalImages = true
             };
 
@@ -296,8 +293,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
             ImportSettings _settings = new ImportSettings()
             {
-                ProductionPrecedence = ExportSettings.ProductionPrecedenceType.Produced.ToString(),
-                ImagePrecedence = Enumerable.Range(1, 3).Select(x => new ProductionDTO() { ArtifactID = x.ToString() }).ToArray(),
+                ProductionPrecedence = (int)ExportSettings.ProductionPrecedenceType.Produced,
+                ImagePrecedence = Enumerable.Range(1, 3).Select(x => new ProductionDTO() { ArtifactID = x.ToString() }).ToList(),
             };
 
             _documentRepository

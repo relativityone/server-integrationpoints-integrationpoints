@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
             _helper = Substitute.For<IHelper>();
 
-            _instance = new TagsSynchronizer(_helper,_dataSynchronizer);
+            _instance = new TagsSynchronizer(_helper, _dataSynchronizer, new JSONSerializer());
         }
 
         [Test]
@@ -48,10 +48,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null, new EmptyDiagnosticLog());
+            _instance.SyncData(_data, _fieldMap, importSettings, null, new EmptyDiagnosticLog());
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, Arg.Any<IDiagnosticLog>());
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x)), null, Arg.Any<IDiagnosticLog>());
         }
 
         [Test]
@@ -67,10 +67,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null, null);
+            _instance.SyncData(_records, _fieldMap, importSettings, (IJobStopManager)null, null);
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, null);
+            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x)), null, null);
         }
 
         [Test]
@@ -92,9 +92,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _dataSynchronizer.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => AssertOptions(x.Configuration)));
         }
 
-        private bool AssertOptions(string s)
+        private bool AssertOptions(string settings)
         {
-            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(s);
+            return AssertOptions(JsonConvert.DeserializeObject<ImportSettings>(settings));
+        }
+
+        private bool AssertOptions(ImportSettings importSettings)
+        {
             return !importSettings.ImageImport && !importSettings.ProductionImport && !importSettings.UseDynamicFolderPath;
         }
     }

@@ -1,9 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Import;
+﻿using System;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
-using System;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Core.Contracts.Agent
+namespace kCura.IntegrationPoints.Core
 {
     public class TaskParametersBuilder : ITaskParametersBuilder
     {
@@ -14,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
             _importFileLocationService = importFileLocationService;
         }
 
-        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, string destinationConfiguration)
+        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, ImportSettings destinationConfiguration)
         {
             TaskParameters parameters = new TaskParameters
             {
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
             return parameters;
         }
 
-        private LoadFileTaskParameters BuildLoadFileParameters(string sourceConfiguration, string destinationConfiguration)
+        private LoadFileTaskParameters BuildLoadFileParameters(string sourceConfiguration, ImportSettings destinationConfiguration)
         {
             LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(sourceConfiguration, destinationConfiguration);
 

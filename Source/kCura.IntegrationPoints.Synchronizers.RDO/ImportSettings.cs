@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
+using Constants = kCura.IntegrationPoints.Domain.Constants;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -19,7 +20,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public ImportSettings()
         {
             ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
-            ExtractedTextFieldContainsFilePath = false;
             MultiValueDelimiter = Constants.MULTI_VALUE_DELIMITER;
             ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
             NestedValueDelimiter = Constants.NESTED_VALUE_DELIMITER;
@@ -48,14 +48,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public int CaseArtifactId { get; set; }
 
-        public int? FederatedInstanceArtifactId { get; set; }
-
-        public string FederatedInstanceCredentials { get; set; }
-
         public bool CopyFilesToDocumentRepository { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool EntityManagerFieldContainsLink { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public int DestinationFolderArtifactId { get; set; }
 
         public bool DisableControlNumberCompatibilityMode { get; set; }
@@ -68,12 +66,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool? DisableNativeValidation { get; set; }
 
+        [JsonProperty(PropertyName = "destinationProviderType")]
         public string DestinationProviderType { get; set; }
 
         public bool DisableUserSecurityCheck { get; set; }
 
         public string ErrorFilePath { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool ExtractedTextFieldContainsFilePath { get; set; }
 
         public string ExtractedTextFileEncoding { get; set; }
@@ -95,6 +95,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public string FolderPathSourceFieldName { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool UseDynamicFolderPath { get; set; }
 
         public int IdentityFieldId { get; set; }
@@ -105,18 +106,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public long? JobID { get; set; }
 
-        /// <summary>
-        /// Indicates user preferences of importing native files.
-        /// </summary>
+        [JsonConverter(typeof(JsonQuotesConverter))]
+        [JsonProperty(PropertyName = "importNativeFile")]
         public bool ImportNativeFile { get; set; }
 
+        [JsonProperty(PropertyName = "importNativeFileCopyMode")]
         public ImportNativeFileCopyModeEnum ImportNativeFileCopyMode { get; set; }
 
         public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
 
         public string LongTextColumnThatContainsPathToFullText { get; set; }
-
-        public int MaximumErrorCount { get; set; }
 
         public char MultiValueDelimiter { get; set; }
 
@@ -156,31 +155,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool ProductionImport { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool ImageImport { get; set; }
-
-        public string IdentifierField { get; set; }
 
         public string DestinationIdentifierField { get; set; }
 
         /// <summary>
         /// In Overlay mode it allows to switch Yes/No if import API should move documents between folders when use folder path information
         /// </summary>
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool MoveExistingDocuments { get; set; }
 
-        public string ProductionPrecedence { get; set; }
+        public int ProductionPrecedence { get; set; }
 
         public bool IncludeOriginalImages { get; set; }
 
-        public IEnumerable<ProductionDTO> ImagePrecedence { get; set; }
+        public List<ProductionDTO> ImagePrecedence { get; set; }
 
         public int ProductionArtifactId { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool CreateSavedSearchForTagging { get; set; }
 
         public bool LoadImportedFullTextFromServer { get; set; }
 
         public bool EnableTagging { get; set; }
 
+        [JsonConverter(typeof(JsonQuotesConverter))]
         public bool UseFolderPathInformation { get; set; }
 
         public int FolderPathSourceField { get; set; }
@@ -228,18 +229,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public bool MoveDocumentsInAnyOverlayMode => ImportOverwriteMode != ImportOverwriteModeEnum.AppendOnly &&
                                                      MoveExistingDocuments && !string.IsNullOrEmpty(FolderPathSourceFieldName);
 
-        #endregion "Internal Properties"
+        [JsonIgnore]
+        public bool UseFolderPath => UseFolderPathInformation || UseDynamicFolderPath;
+
+        #endregion "Calculated Properties"
 
         #region Public Methods
-
         public bool IsRelativityProvider()
         {
             return Provider != null && string.Equals(Provider, "relativity", StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public bool IsFederatedInstance()
-        {
-            return FederatedInstanceArtifactId != null;
         }
         #endregion
     }

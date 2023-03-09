@@ -5,7 +5,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,9 +17,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
@@ -91,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 SourceConfiguration = "Source Configuration",
-                DestinationConfiguration = $"{{ArtifactTypeId: {artifactTypeId}}}"
+                DestinationConfiguration = new ImportSettings { ArtifactTypeId = artifactTypeId }
             };
             ExportUsingSavedSearchSettings sourceConfiguration = new ExportUsingSavedSearchSettings()
             {

@@ -69,16 +69,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
                 SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
             });
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
-            {
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                ArtifactTypeId = (int) ArtifactType.Document,
-                DestinationArtifactTypeId = (int) ArtifactType.Document,
-                DestinationFolderArtifactId = destinationFolder.ArtifactId,
-                CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"// some/service/url/relativity"
-            });
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: destinationWorkspace.ArtifactId,
+                destinationFolderArtifactId: destinationFolder.ArtifactId);
+
             integrationPoint.LogErrors = false;
             integrationPoint.EmailNotificationRecipients = string.Empty;
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
@@ -119,15 +113,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 TypeOfExport = SourceConfiguration.ExportType.View,
                 SourceViewId = sourceView.ArtifactId,
             });
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
-            {
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                ArtifactTypeId = artifactTypeId,
-                DestinationArtifactTypeId = artifactTypeId,
-                CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"// some/service/url/relativity"
-            });
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: destinationWorkspace.ArtifactId,
+                artifactTypeId: artifactTypeId);
+
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
             integrationPoint.EnableScheduler = true;
             integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
@@ -142,14 +131,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public IntegrationPointTest CreateImportIntegrationPointWithEntities(SourceProviderTest sourceProvider,
             string identifierFieldName, string sourceProviderConfiguration)
         {
-            IntegrationPointTest integrationPoint =
-                CreateImportIntegrationPoint(sourceProvider, identifierFieldName, sourceProviderConfiguration);
-
-            ImportSettings destinationImportSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
-
-            destinationImportSettings.ArtifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-            destinationImportSettings.EntityManagerFieldContainsLink = true;
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationImportSettings);
+            IntegrationPointTest integrationPoint = CreateImportIntegrationPoint(sourceProvider, identifierFieldName, sourceProviderConfiguration);
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: Workspace.ArtifactId,
+                artifactTypeId: GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME),
+                entityManagerFieldContainsLink: true,
+                destinationFolderArtifactId: Workspace.Folders.First().ArtifactId);
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync();
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
@@ -177,15 +164,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
             integrationPoint.SourceConfiguration = sourceProviderConfiguration;
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
-            {
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                ArtifactTypeId = (int) ArtifactType.Document,
-                DestinationFolderArtifactId = destinationFolder.ArtifactId,
-                CaseArtifactId = Workspace.ArtifactId,
-                WebServiceURL = @"// some/service/url/relativity"
-            });
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: Workspace.ArtifactId,
+                destinationFolderArtifactId: destinationFolder.ArtifactId);
 
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
             integrationPoint.EnableScheduler = true;
@@ -241,21 +222,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             integrationPoint.SourceConfiguration = _serializer.Serialize(sourceConfiguration);
 
-            ImportSettings destinationConfiguration = new ImportSettings
-            {
-                ArtifactTypeId = (int)ArtifactType.Document,
-                DestinationProviderType = destinationProvider.Identifier,
-                CaseArtifactId = Workspace.ArtifactId,
-                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-                ImportNativeFile = false,
-                ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
-                UseDynamicFolderPath = false,
-                DestinationFolderArtifactId = destinationFolder.ArtifactId,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                WebServiceURL = "https://fake.uri"
-            };
-
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: Workspace.ArtifactId,
+                destinationProviderType: destinationProvider.Identifier,
+                destinationFolderArtifactId: destinationFolder.ArtifactId);
 
             return integrationPoint;
 
@@ -297,17 +267,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             integrationPoint.SourceConfiguration = _serializer.Serialize(sourceConfiguration);
 
-            ImportSettings destinationConfiguration = new ImportSettings
-            {
-                ArtifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME),
-                DestinationProviderType = destinationProvider.Identifier,
-                EntityManagerFieldContainsLink = linkEntityManagers,
-                CaseArtifactId = Workspace.ArtifactId,
-                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-                WebServiceURL = @"// some/service/url/relativity"
-            };
-
-            integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
+            integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
+                caseArtifactId: Workspace.ArtifactId,
+                artifactTypeId: GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME),
+                destinationProviderType: destinationProvider.Identifier,
+                entityManagerFieldContainsLink: linkEntityManagers);
 
             LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
             {
@@ -339,6 +303,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         private int GetArtifactTypeIdByName(string name)
         {
             return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
+        }
+
+        private string CreateDestinationConfiguration(
+            int caseArtifactId,
+            int destinationFolderArtifactId = 0,
+            int artifactTypeId = (int)ArtifactType.Document,
+            string destinationProviderType = null,
+            bool entityManagerFieldContainsLink = false)
+        {
+            return _serializer.Serialize(new ImportSettings
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+
+                CaseArtifactId = caseArtifactId,
+                ArtifactTypeId = artifactTypeId,
+                DestinationArtifactTypeId = artifactTypeId,
+                DestinationFolderArtifactId = destinationFolderArtifactId,
+                DestinationProviderType = destinationProviderType,
+                EntityManagerFieldContainsLink = entityManagerFieldContainsLink,
+                WebServiceURL = "https://fake.uri"
+            });
         }
     }
 }

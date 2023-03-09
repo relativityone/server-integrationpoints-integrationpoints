@@ -32,11 +32,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.Services;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
@@ -215,13 +212,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 new ServiceContextHelperForAgent(c.Resolve<IAgentHelper>(), sourceWorkspaceId)));
 
             Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().IsDefault());
-            Container.Register(Component.For<IJobService>().ImplementedBy<JobService>());
 
             Container.Register(Component.For<IJobTrackerQueryManager>().ImplementedBy<FakeJobTrackerQueryManager>()
                 .Named(nameof(FakeJobTrackerQueryManager)).IsDefault());
-
-            Container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().UsingFactoryMethod(c =>
-                new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 
             Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
             Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()).Named(Guid.NewGuid().ToString()).IsDefault());

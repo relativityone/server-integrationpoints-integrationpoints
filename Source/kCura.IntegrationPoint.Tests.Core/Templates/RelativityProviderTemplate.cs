@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -149,18 +148,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             return Serializer.Serialize(sourceConfiguration);
         }
 
-        protected string CreateDestinationConfig(ImportOverwriteModeEnum overwriteMode)
-        {
-            return CreateSerializedDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID);
-        }
-
-        protected string CreateSerializedDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
-        {
-            ImportSettings destinationConfig = CreateDestinationConfigWithTargetWorkspace(overwriteMode, targetWorkspaceId);
-            return Serializer.Serialize(destinationConfig);
-        }
-
-        protected ImportSettings CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId, int? federatedInstanceArtifactId = null)
+        protected ImportSettings CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
         {
             return new ImportSettings
             {
@@ -175,7 +163,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                 RelativityPassword = SharedVariables.RelativityPassword,
                 DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                 DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId),
-                FederatedInstanceArtifactId = federatedInstanceArtifactId,
                 ExtractedTextFileEncoding = "utf-8"
             };
         }
@@ -243,7 +230,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
         private void SetIntegrationPointBaseModelProperties(IntegrationPointDtoBase dto, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
         {
-            dto.DestinationConfiguration = CreateDestinationConfig(overwriteMode);
+            dto.DestinationConfiguration = CreateDestinationConfigWithTargetWorkspace(overwriteMode, SourceWorkspaceArtifactID);
             dto.DestinationProvider = RelativityDestinationProviderArtifactId;
             dto.SourceProvider = RelativityProvider.ArtifactId;
             dto.SourceConfiguration = CreateDefaultSourceConfig();

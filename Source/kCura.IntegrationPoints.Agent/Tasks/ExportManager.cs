@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -16,9 +15,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -92,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
 
             ExportUsingSavedSearchSettings sourceSettings = Serializer.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration);
-            var destinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+            var destinationConfiguration = integrationPoint.DestinationConfiguration;
 
             long totalCount = GetTotalExportItemsCount(sourceSettings, destinationConfiguration, job);
 

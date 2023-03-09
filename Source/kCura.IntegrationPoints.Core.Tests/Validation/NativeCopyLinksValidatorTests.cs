@@ -154,7 +154,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         {
             var validationModel = new IntegrationPointProviderValidationModel()
             {
-                DestinationConfiguration = $"{{ \"importNativeFileCopyMode\": \"{fileCopyMode.ToString()}\", \"caseArtifactId\": \"{_SOURCE_WORKSPACE_ID}\" }}",
+                DestinationConfiguration = new ImportSettings
+                {
+                    ImportNativeFileCopyMode = fileCopyMode,
+                    CaseArtifactId = _SOURCE_WORKSPACE_ID,
+                },
                 UserId = _USER_IS_ADMIN_ID
             };
 

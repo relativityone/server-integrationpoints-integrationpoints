@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
@@ -195,7 +196,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             {
                 SelectedOverwrite = "123",
                 SourceProvider = 284,
-                DestinationConfiguration = "975426",
+                DestinationConfiguration = new ImportSettings(),
                 SourceConfiguration = "559417",
                 DestinationProvider = 346,
                 Type = 190,

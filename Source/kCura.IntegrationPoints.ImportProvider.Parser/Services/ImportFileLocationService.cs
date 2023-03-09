@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
@@ -32,12 +32,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _fileInfoFactory = fileInfoFactory;
         }
 
-        public string ErrorFilePath(int integrationPointArtifactId, string integrationPointName, string sourceConfiguration, string destinationConfiguration)
+        public string ErrorFilePath(int integrationPointArtifactId, string integrationPointName, string sourceConfiguration, ImportSettings destinationConfiguration)
         {
             ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
-            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
             string loadFileBasePath = Path.GetDirectoryName(settings.LoadFile);
-            string errorFileDirectory = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId),
+            string errorFileDirectory = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(destinationConfiguration.CaseArtifactId),
                 loadFileBasePath,
                 _ERROR_FILE_FOLDER_NAME);
 
@@ -48,14 +47,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, integrationPointName, integrationPointArtifactId));
         }
 
-        public LoadFileInfo LoadFileInfo(string sourceConfiguration, string destinationConfiguration)
+        public LoadFileInfo LoadFileInfo(string sourceConfiguration, ImportSettings destinationConfiguration)
         {
             ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
-            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
 
             // Retrieve the root path of the workspace file location as well as the relative path of the DataTransfer\Import folder
             // We will verify that the fullPath of the load File exists in this location
-            string fileLocationRootPath = _locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId);
+            string fileLocationRootPath = _locationService.GetWorkspaceFileLocationRootPath(destinationConfiguration.CaseArtifactId);
             string dataTransferImportPath = _locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid);
 
             // Doing the GetFullPath make sure that if the LoadFile has "../../" in it we get the true path

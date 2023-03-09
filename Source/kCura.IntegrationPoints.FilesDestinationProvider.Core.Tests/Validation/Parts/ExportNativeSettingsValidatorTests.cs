@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
             var model = new IntegrationPointProviderValidationModel()
             {
-                DestinationConfiguration = string.Empty,
+                DestinationConfiguration = new ImportSettings(),
                 SourceConfiguration = string.Empty,
                 FieldsMap = new List<FieldMap>(),
             };

@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+            _serializer = RipJsonSerializer.CreateWithoutLogger();
             _createdProfilesArtifactIDs = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
         }
 

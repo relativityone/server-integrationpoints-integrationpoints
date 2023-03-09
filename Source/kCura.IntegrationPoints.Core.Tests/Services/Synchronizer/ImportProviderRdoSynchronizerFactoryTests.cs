@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using Castle.MicroKernel;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
@@ -90,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
             var helper = new Mock<IHelper>();
             helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null);
+            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null, null);
             _kernel.Setup(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName)).Returns(dataSynchronizer);
 
             return dataSynchronizer;

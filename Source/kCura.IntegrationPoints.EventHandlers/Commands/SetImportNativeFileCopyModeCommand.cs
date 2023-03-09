@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
@@ -8,14 +9,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
         private readonly ImportNativeFileCopyModeUpdater _importNativeFileCopyModeUpdater;
+        private readonly ISerializer _serializer;
 
-        public SetImportNativeFileCopyModeCommand(IIntegrationPointService integrationPointService,
+        public SetImportNativeFileCopyModeCommand(
+            IIntegrationPointService integrationPointService,
             IIntegrationPointProfileService integrationPointProfileService,
-            ImportNativeFileCopyModeUpdater importNativeFileCopyModeUpdater)
+            ImportNativeFileCopyModeUpdater importNativeFileCopyModeUpdater,
+            ISerializer serializer)
         {
             _integrationPointService = integrationPointService;
             _integrationPointProfileService = integrationPointProfileService;
             _importNativeFileCopyModeUpdater = importNativeFileCopyModeUpdater;
+            _serializer = serializer;
         }
 
         public void Execute()
@@ -28,10 +33,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         {
             foreach (IntegrationPointDto point in _integrationPointService.ReadAll())
             {
+                string destinationConfigurationJson = _serializer.Serialize(point.DestinationConfiguration);
                 string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(
                     point.SourceProvider,
                     point.DestinationProvider,
-                    point.DestinationConfiguration);
+                    destinationConfigurationJson);
 
                 if (destinationConfiguration != null)
                 {

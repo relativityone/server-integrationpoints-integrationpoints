@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Core.Contracts.Import
+namespace kCura.IntegrationPoints.Core
 {
     [Serializable]
     public class LoadFileTaskParameters

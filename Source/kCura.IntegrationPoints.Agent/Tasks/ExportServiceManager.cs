@@ -17,21 +17,19 @@ using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity;
 using Relativity.API;
@@ -107,20 +105,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 InitializeService(job, supportsDrainStop: false);
                 JobStopManager.ThrowIfStopRequested();
 
-                string destinationConfig = IntegrationPointDto.DestinationConfiguration;
-                string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
-                IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
+                ImportSettings importSettings = IntegrationPointDto.DestinationConfiguration;
+                AdjustImportApiSettingsForUser(job, importSettings);
+                IDataSynchronizer synchronizer = CreateDestinationProvider(importSettings);
 
                 try
                 {
                     JobStopManager.ThrowIfStopRequested();
 
-                    InitializeExportServiceObservers(job, userImportApiSettings);
+                    InitializeExportServiceObservers(job, importSettings);
                     SetupSubscriptions(synchronizer, job);
 
                     JobStopManager.ThrowIfStopRequested();
 
-                    PushDocuments(job, userImportApiSettings, synchronizer);
+                    PushDocuments(job, importSettings, synchronizer);
                 }
                 finally
                 {
@@ -172,7 +170,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private void PushDocuments(Job job, string userImportApiSettings, IDataSynchronizer synchronizer)
+        private void PushDocuments(Job job, ImportSettings userImportApiSettings, IDataSynchronizer synchronizer)
         {
             int savedSearchID = UpdateStatusType.IsItemLevelErrorRetry()
                 ? _itemLevelErrorSavedSearchArtifactID.Value
@@ -192,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     .Select(observer => observer.ScratchTableRepository).ToArray();
 
                 var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
-                    Identifier, Serializer.Deserialize<ImportSettings>(userImportApiSettings));
+                    Identifier, userImportApiSettings);
 
                 IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
 
@@ -225,39 +223,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
         }
 
-        protected string GetImportApiSettingsForUser(Job job, string originalImportApiSettings)
+        protected void AdjustImportApiSettingsForUser(Job job, ImportSettings importSettings)
         {
             LogGetImportApiSettingsForUserStart(job);
 
-            ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(originalImportApiSettings);
             importSettings.CorrelationId = ImportSettings.CorrelationId;
             importSettings.JobID = ImportSettings.JobID;
             importSettings.Provider = nameof(ProviderType.Relativity);
             AdjustImportApiSettings(job, importSettings);
-            string serializedSettings = Serializer.Serialize(importSettings);
-
-            GetImportApiSettingsForUserSuccessfulEnd(job, serializedSettings);
-            return serializedSettings;
         }
 
         private void AdjustImportApiSettings(Job job, ImportSettings importSettings)
         {
             importSettings.OnBehalfOfUserId = job.SubmittedBy;
-            importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
-            SetImportAuditLevel(importSettings);
             SetOverwriteModeAccordingToUsersChoice(importSettings);
 
             bool shouldUseDgPaths = ShouldUseDgPaths(IntegrationPointDto.FieldMappings, SourceConfiguration);
             Logger.LogInformation("Should use DataGrid Paths set to {shouldUseDgPath}", shouldUseDgPaths);
             importSettings.LoadImportedFullTextFromServer = shouldUseDgPaths;
-        }
-
-        private void SetImportAuditLevel(ImportSettings importSettings)
-        {
-            if (importSettings.FederatedInstanceArtifactId.HasValue)
-            {
-                throw new NotSupportedException("i2i is not supported");
-            }
         }
 
         private void SetOverwriteModeAccordingToUsersChoice(ImportSettings importSettings)
@@ -360,7 +343,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogFinalizeExportServiceObserversSuccessfulEnd(job);
         }
 
-        private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
+        private void InitializeExportServiceObservers(Job job, ImportSettings userImportApiSettings)
         {
             LogInitializeExportServiceObserversStart(job);
             ITagsCreator tagsCreator = ManagerFactory.CreateTagsCreator();
@@ -490,13 +473,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void LogExecuteEnd(Job job)
         {
             Logger.LogInformation("Finished execution of job in Export Service Manager for job: {JobId}.", job.JobId);
-        }
-
-        private void GetImportApiSettingsForUserSuccessfulEnd(Job job, string jsonString)
-        {
-            Logger.LogInformation("Successfully finished getting Import API settings for user. job: {JobId}", job.JobId);
-            Logger.LogInformation("Getting Import API settings for user returned following json {jsonString}, job: {JobId} ",
-                jsonString, job.JobId);
         }
 
         private void LogJobHistoryErrorManagerSetupStart(Job job)

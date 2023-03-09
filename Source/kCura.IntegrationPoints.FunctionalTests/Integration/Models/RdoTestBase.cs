@@ -9,6 +9,12 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <summary>
+    /// This class was designed to substitute real RDO objects for integration tests purposes.
+    /// Instances of this class are stored in memory as a substitute of real RDO entries stored in database.
+    /// Because of the above it is important for that classes to accurately reflect properties of the original RDOs.
+    /// #field-type-matters.
+    /// </summary>
     public abstract class RdoTestBase
     {
         public ArtifactTest Artifact { get; }

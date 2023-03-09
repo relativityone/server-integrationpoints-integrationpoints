@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             }
             else
             {
-                ExportSettings.ProductionPrecedenceType productionPrecedenceType = GetProductionPrecedenceType();
+                var productionPrecedenceType = (ExportSettings.ProductionPrecedenceType)_settings.ProductionPrecedence;
 
                 if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
                 {
@@ -254,23 +254,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             artifactFieldDtos.Add(imageFileNameField);
 
             return artifactFieldDtos;
-        }
-
-        private ExportSettings.ProductionPrecedenceType GetProductionPrecedenceType()
-        {
-            try
-            {
-                string productionPrecedence = _settings.ProductionPrecedence;
-                if (string.IsNullOrEmpty(productionPrecedence))
-                {
-                    return ExportSettings.ProductionPrecedenceType.Original;
-                }
-                return (ExportSettings.ProductionPrecedenceType)Enum.Parse(typeof(ExportSettings.ProductionPrecedenceType), productionPrecedence);
-            }
-            catch (Exception)
-            {
-                return ExportSettings.ProductionPrecedenceType.Original;
-            }
         }
     }
 }

@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -47,11 +48,40 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const int _VIEW_ARTIFACT_ID = 10235456;
         private readonly string _sourceConfiguration =
             "{\"SavedSearchArtifactId\":" + _SAVED_SEARCH_ARTIFACT_ID + ",\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + ",\"FolderArtifactId\":\"1039185\",\"FolderArtifactName\":\"Test Folder\",\"TypeOfExport\":\"3\"}";
+
         private static IEnumerable ConfigurationTestsData()
         {
-            yield return new TestCaseData(true, 0, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642, \"ProductionArtifactId\":\"" + _PRODUCTION_ARTIFACT_ID + "\"}");
-            yield return new TestCaseData(true, 0, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642, \"DestinationFolderArtifactId\":\"" + _DESTINATION_WORKSPACE_ARTIFACT_ID + "\"}");
-            yield return new TestCaseData(false, 1, "{\"artifactTypeID\":10,\"destinationProviderType\":\"74A863B9-00EC-4BB7-9B3E-1E22323010C6\",\"CaseArtifactId\":1075642}");
+            yield return new TestCaseData(
+                true,
+                0,
+                new ImportSettings
+                {
+                    ArtifactTypeId = 10,
+                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
+                    CaseArtifactId = 1075642,
+                    ProductionArtifactId = _PRODUCTION_ARTIFACT_ID
+                });
+
+            yield return new TestCaseData(
+                true,
+                0,
+                new ImportSettings
+                {
+                    ArtifactTypeId = 10,
+                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
+                    CaseArtifactId = 1075642,
+                    DestinationFolderArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID
+                });
+
+            yield return new TestCaseData(
+                false,
+                1,
+                new ImportSettings
+                {
+                    ArtifactTypeId = 10,
+                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
+                    CaseArtifactId = 1075642,
+                });
         }
 
         [SetUp]
@@ -78,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         }
 
         [TestCaseSource(typeof(RelativityProviderConfigurationValidatorTests), nameof(ConfigurationTestsData))]
-        public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, string destinationConfiguration)
+        public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, ImportSettings destinationConfiguration)
         {
             // arrange
             _workspaceValidatorMock.Validate(Arg.Any<int>())

@@ -1,42 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class IntegrationPointTest : RdoTestBase
     {
-        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
-
         public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
 
         public DateTime? NextScheduledRuntimeUTC { get; set; }
 
         public DateTime? LastRuntimeUTC { get; set; }
 
-        public string FieldMappings { get; set; } = "[]";
+        public string FieldMappings { get; set; }
 
         public bool? EnableScheduler { get; set; }
 
-        public string SourceConfiguration { get; set; } = "{}";
+        public string SourceConfiguration { get; set; }
 
-        public string DestinationConfiguration { get; set; } = "{}";
+        public string DestinationConfiguration { get; set; }
 
         public int? SourceProvider { get; set; }
 
         public string ScheduleRule { get; set; }
 
-        public ChoiceRef OverwriteFields { get; set; } = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+        public ChoiceRef OverwriteFields { get; set; }
 
         public int? DestinationProvider { get; set; }
 
-        public int[] JobHistory { get; set; } = new int[0];
+        public int[] JobHistory { get; set; }
 
         public bool? LogErrors { get; set; }
 
@@ -57,6 +57,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public IntegrationPointTest() : base("IntegrationPoint")
         {
             Name = $"Integration Point (Artifact ID {ArtifactId})";
+            OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+            SourceConfiguration = "{}";
+            DestinationConfiguration = "{}";
+            FieldMappings = "[]";
+            JobHistory = new int[0];
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -330,7 +335,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Name = rdo.Name,
                 SelectedOverwrite = rdo.OverwriteFields == null ? string.Empty : rdo.OverwriteFields.Name,
                 SourceProvider = rdo.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = rdo.DestinationConfiguration,
+                DestinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(rdo.DestinationConfiguration),
                 SourceConfiguration = rdo.SourceConfiguration,
                 DestinationProvider = rdo.DestinationProvider.GetValueOrDefault(0),
                 Type = rdo.Type.GetValueOrDefault(0),
@@ -342,7 +347,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
-                FieldMappings = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings),
+                FieldMappings = JsonConvert.DeserializeObject<List<FieldMap>>(rdo.FieldMappings),
             };
         }
     }

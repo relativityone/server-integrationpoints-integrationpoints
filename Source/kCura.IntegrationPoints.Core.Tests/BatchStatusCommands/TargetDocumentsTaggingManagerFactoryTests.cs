@@ -2,13 +2,11 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,11 +27,9 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private ISerializer _serializer;
         private FieldMap[] _fields;
         private TargetDocumentsTaggingManagerFactory _instance;
-        private ImportSettings _settings;
+        private ImportSettings _destinationConfiguration;
         private IDataSynchronizer _dataSynchronizer;
         private IDiagnosticLog _diagnosticLog;
-        private const string _DEST_CONFIG = "destination config";
-        private const string _NEW_DEST_CONFIG = "new destination config";
         private const int _JOBHISTORY_ARTIFACT_ID = 321;
         private const string _UNIQUE_JOBID = "very unique";
         private readonly SourceConfiguration _sourceConfiguration = new SourceConfiguration();
@@ -51,9 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _helper = Substitute.For<IHelper>();
             _diagnosticLog = Substitute.For<IDiagnosticLog>();
             _fields = new FieldMap[0];
-            _settings = new ImportSettings();
-            _serializer.Deserialize<ImportSettings>(_DEST_CONFIG).Returns(_settings);
-            _serializer.Serialize(_settings).Returns(_NEW_DEST_CONFIG);
+            _destinationConfiguration = new ImportSettings();
         }
 
         [Test]
@@ -71,21 +65,21 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _serializer,
                 _fields,
                 _sourceConfiguration,
-                _DEST_CONFIG,
+                _destinationConfiguration,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
                 _diagnosticLog
             );
 
             // ASSERT
-            Assert.AreEqual(ImportOverwriteModeEnum.OverlayOnly, _settings.ImportOverwriteMode);
-            Assert.AreEqual(ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE, _settings.FieldOverlayBehavior);
-            Assert.IsFalse(_settings.CopyFilesToDocumentRepository);
-            Assert.IsNull(_settings.FileNameColumn);
-            Assert.IsNull(_settings.NativeFilePathSourceFieldName);
-            Assert.IsNull(_settings.FolderPathSourceFieldName);
-            Assert.That(_settings.Provider, Is.Null.Or.Empty);
-            Assert.IsFalse(_settings.ImportNativeFile);
+            Assert.AreEqual(ImportOverwriteModeEnum.OverlayOnly, _destinationConfiguration.ImportOverwriteMode);
+            Assert.AreEqual(ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE, _destinationConfiguration.FieldOverlayBehavior);
+            Assert.IsFalse(_destinationConfiguration.CopyFilesToDocumentRepository);
+            Assert.IsNull(_destinationConfiguration.FileNameColumn);
+            Assert.IsNull(_destinationConfiguration.NativeFilePathSourceFieldName);
+            Assert.IsNull(_destinationConfiguration.FolderPathSourceFieldName);
+            Assert.That(_destinationConfiguration.Provider, Is.Null.Or.Empty);
+            Assert.IsFalse(_destinationConfiguration.ImportNativeFile);
         }
 
         [Test]
@@ -97,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 SourceWorkspaceArtifactId = 1,
                 TargetWorkspaceArtifactId = 2
             };
-            _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _NEW_DEST_CONFIG).Returns(_dataSynchronizer);
+            _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfiguration).Returns(_dataSynchronizer);
             _instance = new TargetDocumentsTaggingManagerFactory
             (
                 _repositoryFactory,
@@ -109,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _serializer,
                 _fields,
                 _sourceConfiguration,
-                _DEST_CONFIG,
+                _destinationConfiguration,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
                 _diagnosticLog

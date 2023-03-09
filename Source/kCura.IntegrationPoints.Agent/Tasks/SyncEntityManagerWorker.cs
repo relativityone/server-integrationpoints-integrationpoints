@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -14,20 +13,15 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -163,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 // change import api settings to be able to overlay and set Entity/Manager links
                 int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID(job.WorkspaceID);
-                string newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
+                ImportSettings newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
 
                 // run import api to link corresponding Managers to Entity
                 FieldEntry fieldEntryEntityIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
@@ -435,31 +429,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private string ReconfigureImportAPISettings(int entityManagerFieldArtifactID)
+        private ImportSettings ReconfigureImportAPISettings(int entityManagerFieldArtifactID)
         {
             LogReconfigureImportApiSettingsStart(entityManagerFieldArtifactID);
-            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
+            ImportSettings importSettings = IntegrationPointDto.DestinationConfiguration;
             importSettings.ObjectFieldIdListContainsArtifactId = new[] { entityManagerFieldArtifactID };
             importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
             importSettings.EntityManagerFieldContainsLink = false;
-            importSettings.FederatedInstanceCredentials = IntegrationPointDto.SecuredConfiguration;
-
-            if (importSettings.IsFederatedInstance())
-            {
-                IInstanceSettingsManager instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager();
-
-                if (!instanceSettingsManager.RetrieveAllowNoSnapshotImport())
-                {
-                    importSettings.ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
-                }
-            }
-
-            string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
-            LogReconfigureImportApiSettingsSuccessfulEnd(entityManagerFieldArtifactID);
-            return newDestinationConfiguration;
+            return importSettings;
         }
 
-        private int LinkManagers(Job job, string newDestinationConfiguration,
+        private int LinkManagers(Job job, ImportSettings newDestinationConfiguration,
             IEnumerable<IDictionary<FieldEntry, object>> sourceData,
             IEnumerable<FieldMap> managerLinkMap, IJobStopManager jobStopManager)
         {
@@ -557,15 +537,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void LogGetEntityManagerFieldArtifactIdStart()
         {
             _logger.LogInformation("Getting entity manager field artifactID.");
-        }
-
-        private void LogReconfigureImportApiSettingsSuccessfulEnd(int entityManagerFieldArtifactID)
-        {
-            _logger.LogInformation("Successfully reconfigured import API settings for: {entityManagerFieldArtifactID}",
-                entityManagerFieldArtifactID);
-            _logger.LogInformation(
-                "Reconfigured import API settings for: {entityManagerFieldArtifactID}",
-                entityManagerFieldArtifactID);
         }
 
         private void LogReconfigureImportApiSettingsStart(int entityManagerFieldArtifactID)

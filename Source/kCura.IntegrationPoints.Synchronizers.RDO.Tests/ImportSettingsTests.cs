@@ -1,9 +1,8 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
-using System.Reflection;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -16,10 +15,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         }
 
         [Test]
-        public void ImportSettings_SerializeDesirialize()
+        public void ImportSettings_SerializeDeserialize()
         {
             // ARRANGE
-            var serializer = new JSONSerializer();
+            ISerializer serializer = new RipJsonSerializer(null);
             var settings = new ImportSettings { ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay };
 
             // ACT

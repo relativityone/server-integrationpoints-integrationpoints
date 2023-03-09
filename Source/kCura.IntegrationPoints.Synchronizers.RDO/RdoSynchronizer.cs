@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -10,12 +11,10 @@ using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Microsoft.VisualBasic.FileIO;
-using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -41,9 +40,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private HashSet<string> _ignoredList;
         private string _webApiPath;
 
+        protected ISerializer Serializer { get; }
+
         protected IImportService ImportService { get; private set; }
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, ISerializer serializer)
         {
             _fieldQuery = fieldQuery;
             _factory = factory;
@@ -51,6 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _helper = helper;
             _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
+            Serializer = serializer;
         }
 
         public event BatchCompleted OnBatchComplete;
@@ -146,7 +148,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     DocumentFields.JobHistory
                 };
 
-                FieldEntry[] fields = GetFieldsInternal(providerConfiguration.Configuration).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+                var importSettings = Serializer.Deserialize<ImportSettings>(providerConfiguration.Configuration);
+                FieldEntry[] fields = GetFieldsInternal(importSettings).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
 
                 foreach (var field in fields.Where(field => field.IsIdentifier))
                 {
@@ -164,7 +167,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public void SyncData(
             IEnumerable<IDictionary<FieldEntry, object>> data,
             IEnumerable<FieldMap> fieldMap,
-            string options,
+            ImportSettings options,
             IJobStopManager jobStopManager,
             IDiagnosticLog diagnosticLog)
         {
@@ -240,7 +243,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public void SyncData(
             IDataTransferContext context,
             IEnumerable<FieldMap> fieldMap,
-            string options,
+            ImportSettings options,
             IJobStopManager jobStopManager,
             IDiagnosticLog diagnosticLog)
         {
@@ -273,7 +276,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
         {
             LogRetrievingEmailBody();
-            ImportSettings settings = GetSettings(options);
+
+            ImportSettings settings = EnsureWebServiceUrl(Serializer.Deserialize<ImportSettings>(options));
             WorkspaceRef destinationWorkspace = GetWorkspace(settings);
 
             var emailBody = new StringBuilder();
@@ -398,13 +402,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return importService;
         }
 
-        protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
+        protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, ImportSettings options, NativeFileImportService nativeFileImportService)
         {
             try
             {
                 LogRetrievingImportSettings();
 
-                ImportSettings settings = GetSettings(options);
+                ImportSettings settings = EnsureWebServiceUrl(options);
 
                 BootstrapParentObjectSettings(fieldMap, settings);
                 BootstrapIdentityFieldSettings(fieldMap, settings);
@@ -412,9 +416,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 BootstrapFolderSettings(fieldMap, settings);
                 BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
 
-                var importSettingsForLogging = new ImportSettingsForLogging(settings);
-
-                _logger.LogInformation("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
                 return settings;
             }
             catch (Exception ex)
@@ -453,10 +454,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
         }
 
-        protected ImportSettings GetSettings(string options)
+        protected ImportSettings EnsureWebServiceUrl(ImportSettings settings)
         {
-            ImportSettings settings = DeserializeImportSettings(options);
-
             if (string.IsNullOrEmpty(settings.WebServiceURL))
             {
                 settings.WebServiceURL = WebAPIPath;
@@ -514,9 +513,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return _factory.GetImportApiFacade(settings.WebServiceURL);
         }
 
-        private IEnumerable<FieldEntry> GetFieldsInternal(string options)
+        private IEnumerable<FieldEntry> GetFieldsInternal(ImportSettings options)
         {
-            ImportSettings settings = GetSettings(options);
+            ImportSettings settings = EnsureWebServiceUrl(options);
             List<RelativityObject> fields = GetRelativityFields(settings);
             return ParseFields(fields);
         }
@@ -550,7 +549,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        private void InitializeImportJob(IEnumerable<FieldMap> fieldMap, string options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+        private void InitializeImportJob(IEnumerable<FieldMap> fieldMap, ImportSettings options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
         {
             LogInitializingImportJob();
 
@@ -668,19 +667,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
         }
 
-        private ImportSettings DeserializeImportSettings(string options)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<ImportSettings>(options);
-            }
-            catch (Exception e)
-            {
-                LogImportSettingsDeserializationError(e);
-                throw;
-            }
-        }
-
         private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
         {
             LogLockingImportServiceInFinish();
@@ -725,7 +711,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
-        private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, string options)
+        private IntegrationPointsException LogAndCreateSyncDataException(Exception ex, IEnumerable<FieldMap> fieldMap, ImportSettings options)
         {
             string message = "Error occurred while syncing rdo.";
             IEnumerable<FieldMap> fieldMapWithoutFieldNames = CreateFieldMapWithoutFieldNames(fieldMap);
@@ -796,11 +782,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private void LogMissingWebApiPath()
         {
             _logger.LogError("No WebAPI path set for integration points.");
-        }
-
-        private void LogImportSettingsDeserializationError(Exception e)
-        {
-            _logger.LogError(e, "Failed to deserialize Import Settings.");
         }
 
         private void LogNewDisableNativeLocationValidationValue()

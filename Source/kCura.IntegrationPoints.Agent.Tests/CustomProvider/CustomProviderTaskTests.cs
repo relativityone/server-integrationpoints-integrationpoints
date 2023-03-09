@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto()
             {
-                DestinationConfiguration = new JSONSerializer().Serialize(destinationConfiguration),
+                DestinationConfiguration = destinationConfiguration,
                 FieldMappings = Enumerable.Range(0, 3).Select(x => new FieldMap()).ToList(),
                 SourceProvider = SourceProviderId
             };

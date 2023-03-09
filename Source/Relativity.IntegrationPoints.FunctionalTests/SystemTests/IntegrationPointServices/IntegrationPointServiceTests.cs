@@ -195,7 +195,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
                 RelativityPassword = SharedVariables.RelativityPassword,
                 DestinationProviderType = CoreConstants.IntegrationPoints.DestinationProviders.RELATIVITY,
                 DestinationFolderArtifactId = GetDestinationWorkspaceRootFolderID().GetAwaiter().GetResult(),
-                FederatedInstanceArtifactId = null
             };
 
             return configuration;

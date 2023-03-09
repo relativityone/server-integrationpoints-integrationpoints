@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
@@ -37,12 +36,10 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
             Guid objectTypeGuid,
             int userId)
         {
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
-
             return new IntegrationPointProviderValidationModel(model)
             {
                 ArtifactId = model.ArtifactId,
-                ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
+                ArtifactTypeId = model.DestinationConfiguration.ArtifactTypeId,
                 UserId = userId,
                 SourceProviderIdentifier = sourceProvider.Identifier,
                 SourceProviderArtifactId = sourceProvider.ArtifactId,
@@ -55,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
                 IntegrationPointTypeIdentifier = integrationPointType.Identifier,
                 ObjectTypeGuid = objectTypeGuid,
                 SecuredConfiguration = model.SecuredConfiguration,
-                CreateSavedSearch = destinationConfiguration.CreateSavedSearchForTagging
+                CreateSavedSearch = model.DestinationConfiguration.CreateSavedSearchForTagging
             };
         }
 

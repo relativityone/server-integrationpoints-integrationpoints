@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         {
             _createRelativityObjectManager = createRelativityObjectManager;
             _objectArtifactIDsByStringFieldValueQuery = objectArtifactIDsByStringFieldValueQuery;
-            _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+            _serializer = RipJsonSerializer.CreateWithoutLogger();
         }
 
         public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)

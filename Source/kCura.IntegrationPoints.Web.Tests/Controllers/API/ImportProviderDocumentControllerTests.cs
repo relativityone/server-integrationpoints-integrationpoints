@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Results;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -17,9 +18,9 @@ using NUnit.Framework;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.API;
 using SystemInterface.IO;
-using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -163,7 +164,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnNoContentResultIfErrorFileExists()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(true);
 
             IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnBadRequestResultIfErrorFileMissing()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(false);
 
             IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
@@ -187,7 +188,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnCorrectResponseMessageResultForDownload()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
             _memoryStream.GetBuffer().Returns(_FILE_CONTENT_MEM_STREAM_BYTES);
 
             IHttpActionResult result = _controller.DownloadErrorFile(-1, -1);

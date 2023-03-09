@@ -36,28 +36,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         }
 
         [Test]
-        public void ItShouldCreateJob_byNewNativeDocumentImportJob_withParams()
-        {
-            // Arrange
-            _importSettings.ArtifactTypeId = (int) ArtifactType.Document;
-            _importSettings.FederatedInstanceArtifactId = null;
-            var expected = new ImportBulkArtifactJob();
-            _importApi.NewNativeDocumentImportJob().Returns(expected);
-
-            // Act
-            ImportBulkArtifactJob actual = _instance.CreateJob();
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-            _importApi.Received().NewNativeDocumentImportJob();
-        }
-
-        [Test]
         public void ItShouldCreateJob_byNewNativeDocumentImportJob()
         {
             // Arrange
             _importSettings.ArtifactTypeId = (int)ArtifactType.Document;
-            _importSettings.FederatedInstanceArtifactId = 0;
             var expected = new ImportBulkArtifactJob();
             _importApi.NewNativeDocumentImportJob().Returns(expected);
 
