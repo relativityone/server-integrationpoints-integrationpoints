@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -25,7 +28,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_relativityObjectManager.QueryWithExportAsync(Arg.Any<QueryRequest>(), Arg.Any<int>(), Arg.Any<ExecutionIdentity>())
 				.Returns(_exportResult);
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>().Returns(_logger);
-			_instance = new ImageTotalStatistics(_helper, _repositoryFactory);
+
+			var choiceService = Substitute.For<IChoiceService>();
+
+			_instance = new ImageTotalStatistics(_helper, _repositoryFactory, choiceService);
 		}
 
 		[Test]

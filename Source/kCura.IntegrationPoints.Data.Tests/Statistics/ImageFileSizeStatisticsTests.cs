@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,7 +25,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		{
 			base.SetUp();
 			_helper.GetLoggerFactory().GetLogger().ForContext<ImageFileSizeStatistics>().Returns(_logger);
-			_instance = new ImageFileSizeStatistics(_helper, _repositoryFactory);
+
+			var choiceService = Substitute.For<IChoiceService>();
+
+			_instance = new ImageFileSizeStatistics(_helper, _repositoryFactory, choiceService);
 		}
 
 		[Test]
