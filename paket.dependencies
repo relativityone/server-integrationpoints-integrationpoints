@@ -38,7 +38,7 @@ nuget Relativity.Logging.Interfaces 2019.5.1
 nuget Relativity.OAuth2Client 1.5.2
 nuget Relativity.OAuth2Client.Interfaces 1.5.2
 nuget Relativity.Productions.Services.Interfaces 11.1.0
-nuget Relativity.Telemetry.APM 2019.1.1 
+nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3000.0.1
 nuget Relativity.Toggles 1.0.0.100
@@ -83,7 +83,7 @@ nuget Relativity.Testing.Identification 1.20.0
 nuget Selenium.Support 3.141.0
 nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
-nuget Serilog 1.5.14	
+nuget Serilog 1.5.14
 nuget Serilog.Sinks.Seq 1.5.36
 nuget ARMTestServices 1.1.1
 
@@ -92,7 +92,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-    nuget Relativity.Sync 0.6.79
+    nuget Relativity.Sync 0.6.84
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9

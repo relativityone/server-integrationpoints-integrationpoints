@@ -421,7 +421,7 @@ NUGET
       Relativity.Kepler.Service (>= 2.7)
       Relativity.Services.DataContracts (>= 13.2.5)
     Relativity.Services.Interfaces.Private (13.1.4)
-    Relativity.Sync (0.6.79)
+    Relativity.Sync (0.6.84)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
