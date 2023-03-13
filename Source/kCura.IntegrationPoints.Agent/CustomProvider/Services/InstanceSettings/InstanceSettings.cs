@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Data.Queries;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
@@ -11,8 +13,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
 {
     public class InstanceSettings : IInstanceSettings
     {
-        private const string _INTEGRATION_POINTS_SECTION = "kCura.IntegrationPoints";
-
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IAPILog _logger;
 
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
 
         public async Task<int> GetCustomProviderBatchSizeAsync()
         {
-            return await GetAsync<int>("CustomProviderBatchSize", _INTEGRATION_POINTS_SECTION, 10000);
+            return await GetAsync<int>(Constants.InstanceSettings.CUSTOM_PROVIDER_BATCH_SIZE, Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, 10000);
         }
 
         public async Task<T> GetAsync<T>(string name, string section, T defaultValue)
@@ -61,9 +61,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
             {
                 using (IInstanceSettingManager instanceSettingManager = await _serviceFactory.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
                 {
-                    Query query = BuildInstanceSettingQuery(name, section);
-                    InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);
-
+                    Query query = new Query
+                    {
+                        Condition = InstanceSettingConditionBuilder.GetCondition(name, section)
+                    };
+                    InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query, 1).ConfigureAwait(false);
                     return resultSet;
                 }
             }
@@ -75,14 +77,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
                     Message = ex.Message
                 };
             }
-        }
-
-        private static Query BuildInstanceSettingQuery(string name, string section)
-        {
-            return new Query
-            {
-                Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
-            };
         }
 
         private bool TryConvertValue<T>(object value, out T outVal)
