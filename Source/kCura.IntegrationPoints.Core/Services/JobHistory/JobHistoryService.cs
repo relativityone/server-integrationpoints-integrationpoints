@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return jobHistory;
         }
 
-        public void UpdateRdoToBeChanged(Data.JobHistory jobHistory)
+        public void UpdateRdo(Data.JobHistory jobHistory)
         {
             JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All().Except(JobHistoryFieldGuids.Documents);
             UpdateRdo(jobHistory, queryOptions);

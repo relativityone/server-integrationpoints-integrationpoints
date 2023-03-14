@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             };
 
             // Act
-            _instance.UpdateRdoToBeChanged(jobHistory);
+            _instance.UpdateRdoWithoutDocuments(jobHistory);
 
             // Assert
             _relativityObjectManager

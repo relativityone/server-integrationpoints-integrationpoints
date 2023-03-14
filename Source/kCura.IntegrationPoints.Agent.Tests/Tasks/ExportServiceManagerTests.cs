@@ -704,7 +704,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             // ASSERT
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
 
-            _jobHistoryService.Received(1).UpdateRdoToBeChanged(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(1).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         [Test]
@@ -725,7 +725,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
 
-            _jobHistoryService.Received(2).UpdateRdoToBeChanged(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         [Test]
@@ -745,7 +745,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             action.ShouldThrow<IntegrationPointValidationException>();
 
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
-            _jobHistoryService.Received(2).UpdateRdoToBeChanged(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         private void AssertFinalizedJob(Job job)
@@ -780,7 +780,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
         private void EnsureToUpdateTotalItemCount()
         {
-            _jobHistoryService.Received().UpdateRdoToBeChanged(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
         }
 
         private void AssertRetrySavedSearch(bool expectToCreate)

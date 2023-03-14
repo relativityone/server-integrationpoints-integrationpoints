@@ -344,14 +344,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (!JobHistory.StartTimeUTC.HasValue)
             {
                 JobHistory.StartTimeUTC = DateTime.UtcNow;
-                _jobHistoryService.UpdateRdoToBeChanged(JobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
             }
         }
 
         private void ValidateJob(Job job)
         {
             JobHistory.JobStatus = JobStatusChoices.JobHistoryValidating;
-            _jobHistoryService.UpdateRdoToBeChanged(JobHistory);
+            _jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
             _agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
         }
 
@@ -429,7 +429,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(BatchInstance);
                 jobHistory.TotalItems = items;
-                _jobHistoryService.UpdateRdoToBeChanged(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
             catch (Exception exception)
             {

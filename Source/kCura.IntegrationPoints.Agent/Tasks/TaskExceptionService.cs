@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _jobHistoryErrorService.JobHistory = taskWithJobHistory.JobHistory;
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, ex.Message, ex.StackTrace);
                 taskWithJobHistory.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-                _jobHistoryService.UpdateRdoToBeChanged(taskWithJobHistory.JobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(taskWithJobHistory.JobHistory);
                 _jobService.CleanupJobQueueTable();
             }
             catch (Exception errorHandlingException)
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 
                 jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-                _jobHistoryService.UpdateRdoToBeChanged(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
             catch (Exception errorHandlingException)
             {

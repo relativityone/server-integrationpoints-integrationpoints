@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.Received().UpdateRdoToBeChanged(Arg.Is<JobHistory>(h => h.JobID == jobId.ToString()));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(h => h.JobID == jobId.ToString()));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoToBeChanged(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoToBeChanged(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoToBeChanged(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [TestCase(new[] { 123 }, 123, new int[] { })]
@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
 
             // Assert
-            _jobHistoryService.Received().UpdateRdoToBeChanged(Arg.Is<JobHistory>(x => x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
         }
 
         [Test]
