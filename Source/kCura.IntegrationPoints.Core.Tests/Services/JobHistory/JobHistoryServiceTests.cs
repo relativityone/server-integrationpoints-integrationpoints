@@ -184,25 +184,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         }
 
         [Test]
-        public void UpdateRdo_Succeeds_Test()
-        {
-            // Arrange
-            Data.JobHistory jobHistory = new Data.JobHistory
-            {
-                ArtifactId = 456,
-                BatchInstance = new Guid().ToString()
-            };
-
-            // Act
-            _instance.UpdateRdoWithoutDocuments(jobHistory);
-
-            // Assert
-            _relativityObjectManager
-                .Received(1)
-                .Update(jobHistory);
-        }
-
-        [Test]
         public void UpdateRdoWithoutDocuments_Succeeds_Test()
         {
             // Arrange
