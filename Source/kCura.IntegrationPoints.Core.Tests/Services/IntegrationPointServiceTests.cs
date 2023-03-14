@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
 
             _jobHistoryServiceMock.Verify(
-                x => x.UpdateRdo(
+                x => x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
                 Times.Exactly(numberOfPendingJobs));
@@ -366,7 +366,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
 
             _jobHistoryServiceMock.Verify(
-                x => x.UpdateRdo(
+                x => x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
                 Times.Exactly(numberOfPendingJobs));
@@ -418,7 +418,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _jobManagerMock.Setup(x => x.StopJobs(It.IsAny<IList<long>>()))
                 .Throws<EntryPointNotFoundException>();
 
-            _jobHistoryServiceMock.Setup(x => x.UpdateRdo(It.IsAny<Data.JobHistory>()))
+            _jobHistoryServiceMock.Setup(x => x.UpdateRdoWithoutDocuments(It.IsAny<Data.JobHistory>()))
                 .Throws<ArgumentException>();
 
             // Act
@@ -432,7 +432,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
 
-            _jobHistoryServiceMock.Verify(x => x.UpdateRdo(It.IsAny<Data.JobHistory>()), Times.Exactly(numberOfPendingJobs));
+            _jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.IsAny<Data.JobHistory>()), Times.Exactly(numberOfPendingJobs));
         }
 
         [Test]
@@ -477,7 +477,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<string>()));
 
             _jobHistoryServiceMock.Verify(x =>
-                x.UpdateRdo(
+                x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))));
         }
@@ -584,7 +584,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<string>()));
 
             _jobHistoryServiceMock.Verify(x =>
-                x.UpdateRdo(
+                x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))));
         }

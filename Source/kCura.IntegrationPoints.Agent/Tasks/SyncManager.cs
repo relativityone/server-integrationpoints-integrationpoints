@@ -344,14 +344,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (!JobHistory.StartTimeUTC.HasValue)
             {
                 JobHistory.StartTimeUTC = DateTime.UtcNow;
-                _jobHistoryService.UpdateRdo(JobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
             }
         }
 
         private void ValidateJob(Job job)
         {
             JobHistory.JobStatus = JobStatusChoices.JobHistoryValidating;
-            _jobHistoryService.UpdateRdo(JobHistory);
+            _jobHistoryService.UpdateRdoWithoutDocuments(JobHistory);
             _agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
         }
 
@@ -427,9 +427,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // TODO we should not update JobHistory here, it is not SyncManager responsibility
             try
             {
-                JobHistory jobHistory = _jobHistoryService.GetRdo(BatchInstance);
+                JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(BatchInstance);
                 jobHistory.TotalItems = items;
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
             catch (Exception exception)
             {

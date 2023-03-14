@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public ChoiceRef GenerateStatus(Guid batchId)
         {
-            Data.JobHistory result = _jobHistoryService.GetRdo(batchId);
+            Data.JobHistory result = _jobHistoryService.GetRdoWithoutDocuments(batchId);
             return GenerateStatus(result);
         }
 

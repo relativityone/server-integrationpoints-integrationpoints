@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Returns(new List<Data.JobHistory>(1) { jobHistory });
 
             // Act
-            Data.JobHistory actual = _instance.GetRdo(batchInstance);
+            Data.JobHistory actual = _instance.GetRdoWithoutDocuments(batchInstance);
 
             // Assert
             Assert.IsNotNull(actual);
@@ -181,25 +181,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
                     !string.IsNullOrEmpty(x.Condition) &&
                         x.Condition.Contains(conditionValue)));
-        }
-
-        [Test]
-        public void UpdateRdo_Succeeds_Test()
-        {
-            // Arrange
-            Data.JobHistory jobHistory = new Data.JobHistory
-            {
-                ArtifactId = 456,
-                BatchInstance = new Guid().ToString()
-            };
-
-            // Act
-            _instance.UpdateRdo(jobHistory);
-
-            // Assert
-            _relativityObjectManager
-                .Received(1)
-                .Update(jobHistory);
         }
 
         [Test]

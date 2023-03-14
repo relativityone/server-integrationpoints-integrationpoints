@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             // ARRANGE
             Guid guid = Guid.NewGuid();
             JobHistory jobHistory = new JobHistory() {JobStatus = JobStatusChoices.JobHistoryStopping};
-            _jobHistoryService.GetRdo(guid).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(guid).Returns(jobHistory);
 
             // ACT
             var choice = _instance.GenerateStatus(guid);
