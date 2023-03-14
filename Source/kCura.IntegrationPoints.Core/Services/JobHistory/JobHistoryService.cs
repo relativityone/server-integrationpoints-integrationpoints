@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -183,7 +184,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 Fields = MapToFieldRefs(queryOptions?.FieldGuids)
             };
 
+            Stopwatch sw = Stopwatch.StartNew();
             List<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
+            sw.Stop();
+
+            _logger.LogInformation("JobHistoryService JobHistory Query to ObjectManager with [{queryCondition}] elapsed time: {jobHistoryQueryElapsedTimeMs} ms", queryCondition, sw.ElapsedMilliseconds);
+
             if (jobHistories.Count > 1)
             {
                 _logger.LogWarning("More than one job history instance found for query condition: {queryCondition}", queryCondition);
