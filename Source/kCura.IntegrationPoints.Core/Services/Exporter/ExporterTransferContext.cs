@@ -25,9 +25,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         {
             if (TotalItemsFound.HasValue)
             {
-                Data.JobHistory dto = _configuration.JobHistoryService.GetRdo(_configuration.Identifier);
+                Data.JobHistory dto = _configuration.JobHistoryService.GetRdoWithoutDocuments(_configuration.Identifier);
                 dto.TotalItems = TotalItemsFound;
-                _configuration.JobHistoryService.UpdateRdo(dto);
+                _configuration.JobHistoryService.UpdateRdoToBeChanged(dto);
             }
         }
     }

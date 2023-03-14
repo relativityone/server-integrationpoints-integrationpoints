@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             serializer.Deserialize<TaskParameters>(job.JobDetails)
                 .Returns(_taskParameters);
-            jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
+            jobHistoryService.GetRdoWithoutDocuments(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
             _instance = new ImportServiceManager(
                 _helper,
                 _retryHandler,

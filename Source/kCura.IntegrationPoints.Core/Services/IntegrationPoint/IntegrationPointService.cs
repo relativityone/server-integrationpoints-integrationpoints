@@ -416,7 +416,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 try
                 {
                     jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-                    _jobHistoryService.UpdateRdo(jobHistory);
+                    _jobHistoryService.UpdateRdoToBeChanged(jobHistory);
 
                     Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
 
@@ -641,7 +641,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (switchToAppendOverlayMode)
             {
                 jobHistory.Overwrite = OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name;
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoToBeChanged(jobHistory);
             }
         }
 
@@ -650,7 +650,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (jobHistory != null)
             {
                 jobHistory.JobStatus = status;
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoToBeChanged(jobHistory);
             }
             else
             {

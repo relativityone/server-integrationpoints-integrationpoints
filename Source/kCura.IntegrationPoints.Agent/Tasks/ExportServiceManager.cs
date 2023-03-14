@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 lock (_syncRoot)
                 {
-                    JobHistory = JobHistoryService.GetRdo(Identifier);
+                    JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
                     dataTransferContext.UpdateTransferStatus();
                 }
 

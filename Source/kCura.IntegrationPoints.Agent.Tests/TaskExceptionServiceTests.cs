@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Assert
             Assert.AreEqual(JobStatusChoices.JobHistoryErrorJobFailed.Name, _jobHistoryDto.JobStatus.Name);
             _jobHistoryErrorServiceMock.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, exception.Message, exception.StackTrace );
-            _jobHistoryServiceMock.Received(1).UpdateRdo(_jobHistoryDto);
+            _jobHistoryServiceMock.Received(1).UpdateRdoToBeChanged(_jobHistoryDto);
             _jobServiceMock.Received(1).CleanupJobQueueTable();
         }
     }

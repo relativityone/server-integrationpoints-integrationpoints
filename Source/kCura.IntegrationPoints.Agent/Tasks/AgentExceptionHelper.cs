@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (ex is PermissionException || ex is IntegrationPointValidationException)
             {
                 jobHistory.JobStatus = JobStatusChoices.JobHistoryValidationFailed;
-                jobHistoryService.UpdateRdo(jobHistory);
+                jobHistoryService.UpdateRdoToBeChanged(jobHistory);
             }
         }
     }

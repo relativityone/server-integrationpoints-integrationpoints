@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = GetRdo(batchInstance);
+            Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);
             if (jobHistory == null)
             {
                 _logger.LogInformation("JobHistory {batchInstance} doesn't exist. Create new...", batchInstance);
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public Data.JobHistory CreateRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = GetRdo(batchInstance);
+            Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);
             if (jobHistory != null)
             {
                 _logger.LogWarning("JobHistory already exists. Withdrawn from creating the new one: {jobHistoryDetails}", jobHistory.Stringify());
@@ -142,9 +142,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return jobHistory;
         }
 
-        public void UpdateRdo(Data.JobHistory jobHistory)
+        public void UpdateRdoToBeChanged(Data.JobHistory jobHistory)
         {
-            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
+            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All().Except(JobHistoryFieldGuids.Documents);
             UpdateRdo(jobHistory, queryOptions);
         }
 

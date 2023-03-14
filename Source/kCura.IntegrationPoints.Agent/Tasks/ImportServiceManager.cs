@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void MarkJobAsDrainStoppedIfNeeded(Job job)
         {
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
-            JobHistory = JobHistoryService.GetRdo(batchInstance);
+            JobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
 
             DiagnosticLog.LogDiagnostic("Processed ItemsCount: {itemsCount}", processedItemsCount);
@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
+            JobHistory jobHistory = JobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
             ChoiceRef status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
             if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
@@ -375,7 +375,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 lock (_syncRoot)
                 {
-                    JobHistory = JobHistoryService.GetRdo(Identifier);
+                    JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
                     JobHistory.TotalItems = recordCount;
                     UpdateJobStatus(JobHistory);
 

@@ -334,7 +334,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobHistoryErrorService.Received(1).JobHistory = _jobHistory;
 
             // We expect to update Start Time and State of JobHistory object
-            _jobHistoryService.Received(2).UpdateRdo(_jobHistory);
+            _jobHistoryService.Received(2).UpdateRdoToBeChanged(_jobHistory);
             _managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>());
         }
 
@@ -365,7 +365,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             PreJobExecutionGoldFlowSetup();
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _integrationPoint.NextRun = null;
-            _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
             // act
             _syncManagerEventHelper.RaisePostEvent(_job, _taskResult, itemCount);
 
@@ -373,7 +373,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _batchStatus.Received(1).OnJobComplete(_job);
             Assert.IsNull(_integrationPoint.NextRun);
             _integrationPointService.UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun);
-            _jobHistoryService.Received().UpdateRdo(_jobHistory);
+            _jobHistoryService.Received().UpdateRdoToBeChanged(_jobHistory);
             _jobHistoryErrorService.Received().CommitErrors();
         }
 
@@ -388,7 +388,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _syncManagerEventHelper.BatchJobCount = 0;
             _integrationPoint.NextRun = null;
             _jobStopManager.IsStopRequested().Returns(true);
-            _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
 
             // act
             _syncManagerEventHelper.RaisePostEvent(_job, _taskResult, itemCount);
@@ -424,8 +424,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 {
                     throw exception4;
                 });
-            _jobHistoryService.When(x => x.UpdateRdo(_jobHistory)).Do(x => { throw exception5;});
-            _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+            _jobHistoryService.When(x => x.UpdateRdoToBeChanged(_jobHistory)).Do(x => { throw exception5;});
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
 
             // act
             _syncManagerEventHelper.RaisePostEvent(_job, _taskResult, 0);
@@ -558,7 +558,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 }
             );
             bool jobValidationFailedUpdated = false;
-            _jobHistoryService.When(x => x.UpdateRdo(Arg.Is<JobHistory>( jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
+            _jobHistoryService.When(x => x.UpdateRdoToBeChanged(Arg.Is<JobHistory>( jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
                 {
                     jobValidationFailedUpdated = true;
                 }
@@ -583,7 +583,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobHistoryManager.Received(1).SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, _jobHistory.ArtifactId);
             Assert.IsNotNull(_integrationPoint.NextRun);
             _integrationPointService.Received(1).UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun);
-            _jobHistoryService.Received().UpdateRdo(_jobHistory);
+            _jobHistoryService.Received().UpdateRdoToBeChanged(_jobHistory);
             _jobHistoryErrorService.Received().CommitErrors();
         }
 

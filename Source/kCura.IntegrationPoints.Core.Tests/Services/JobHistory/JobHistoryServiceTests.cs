@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Returns(new List<Data.JobHistory>(1) { jobHistory });
 
             // Act
-            Data.JobHistory actual = _instance.GetRdo(batchInstance);
+            Data.JobHistory actual = _instance.GetRdoWithoutDocuments(batchInstance);
 
             // Assert
             Assert.IsNotNull(actual);
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             };
 
             // Act
-            _instance.UpdateRdo(jobHistory);
+            _instance.UpdateRdoToBeChanged(jobHistory);
 
             // Assert
             _relativityObjectManager

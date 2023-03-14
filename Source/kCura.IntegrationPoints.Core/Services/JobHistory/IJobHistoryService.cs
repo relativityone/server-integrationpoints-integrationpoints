@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// Updates job history Rdo
         /// </summary>
         /// <param name="jobHistory">Job history Rdo</param>
-        void UpdateRdo(Data.JobHistory jobHistory);
+        void UpdateRdoToBeChanged(Data.JobHistory jobHistory);
 
         /// <summary>
         /// Updates job history Rdo without Documents field

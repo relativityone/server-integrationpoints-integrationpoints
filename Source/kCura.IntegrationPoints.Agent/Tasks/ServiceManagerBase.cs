@@ -204,7 +204,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                JobHistoryService.UpdateRdo(jobHistory);
+                JobHistoryService.UpdateRdoToBeChanged(jobHistory);
             }
             catch (Exception e)
             {
