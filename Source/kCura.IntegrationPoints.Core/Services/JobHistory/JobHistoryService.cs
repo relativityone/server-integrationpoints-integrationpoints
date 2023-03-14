@@ -38,12 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _serializer = serializer;
         }
 
-        public Data.JobHistory GetRdo(Guid batchInstance)
-        {
-            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
-            return GetRdo(GetBatchInstanceQueryCondition(batchInstance), queryOptions);
-        }
-
         public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
         {
             JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
@@ -140,12 +134,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             _logger.LogInformation("Created JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
             return jobHistory;
-        }
-
-        public void UpdateRdo(Data.JobHistory jobHistory)
-        {
-            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All().Except(JobHistoryFieldGuids.Documents);
-            UpdateRdo(jobHistory, queryOptions);
         }
 
         public void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory)

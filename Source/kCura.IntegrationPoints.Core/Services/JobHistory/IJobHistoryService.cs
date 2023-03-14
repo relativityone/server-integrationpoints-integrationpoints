@@ -36,13 +36,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds);
 
         /// <summary>
-        /// Retrieves job history Rdo
-        /// </summary>
-        /// <param name="batchInstance">Batch instance Guid</param>
-        /// <returns></returns>
-        Data.JobHistory GetRdo(Guid batchInstance);
-
-        /// <summary>
         /// Retrieves job history Rdo without Documents field
         /// </summary>
         /// <param name="batchInstance">Batch instance Guid</param>
@@ -55,12 +48,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// <param name="artifactId">Artifact ID of the Job History object</param>
         /// <returns></returns>
         Data.JobHistory GetRdoWithoutDocuments(int artifactId);
-
-        /// <summary>
-        /// Updates job history Rdo
-        /// </summary>
-        /// <param name="jobHistory">Job history Rdo</param>
-        void UpdateRdo(Data.JobHistory jobHistory);
 
         /// <summary>
         /// Updates job history Rdo without Documents field
