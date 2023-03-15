@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             };
             jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
                 .Returns(jobHistoryDto);
-            jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
+            jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
             // Logging
             IAPILog logger = Substitute.For<IAPILog>();

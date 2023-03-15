@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             if (jobHistory != null && string.IsNullOrEmpty(jobHistory.JobID))
             {
                 jobHistory.JobID = job.JobId.ToString();
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
         }
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _integrationPointService.UpdateJobHistory(_integrationPoint.ArtifactId, _integrationPoint.JobHistory);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-            _jobHistoryService.UpdateRdo(jobHistory);
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             _jobHistoryService.DeleteRdo(jobHistory.ArtifactId);
 
             LogRemoveJobHistoryFromIntegrationPointSuccessfulEnd();
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             LogGetJobHistoryStart(job);
 
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+            JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
 
             LogGetJobHistorySuccessfulEnd(job, jobHistory);
             return jobHistory;

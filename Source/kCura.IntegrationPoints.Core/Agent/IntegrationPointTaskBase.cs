@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Core.Agent
         {
             if (JobHistory == null)
             {
-                JobHistory = JobHistoryService.GetRdo(BatchInstance);
+                JobHistory = JobHistoryService.GetRdoWithoutDocuments(BatchInstance);
                 if (JobHistory == null)
                 {
                     _logger.LogWarning("Failed to retrieve corresponding Job History for BatchInstance {JobId}.", BatchInstance);

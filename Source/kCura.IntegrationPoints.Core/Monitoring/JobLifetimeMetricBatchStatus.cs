@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
         private JobHistory GetHistory(Job job)
         {
             TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            return _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+            return _jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
         }
 
         private string GetProviderName(Job job)

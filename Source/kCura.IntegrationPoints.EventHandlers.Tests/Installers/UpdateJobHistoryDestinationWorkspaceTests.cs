@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 
             _testInstance.ExecuteInternal();
 
-            _jobHistoryService.Received(1).UpdateRdo(Arg.Is<Data.JobHistory>(j => j.DestinationWorkspace.Equals("This Instance - " + destinationWorkspace1)));
+            _jobHistoryService.Received(1).UpdateRdoWithoutDocuments(Arg.Is<Data.JobHistory>(j => j.DestinationWorkspace.Equals("This Instance - " + destinationWorkspace1)));
         }
 
         public override void SetUp()

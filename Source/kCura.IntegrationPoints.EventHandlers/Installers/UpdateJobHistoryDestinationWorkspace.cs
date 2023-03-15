@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
                 if (elements.Length == 2)
                 {
                     jobHistory.DestinationWorkspace = FederatedInstanceManager.LocalInstance.Name + " - " + jobHistory.DestinationWorkspace;
-                    _jobHistoryService.UpdateRdo(jobHistory);
+                    _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
                 }
             }
         }

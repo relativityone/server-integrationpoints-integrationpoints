@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
@@ -38,12 +39,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _serializer = serializer;
         }
 
-        public Data.JobHistory GetRdo(Guid batchInstance)
-        {
-            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
-            return GetRdo(GetBatchInstanceQueryCondition(batchInstance), queryOptions);
-        }
-
         public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
         {
             JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions
@@ -79,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = GetRdo(batchInstance);
+            Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);
             if (jobHistory == null)
             {
                 _logger.LogInformation("JobHistory {batchInstance} doesn't exist. Create new...", batchInstance);
@@ -93,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public Data.JobHistory CreateRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc)
         {
-            Data.JobHistory jobHistory = GetRdo(batchInstance);
+            Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);
             if (jobHistory != null)
             {
                 _logger.LogWarning("JobHistory already exists. Withdrawn from creating the new one: {jobHistoryDetails}", jobHistory.Stringify());
@@ -140,12 +135,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             _logger.LogInformation("Created JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
             return jobHistory;
-        }
-
-        public void UpdateRdo(Data.JobHistory jobHistory)
-        {
-            JobHistoryQueryOptions queryOptions = JobHistoryQueryOptions.All();
-            UpdateRdo(jobHistory, queryOptions);
         }
 
         public void UpdateRdoWithoutDocuments(Data.JobHistory jobHistory)
@@ -195,7 +184,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 Fields = MapToFieldRefs(queryOptions?.FieldGuids)
             };
 
+            Stopwatch sw = Stopwatch.StartNew();
             List<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
+            sw.Stop();
+
+            _logger.LogInformation("JobHistoryService JobHistory Query to ObjectManager with [{queryCondition}] elapsed time: {jobHistoryQueryElapsedTimeMs} ms", queryCondition, sw.ElapsedMilliseconds);
+
             if (jobHistories.Count > 1)
             {
                 _logger.LogWarning("More than one job history instance found for query condition: {queryCondition}", queryCondition);
