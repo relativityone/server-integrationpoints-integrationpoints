@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Common.Stubs;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -24,6 +28,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobStatisticsContainer> _jobStatisticsContainerStub;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminStub;
         private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
+        private Mock<IIAPIv2RunChecker> _iapiv2CheckFake;
+
+        private IFixture _fxt;
+
         private List<IBatch> _batches;
 
         private IExecutor<IJobStatusConsolidationConfiguration> _sut;
@@ -49,6 +57,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [SetUp]
         public void SetUp()
         {
+            _fxt = FixtureFactory.Create();
+
             _objectManagerFake = new Mock<IObjectManager>();
             _batchRepositoryStub = new Mock<IBatchRepository>();
             _jobStatisticsContainerStub = new Mock<IJobStatisticsContainer>();
@@ -60,15 +70,26 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .ReturnsAsync(_objectManagerFake.Object);
 
+            _iapiv2CheckFake = new Mock<IIAPIv2RunChecker>();
+            _iapiv2CheckFake.Setup(x => x.ShouldBeUsed()).Returns(false);
+
             _batches = new List<IBatch>();
 
             _batchRepositoryStub
                 .Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(_batches);
+                .ReturnsAsync(() => _batches);
+
+            Mock<IAPILog> log = new Mock<IAPILog>();
 
             SetUpUpdateCall(success: true);
 
-            _sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryForAdminStub.Object);
+            _sut = new JobStatusConsolidationExecutor(
+                new ConfigurationStub(),
+                _batchRepositoryStub.Object,
+                _jobStatisticsContainerStub.Object,
+                _serviceFactoryForAdminStub.Object,
+                _iapiv2CheckFake.Object,
+                log.Object);
         }
 
         [Test]
@@ -134,6 +155,31 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             result.Status.Should().Be(ExecutionStatus.Completed);
             VerifyUpdateCall(transferredCount, failedCount, totalItemCount);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldAggregateStatisticsFromBatches_WhenNewImportFlowIsUsed()
+        {
+            // Arrange
+            _batches = _fxt.CreateMany<BatchStub>().ToList<IBatch>();
+
+            int expectedTransferred = _batches.Sum(x => x.TransferredDocumentsCount);
+            int expectedFailed = _batches.Sum(x => x.FailedDocumentsCount);
+            int expectedTotal = _batches.Sum(x => x.TotalDocumentsCount);
+
+            _iapiv2CheckFake.Setup(x => x.ShouldBeUsed()).Returns(true);
+
+            // Act
+            ExecutionResult result = await _sut
+                .ExecuteAsync(_configurationStub.Object, CompositeCancellationToken.None)
+                .ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Completed);
+            VerifyUpdateCall(
+                expectedTransferred,
+                expectedFailed,
+                expectedTotal);
         }
 
         [Test]

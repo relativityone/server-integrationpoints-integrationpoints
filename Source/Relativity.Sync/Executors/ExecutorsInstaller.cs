@@ -107,7 +107,6 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
             builder.RegisterType<AdlsMigrationStatus>().As<IAdlsMigrationStatus>().SingleInstance();
             builder.RegisterType<IsAdfTransferEnabled>().As<IIsAdfTransferEnabled>().SingleInstance();
-            builder.RegisterType<HelperWrapper>().As<IHelperWrapper>().SingleInstance();
             builder.RegisterType<AdlsUploader>().As<IAdlsUploader>().SingleInstance();
 
             builder.RegisterType<BatchRepository>().As<IBatchRepository>();
@@ -122,6 +121,7 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<LoadFileGenerator>().As<ILoadFileGenerator>();
             builder.RegisterType<LoadFilePathService>().As<ILoadFilePathService>();
             builder.RegisterType<ItemLevelErrorHandler>().As<IItemLevelErrorHandler>();
+            builder.RegisterType<ImportService>().As<IImportService>();
 
             RegisterNonDocumentFlowComponents(builder);
         }

@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Relativity.Sync.Telemetry.RelEye;
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
     internal abstract class MetricBase<T> : IMetric
         where T : IMetric, new()
     {
+        private Dictionary<string, object> _attributes = new Dictionary<string, object>()
+        {
+            [Const.Names.R1TeamID] = Const.Values.R1TeamID,
+            [Const.Names.ServiceName] = Const.Values.ServiceName,
+        };
+
         private static Dictionary<PropertyInfo, MetricAttribute> _metricCacheProperties;
 
         [Metric(MetricType.PointInTimeString, TelemetryConstants.MetricIdentifiers.JOB_CORRELATION_ID)]
@@ -46,7 +53,7 @@ namespace Relativity.Sync.Telemetry.Metrics
                 .Where(item => item.Key.GetCustomAttribute<APMIgnoreMetricAttribute>() == null)
                 .ToDictionary(keyValuePair => keyValuePair.Key.Name, keyValuePair => GetValue(keyValuePair.Key));
 
-            return apmMetrics;
+            return _attributes.Concat(apmMetrics).ToDictionary(x => x.Key, x => x.Value);
         }
 
         public virtual IEnumerable<SumMetric> GetSumMetrics()

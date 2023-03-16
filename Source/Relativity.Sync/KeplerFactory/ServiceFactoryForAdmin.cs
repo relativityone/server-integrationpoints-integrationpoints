@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -9,9 +8,8 @@ namespace Relativity.Sync.KeplerFactory
         private readonly IServicesMgr _servicesMgr;
         private readonly IDynamicProxyFactory _proxyFactory;
 
-        public ServiceFactoryForAdmin(IServicesMgr servicesMgr, IDynamicProxyFactory proxyFactory,
-            IRandom random, IAPILog logger)
-            : base(random, logger)
+        public ServiceFactoryForAdmin(IServicesMgr servicesMgr, IDynamicProxyFactory proxyFactory, IAPILog logger)
+            : base(logger)
         {
             _servicesMgr = servicesMgr;
             _proxyFactory = proxyFactory;

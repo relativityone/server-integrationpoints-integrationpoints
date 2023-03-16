@@ -10,28 +10,28 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
         {
             TypeGuid = new Guid("DF0A4E86-251E-4B21-870D-265C9B00B0F5"),
             CompletedItemsFieldGuid = new Guid("EC869E59-933F-44C8-9E9F-5F1C4619B1AA"),
-            ReadItemsFieldGuid = new Guid("bd917575-1a47-47c9-8428-c0b1bee42ab0"),
+            ReadItemsFieldGuid = new Guid("eeba8bb7-201c-47d1-a8ec-ec00e73755e2"),
             DestinationWorkspaceInformationGuid = new Guid("412677B9-7F13-44CF-9F9E-37A91ECEE420"),
             FailedItemsFieldGuid = new Guid("ABC708E9-4DB9-4B62-B2E9-3EEF0166A695"),
             TotalItemsFieldGuid = new Guid("B54407A6-26F5-48CE-9079-0A99A49C9CF3"),
-            JobIdGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d"),
-            StartTimeGuid = new Guid("25b7c8ef-66d9-41d1-a8de-29a93e47fb11"),
-            EndTimeGuid = new Guid("4736cf49-ad0f-4f02-aaaa-898e07400f22"),
-            StatusGuid = new Guid("5c28ce93-c62f-4d25-98c9-9a330a6feb52")
+            JobIdGuid = new Guid("801299fe-030c-4414-87f8-90626d2bc461"),
+            StartTimeGuid = new Guid("34ca8b8c-e11c-435a-8797-1441bd5403f0"),
+            EndTimeGuid = new Guid("5b6e9f49-633d-423d-9460-2a1b07d2881c"),
+            StatusGuid = new Guid("7d69bcda-5c4c-4fbd-9a01-05ece982bb25")
         };
 
         public static IJobHistoryStatusProvider JobHistoryStatus => new JobHistoryStatusGuidProviderStub
         {
-            CompletedGuid = new Guid("c7d1eb34-166e-48d0-bce7-0be0df43511c"),
-            CompletedWithErrorsGuid = new Guid("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37"),
-            JobFailedGuid = new Guid("3152ece9-40e6-44dd-afc8-1004f55dfb63"),
-            ProcessingGuid = new Guid("bb170e53-2264-4708-9b00-86156187ed54"),
-            StoppedGuid = new Guid("a29c5bcb-d3a6-4f81-877a-2a6556c996c3"),
-            StoppingGuid = new Guid("97c1410d-864d-4811-857b-952464872baa"),
-            SuspendedGuid = new Guid("f219e060-d7e1-4666-964d-f229a1a13baa"),
-            SuspendingGuid = new Guid("c65658c3-79ea-4762-b78e-85d9f38785b6"),
-            ValidationFailedGuid = new Guid("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a"),
-            ValidatingGuid = new Guid("6a2dcef5-5826-4f61-9bac-59fef879ebc2")
+            CompletedGuid = new Guid("ee1e1ae9-2490-44b9-8424-b4200f9799c3"),
+            CompletedWithErrorsGuid = new Guid("25e90af8-0ea4-4aa3-a246-c09c8138e146"),
+            JobFailedGuid = new Guid("55039feb-de01-495b-9257-156dedfe7232"),
+            ProcessingGuid = new Guid("352e211b-c85c-4aac-8d3b-eb38fb880b3d"),
+            StoppedGuid = new Guid("baebac34-e587-4dec-a4c9-6da4db9918c6"),
+            StoppingGuid = new Guid("ec47c22a-ef8d-4b28-b539-c4e98269ff6d"),
+            SuspendedGuid = new Guid("6d19d402-072b-47b9-b845-afbeb47b417b"),
+            SuspendingGuid = new Guid("cc8a6535-7a1c-447c-b110-8fde1d35ec5d"),
+            ValidationFailedGuid = new Guid("dc3aa0cd-b212-4842-8898-7df34c438578"),
+            ValidatingGuid = new Guid("d0bc4f28-db9c-48ce-aa11-8d0155bb441e")
         };
 
         public static IJobHistoryErrorGuidsProvider JobHistoryError => new JobHistoryErrorGuidsProviderStub
@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
             ErrorMessagesGuid = new Guid("66C5E26F-DB42-4FD9-B2CF-14A2641C42E3"),
             ErrorStatusGuid = new Guid("CE53A2A4-FD29-437F-98A2-D0A4DB341929"),
             ErrorTypeGuid = new Guid("67936C04-A0A8-4C15-B055-F37D5978F4EF"),
-            NameGuid = new Guid("8027D593-1BC3-49E5-8AEB-10AEF0475ECC"),
+            NameGuid = new Guid("ec885aaf-691a-4009-849c-d0e0449cf176"),
             StackTraceGuid = new Guid("BE5DAF5C-5C95-47C6-988C-0F53704199F9"),
             TimeStampGuid = new Guid("EA356DA1-C992-4A8E-8BCE-BED966477106"),
             ItemLevelErrorGuid = new Guid("6D9DAB63-4A26-4E36-A2FC-2EDD73B8C29C"),

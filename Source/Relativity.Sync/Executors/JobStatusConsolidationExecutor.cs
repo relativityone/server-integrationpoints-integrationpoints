@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -18,17 +19,23 @@ namespace Relativity.Sync.Executors
         private readonly IBatchRepository _batchRepository;
         private readonly IJobStatisticsContainer _jobStatisticsContainer;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IIAPIv2RunChecker _iapiv2Check;
+        private readonly IAPILog _logger;
 
         public JobStatusConsolidationExecutor(
             IRdoGuidConfiguration rdoGuidConfiguration,
             IBatchRepository batchRepository,
             IJobStatisticsContainer jobStatisticsContainer,
-            ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IIAPIv2RunChecker iapiv2Check,
+            IAPILog logger)
         {
             _rdoGuidConfiguration = rdoGuidConfiguration;
             _batchRepository = batchRepository;
             _jobStatisticsContainer = jobStatisticsContainer;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
+            _iapiv2Check = iapiv2Check;
+            _logger = logger;
         }
 
         public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CompositeCancellationToken token)
@@ -47,10 +54,20 @@ namespace Relativity.Sync.Executors
                         .GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, exportRunId.Value)
                         .ConfigureAwait(false)).ToList();
 
-                    completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
-                    totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
-                    failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
-                    readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
+                    if (_iapiv2Check.ShouldBeUsed())
+                    {
+                        completedItemsCount = batches.Sum(batch => batch.TransferredDocumentsCount);
+                        totalItemsCount = batches.Sum(batch => batch.TotalDocumentsCount);
+                        failedItemsCount = batches.Sum(batch => batch.FailedDocumentsCount);
+                        readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
+                    }
+                    else
+                    {
+                        completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
+                        totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
+                        failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
+                        readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
+                    }
                 }
 
                 updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, readItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
@@ -89,6 +106,14 @@ namespace Relativity.Sync.Executors
 
         private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int readItemsCount, int failedItemsCount, int totalItemsCount)
         {
+            _logger.LogInformation(
+                "Update JobHistory in JobStatusConsolidationExecutor - " +
+                "CompletedItems: {completed}, ReadItems: {read}, FailedItems: {failed}, Total: {total}",
+                completedItemsCount,
+                readItemsCount,
+                failedItemsCount,
+                totalItemsCount);
+
             using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 var updateRequest = new UpdateRequest

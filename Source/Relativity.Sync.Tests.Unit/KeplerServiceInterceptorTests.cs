@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<IStubForInterception> _stubForInterceptionMock;
         private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
         private Mock<IAPILog> _syncLogMock;
-        private Mock<IRandom> _randomFake;
 
         private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
@@ -39,16 +38,14 @@ namespace Relativity.Sync.Tests.Unit
             _stubForInterceptionFactoryFake.Setup(x => x()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 
             _syncLogMock = new Mock<IAPILog>();
-            _randomFake = new Mock<IRandom>();
 
             Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
             stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
             Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
 
-            IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
+            IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _syncLogMock.Object);
             _sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
-            const int delayBaseMs = 0;
-            SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
+            SetDelayBetweenHttpRetriesBase(_sut, TimeSpan.Zero);
         }
 
         [Test]
@@ -325,7 +322,7 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
             stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
             Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
-            IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _randomFake.Object, new EmptyLogger());
+            IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, new EmptyLogger());
             IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
 
             // ACT
@@ -381,19 +378,19 @@ namespace Relativity.Sync.Tests.Unit
             field.Should().NotBeNull();
         }
 
-        private static void SetMillisecondsDelayBetweenHttpRetriesBase(IStubForInterception stub, int delayBaseMs)
+        private static void SetDelayBetweenHttpRetriesBase(IStubForInterception stub, TimeSpan delay)
         {
             global::System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");
             IInterceptor[] interceptors = (IInterceptor[])interceptorsField.GetValue(stub);
             IInterceptor interceptor = interceptors.Single();
-            const string fieldName = "_secondsBetweenHttpRetriesBase";
-            global::System.Reflection.FieldInfo millisecondsBetweenHttpRetriesBaseField = interceptor.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-            if (millisecondsBetweenHttpRetriesBaseField == null)
+            const string fieldName = "_timeBetweenHttpRetriesBase";
+            global::System.Reflection.FieldInfo timeBetweenHttpRetriesBaseField = interceptor.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            if (timeBetweenHttpRetriesBaseField == null)
             {
                 Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
             }
 
-            millisecondsBetweenHttpRetriesBaseField.SetValue(interceptor, delayBaseMs);
+            timeBetweenHttpRetriesBaseField.SetValue(interceptor, delay);
         }
 
         private static IEnumerable<Exception> AuthTokenExceptionToRetry()

@@ -503,6 +503,11 @@ namespace Relativity.Sync.Storage
             List<int> batchesIds,
             Guid exportRunId)
         {
+            if (batchesIds.Count == 0)
+            {
+                return Enumerable.Empty<IBatch>();
+            }
+
             Batch batch = new Batch(rdoManager, serviceFactoryForAdmin, workspaceArtifactId);
             IEnumerable<IBatch> batches = await batch.ReadBatchesWithIdsAsync(syncConfigurationArtifactId, batchesIds, exportRunId).ConfigureAwait(false);
             return batches;

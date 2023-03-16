@@ -69,7 +69,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
             }
         }
 
-        public async Task MonitorAsync(List<FmsBatchStatusInfo> batches, CancellationToken cancellationToken)
+        public async Task<List<FmsBatchStatusInfo>> MonitorAsync(List<FmsBatchStatusInfo> batches, CancellationToken cancellationToken)
         {
             Guid batchesTraceId = batches.FirstOrDefault()?.TraceId ?? Guid.Empty;
             try
@@ -91,6 +91,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
                 _logger.LogInformation("Monitoring of {count} fms batches finished. TraceId: {traceId}", batches.Count, batchesTraceId);
                 PrintBatchesStatus(batches);
+                return batches;
             }
             catch (Exception ex)
             {

@@ -12,6 +12,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
     {
         Task<List<FmsBatchStatusInfo>> RunAsync(List<FmsBatchInfo> batches, CancellationToken cancellationToken);
 
-        Task MonitorAsync(List<FmsBatchStatusInfo> batches, CancellationToken cancellationToken);
+        Task<List<FmsBatchStatusInfo>> MonitorAsync(List<FmsBatchStatusInfo> batches, CancellationToken cancellationToken);
     }
 }

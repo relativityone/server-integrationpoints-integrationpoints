@@ -38,12 +38,10 @@ namespace Relativity.Sync.Tests.System
         [SetUp]
         public async Task SetUp()
         {
-            Mock<IRandom> randomFake = new Mock<IRandom>();
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
             _workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-            _serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(),
-                randomFake.Object, syncLogMock.Object);
+            _serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), syncLogMock.Object);
             _dateTime = new DateTimeWrapper();
             _logger = new EmptyLogger();
         }

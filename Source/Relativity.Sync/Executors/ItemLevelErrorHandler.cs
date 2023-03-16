@@ -64,7 +64,6 @@ namespace Relativity.Sync.Executors
             };
 
             _itemErrors.Enqueue(itemError);
-            _log.LogWarning("Item Level Error: {@itemLevelError}", itemLevelError);
 
             if (_itemErrors.Count >= _ITEM_LEVEL_ERRORS_CREATE_BATCH_SIZE)
             {

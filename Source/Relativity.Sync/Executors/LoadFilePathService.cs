@@ -7,6 +7,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -18,6 +19,7 @@ namespace Relativity.Sync.Executors
         private readonly IFileShareService _fileShareService;
         private readonly ILoadFileConfiguration _configuration;
         private readonly IMemoryCache _memoryCache;
+        private readonly IStorageAccessService _storageAccessService;
         private readonly IAPILog _logger;
 
         private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy();
@@ -26,11 +28,13 @@ namespace Relativity.Sync.Executors
             IFileShareService fileShareService,
             ILoadFileConfiguration configuration,
             IMemoryCache memoryCache,
+            IStorageAccessService storageAccessService,
             IAPILog logger)
         {
             _fileShareService = fileShareService;
             _configuration = configuration;
             _memoryCache = memoryCache;
+            _storageAccessService = storageAccessService;
             _logger = logger;
         }
 
@@ -48,7 +52,8 @@ namespace Relativity.Sync.Executors
                     .GetWorkspaceFileShareLocationAsync(_configuration.DestinationWorkspaceArtifactId)
                     .ConfigureAwait(false);
 
-                if (!Directory.Exists(fileSharePath))
+                bool exists = await _storageAccessService.DirectoryExistsAsync(fileSharePath).ConfigureAwait(false);
+                if (!exists)
                 {
                     throw new DirectoryNotFoundException($"Workspace fileshare directory: {fileSharePath} does not exist!");
                 }

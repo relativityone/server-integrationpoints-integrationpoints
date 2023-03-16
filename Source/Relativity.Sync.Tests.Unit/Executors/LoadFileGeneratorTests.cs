@@ -1,15 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Exceptions;
+using Relativity.Storage;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.Stubs;
+using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -26,11 +34,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
         private Mock<ILoadFilePathService> _loadFilePathServiceMock;
+        private Mock<IStorageAccessService> _storageAccessFake;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
+        private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
+        private Mock<IStopwatch> _stopwatchFake;
+        private Mock<ISyncMetrics> _syncMetricsMock;
         private Mock<IAPILog> _loggerMock;
         private CompositeCancellationTokenStub _token;
 
@@ -74,12 +86,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _instanceSettingsMock.Setup(x => x.GetImportAPIBatchStatusItemsUpdateCountAsync(It.IsAny<int>())).ReturnsAsync(1000);
 
+            _stopwatchFake = new Mock<IStopwatch>();
+
+            _stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
+            _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
+
+            _syncMetricsMock = new Mock<ISyncMetrics>();
+
+            StorageAccessServiceMock storageAccessService = new StorageAccessServiceMock();
+
             _sut = new LoadFileGenerator(
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
                 _itemLevelErrorHandlerMock.Object,
                 _instanceSettingsMock.Object,
                 _loadFilePathServiceMock.Object,
+                _stopwatchFactoryFake.Object,
+                _syncMetricsMock.Object,
+                storageAccessService,
                 _loggerMock.Object);
         }
 
@@ -103,6 +127,32 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             result.Id.Should().Be(_BATCH_GUID);
+        }
+
+        [Test]
+        public async Task GenerateAsync_ShouldSendMetrics()
+        {
+            // Act
+            await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
+
+            // Assert
+            _syncMetricsMock.Verify(x => x.Send(It.IsAny<BatchLoadFileMetric>()), Times.Once);
+        }
+
+        [Test]
+        public async Task GenerateAsync_ShouldFailBatch_WhenExceptionInLoadFileGeneration()
+        {
+            // Arrange
+            _itemLevelErrorHandlerMock.Setup(x => x.HandleRemainingErrorsAsync())
+                .Throws<ServiceException>();
+
+            // Act
+            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock, _token).ConfigureAwait(false);
+
+            // Assert
+            function.Should().Throw<ServiceException>();
+
+            _syncMetricsMock.Verify(x => x.Send(It.IsAny<BatchLoadFileMetric>()), Times.Once);
         }
 
         [Test]

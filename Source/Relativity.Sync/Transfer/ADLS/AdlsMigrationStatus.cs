@@ -12,16 +12,16 @@ namespace Relativity.Sync.Transfer.ADLS
     internal class AdlsMigrationStatus : IAdlsMigrationStatus
     {
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        private readonly IHelperWrapper _helperWrapper;
+        private readonly IStorageAccessService _storageAccessService;
         private readonly IAPILog _logger;
 
         public AdlsMigrationStatus(
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IHelperWrapper helperWrapper,
+            IStorageAccessService storageAccessService,
             IAPILog logger)
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _helperWrapper = helperWrapper;
+            _storageAccessService = storageAccessService;
             _logger = logger;
         }
 
@@ -79,17 +79,7 @@ namespace Relativity.Sync.Transfer.ADLS
 
         private async Task<List<string>> GetListOfFilesharesFromBedrockAsync()
         {
-            var bedrockEndpoints =
-                await _helperWrapper.GetStorageEndpointsAsync().ConfigureAwait(false);
-
-            _logger.LogInformation("Retrieved {fileServersBedrockCount} bedrock server(s)", bedrockEndpoints.Length);
-
-            foreach (var endpoint in bedrockEndpoints)
-            {
-                _logger.LogInformation(
-                    "EndpointFqdn: {EndpointFqdn} StorageInterface: {StorageInterface}",
-                    endpoint.EndpointFqdn, endpoint.StorageInterface);
-            }
+            var bedrockEndpoints = await _storageAccessService.GetStorageEndpointsAsync().ConfigureAwait(false);
 
             return bedrockEndpoints.Select(x => x.EndpointFqdn).ToList();
         }

@@ -23,15 +23,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     internal class DocumentSynchronizationMonitorExecutorTests
     {
-        private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
         private Mock<IAPILog> _loggerMock;
-        private Mock<IImportSourceController> _sourceControllerMock;
         private Mock<IProgressHandler> _progressHandlerMock;
-        private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
         private Mock<IBatchRepository> _batchRepository;
         private Mock<IInstanceSettings> _instanceSettingsFake;
+        private Mock<Sync.Executors.IImportService> _importServiceMock;
 
         private DocumentSynchronizationMonitorExecutor _sut;
 
@@ -52,30 +50,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _loggerMock = new Mock<IAPILog>();
             _progressHandlerMock = new Mock<IProgressHandler>();
-            _sourceControllerMock = new Mock<IImportSourceController>();
-            _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
             _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
             _instanceSettingsFake = new Mock<IInstanceSettings>();
             _instanceSettingsFake.Setup(x => x.GetImportAPIStatusCheckDelayAsync(It.IsAny<TimeSpan>()))
                 .ReturnsAsync(TimeSpan.FromMilliseconds(100));
+            _importServiceMock = new Mock<Sync.Executors.IImportService>();
 
             _batchRepository = new Mock<IBatchRepository>();
-
-            _serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_sourceControllerMock.Object);
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportJobController>()).ReturnsAsync(_jobControllerMock.Object);
 
             _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(_EXPORT_RUN_ID);
 
             _sut = new DocumentSynchronizationMonitorExecutor(
-                _serviceFactoryMock.Object,
                 _progressHandlerMock.Object,
                 _itemLevelErrorHandler.Object,
                 _batchRepository.Object,
                 _instanceSettingsFake.Object,
+                _importServiceMock.Object,
                 _loggerMock.Object);
         }
 
@@ -117,8 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareTestDataSourceForBatch(DataSourceState.Inserting);
 
-            _jobControllerMock.Setup(x => x.GetDetailsAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
-                .Throws<InvalidOperationException>();
+            _importServiceMock.Setup(x => x.GetJobImportProgressValueAsync()).Throws(new SyncException());
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -143,8 +135,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             result.Status.Should().Be(ExecutionStatus.Paused);
-            _jobControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
-            _sourceControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+            _importServiceMock.Verify(x => x.GetJobImportStatusAsync(), Times.Never);
+            _importServiceMock.Verify(x => x.GetDataSourceProgressAsync(It.IsAny<Guid>()), Times.Never);
             _progressHandlerMock.Verify(x => x.HandleProgressAsync(), Times.Never);
         }
 
@@ -160,15 +152,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
             PrepareImportDetailsConsecutiveResponse(
                 ImportState.Inserting, ImportState.Canceled, ImportState.Canceled);
 
-            _jobControllerMock.Setup(x => x.CancelAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID))
-                .ReturnsAsync(Response.CreateForSuccess(_EXPORT_RUN_ID));
-
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
 
             // Assert
             result.Status.Should().Be(ExecutionStatus.Canceled);
-            _jobControllerMock.Verify(x => x.CancelAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID), Times.Once);
+            _importServiceMock.Verify(x => x.CancelJobAsync(), Times.Once);
         }
 
         [Test]
@@ -188,7 +177,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             result.Status.Should().Be(ExecutionStatus.Canceled);
-            _jobControllerMock.Verify(x => x.CancelAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID), Times.Never);
+            _importServiceMock.Verify(x => x.CancelJobAsync(), Times.Never);
         }
 
         [TestCase(ImportState.Canceled, ExecutionStatus.Canceled)]
@@ -229,8 +218,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             result.Status.Should().Be(ExecutionStatus.CompletedWithErrors);
 
-            batch.TransferredItemsCount.Should().Be(dataSourceProgress.ImportedRecords);
-            batch.FailedItemsCount.Should().Be(dataSourceProgress.ErroredRecords);
+            batch.TransferredDocumentsCount.Should().Be(dataSourceProgress.ImportedRecords);
+            batch.FailedDocumentsCount.Should().Be(dataSourceProgress.ErroredRecords);
         }
 
         private IBatch PrepareTestDataSourceForBatch(
@@ -252,13 +241,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .With(x => x.State, dataSourceState)
                 .Create();
 
-            _sourceControllerMock.Setup(x => x.GetDetailsAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID, batch.BatchGuid))
-                .ReturnsAsync(ValueResponse<DataSourceDetails>.CreateForSuccess(_EXPORT_RUN_ID, dataSource));
+            _importServiceMock.Setup(x => x.GetDataSourceStatusAsync(batch.BatchGuid))
+                .ReturnsAsync(ValueResponse<DataSourceDetails>.CreateForSuccess(_EXPORT_RUN_ID, dataSource).Value);
 
             ImportProgress dataSourceProgress = importProgress ?? _fxt.Create<ImportProgress>();
 
-            _sourceControllerMock.Setup(x => x.GetProgressAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID, batch.BatchGuid))
-                .ReturnsAsync(ValueResponse<ImportProgress>.CreateForSuccess(_EXPORT_RUN_ID, dataSourceProgress));
+            _importServiceMock.Setup(x => x.GetDataSourceProgressAsync(batch.BatchGuid))
+                 .ReturnsAsync(ValueResponse<ImportProgress>.CreateForSuccess(_EXPORT_RUN_ID, dataSourceProgress).Value);
 
             return batch;
         }
@@ -266,10 +255,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private void PrepareImportDetailsConsecutiveResponse(
             params ImportState[] states)
         {
-            var setupSequence = _jobControllerMock.SetupSequence(
-                x => x.GetDetailsAsync(
-                    _DESTINATION_WORKSPACE_ID,
-                    _EXPORT_RUN_ID));
+            var setupSequence = _importServiceMock.SetupSequence(
+                x => x.GetJobImportStatusAsync());
 
             foreach (var state in states)
             {
@@ -283,7 +270,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
                 setupSequence = setupSequence.ReturnsAsync(
                     ValueResponse<ImportDetails>.CreateForSuccess(
-                        _EXPORT_RUN_ID, importDetails));
+                        _EXPORT_RUN_ID, importDetails).Value);
             }
         }
 
@@ -297,8 +284,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .With(x => x.NumberOfRecords, readRecords)
                 .Create();
 
-            _sourceControllerMock.Setup(x => x.GetItemErrorsAsync(_DESTINATION_WORKSPACE_ID, _EXPORT_RUN_ID, It.IsAny<Guid>(), 0, 1000))
-                .ReturnsAsync(ValueResponse<ImportErrors>.CreateForSuccess(_EXPORT_RUN_ID, errors));
+            _importServiceMock.Setup(x => x.GetDataSourceErrorsAsync(It.IsAny<Guid>(), 0, 1000))
+                .ReturnsAsync(ValueResponse<ImportErrors>.CreateForSuccess(_EXPORT_RUN_ID, errors).Value);
         }
     }
 }

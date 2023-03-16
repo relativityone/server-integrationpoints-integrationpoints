@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -7,6 +8,8 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.RelEye;
+using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
@@ -24,6 +27,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
         private Mock<IMetricsManager> _metricsManagerMock;
         private Mock<IAPMClient> _apmMock;
 
+        protected IFixture _fxt;
+
         protected const int _WORKSPACE_ID = 100;
         private const int _USER_ID = 323454;
 
@@ -36,6 +41,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
         [SetUp]
         public void SetUp()
         {
+            _fxt = FixtureFactory.Create();
+
             _syncLogMock = new Mock<IAPILog>();
             _metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
             _metricsManagerMock.Setup(x => x.Dispose());
@@ -63,10 +70,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
                 apmSink
             };
 
+            Mock<IAPILog> log = new Mock<IAPILog>();
+
+            Mock<IEventPublisher> eventPublisher = new Mock<IEventPublisher>();
+
             _metricsConfigurationFake = new Mock<IMetricsConfiguration>();
             _metricsConfigurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Document);
             _metricsConfigurationFake.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns((int)ArtifactType.Document);
-            _syncMetrics = new SyncMetrics(sinks, _metricsConfigurationFake.Object);
+            _syncMetrics = new SyncMetrics(eventPublisher.Object, sinks, _metricsConfigurationFake.Object, log.Object);
         }
 
         [Test]

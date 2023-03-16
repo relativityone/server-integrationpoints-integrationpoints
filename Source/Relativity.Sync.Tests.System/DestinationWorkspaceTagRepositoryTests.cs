@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
+using Moq;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.RelEye;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -59,7 +61,7 @@ namespace Relativity.Sync.Tests.System
                 new TagNameFormatter(new EmptyLogger()),
                 configuration,
                 new EmptyLogger(),
-                new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub()),
+                EmptyMetrics(),
                 () => new StopwatchWrapper());
 
             IList<TagDocumentsResult<int>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
@@ -93,6 +95,13 @@ namespace Relativity.Sync.Tests.System
             IList<int> documentIds = await Rdos.QueryDocumentIdsAsync(ServiceFactory, _sourceWorkspaceArtifactId).ConfigureAwait(false);
             Assert.AreEqual(numDocuments, documentIds.Count, $"Unexpected number of documents in workspace {_sourceWorkspaceArtifactId}. Ensure test is run against clean workspace.");
             return documentIds;
+        }
+
+        private ISyncMetrics EmptyMetrics()
+        {
+            Mock<IEventPublisher> eventPublisher = new Mock<IEventPublisher>();
+
+            return new SyncMetrics(eventPublisher.Object, Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub(), Logger);
         }
     }
 }

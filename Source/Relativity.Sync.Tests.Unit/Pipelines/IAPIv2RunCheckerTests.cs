@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -11,10 +9,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Pipelines
 {
@@ -24,8 +20,6 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
         private IIAPIv2RunChecker _sut;
         private Mock<ISyncToggles> _togglesMock;
         private Mock<IIAPIv2RunCheckerConfiguration> _runCheckerConfig;
-        private Mock<IFieldMappings> _fieldMappingsMock;
-        private Mock<IObjectFieldTypeRepository> _objectFieldTypeRepositoryMock;
         private Mock<IDestinationServiceFactoryForAdmin> _serviceFactoryMock;
         private Mock<IApplicationInstallManager> _appInstallManagerMock;
 
@@ -38,8 +32,6 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
             _togglesMock = new Mock<ISyncToggles>();
             _runCheckerConfig = new Mock<IIAPIv2RunCheckerConfiguration>();
             _runCheckerConfig.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DEST_WORKSPACE_ID);
-            _fieldMappingsMock = new Mock<IFieldMappings>();
-            _objectFieldTypeRepositoryMock = new Mock<IObjectFieldTypeRepository>();
             _appInstallManagerMock = new Mock<IApplicationInstallManager>();
             _appInstallManagerMock
                 .Setup(x => x.GetStatusAsync(_DEST_WORKSPACE_ID, ImportAppGuid, It.IsAny<bool>()))
@@ -55,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
 
             SetUpInitialValuesForPositiveCheck();
 
-            _sut = new IAPIv2RunChecker(_runCheckerConfig.Object, _togglesMock.Object, _fieldMappingsMock.Object, _objectFieldTypeRepositoryMock.Object, _serviceFactoryMock.Object, new EmptyLogger());
+            _sut = new IAPIv2RunChecker(_runCheckerConfig.Object, _togglesMock.Object, _serviceFactoryMock.Object, new EmptyLogger());
         }
 
         [Test]
@@ -236,24 +228,6 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
             _runCheckerConfig.SetupGet(x => x.IsRetried).Returns(false);
             _runCheckerConfig.SetupGet(x => x.NativeBehavior).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
             _runCheckerConfig.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Document);
-
-            FieldMap fieldMap = new FieldMap
-            {
-                SourceField = new FieldEntry() { DisplayName = "TestName" },
-                DestinationField = new FieldEntry(),
-                FieldMapType = FieldMapType.None
-            };
-
-            IList<FieldMap> fieldMaps = new List<FieldMap> { fieldMap };
-            _fieldMappingsMock.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
-
-            Dictionary<string, RelativityDataType> dataTypes = new Dictionary<string, RelativityDataType>();
-            dataTypes.Add("testValue", RelativityDataType.Date);
-            _objectFieldTypeRepositoryMock.Setup(x => x.GetRelativityDataTypesForFieldsByFieldNameAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<ICollection<string>>(),
-                CancellationToken.None)).ReturnsAsync(dataTypes);
         }
     }
 }

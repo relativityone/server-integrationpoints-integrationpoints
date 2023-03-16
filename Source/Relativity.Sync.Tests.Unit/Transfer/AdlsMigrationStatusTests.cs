@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     internal class AdlsMigrationStatusTests
     {
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
-        private Mock<IHelperWrapper> _helperFactoryMock;
+        private Mock<IStorageAccessService> _storageAccessService;
         private Mock<IAPILog> _loggerMock;
         private Mock<IFileShareServerManager> _fileShareServerManagerMock;
         private AdlsMigrationStatus _sut;
@@ -74,12 +74,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 PrimaryStorageContainer = null,
             };
             StorageEndpoint[] resultFromBedrock = { resultsBedrock1 };
-            _helperFactoryMock = new Mock<IHelperWrapper>();
+            _storageAccessService = new Mock<IStorageAccessService>();
 
-            _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(resultFromBedrock);
+            _storageAccessService.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(resultFromBedrock);
 
-            _sut = new AdlsMigrationStatus(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object,
+            _sut = new AdlsMigrationStatus(
+                _serviceFactoryForAdminMock.Object,
+                _storageAccessService.Object,
                 _loggerMock.Object);
         }
 
@@ -94,8 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task MigrationStatusAsync_ShouldReturnFalse_WhenThereIsZeroBedrockMigratedFileShare()
         {
             StorageEndpoint[] resultFromBedrock = Array.Empty<StorageEndpoint>();
-            _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(resultFromBedrock);
+            _storageAccessService.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(resultFromBedrock);
 
             bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
             isTenantFullyMigrated.Should().BeFalse();
@@ -148,8 +148,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task MigrationStatusAsync_ShouldReturnFalse_WhenException()
         {
             // ARRANGE
-            _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).Throws(new Exception());
+            _storageAccessService.Setup(x => x.GetStorageEndpointsAsync()).Throws(new Exception());
 
             // ACT
             bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);

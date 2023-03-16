@@ -9,10 +9,12 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Storage;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
@@ -36,6 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private Mock<IObjectManager> _objectManager;
         private Mock<IIAPIv2RunChecker> _iapiRunCheckerFake;
         private Mock<ILoadFilePathService> _loadFilePathServiceFake;
+        private Mock<IStorageAccessService> _storageAccessServiceFake;
 
         private LongTextFieldSanitizer _sut;
 
@@ -57,12 +60,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             _loadFilePathServiceFake = new Mock<ILoadFilePathService>();
 
+            _storageAccessServiceFake = new Mock<IStorageAccessService>();
+
             _sut = new LongTextFieldSanitizer(
                 _serviceFactoryForUser.Object,
                 _retriableStreamBuilderFactory.Object,
                 _streamBuilder.Object,
                 _iapiRunCheckerFake.Object,
                 _loadFilePathServiceFake.Object,
+                _storageAccessServiceFake.Object,
                 _logger.Object);
         }
 

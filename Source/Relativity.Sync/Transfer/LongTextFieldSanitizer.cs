@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Storage;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
@@ -22,6 +23,7 @@ namespace Relativity.Sync.Transfer
         private readonly IImportStreamBuilder _importStreamBuilder;
         private readonly IIAPIv2RunChecker _iapiRunChecker;
         private readonly ILoadFilePathService _filePathService;
+        private readonly IStorageAccessService _storageAccessService;
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
         private readonly IAPILog _logger;
@@ -34,6 +36,7 @@ namespace Relativity.Sync.Transfer
             IImportStreamBuilder importStreamBuilder,
             IIAPIv2RunChecker iapiRunChecker,
             ILoadFilePathService filePathService,
+            IStorageAccessService storageAccessService,
             IAPILog logger)
         {
             _serviceFactoryForUser = serviceFactoryForUser;
@@ -41,6 +44,7 @@ namespace Relativity.Sync.Transfer
             _importStreamBuilder = importStreamBuilder;
             _iapiRunChecker = iapiRunChecker;
             _filePathService = filePathService;
+            _storageAccessService = storageAccessService;
             _logger = logger;
         }
 
@@ -79,7 +83,7 @@ namespace Relativity.Sync.Transfer
                 Guid longTextId = Guid.NewGuid();
                 string longTextFile = await _filePathService.GenerateLongTextFilePathAsync(longTextId).ConfigureAwait(false);
 
-                WriteToFile(longTextFile, value);
+                await WriteToFileAsync(longTextFile, value).ConfigureAwait(false);
 
                 return await _filePathService.GetLoadFileRelativeLongTextFilePathAsync(longTextFile).ConfigureAwait(false);
             }
@@ -87,20 +91,17 @@ namespace Relativity.Sync.Transfer
             return value;
         }
 
-        private void WriteToFile(string file, object value)
+        private async Task WriteToFileAsync(string file, object value)
         {
-            PathExtensions.CreateFileWithRecursiveDirectories(file);
-
             if (value is string)
             {
-                File.WriteAllText(file, (string)value, Encoding.Unicode);
-                return;
+                await _storageAccessService.WriteAllTextAsync(file, (string)value, new WriteAllTextOptions { Encoding = Encoding.Unicode }).ConfigureAwait(false);
             }
             else if (value is Stream stream)
             {
-                using (Stream fileStream = new FileStream(file, FileMode.OpenOrCreate))
+                using (Stream fileStream = await _storageAccessService.OpenFileAsync(file, OpenBehavior.CreateNewOrTruncateExisting, ReadWriteMode.WriteOnly).ConfigureAwait(false))
                 {
-                    stream.CopyTo(fileStream);
+                    await stream.CopyToAsync(fileStream).ConfigureAwait(false);
                 }
             }
             else

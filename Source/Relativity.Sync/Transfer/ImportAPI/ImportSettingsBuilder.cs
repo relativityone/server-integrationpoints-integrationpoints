@@ -212,12 +212,17 @@ namespace Relativity.Sync.Transfer.ImportAPI
                         continue;
                     }
 
-                    _logger.LogInformation(
-                        "Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName: {destinationName}",
-                        pair.DocumentFieldIndex,
-                        pair.SourceFieldName,
-                        pair.DestinationFieldName);
-                    x = x.WithField(pair.DocumentFieldIndex, pair.DestinationFieldName);
+                    _logger.LogInformation("Configure Field - {@field}", pair);
+
+                    switch (pair.RelativityDataType)
+                    {
+                        case RelativityDataType.LongText:
+                            x = x.WithLongTextFieldContainingFilePath(pair.DocumentFieldIndex, pair.DestinationFieldName);
+                            break;
+                        default:
+                            x = x.WithField(pair.DocumentFieldIndex, pair.DestinationFieldName);
+                            break;
+                    }
                 }
             });
         }
@@ -255,9 +260,9 @@ namespace Relativity.Sync.Transfer.ImportAPI
         private int GetFieldIndex(IReadOnlyList<FieldInfoDto> mappedFields, SpecialFieldType specialFieldType)
             => mappedFields.Single(x => x.SpecialFieldType == specialFieldType).DocumentFieldIndex;
 
-        private int GetFieldIndex(IReadOnlyList<FieldInfoDto> fieldMappings, string filedName)
+        private int GetFieldIndex(IReadOnlyList<FieldInfoDto> fieldMappings, string fieldName)
         {
-            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SourceFieldName == filedName);
+            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SourceFieldName == fieldName);
             return field?.DocumentFieldIndex ?? -1;
         }
 

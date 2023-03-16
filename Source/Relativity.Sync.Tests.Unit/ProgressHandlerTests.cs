@@ -10,11 +10,11 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
-using Relativity.Import.V1.Services;
-using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
@@ -25,8 +25,7 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<IInstanceSettings> _instanceSettingsFake;
         private Mock<IJobProgressUpdater> _jobProgressUpdaterMock;
         private Mock<IBatchRepository> _batchRepositoryMock;
-
-        private Mock<IImportJobController> _importJobControllerFake;
+        private Mock<IImportService> _importServiceMock;
 
         private IFixture _fxt;
 
@@ -39,15 +38,11 @@ namespace Relativity.Sync.Tests.Unit
 
             _timerFactoryFake = _fxt.Freeze<Mock<ITimerFactory>>();
 
-            _importJobControllerFake = new Mock<IImportJobController>();
-
-            Mock<ISourceServiceFactoryForAdmin> serviceFactoryAdmin = _fxt.Freeze<Mock<ISourceServiceFactoryForAdmin>>();
-            serviceFactoryAdmin.Setup(x => x.CreateProxyAsync<IImportJobController>())
-                .ReturnsAsync(_importJobControllerFake.Object);
-
             _instanceSettingsFake = _fxt.Freeze<Mock<IInstanceSettings>>();
             _jobProgressUpdaterMock = _fxt.Freeze<Mock<IJobProgressUpdater>>();
+
             _batchRepositoryMock = _fxt.Freeze<Mock<IBatchRepository>>();
+            _importServiceMock = _fxt.Freeze<Mock<IImportService>>();
 
             _sut = _fxt.Create<ProgressHandler>();
         }
@@ -65,7 +60,8 @@ namespace Relativity.Sync.Tests.Unit
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<int>())
+                    It.IsAny<int>(),
+                    It.IsAny<IEnumerable<int>>())
                 .ConfigureAwait(false);
 
             // Assert
@@ -94,11 +90,12 @@ namespace Relativity.Sync.Tests.Unit
 
             // Act
             await _sut.AttachAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<int>())
+                    _fxt.Create<int>(),
+                    _fxt.Create<int>(),
+                    _fxt.Create<int>(),
+                    _fxt.Create<Guid>(),
+                    _fxt.Create<int>(),
+                    _fxt.Create<IEnumerable<int>>())
                 .ConfigureAwait(false);
 
             // Assert
@@ -111,10 +108,30 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             ImportProgress importProgress = _fxt.Create<ImportProgress>();
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
-            _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(valueProgress);
+            _importServiceMock.Setup(x => x.GetJobImportProgressValueAsync())
+                 .ReturnsAsync(valueProgress.Value);
 
-            Progress.Progress progress = PrepareBatches(importProgress);
+            var importJobProgress = new Progress.Progress(
+                0,
+                importProgress.ErroredRecords,
+                importProgress.ImportedRecords);
+
+            IEnumerable<IBatch> batches = _fxt.CreateMany<BatchStub>().ToList<IBatch>();
+
+            _batchRepositoryMock.Setup(x =>
+                    x.GetBatchesWithIdsAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<int>(),
+                        It.IsAny<List<int>>(),
+                        It.IsAny<Guid>()))
+                .ReturnsAsync(batches);
+
+            var batchProgress = new Progress.Progress(
+                batches.Sum(x => x.ReadDocumentsCount),
+                batches.Sum(x => x.FailedReadDocumentsCount),
+                0);
+
+            Progress.Progress expectedProgress = batchProgress + importJobProgress;
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -124,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit
                 x => x.UpdateJobProgressAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
-                    progress),
+                    It.Is<Progress.Progress>(p => p.Equals(expectedProgress))),
                 Times.Once());
         }
 
@@ -139,8 +156,8 @@ namespace Relativity.Sync.Tests.Unit
                 It.IsAny<string>(),
                 It.IsAny<ImportProgress>());
 
-            _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(valueProgress);
+            _importServiceMock.Setup(x => x.GetJobImportProgressValueAsync())
+                  .ReturnsAsync(valueProgress.Value);
 
             // Act
             await _sut.HandleProgressAsync().ConfigureAwait(false);
@@ -162,8 +179,8 @@ namespace Relativity.Sync.Tests.Unit
 
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
 
-            _importJobControllerFake.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(valueProgress);
+            _importServiceMock.Setup(x => x.GetJobImportProgressValueAsync())
+                  .ReturnsAsync(valueProgress.Value);
 
             _jobProgressUpdaterMock.Setup(x =>
                 x.UpdateJobProgressAsync(
@@ -185,15 +202,26 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             ImportProgress importProgress = _fxt.Create<ImportProgress>();
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
-            _importJobControllerFake
-                .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+            _importServiceMock
+                .Setup(x => x.GetJobImportProgressValueAsync())
                 .ReturnsAsync(() =>
                 {
                     Task.Delay(500).GetAwaiter().GetResult();
-                    return valueProgress;
+                    return valueProgress.Value;
                 });
 
-            PrepareBatches(importProgress);
+            IEnumerable<IBatch> batches = _fxt.Build<BatchStub>()
+                .With(x => x.Status, BatchStatus.InProgress)
+                .CreateMany()
+                .ToList<IBatch>();
+
+            _batchRepositoryMock.Setup(x =>
+                    x.GetBatchesWithIdsAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<int>(),
+                        It.IsAny<List<int>>(),
+                        It.IsAny<Guid>()))
+                .ReturnsAsync(batches);
 
             // Act
             Task progress1 = Task.Run(() => _sut.HandleProgressAsync());
@@ -217,28 +245,32 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             ImportProgress importProgress = _fxt.Create<ImportProgress>();
             ValueResponse<ImportProgress> valueProgress = ValueResponse<ImportProgress>.CreateForSuccess(It.IsAny<Guid>(), importProgress);
-            _importJobControllerFake
-                .Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(valueProgress);
+            _importServiceMock.Setup(x => x.GetJobImportProgressValueAsync())
+                  .ReturnsAsync(valueProgress.Value);
 
-            List<IBatch> batches = new List<IBatch>();
-            int expectedReadDocumentsCountCache = 0;
-            int expectedFailedReadDocumentsCountCache = 0;
-            IEnumerable<BatchStatus> batchStatuses = Enum.GetValues(typeof(BatchStatus)).Cast<BatchStatus>();
-            foreach (BatchStatus batchStatus in batchStatuses)
-            {
-                IBatch batch = _fxt.Create<IBatch>();
-                batch.GetType().GetProperty("Status", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(batch, batchStatus);
-                batches.Add(batch);
-                if (batch.IsFinished || batch.Status == BatchStatus.Generated)
-                {
-                    expectedReadDocumentsCountCache += batch.ReadDocumentsCount;
-                    expectedFailedReadDocumentsCountCache += batch.FailedReadDocumentsCount;
-                }
-            }
-            PrepareBatches(importProgress, batches);
+            IEnumerable<IBatch> batches = _fxt.Build<BatchStub>()
+                .With(x => x.Status, () => BatchStatus.Generated)
+                .CreateMany()
+                .ToList<IBatch>();
+
+            _batchRepositoryMock.Setup(x =>
+                    x.GetBatchesWithIdsAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<int>(),
+                        It.IsAny<List<int>>(),
+                        It.IsAny<Guid>()))
+                .ReturnsAsync(batches);
 
             // Act
+            await _sut.AttachAsync(
+                    _fxt.Create<int>(),
+                    _fxt.Create<int>(),
+                    _fxt.Create<int>(),
+                    _fxt.Create<Guid>(),
+                    _fxt.Create<int>(),
+                    batches.Select(x => x.ArtifactId))
+                .ConfigureAwait(false);
+
             await _sut.HandleProgressAsync().ConfigureAwait(false);
 
             // Assert
@@ -252,35 +284,8 @@ namespace Relativity.Sync.Tests.Unit
                 .GetField("_failedReadDocumentsCountCache", BindingFlags.Instance | BindingFlags.NonPublic)?
                 .GetValue(_sut);
 
-            readDocumentsCountCache.Should().Be(expectedReadDocumentsCountCache);
-            failedReadDocumentsCountCache.Should().Be(expectedFailedReadDocumentsCountCache);
-        }
-
-        private Progress.Progress PrepareBatches(ImportProgress importProgress, List<IBatch> batches = null, BatchStatus batchStatus = BatchStatus.Generated)
-        {
-            if (batches == null)
-            {
-                batches = new List<IBatch>();
-                for (int i = 0; i < 3; i++)
-                {
-                    IBatch batch = _fxt.Create<IBatch>();
-                    batch.GetType().GetProperty("Status", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(batch, batchStatus);
-                    batches.Add(batch);
-                }
-            }
-
-            int readRecordsCount = batches.Select(x => x.ReadDocumentsCount).Sum();
-            int failedRecordsCount = importProgress.ErroredRecords + batches.Select(x => x.FailedReadDocumentsCount).Sum();
-
-            Progress.Progress progress = new Progress.Progress(readRecordsCount, failedRecordsCount, importProgress.ImportedRecords);
-
-            _batchRepositoryMock.Setup(x => x.GetBatchesWithIdsAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<List<int>>(),
-                    It.IsAny<Guid>()))
-                .ReturnsAsync(batches);
-            return progress;
+            readDocumentsCountCache.Should().Be(batches.Sum(x => x.ReadDocumentsCount));
+            failedReadDocumentsCountCache.Should().Be(batches.Sum(x => x.FailedReadDocumentsCount));
         }
     }
 }

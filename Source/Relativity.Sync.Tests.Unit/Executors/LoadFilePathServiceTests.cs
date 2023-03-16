@@ -8,6 +8,7 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Tests.Common.Stubs;
+using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
@@ -46,6 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _fileShareServiceMock.Object,
                 configuration.Object,
                 new MemoryCacheWrapper(),
+                new StorageAccessServiceMock(),
                 log.Object);
         }
 

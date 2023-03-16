@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
+using Relativity.Storage;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Transfer.ImportAPI;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
@@ -20,6 +26,9 @@ namespace Relativity.Sync.Executors
         private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
         private readonly IInstanceSettings _instanceSettings;
         private readonly ILoadFilePathService _pathService;
+        private readonly Func<IStopwatch> _stopwatchFactory;
+        private readonly ISyncMetrics _syncMetrics;
+        private readonly IStorageAccessService _storageAccessService;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
@@ -28,6 +37,9 @@ namespace Relativity.Sync.Executors
             IItemLevelErrorHandler itemLevelErrorHandler,
             IInstanceSettings instanceSettings,
             ILoadFilePathService pathService,
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IStorageAccessService storageAccessService,
             IAPILog logger)
         {
             _configuration = configuration;
@@ -35,42 +47,41 @@ namespace Relativity.Sync.Executors
             _itemLevelErrorHandler = itemLevelErrorHandler;
             _instanceSettings = instanceSettings;
             _pathService = pathService;
+            _stopwatchFactory = stopwatchFactory;
+            _syncMetrics = syncMetrics;
+            _storageAccessService = storageAccessService;
             _logger = logger;
         }
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch, CompositeCancellationToken token)
         {
-            string loadFilePath = await CreateEmptyBatchLoadFileAsync(batch).ConfigureAwait(false);
+            string loadFilePath = await _pathService.GenerateBatchLoadFilePathAsync(batch).ConfigureAwait(false);
 
             DataSourceSettings settings = CreateSettings(loadFilePath);
             await WriteToLoadFileAsync(batch, loadFilePath, settings, token).ConfigureAwait(false);
             return new LoadFile(batch.BatchGuid, loadFilePath, settings);
         }
 
-        private async Task<string> CreateEmptyBatchLoadFileAsync(IBatch batch)
-        {
-            string loadFilePath = await _pathService.GenerateBatchLoadFilePathAsync(batch).ConfigureAwait(false);
-
-            PathExtensions.CreateFileWithRecursiveDirectories(loadFilePath);
-
-            return loadFilePath;
-        }
-
         private async Task WriteToLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
         {
             using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
             {
+                IStopwatch sw = _stopwatchFactory();
                 try
                 {
+                    sw.Start();
+
                     _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
-                    using (StreamWriter writer = new StreamWriter(batchPath, append: true))
+
+                    using (StreamWriter fileStream = await OpenBatchLoadFileAsync(batch, batchPath, token.AnyReasonCancellationToken).ConfigureAwait(false))
                     {
                         int updateBatchStatusCount = await _instanceSettings.GetImportAPIBatchStatusItemsUpdateCountAsync().ConfigureAwait(false);
                         while (reader.Read())
                         {
                             string line = GetLineContent(reader, settings);
-                            writer.WriteLine(line);
+                            await fileStream.WriteLineAsync(line).ConfigureAwait(false);
+
                             if (reader.ItemStatusMonitor.ReadItemsCount % updateBatchStatusCount == 0)
                             {
                                 await HandleBatchStatusAsync(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
@@ -96,6 +107,11 @@ namespace Relativity.Sync.Executors
                     await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
                     throw;
                 }
+                finally
+                {
+                    sw.Stop();
+                    SendLoadFileMetric(batch, batchPath, sw.Elapsed);
+                }
             }
         }
 
@@ -110,8 +126,6 @@ namespace Relativity.Sync.Executors
             }
 
             return string.Join($"{settings.ColumnDelimiter}", rowValues);
-
-            // TBD: Should we add settings.NewLineDelimiter here if we are processing returned value as writer.WriteLine() parameter?
         }
 
         private DataSourceSettings CreateSettings(string batchPath)
@@ -150,6 +164,39 @@ namespace Relativity.Sync.Executors
                 await batch.SetStartingIndexAsync(monitor.ReadItemsCount).ConfigureAwait(false);
                 return;
             }
+        }
+
+        private void SendLoadFileMetric(IBatch batch, string loadFilePath, TimeSpan writeDuration)
+        {
+            _syncMetrics.Send(new BatchLoadFileMetric
+            {
+                Status = batch.Status.ToString(),
+                TotalRecordsRequested = batch.TotalDocumentsCount,
+                TotalRecordsRead = batch.ReadDocumentsCount,
+                TotalRecordsReadFailed = batch.FailedReadDocumentsCount,
+                ReadMetadataBytesSize = new FileInfo(loadFilePath)?.Length ?? 0,
+                WriteLoadFileDuration = writeDuration.TotalSeconds
+            });
+        }
+
+        private async Task<StreamWriter> OpenBatchLoadFileAsync(IBatch batch, string batchPath, CancellationToken token)
+        {
+            OpenBehavior openBehavior = batch.Status == BatchStatus.Paused
+                ? OpenBehavior.CreateNewOrAppendExisting
+                : OpenBehavior.CreateNewOrTruncateExisting;
+
+            Stream fileStream = await _storageAccessService
+                .OpenFileAsync(
+                        batchPath,
+                        openBehavior,
+                        ReadWriteMode.WriteOnly,
+                        new OpenFileOptions
+                        { 
+                            ParentDirectoryNotExistsBehavior = DirectoryNotExistsBehavior.CreateIfNotExists
+                        })
+                    .ConfigureAwait(false);
+
+            return new StreamWriter(fileStream);
         }
     }
 }

@@ -18,8 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         private const string _SOURCE_FILE_PATH = @"\\Adler\Sieben";
         private const string _EXCEPTION_MESSAGE = "Some Exception";
 
-        private Mock<IHelperWrapper> _helperMock;
-        private Mock<IStorageAccess<string>> _storageAccessMock;
+        private Mock<IStorageAccessService> _storageAccessServiceMock;
         private Mock<IAPILog> _loggerFake;
         private AdlsUploader _sut;
         private StorageEndpoint[] _storageEndpoints;
@@ -41,15 +40,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 "Temp",
                 "RIP_BatchFiles");
 
-            _helperMock = new Mock<IHelperWrapper>();
+            _storageAccessServiceMock = new Mock<IStorageAccessService>();
 
             _loggerFake = new Mock<IAPILog>();
             _loggerFake.Setup(x => x.ForContext<AdlsUploader>()).Returns(_loggerFake.Object);
 
-            _storageAccessMock = new Mock<IStorageAccess<string>>();
-            _helperMock.Setup(x => x.GetStorageAccessorAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageAccessMock.Object);
-
-            _sut = new AdlsUploader(_helperMock.Object, _loggerFake.Object);
+            _sut = new AdlsUploader(_storageAccessServiceMock.Object, _loggerFake.Object);
 
             typeof(AdlsUploader)
                 .GetField("_betweenRetriesBase", BindingFlags.NonPublic | BindingFlags.Instance)
@@ -60,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         public async Task ADLSUploader_UploadFileAsync_ShouldReturnValidDestinationFilePath()
         {
             // Arrange
-            _helperMock.Setup(x => x.GetStorageEndpointsAsync(CancellationToken.None)).ReturnsAsync(_storageEndpoints);
+            _storageAccessServiceMock.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(_storageEndpoints);
 
             // Act
             string destinationFilePath = await _sut.UploadFileAsync(_SOURCE_FILE_PATH, CancellationToken.None).ConfigureAwait(false);
@@ -68,26 +64,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             // Assert
             Path.GetDirectoryName(destinationFilePath).Should().Be(_destinationDir);
             Path.GetExtension(destinationFilePath).Should().BeEquivalentTo(".csv");
-        }
-
-        [Test]
-        public void ADLSUploader_UploadFileAsync_ShouldThrowErrorWhenCreateDirectoryAsyncFails()
-        {
-            // Arrange
-            _storageAccessMock.Setup(x => x.CreateDirectoryAsync(
-                It.IsAny<string>(),
-                It.IsAny<CreateDirectoryOptions>(),
-                It.IsAny<CancellationToken>())).Throws(new Exception(_EXCEPTION_MESSAGE));
-
-            _helperMock.Setup(x => x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageEndpoints);
-
-            // Act
-            Func<Task<string>> function = async () => await _sut.UploadFileAsync(_SOURCE_FILE_PATH, CancellationToken.None).ConfigureAwait(false);
-
-            // Assert
-            function.Should().Throw<Exception>().WithMessage(_EXCEPTION_MESSAGE);
-            _loggerFake.Verify(x => x.LogError(_EXCEPTION_MESSAGE), Times.Once);
-            _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Exactly(3));
         }
 
         [Test]
@@ -100,14 +76,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 DestinationExistsBehavior = FileExistsBehavior.OverwriteIfExists
             };
 
-            _storageAccessMock.Setup(x => x.CopyFileAsync(
+            _storageAccessServiceMock.Setup(x => x.CopyFileAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.Is<CopyFileOptions>(y => y.DestinationParentDirectoryNotExistsBehavior == copyFileOptions.DestinationParentDirectoryNotExistsBehavior &&
                                             y.DestinationExistsBehavior == copyFileOptions.DestinationExistsBehavior),
                 It.IsAny<CancellationToken>())).Throws(new Exception(_EXCEPTION_MESSAGE));
 
-            _helperMock.Setup(x => x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageEndpoints);
+            _storageAccessServiceMock.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(_storageEndpoints);
 
             // Act
             Func<Task<string>> function = async () => await _sut.UploadFileAsync(_SOURCE_FILE_PATH, CancellationToken.None).ConfigureAwait(false);
@@ -122,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         public void ADLSUploader_UploadFileAsync_ShouldReturnEmptyStringWhenSourceFilePathIsEmpty()
         {
             // Arrange
-            _helperMock.Setup(x => x.GetStorageEndpointsAsync(CancellationToken.None)).ReturnsAsync(_storageEndpoints);
+            _storageAccessServiceMock.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(_storageEndpoints);
 
             // Act
             Func<Task<string>> function = async () => await _sut.UploadFileAsync(string.Empty, CancellationToken.None).ConfigureAwait(false);
@@ -136,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         {
             // Arrange
             CancellationTokenSource token = new CancellationTokenSource();
-            _helperMock.Setup(x => x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageEndpoints);
+            _storageAccessServiceMock.Setup(x => x.GetStorageEndpointsAsync()).ReturnsAsync(_storageEndpoints);
 
             // Act
             token.Cancel();
@@ -146,40 +122,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             await act.Should().ThrowAsync<Exception>().WithMessage("The operation was canceled.");
             _loggerFake.Verify(x => x.LogWarning("ADLS Batch file upload cancelled."), Times.Once);
             _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Never);
-        }
-
-        [Test]
-        public void ADLSUploader_DeleteFileAsync_ShouldLogWarningWhenDeletionFailed()
-        {
-            // Arrange
-            _storageAccessMock.Setup(x =>
-                    x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<DeleteFileOptions>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(DeleteFileResult.FileNotFound);
-
-            // Act
-            Func<Task> function = async () => await _sut.DeleteFileAsync(_SOURCE_FILE_PATH, CancellationToken.None).ConfigureAwait(false);
-
-            // Assert
-            function.Should().NotThrow<Exception>();
-            _loggerFake.Verify(x => x.LogWarning("Unable to delete file, because it was not found - {filePath}", _SOURCE_FILE_PATH), Times.Once);
-        }
-
-        [Test]
-        public void ADLSUploader_DeleteFileAsync_ShouldLogWarningWhenCancellationRequested()
-        {
-            // Arrange
-            CancellationTokenSource token = new CancellationTokenSource();
-            _storageAccessMock.Setup(x =>
-                    x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<DeleteFileOptions>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(DeleteFileResult.FileNotFound);
-
-            // Act
-            token.Cancel();
-            Func<Task> function = async () => await _sut.DeleteFileAsync(_SOURCE_FILE_PATH, token.Token).ConfigureAwait(false);
-
-            // Assert
-            function.Should().NotThrow<Exception>();
-            _loggerFake.Verify(x => x.LogWarning("ADLS file deletion cancelled, file path - {filePath}", _SOURCE_FILE_PATH), Times.Once);
         }
     }
 }

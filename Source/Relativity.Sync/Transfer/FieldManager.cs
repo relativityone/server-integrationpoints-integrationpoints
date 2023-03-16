@@ -301,7 +301,7 @@ namespace Relativity.Sync.Transfer
         {
             bool isIAPIv2flow = _iapiRunChecker.ShouldBeUsed();
             int currentIndex = 0;
-            foreach (var field in fields)
+            foreach (FieldInfoDto field in fields)
             {
                 if (field.IsDocumentField || isIAPIv2flow)
                 {

@@ -17,15 +17,14 @@ namespace Relativity.Sync.Transfer.ADLS
         private const int _MAX_NUMBER_OF_RETRIES = 3;
         private const int _MAX_JITTER_MS = 100;
 
-        private readonly IHelperWrapper _helper;
         private readonly IAPILog _logger;
-
+        private readonly IStorageAccessService _storageAccessService;
         private double _betweenRetriesBase = 2;
 
-        public AdlsUploader(IHelperWrapper helperWrapper, IAPILog logger)
+        public AdlsUploader(IStorageAccessService storageAccessService, IAPILog logger)
         {
-            _helper = helperWrapper;
             _logger = logger.ForContext<AdlsUploader>();
+            _storageAccessService = storageAccessService;
         }
 
         public string CreateBatchFile(FmsBatchInfo storedLocation, CancellationToken cancellationToken)
@@ -69,7 +68,6 @@ namespace Relativity.Sync.Transfer.ADLS
             string destinationFilePath;
             async Task<string> ExecutionFunction()
             {
-                IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
                 string batchFileName = $"BatchFile_{Guid.NewGuid()}.csv";
 
                 string destinationDir = await GetAdlsDestinationDirectory(cancellationToken);
@@ -81,8 +79,8 @@ namespace Relativity.Sync.Transfer.ADLS
                     DestinationParentDirectoryNotExistsBehavior = DirectoryNotExistsBehavior.CreateIfNotExists,
                     DestinationExistsBehavior = FileExistsBehavior.OverwriteIfExists
                 };
-                await storageAccess.CreateDirectoryAsync(destinationDir, cancellationToken: cancellationToken).ConfigureAwait(false);
-                await storageAccess.CopyFileAsync(sourceFilePath, destinationFilePath, copyFileOptions, cancellationToken).ConfigureAwait(false);
+
+                await _storageAccessService.CopyFileAsync(sourceFilePath, destinationFilePath, copyFileOptions, cancellationToken).ConfigureAwait(false);
                 string batchLocationBasedOnAdls = GetAdlsRelativeLocation(batchFileName);
 
                 return batchLocationBasedOnAdls;
@@ -112,24 +110,7 @@ namespace Relativity.Sync.Transfer.ADLS
 
         public async Task DeleteFileAsync(string filePath, CancellationToken cancellationToken)
         {
-            IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
-            DeleteFileOptions deleteFileOptions = new DeleteFileOptions
-            {
-                FileNotExistsBehavior = FileNotExistsBehavior.ReturnResultObjIfNotExists,
-                Force = true
-            };
-
-            _logger.LogInformation("Deleting ADLS batch file - {filePath}", filePath);
-            DeleteFileResult deleteResultObject = await storageAccess.DeleteFileAsync(filePath, deleteFileOptions, cancellationToken).ConfigureAwait(false);
-            if (deleteResultObject == DeleteFileResult.FileNotFound)
-            {
-                _logger.LogWarning("Unable to delete file, because it was not found - {filePath}", filePath);
-            }
-
-            if (deleteResultObject != DeleteFileResult.Success && cancellationToken.IsCancellationRequested)
-            {
-                _logger.LogWarning("ADLS file deletion cancelled, file path - {filePath}", filePath);
-            }
+            await _storageAccessService.DeleteFileAsync(filePath, true, cancellationToken).ConfigureAwait(false);
         }
 
         private string GetAdlsRelativeLocation(string fileName)
@@ -145,7 +126,7 @@ namespace Relativity.Sync.Transfer.ADLS
                 return string.Empty;
             }
 
-            StorageEndpoint[] storages = await _helper.GetStorageEndpointsAsync(cancellationToken).ConfigureAwait(false);
+            StorageEndpoint[] storages = await _storageAccessService.GetStorageEndpointsAsync().ConfigureAwait(false);
             string destinationDir;
             if (storages != null && storages.Length > 0)
             {

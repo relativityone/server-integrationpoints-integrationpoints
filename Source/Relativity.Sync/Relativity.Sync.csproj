@@ -25,9 +25,10 @@
     <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
     <!-- Relativity Packages with Release Versioning Schema -->
     <ItemGroup>
+        <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
         <PackageReference Include="Relativity" />
-        <PackageReference Include="Relativity.Import.Private.SDK" Version="1.0.9" />
-        <PackageReference Include="Relativity.Import.SDK" Version="1.0.9" />
+        <PackageReference Include="Relativity.Import.Private.SDK" Version="1.0.14" />
+        <PackageReference Include="Relativity.Import.SDK" Version="1.0.14" />
         <PackageReference Include="Relativity.Services.Interfaces" />
         <PackageReference Include="Relativity.Services.Interfaces.Private" />
     </ItemGroup>
@@ -37,8 +38,8 @@
         <PackageReference Include="Relativity.Kepler.Client" Version="2.18" />
         <PackageReference Include="Relativity.OAuth2Client" Version="1.5.3" />
         <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.3" />
-        <PackageReference Include="Relativity.Storage" Version="0.6.0" />
-        <PackageReference Include="Relativity.Storage.Extensions" Version="0.6.0" />
+        <PackageReference Include="Relativity.Storage" Version="1.6.0" />
+        <PackageReference Include="Relativity.Storage.Extensions" Version="1.6.0" />
         <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
         <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
         <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.2]" />

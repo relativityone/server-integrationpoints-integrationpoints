@@ -6,6 +6,7 @@ using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.DbContext;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Pipelines;
@@ -50,6 +51,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<ProgressHandler>().As<IProgressHandler>();
             containerBuilder.RegisterType<JobProgressUpdater>().As<IJobProgressUpdater>();
             containerBuilder.RegisterType<TimerFactory>().As<ITimerFactory>();
+            containerBuilder.RegisterType<SleeperWrapper>().As<ISleeperWrapper>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 
@@ -72,6 +74,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
             containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
             containerBuilder.RegisterType<IAPIv2RunCheckerConfiguration>().As<IIAPIv2RunCheckerConfiguration>();
+            containerBuilder.RegisterType<ImportServiceConfiguration>().As<IImportServiceConfiguration>();
 
             containerBuilder.RegisterType<RdoGuidProvider>().AsImplementedInterfaces();
             containerBuilder.RegisterType<RdoManager>().AsImplementedInterfaces();

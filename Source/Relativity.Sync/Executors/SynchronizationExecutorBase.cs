@@ -341,7 +341,8 @@ namespace Relativity.Sync.Executors
 
             int processedItemsCount = progressHandler.GetBatchItemsProcessedCount(batch.ArtifactId);
             await batch.SetTransferredItemsCountAsync(batch.TransferredItemsCount + processedItemsCount).ConfigureAwait(false);
-            await batch.SetReadDocumentsCount(batch.TransferredDocumentsCount + processedItemsCount).ConfigureAwait(false);
+
+            await batch.SetReadDocumentsCount(batch.TransferredItemsCount).ConfigureAwait(false);
 
             await batch.SetMetadataBytesTransferredAsync(batch.MetadataBytesTransferred + batchProcessResult.MetadataBytesTransferred).ConfigureAwait(false);
             await batch.SetFilesBytesTransferredAsync(batch.FilesBytesTransferred + batchProcessResult.FilesBytesTransferred).ConfigureAwait(false);

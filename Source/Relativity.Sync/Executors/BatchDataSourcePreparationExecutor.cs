@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Import.V1;
-using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Progress;
 using Relativity.Sync.Storage;
 
@@ -14,20 +11,20 @@ namespace Relativity.Sync.Executors
 {
     internal class BatchDataSourcePreparationExecutor : IExecutor<IBatchDataSourcePreparationConfiguration>
     {
-        private readonly IDestinationServiceFactoryForUser _serviceFactory;
+        private readonly IImportService _importService;
         private readonly IBatchRepository _batchRepository;
         private readonly ILoadFileGenerator _fileGenerator;
         private readonly IProgressHandler _progressHandler;
         private readonly IAPILog _logger;
 
         public BatchDataSourcePreparationExecutor(
-            IDestinationServiceFactoryForUser serviceFactory,
+            IImportService importService,
             IBatchRepository batchRepository,
             ILoadFileGenerator fileGenerator,
             IProgressHandler progressHandler,
             IAPILog logger)
         {
-            _serviceFactory = serviceFactory;
+            _importService = importService;
             _batchRepository = batchRepository;
             _fileGenerator = fileGenerator;
             _progressHandler = progressHandler;
@@ -36,27 +33,26 @@ namespace Relativity.Sync.Executors
 
         public async Task<ExecutionResult> ExecuteAsync(IBatchDataSourcePreparationConfiguration configuration, CompositeCancellationToken token)
         {
-            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
-            using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            List<int> batchIdList = (await _batchRepository.GetAllBatchesIdsToExecuteAsync(
+                                    configuration.SourceWorkspaceArtifactId,
+                                    configuration.SyncConfigurationArtifactId,
+                                    configuration.ExportRunId)
+                    .ConfigureAwait(false))
+                    .ToList();
+
+            _logger.LogInformation("Retrieved {batchesCount} Batches to Import.", batchIdList.Count);
+
             using (await _progressHandler.AttachAsync(
-                       configuration.SourceWorkspaceArtifactId,
-                       configuration.DestinationWorkspaceArtifactId,
-                       configuration.JobHistoryArtifactId,
-                       configuration.ExportRunId,
-                       configuration.SyncConfigurationArtifactId)
+                           configuration.SourceWorkspaceArtifactId,
+                           configuration.DestinationWorkspaceArtifactId,
+                           configuration.JobHistoryArtifactId,
+                           configuration.ExportRunId,
+                           configuration.SyncConfigurationArtifactId,
+                           batchIdList)
                        .ConfigureAwait(false))
             {
                 try
                 {
-                    List<int> batchIdList = (await _batchRepository.GetAllBatchesIdsToExecuteAsync(
-                                             configuration.SourceWorkspaceArtifactId,
-                                             configuration.SyncConfigurationArtifactId,
-                                             configuration.ExportRunId)
-                             .ConfigureAwait(false))
-                             .ToList();
-
-                    _logger.LogInformation("Retrieved {batchesCount} Batches to Import.", batchIdList.Count);
-
                     foreach (int batchId in batchIdList)
                     {
                         _logger.LogInformation("Reading Batch {batchId}...", batchId);
@@ -65,7 +61,7 @@ namespace Relativity.Sync.Executors
 
                         if (batch.Status == BatchStatus.Cancelled)
                         {
-                            await CancelJobAsync(job, configuration).ConfigureAwait(false);
+                            await _importService.CancelJobAsync().ConfigureAwait(false);
 
                             // After every cancellation we need to end this execution with success to get into DocumentSynchronizationMonitorExecutor
                             return ExecutionResult.Success();
@@ -76,17 +72,13 @@ namespace Relativity.Sync.Executors
                             return ExecutionResult.Paused();
                         }
 
-                        Response result = await importSource.AddSourceAsync(
-                             configuration.DestinationWorkspaceArtifactId,
-                             configuration.ExportRunId,
-                             batch.BatchGuid,
-                             loadFile.Settings)
-                             .ConfigureAwait(false);
-
-                        if (!result.IsSuccess)
+                        try
                         {
-                            _logger.LogInformation("Could not add data source for batch id {batchGuid}. Error: {errorCode} {errorMessage}", batch.BatchGuid, result.ErrorCode, result.ErrorMessage);
-                            await CancelJobAsync(job, configuration).ConfigureAwait(false);
+                            await _importService.AddDataSourceAsync(batch.BatchGuid, loadFile.Settings).ConfigureAwait(false);
+                        }
+                        catch (SyncException)
+                        {
+                            await _importService.CancelJobAsync().ConfigureAwait(false);
                             await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
                             return ExecutionResult.Success();
                         }
@@ -96,36 +88,16 @@ namespace Relativity.Sync.Executors
                     }
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
-                    await EndJobAsync(job, configuration).ConfigureAwait(false);
+                    await _importService.EndJobAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Batch Data Source preparation failed");
-                    await CancelJobAsync(job, configuration).ConfigureAwait(false);
+                    await _importService.CancelJobAsync().ConfigureAwait(false);
                 }
             }
 
             return ExecutionResult.Success();
-        }
-
-        private async Task CancelJobAsync(IImportJobController job, IBatchDataSourcePreparationConfiguration configuration)
-        {
-            Response result = await job.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
-
-            if (!result.IsSuccess)
-            {
-                _logger.LogError("Could not cancel Job ID = {jobId}. {errorMessage}", configuration.ExportRunId, result.ErrorMessage);
-            }
-        }
-
-        private async Task EndJobAsync(IImportJobController job, IBatchDataSourcePreparationConfiguration configuration)
-        {
-            Response result = await job.EndAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
-
-            if (!result.IsSuccess)
-            {
-                _logger.LogError("Could not end Job ID = {jobId}. {errorMessage}", configuration.ExportRunId, result.ErrorMessage);
-            }
         }
     }
 }

@@ -18,6 +18,7 @@ using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Transfer.FileMovementService;
+using Relativity.Sync.Transfer.FileMovementService.Models;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -70,7 +71,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IFileLocationManager> _fileLocationManagerMock;
-        private Mock<IFmsRunner> _fmsRunnerMock;
+        private Mock<IFmsRunner> _fmsRunnerFake;
+        private Mock<ISleeperWrapper> _sleeperWrapperMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -207,7 +209,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
             _fileLocationManagerMock = new Mock<IFileLocationManager>();
-            _fmsRunnerMock = new Mock<IFmsRunner>();
+            _fmsRunnerFake = new Mock<IFmsRunner>();
+            _sleeperWrapperMock = new Mock<ISleeperWrapper>();
 
             _sut = new DocumentSynchronizationExecutor(
                 _importJobFactoryFake.Object,
@@ -224,7 +227,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _adlsUploaderFake.Object,
                 _isAdfTransferEnabledMock.Object,
                 _fileLocationManagerMock.Object,
-                _fmsRunnerMock.Object,
+                _fmsRunnerFake.Object,
+                _sleeperWrapperMock.Object,
                 new EmptyLogger());
         }
 
@@ -1140,6 +1144,53 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        [Test]
+        public async Task Execute_ShouldRetryWhenFmsBatchFailsToTransfer()
+        {
+            // Arrange
+            List<FmsBatchInfo> storageLocations = PrepareAdlsTests();
+            List<FmsBatchStatusInfo> fmsBatchStatusInfosAllCompleted = storageLocations.Select(fmsBatchInfo => new FmsBatchStatusInfo() { RunId = fmsBatchInfo.TraceId.ToString(), TraceId = fmsBatchInfo.TraceId, Status = "Completed" }).ToList();
+            List<FmsBatchStatusInfo> fmsBatchStatusInfosOneFailed = storageLocations.Select(fmsBatchInfo => new FmsBatchStatusInfo() { RunId = fmsBatchInfo.TraceId.ToString(), TraceId = fmsBatchInfo.TraceId, Status = "Completed" }).ToList();
+            fmsBatchStatusInfosOneFailed[0].Status = "Failed";
+
+            _fmsRunnerFake.SetupSequence(x => x.RunAsync(It.IsAny<List<FmsBatchInfo>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fmsBatchStatusInfosOneFailed)
+                .ReturnsAsync(fmsBatchStatusInfosAllCompleted);
+            _fmsRunnerFake.SetupSequence(x => x.MonitorAsync(It.IsAny<List<FmsBatchStatusInfo>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fmsBatchStatusInfosOneFailed)
+                .ReturnsAsync(fmsBatchStatusInfosAllCompleted);
+
+            // Act
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _fmsRunnerFake.Verify(x => x.MonitorAsync(It.IsAny<List<FmsBatchStatusInfo>>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+        }
+
+        [Test]
+        public async Task Execute_ShouldThrowWhenFmsBatchFailsToTransferAndExceedsRetryLimit()
+        {
+            // Arrange
+            List<FmsBatchInfo> storageLocations = PrepareAdlsTests();
+            List<FmsBatchStatusInfo> fmsBatchStatusInfosOneFailed = storageLocations.Select(fmsBatchInfo => new FmsBatchStatusInfo() { RunId = fmsBatchInfo.TraceId.ToString(), TraceId = fmsBatchInfo.TraceId, Status = "Completed" }).ToList();
+            fmsBatchStatusInfosOneFailed[0].Status = "Failed";
+
+            _fmsRunnerFake.Setup(x => x.RunAsync(It.IsAny<List<FmsBatchInfo>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fmsBatchStatusInfosOneFailed);
+            _fmsRunnerFake.Setup(x =>
+                    x.MonitorAsync(It.IsAny<List<FmsBatchStatusInfo>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fmsBatchStatusInfosOneFailed);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            const string expectedMessage = "Fatal exception occurred while executing import job.";
+            _fmsRunnerFake.Verify(x => x.MonitorAsync(It.IsAny<List<FmsBatchStatusInfo>>(), It.IsAny<CancellationToken>()), Times.Exactly(5));
+            result.Message.Should().Be(expectedMessage);
+        }
+
+
         private void SetupBatch(IBatch batch)
         {
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
@@ -1211,7 +1262,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private List<FmsBatchInfo> CreateStoredLocations()
         {
             List<FmsBatchInfo> storageLocations = new List<FmsBatchInfo>();
-            Guid correlationId = Guid.NewGuid();
 
             for (int i = 0; i < 10; i++)
             {
@@ -1230,7 +1280,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                             { i, new NativeFilePathStructure($@"/path/1/2/3/4/{i}/") }
                         },
                         $@"//path_{i}",
-                        correlationId)
+                        Guid.NewGuid())
                     {
                         Files = files,
                     });

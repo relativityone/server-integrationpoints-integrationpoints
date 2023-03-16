@@ -7,10 +7,8 @@ using Relativity.Services.Interfaces.LibraryApplication.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Pipelines
 {
@@ -20,8 +18,6 @@ namespace Relativity.Sync.Pipelines
 
         private readonly ISyncToggles _toggles;
         private readonly IIAPIv2RunCheckerConfiguration _configuration;
-        private readonly IFieldMappings _fieldMappings;
-        private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
         private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
         private readonly IAPILog _logger;
 
@@ -30,15 +26,11 @@ namespace Relativity.Sync.Pipelines
         public IAPIv2RunChecker(
             IIAPIv2RunCheckerConfiguration configuration,
             ISyncToggles toggles,
-            IFieldMappings fieldMappings,
-            IObjectFieldTypeRepository objectFieldTypeRepository,
             IDestinationServiceFactoryForAdmin serviceFactory,
             IAPILog logger)
         {
             _toggles = toggles;
             _configuration = configuration;
-            _fieldMappings = fieldMappings;
-            _objectFieldTypeRepository = objectFieldTypeRepository;
             _serviceFactory = serviceFactory;
             _logger = logger;
         }

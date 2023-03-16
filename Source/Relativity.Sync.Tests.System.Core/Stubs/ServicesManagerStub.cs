@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.API;
+using Relativity.Services.Interfaces.Helpers;
 using Relativity.Services.ServiceProxy;
 
 namespace Relativity.Sync.Tests.System.Core.Stubs
@@ -18,6 +19,11 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 
         public T CreateProxy<T>(ExecutionIdentity ident) where T : IDisposable
         {
+            if (typeof(T) == typeof(IAuthTokenProvider))
+            {
+                return (T)(new AuthTokenProviderStub() as IAuthTokenProvider);
+            }
+
             var userCredential = new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
             var userSettings = new ServiceFactorySettings(AppSettings.RelativityRestUrl, userCredential);
             var userServiceFactory = new ServiceFactory(userSettings);

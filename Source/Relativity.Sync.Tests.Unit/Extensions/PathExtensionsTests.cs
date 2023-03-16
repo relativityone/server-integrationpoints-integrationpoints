@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Extensions;
@@ -48,28 +47,6 @@ namespace Relativity.Sync.Tests.Unit.Extensions
 
             // Assert
             func.Should().Throw<ArgumentNullException>();
-        }
-
-        [Test]
-        public void CreateFileWithRecursiveDirectories_ShouldCreateFileWithRecursiveDirectories()
-        {
-            // Arrange
-            string rootDirectory = Path.Combine(
-                Path.GetTempPath(),
-                Guid.NewGuid().ToString());
-
-            string file = Path.Combine(
-                rootDirectory,
-                Guid.NewGuid().ToString(),
-                $"{Guid.NewGuid()}.txt");
-
-            // Act
-            PathExtensions.CreateFileWithRecursiveDirectories(file);
-
-            // Assert
-            File.Exists(file).Should().BeTrue();
-
-            Directory.Delete(rootDirectory, true);
         }
     }
 }

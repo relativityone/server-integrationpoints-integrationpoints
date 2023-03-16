@@ -16,6 +16,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
 {
     internal class ImportSettingsBuilderTests
     {
+        private const string _RELATIVITY_LONG_TEXT_TYPE_DISPLAY_NAME = "RelativityLongTextType";
+
         private Mock<IConfigureDocumentSynchronizationConfiguration> _configurationFake;
 
         private Mock<IFieldManager> _fieldManagerFake;
@@ -134,6 +136,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.SupportedByViewer).DocumentFieldIndex);
             result.AdvancedSettings.Native.FileType.RelativityNativeTypeColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.RelativityNativeType).DocumentFieldIndex);
+
+            result.DocumentSettings.Fields.FieldMappings.Single(x => x.Field == _RELATIVITY_LONG_TEXT_TYPE_DISPLAY_NAME &&
+                                                                     x.ContainsFilePath).ColumnIndex
+                .Should().Be(fields.Single(x => x.RelativityDataType == RelativityDataType.LongText).DocumentFieldIndex);
 
             result.DocumentSettings.Image.Should().BeNull();
         }
@@ -285,9 +291,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
                 _fxt.Create<string>(),
                 true);
 
+            FieldInfoDto longTextField = new FieldInfoDto(SpecialFieldType.None, _RELATIVITY_LONG_TEXT_TYPE_DISPLAY_NAME, _RELATIVITY_LONG_TEXT_TYPE_DISPLAY_NAME, false, false);
+            longTextField.RelativityDataType = RelativityDataType.LongText;
+
             List<FieldInfoDto> mappedFields = new List<FieldInfoDto>()
             {
                 identifierField,
+                longTextField,
                 FieldInfoDto.NativeFileLocationField(),
                 FieldInfoDto.NativeFileFilenameField(),
                 FieldInfoDto.NativeFileSizeField(),

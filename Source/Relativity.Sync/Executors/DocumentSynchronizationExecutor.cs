@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly.Contrib.WaitAndRetry;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Progress;
@@ -19,8 +20,12 @@ namespace Relativity.Sync.Executors
 {
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
+        private const string _FAILED_STATUS_NAME = "Failed";
+        const int _MAX_RETRY_COUNT = 4;
+        private readonly TimeSpan _timeBetweenFmsRetriesBase = TimeSpan.FromSeconds(3);
         private readonly IDocumentTagger _documentTagger;
         private readonly IFmsRunner _fmsRunner;
+        private readonly ISleeperWrapper _sleeperWrapper;
 
         public DocumentSynchronizationExecutor(
             IImportJobFactory importJobFactory,
@@ -38,6 +43,7 @@ namespace Relativity.Sync.Executors
             IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
             IFmsRunner fmsRunner,
+            ISleeperWrapper sleeperWrapper,
             IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
@@ -57,6 +63,7 @@ namespace Relativity.Sync.Executors
         {
             _documentTagger = documentTagger;
             _fmsRunner = fmsRunner;
+            _sleeperWrapper = sleeperWrapper;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -184,9 +191,44 @@ namespace Relativity.Sync.Executors
         {
             if (IsAdfTransferEnabled.Value && fmsBatches.Count > 0)
             {
-                List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken);
-                await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken);
+                int retryCount = 0;
+                var failedBatches = await PerformFmsTransferInternalAsync(fmsBatches, cancellationToken).ConfigureAwait(false);
+
+                while (failedBatches.Count > 0 && retryCount < _MAX_RETRY_COUNT)
+                {
+                    retryCount++;
+                    TimeSpan backoffDuration =
+                        Backoff.DecorrelatedJitterBackoffV2(_timeBetweenFmsRetriesBase, _MAX_RETRY_COUNT)
+                            .ToList()[retryCount - 1];
+                    Logger.LogInformation("Failed batches found {failedBatchCount}. Retrying FMS Transfer in {backoffDurationMs}. Retry count {fmsRetryCount}", failedBatches.Count, backoffDuration, retryCount);
+                    _sleeperWrapper.ThreadSleep(backoffDuration);
+                    failedBatches = await PerformFmsTransferInternalAsync(failedBatches, cancellationToken).ConfigureAwait(false);
+                }
+
+                if (failedBatches.Count > 0 && retryCount >= _MAX_RETRY_COUNT)
+                {
+                    string message = $"Failed to push {failedBatches.Count} FMS batches. Exceeded retry count ({_MAX_RETRY_COUNT})";
+                    throw new ImportFailedException(message);
+                }
+                Logger.LogInformation("Successfully pushed all FMS batches.");
             }
+        }
+
+        private async Task<List<FmsBatchInfo>> PerformFmsTransferInternalAsync(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        {
+            List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken).ConfigureAwait(false);
+            List<FmsBatchStatusInfo> completedBatches = await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken).ConfigureAwait(false);
+            return GetBatchesToRetry(fmsBatches, completedBatches);
+        }
+
+        private static List<FmsBatchInfo> GetBatchesToRetry(
+            IEnumerable<FmsBatchInfo> allBatches,
+            IEnumerable<FmsBatchStatusInfo> completedBatches)
+        {
+            IEnumerable<Guid> failedBatches = completedBatches
+                .Where(b => b.Status == _FAILED_STATUS_NAME)
+                .Select(f => f.TraceId);
+            return allBatches.Where(x => failedBatches.Contains(x.TraceId)).ToList();
         }
 
         private async Task<List<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
