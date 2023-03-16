@@ -1,6 +1,5 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -62,11 +61,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 switch (taskType)
                 {
                     case TaskType.SyncManager:
-                        if (NewCustomProviderFlowShouldBeUsed(integrationPointDto))
-                        {
-                            return _container.Resolve<ICustomProviderTask>();
-                        }
-
                         return CheckForSynchronizationAndResolve<SyncManager>(job, integrationPointDto, agentBase);
                     case TaskType.SyncWorker:
                         return CheckForSynchronizationAndResolve<SyncWorker>(job, integrationPointDto, agentBase);
@@ -99,12 +93,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 jobHistoryServices.UpdateJobHistoryOnFailure(job, e);
                 throw;
             }
-        }
-
-        private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
-        {
-            ICustomProviderFlowCheck newFlowCheck = _container.Resolve<ICustomProviderFlowCheck>();
-            return newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
         }
 
         private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask

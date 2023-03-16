@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _objectManager;
         private readonly ITaskParametersBuilder _taskParametersBuilder;
-        private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
         private readonly IAgentLauncher _agentLauncher;
@@ -337,7 +336,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance);
+            SubmitJob(workspaceArtifactId, userId, integrationPointDto, sourceProvider, destinationProvider, batchInstance);
         }
 
         public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode)
@@ -371,7 +370,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance);
+            SubmitJob(workspaceArtifactId, userId, integrationPointDto, sourceProvider, destinationProvider, batchInstance);
         }
 
         public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
@@ -443,32 +442,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
+        private void SubmitJob(int workspaceArtifactId, int userId, IntegrationPointDto integrationPointDto, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
         {
-            bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
-            if (shouldUseRelativitySyncAppIntegration)
+            _logger.LogInformation("Using Sync DLL to run the job");
+            Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
+            if (job != null)
             {
-                _logger.LogInformation("Using Sync application to run the job");
-                try
-                {
-                    _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                    _logger.LogInformation("Sync retry job has been submitted");
-                }
-                catch (SyncJobSendingException ex)
-                {
-                    _logger.LogError(ex, "Failed to send sync job");
-                    MarkSyncJobAsFailed(jobHistory.ArtifactId, integrationPointArtifactId, ex);
-                }
-            }
-            else
-            {
-                _logger.LogInformation("Using Sync DLL to run the job");
-                Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
-                if (job != null)
-                {
-                    _agentLauncher.LaunchAgentAsync().GetAwaiter().GetResult();
-                    _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
-                }
+                _agentLauncher.LaunchAgentAsync().GetAwaiter().GetResult();
+                _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
             }
         }
 

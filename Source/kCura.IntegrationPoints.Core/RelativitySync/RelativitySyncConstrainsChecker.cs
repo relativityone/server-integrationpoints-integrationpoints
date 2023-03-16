@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -35,23 +34,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             _toggleProvider = toggleProvider;
             _serializer = serializer;
             _logger = logger;
-        }
-
-        public bool ShouldUseRelativitySyncApp(int integrationPointId)
-        {
-            _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
-
-            bool isToggleEnabled = _toggleProvider.IsEnabled<EnableRelativitySyncApplicationToggle>();
-
-            if (!isToggleEnabled)
-            {
-                _logger.LogInformation("Toggle {toggleName} is disabled - Relativity Sync application will not be used", typeof(EnableRelativitySyncApplicationToggle).FullName);
-                return false;
-            }
-
-            bool configurationAllowsUsingSync = ShouldUseRelativitySync(integrationPointId);
-
-            return configurationAllowsUsingSync;
         }
 
         public bool ShouldUseRelativitySync(int integrationPointId)
