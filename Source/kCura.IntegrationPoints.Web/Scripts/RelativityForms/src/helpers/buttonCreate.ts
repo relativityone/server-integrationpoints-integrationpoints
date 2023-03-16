@@ -2,7 +2,7 @@
 import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
-    return consoleApi.generate.button({
+    let runButton = consoleApi.generate.button({        
         innerText: "Run",
         disabled: !enabled,
         onclick: function (e) {
@@ -61,6 +61,8 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
             return convenienceApi.modalService.openCustomModal(model);
         }
     });
+    runButton.setAttribute("data-heap-id", "integrationPoints-run-button")
+    return runButton;
 }
 
 function createMessageContainer(message: string, theme: string, lqMessageContainer: Element, title: string) {
@@ -87,7 +89,7 @@ export function removeMessageContainers() {
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.button({
+    let stopButton = consoleApi.generate.button({
         innerText: "Stop",
         disabled: !enabled,
         onclick: function () {
@@ -108,6 +110,8 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
             })
         }
     });
+    stopButton.setAttribute("data-heap-id", "integrationPoints-stop-button")
+    return stopButton;
 }
 
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
@@ -118,7 +122,7 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
         operationType = "Saved Search";
     }
 
-    return consoleApi.generate.button({
+    let calculateStatsButton = consoleApi.generate.button({
         innerText: "Calculate statistics",
         disabled: !enabled,
         onclick: function () {
@@ -134,11 +138,14 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
             });
         }
     });
+
+    calculateStatsButton.setAttribute("data-heap-id", "integrationPoints-calculate-stats-button")
+    return calculateStatsButton;
 }
 
 export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string, lqMessageContainer: Element) {
 
-    return consoleApi.generate.button({
+    let retryButton = consoleApi.generate.button({
         innerText: "Retry Errors",
         disabled: !enabled,
         onclick: function () {
@@ -257,10 +264,13 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
             }
         }
     });
+
+    retryButton.setAttribute("data-heap-id", "integrationPoints-retry-button")
+    return retryButton;
 }
 
 export function createViewErrorsLink(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.buttonStyledAsLink({
+    let viewErrorsLink = consoleApi.generate.buttonStyledAsLink({
         innerText: "View Errors",
         disabled: !enabled,
         onclick: function () {
@@ -281,10 +291,13 @@ export function createViewErrorsLink(consoleApi, convenienceApi: IConvenienceApi
             })
         }
     });
+
+    viewErrorsLink.setAttribute("data-heap-id", "integrationPoints-view-errors-link")
+    return viewErrorsLink;
 }
 
 export function createSaveAsProfileButton(consoleApi, convenienceApi: IConvenienceApi, ctx, workspaceId: number, integrationPointId: number, integrationPoint: object) {
-    return consoleApi.generate.button({
+    let saveAsProfileButton = consoleApi.generate.button({
         innerText: "Save as Profile",
         onclick: function (e) {
             var contentContainer = document.createElement("div");
@@ -324,10 +337,13 @@ export function createSaveAsProfileButton(consoleApi, convenienceApi: IConvenien
             return convenienceApi.modalService.openCustomModal(model);
         }
     });
+
+    saveAsProfileButton.setAttribute("data-heap-id", "integrationPoints-save-as-profile-button")
+    return saveAsProfileButton;
 }
 
 export function createDownloadErrorFileLink(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.buttonStyledAsLink({
+    let downloadErrorFileLink = consoleApi.generate.buttonStyledAsLink({
         innerText: "Download Error File",
         disabled: !enabled,
         onclick: function (e) {
@@ -345,4 +361,7 @@ export function createDownloadErrorFileLink(consoleApi, convenienceApi: IConveni
                 });
         }
     });
+
+    downloadErrorFileLink.setAttribute("data-heap-id", "integrationPoints-download-error-file-link")
+    return downloadErrorFileLink;
 }
