@@ -9,7 +9,6 @@ using Polly.Wrap;
 using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory

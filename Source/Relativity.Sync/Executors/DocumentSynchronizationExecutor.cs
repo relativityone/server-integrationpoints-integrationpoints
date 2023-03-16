@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Polly.Contrib.WaitAndRetry;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Progress;
@@ -11,21 +10,13 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADLS;
-using Relativity.Sync.Transfer.FileMovementService;
-using Relativity.Sync.Transfer.FileMovementService.Models;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
-        private const string _FAILED_STATUS_NAME = "Failed";
-        const int _MAX_RETRY_COUNT = 4;
-        private readonly TimeSpan _timeBetweenFmsRetriesBase = TimeSpan.FromSeconds(3);
         private readonly IDocumentTagger _documentTagger;
-        private readonly IFmsRunner _fmsRunner;
-        private readonly ISleeperWrapper _sleeperWrapper;
 
         public DocumentSynchronizationExecutor(
             IImportJobFactory importJobFactory,
@@ -39,11 +30,6 @@ namespace Relativity.Sync.Executors
             ISyncMetrics syncMetrics,
             IDocumentTagger documentTagger,
             IUserContextConfiguration userContextConfiguration,
-            IAdlsUploader uploader,
-            IIsAdfTransferEnabled isAdfTransferEnabled,
-            IFileLocationManager fileLocationManager,
-            IFmsRunner fmsRunner,
-            ISleeperWrapper sleeperWrapper,
             IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
@@ -56,14 +42,9 @@ namespace Relativity.Sync.Executors
             stopwatchFactory,
             syncMetrics,
             userContextConfiguration,
-            uploader,
-            isAdfTransferEnabled,
-            fileLocationManager,
             logger)
         {
             _documentTagger = documentTagger;
-            _fmsRunner = fmsRunner;
-            _sleeperWrapper = sleeperWrapper;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -155,105 +136,6 @@ namespace Relativity.Sync.Executors
         protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
-        }
-
-        protected override async Task<List<FmsBatchInfo>> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
-        {
-            if (IsAdfTransferEnabled.Value)
-            {
-                List<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
-                List<Task> batchesUploadTasks = new List<Task>();
-                foreach (FmsBatchInfo storedLocation in storedLocations)
-                {
-                    if (storedLocation.Files.Count > 0)
-                    {
-                        batchesUploadTasks.Add(new Task(() =>
-                        {
-                            string tempBatchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
-                            string uploadedBatchFilePath = AdlsUploader.UploadFileAsync(tempBatchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
-                            storedLocation.UploadedBatchFilePath = uploadedBatchFilePath;
-                        }));
-                    }
-                    else
-                    {
-                        Logger.LogWarning("Successfully pushed documents not found for FMSBatchInfo.TraceId - {TraceId}", storedLocation.TraceId);
-                    }
-                }
-
-                await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
-                return storedLocations;
-            }
-
-            return null;
-        }
-
-        protected override async Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
-        {
-            if (IsAdfTransferEnabled.Value && fmsBatches.Count > 0)
-            {
-                int retryCount = 0;
-                var failedBatches = await PerformFmsTransferInternalAsync(fmsBatches, cancellationToken).ConfigureAwait(false);
-
-                while (failedBatches.Count > 0 && retryCount < _MAX_RETRY_COUNT)
-                {
-                    retryCount++;
-                    TimeSpan backoffDuration =
-                        Backoff.DecorrelatedJitterBackoffV2(_timeBetweenFmsRetriesBase, _MAX_RETRY_COUNT)
-                            .ToList()[retryCount - 1];
-                    Logger.LogInformation("Failed batches found {failedBatchCount}. Retrying FMS Transfer in {backoffDurationMs}. Retry count {fmsRetryCount}", failedBatches.Count, backoffDuration, retryCount);
-                    _sleeperWrapper.ThreadSleep(backoffDuration);
-                    failedBatches = await PerformFmsTransferInternalAsync(failedBatches, cancellationToken).ConfigureAwait(false);
-                }
-
-                if (failedBatches.Count > 0 && retryCount >= _MAX_RETRY_COUNT)
-                {
-                    string message = $"Failed to push {failedBatches.Count} FMS batches. Exceeded retry count ({_MAX_RETRY_COUNT})";
-                    throw new ImportFailedException(message);
-                }
-                Logger.LogInformation("Successfully pushed all FMS batches.");
-            }
-        }
-
-        private async Task<List<FmsBatchInfo>> PerformFmsTransferInternalAsync(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
-        {
-            List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken).ConfigureAwait(false);
-            List<FmsBatchStatusInfo> completedBatches = await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken).ConfigureAwait(false);
-            return GetBatchesToRetry(fmsBatches, completedBatches);
-        }
-
-        private static List<FmsBatchInfo> GetBatchesToRetry(
-            IEnumerable<FmsBatchInfo> allBatches,
-            IEnumerable<FmsBatchStatusInfo> completedBatches)
-        {
-            IEnumerable<Guid> failedBatches = completedBatches
-                .Where(b => b.Status == _FAILED_STATUS_NAME)
-                .Select(f => f.TraceId);
-            return allBatches.Where(x => failedBatches.Contains(x.TraceId)).ToList();
-        }
-
-        private async Task<List<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
-        {
-            List<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
-            List<int> successfullyPushedItemsDocumentArtifactIds = (await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false)).ToList();
-            foreach (FmsBatchInfo storedLocation in storedLocations)
-            {
-                storedLocation.Files = storedLocation.Files
-                    .Where(x =>
-                        successfullyPushedItemsDocumentArtifactIds
-                            .Contains(x.DocumentArtifactId))
-                    .ToList();
-            }
-
-            return storedLocations;
-        }
-
-        private async Task UploadBatchFilesAsync(List<Task> tasks)
-        {
-            if (IsAdfTransferEnabled.Value)
-            {
-                Parallel.ForEach(tasks, t => t.Start());
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Relativity.AntiMalware.SDK;
 using Relativity.API;
-using Relativity.Storage;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Transfer.ADLS;
@@ -35,7 +34,6 @@ namespace Relativity.Sync.Transfer
             builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
             builder.RegisterType<InstanceSettings>().As<IInstanceSettings>();
             builder.RegisterType<SnapshotQueryRequestProvider>().As<ISnapshotQueryRequestProvider>();
-            builder.RegisterType<FileLocationManager>().As<IFileLocationManager>().SingleInstance();
             builder.RegisterType<FileShareService>().As<IFileShareService>();
             builder.Register(c => c.Resolve<IHelper>().GetAntiMalwareEventHelper()).As<IAntiMalwareEventHelper>();
             builder.RegisterType<AntiMalwareHandler>().As<IAntiMalwareHandler>();

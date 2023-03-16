@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Errors;
-using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Sync.Transfer.ImportAPI;
 

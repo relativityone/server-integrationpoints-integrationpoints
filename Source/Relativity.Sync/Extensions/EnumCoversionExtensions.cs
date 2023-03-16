@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using Banzai;
-using Relativity.Sync.Progress;
 
 namespace Relativity.Sync.Extensions
 {

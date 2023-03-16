@@ -8,7 +8,6 @@ using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Storage;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
