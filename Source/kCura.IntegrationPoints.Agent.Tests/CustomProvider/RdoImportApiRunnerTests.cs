@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IRdoImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Setup(x => x.Build(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(_importConfiguration);
 
             _sut = new RdoImportApiRunner(
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             await _sut.RunImportJobAsync(_importJobContext, configuration, fieldMappings);
 
             // Assert
-            _settingsBuilderMock.Verify(x => x.BuildAsync(configuration, fieldMappings), Times.Once);
+            _settingsBuilderMock.Verify(x => x.Build(configuration, fieldMappings), Times.Once);
         }
 
         [Test]

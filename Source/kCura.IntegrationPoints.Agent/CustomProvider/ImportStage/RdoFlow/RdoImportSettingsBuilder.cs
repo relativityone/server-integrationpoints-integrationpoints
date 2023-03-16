@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public async Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public RdoImportConfiguration Build(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
@@ -38,12 +38,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             
             ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
 
-            AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
+            AdvancedImportSettings advancedSettings = CreateAdvancedImportSettings();
 
             return new RdoImportConfiguration(importSettings, advancedSettings);
         }
 
-        private async Task<AdvancedImportSettings> CreateAdvancedImportSettingsAsync()
+        private AdvancedImportSettings CreateAdvancedImportSettings()
         {
             var advancedSettings = new AdvancedImportSettings()
             {
