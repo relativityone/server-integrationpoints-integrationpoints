@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Import.V1;
-using Relativity.Import.V1.Models.Settings;
-using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -40,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _settingsBuilderMock = new Mock<IRdoImportSettingsBuilder>();
             _settingsBuilderMock
                 .Setup(x => x.Build(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
-                .ReturnsAsync(_importConfiguration);
+                .Returns(_importConfiguration);
 
             _sut = new RdoImportApiRunner(
                 _settingsBuilderMock.Object,

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Rdos;
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IWithRdo withRdo = ConfigureFieldsMappingSettings(
                 fieldsSettings,
                 fieldMappings);
-            
+
             ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
 
             AdvancedImportSettings advancedSettings = CreateAdvancedImportSettings();
