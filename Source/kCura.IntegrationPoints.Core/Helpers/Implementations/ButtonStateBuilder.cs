@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IProviderTypeService _providerTypeService;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IIntegrationPointService _integrationPointService;
-        private readonly IRelativitySyncConstrainsChecker _syncConstrainsChecker;
         private readonly IViewErrorsPermissionValidator _viewErrorsPermissionValidator;
         private readonly IJobHistoryManager _jobHistoryManager;
         private readonly IQueueManager _queueManager;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IProviderTypeService providerTypeService,
             IRepositoryFactory repositoryFactory,
             IIntegrationPointService integrationPointService,
-            IRelativitySyncConstrainsChecker syncConstrainsChecker,
             IViewErrorsPermissionValidator viewErrorsPermissionValidator,
             IManagerFactory managerFactory)
         {
@@ -42,7 +40,6 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _providerTypeService = providerTypeService;
             _repositoryFactory = repositoryFactory;
             _integrationPointService = integrationPointService;
-            _syncConstrainsChecker = syncConstrainsChecker;
             _viewErrorsPermissionValidator = viewErrorsPermissionValidator;
 
             _queueManager = managerFactory.CreateQueueManager();
@@ -58,16 +55,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider, integrationPoint.DestinationProvider);
 
-            bool useSyncApp = _syncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
-
-            bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId, useSyncApp);
+            bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 
             bool integrationPointIsStoppable = IntegrationPointIsStoppable(
                 providerType,
                 workspaceArtifactId,
                 integrationPointArtifactId,
-                exportType,
-                useSyncApp);
+                exportType);
 
             CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPoint.ArtifactId);
             bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
@@ -109,22 +103,16 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 ArtifactPermission.Create);
         }
 
-        private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId, bool useSyncApp)
+        private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            if (useSyncApp)
-            {
-                StoppableJobHistoryCollection stoppableJobs = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
-                return stoppableJobs.HasStoppableJobHistory;
-            }
-
             return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
         }
 
-        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType, bool useSyncApp)
+        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType)
         {
             StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-            bool hasExecutingJobs = !useSyncApp && _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
+            bool hasExecutingJobs = _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
 
             if (stoppableJobCollection.HasOnlyPendingJobHistory && !hasExecutingJobs)
             {

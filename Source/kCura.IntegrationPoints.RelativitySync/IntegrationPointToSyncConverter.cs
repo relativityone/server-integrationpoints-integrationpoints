@@ -27,7 +27,7 @@ using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-    public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter, IIntegrationPointToSyncAppConverter
+    public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter
     {
         private readonly ISerializer _serializer;
         private readonly IJobHistoryService _jobHistoryService;

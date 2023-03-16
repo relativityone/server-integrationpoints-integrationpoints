@@ -41,7 +41,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _objectManager;
         private readonly ITaskParametersBuilder _taskParametersBuilder;
-        private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
         private readonly IRetryHandler _retryHandler;
         private readonly IAgentLauncher _agentLauncher;
         private readonly IDateTimeHelper _dateTimeHelper;
@@ -60,8 +59,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IIntegrationPointRepository integrationPointRepository,
             IRelativityObjectManager objectManager,
             ITaskParametersBuilder taskParametersBuilder,
-            IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
-            IRelativitySyncAppIntegration relativitySyncAppIntegration,
             IAgentLauncher agentLauncher,
             IDateTimeHelper dateTimeHelper,
             IRetryHandler retryHandler,
@@ -78,8 +75,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _integrationPointRepository = integrationPointRepository;
             _objectManager = objectManager;
             _taskParametersBuilder = taskParametersBuilder;
-            _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
-            _relativitySyncAppIntegration = relativitySyncAppIntegration;
             _agentLauncher = agentLauncher;
             _dateTimeHelper = dateTimeHelper;
             _retryHandler = retryHandler;
@@ -384,8 +379,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
             _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
 
-            StopSyncAppJobs(stoppableJobHistories);
-
             List<Exception> exceptions = new List<Exception>();
 
             List<Data.JobHistory> processingJobHistories = stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
@@ -478,27 +471,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             _integrationPointRepository.UpdateHasErrors(integrationPointId, true);
             _integrationPointRepository.UpdateLastAndNextRunTime(integrationPointId, endTime, null);
-        }
-
-        private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
-        {
-            List<Data.JobHistory> syncAppJobHistories = stoppableJobHistories
-                .PendingJobHistory
-                .Concat(stoppableJobHistories.ProcessingJobHistory)
-                .Where(FilterSyncAppJobHistory)
-                .ToList();
-
-            foreach (Data.JobHistory syncAppJobHistory in syncAppJobHistories)
-            {
-                try
-                {
-                    _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(syncAppJobHistory.JobID)).GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", syncAppJobHistory.JobID);
-                }
-            }
         }
 
         private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
