@@ -1884,24 +1884,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5539018</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539236</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Private.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539439</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Models.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5539467</ArtifactId>
       <Keywords />
       <Name>Relativity.HostingBridge.SDK.dll</Name>
