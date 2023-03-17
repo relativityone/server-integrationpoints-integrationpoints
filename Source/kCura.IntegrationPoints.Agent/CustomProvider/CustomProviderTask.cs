@@ -130,6 +130,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     batch.IsAddedToImportQueue = true;
                     UpdateJobDetails(job, jobDetails);
                 }
+
+                await EndImportJobAsync(destinationConfiguration.CaseArtifactId, jobDetails.ImportJobID).ConfigureAwait(false);
             }
             catch (ImportApiResponseException ex)
             {
@@ -140,6 +142,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     ex.Response.ErrorCode,
                     ex.Response.ErrorMessage);
 
+                await CancelJobAsync(destinationConfiguration.CaseArtifactId, jobDetails.ImportJobID).ConfigureAwait(false);
+
                 throw;
             }
             catch (Exception ex)
@@ -149,16 +153,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 // TODO REL-806942 Mark job as failed
                 // There is a newly created method IntegrationPointService.MarkJobAsFailed() (currently private)
                 // We can extract this method to the separate service and extend it with other JobHistory(Error) use cases
+                await CancelJobAsync(destinationConfiguration.CaseArtifactId, jobDetails.ImportJobID).ConfigureAwait(false);
 
                 throw;
             }
             finally
             {
-                if (destinationConfiguration != null && jobDetails != null)
-                {
-                    await EndImportJobAsync(destinationConfiguration.CaseArtifactId, jobDetails.ImportJobID).ConfigureAwait(false);
-                }
-
                 if (storage != null && importDirectory != null)
                 {
                     await storage.DeleteDirectoryAsync(importDirectory.FullName, new DeleteDirectoryOptions()
@@ -212,6 +212,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to end import job ID: {importJobId}", importJobId);
+                throw;
+            }
+        }
+
+        private async Task CancelJobAsync(int workspaceId, Guid importJobId)
+        {
+            try
+            {
+                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                {
+                    Response response = await jobController.CancelAsync(workspaceId, importJobId).ConfigureAwait(false);
+                    response.Validate();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to cancel import job ID: {importJobId}", importJobId);
                 throw;
             }
         }

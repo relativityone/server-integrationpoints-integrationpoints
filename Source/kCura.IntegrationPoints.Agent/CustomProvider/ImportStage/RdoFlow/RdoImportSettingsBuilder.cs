@@ -36,8 +36,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 fieldMappings);
 
             ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
+            _logger.LogInformation("Job Import Settings: {@settings}", importSettings);
 
             AdvancedImportSettings advancedSettings = CreateAdvancedImportSettings();
+            _logger.LogInformation("Job Advanced Import Settings: {@advancedSettings}", advancedSettings);
 
             return new RdoImportConfiguration(importSettings, advancedSettings);
         }
@@ -48,8 +50,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 Other = new AdvancedOtherSettings
                 {
-                    AuditLevel = AuditLevel.FullAudit,
-                    BatchSize = 1000
+                    AuditLevel = AuditLevel.FullAudit
                 }
             };
 
