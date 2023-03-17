@@ -7,7 +7,5 @@ Relativity.Telemetry.APM
 Relativity.OutsideIn
 Relativity.IntegrationPoints.Contracts
 
-
-
 group Sync
 Relativity.Sync

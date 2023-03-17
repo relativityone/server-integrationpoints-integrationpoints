@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -241,21 +240,6 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 
             // Assert
             result.Should().BeTrue();
-        }
-
-        [TestCase(false, ExpectedResult = false)]
-        [TestCase(true, ExpectedResult = true)]
-        public bool ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
-        {
-            // Arrange
-            _toggleProvider.Setup(x => x.IsEnabled<EnableRelativitySyncApplicationToggle>())
-                .Returns(toggleValue);
-
-            // Act
-            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
-
-            // Assert
-            return result;
         }
     }
 }

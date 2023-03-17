@@ -34,7 +34,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private IProviderTypeService _providerTypeService;
         private IQueueManager _queueManager;
         private IStateManager _stateManager;
-        private IRelativitySyncConstrainsChecker _syncConstrainsChecker;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
 
@@ -48,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _permissionRepository = Substitute.For<IPermissionRepository>();
             _permissionValidator = Substitute.For<IViewErrorsPermissionValidator>();
             _integrationPointService = Substitute.For<IIntegrationPointService>();
-            _syncConstrainsChecker = Substitute.For<IRelativitySyncConstrainsChecker>();
 
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
             _repositoryFactory.GetPermissionRepository(_WORKSPACE_ID).Returns(_permissionRepository);
@@ -94,7 +92,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasAddProfilePermission);
 
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(false);
             ButtonStateBuilder sut = GetSut();
 
             // Act
@@ -141,7 +138,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _queueManager.HasJobsExecuting(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(hasJobsExecuting);
 
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(false);
             ButtonStateBuilder sut = GetSut();
 
             // Act
@@ -158,48 +154,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(expectedIsStoppable),
                     Arg.Any<bool>(),
                     Arg.Any<bool>());
-        }
-
-        [TestCase(false, false, false, false)]
-        [TestCase(true, false, true, true)]
-        [TestCase(false, true, true, true)]
-        [TestCase(true, true, true, true)]
-        public void CreateButtonStateAsync_ShouldCreateBasedOnJobHistory_WhenSyncAppIsInUse(
-            bool pendingJobHistory,
-            bool processingJobHistory,
-            bool expectedHasStoppableJobs,
-            bool expectedHasJobsExecutingOrInQueue)
-        {
-            // Arrange
-            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch);
-
-            _permissionValidator.Validate(_WORKSPACE_ID)
-                .Returns(new ValidationResult());
-
-            _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
-                .Returns(GetJobHistoryCollection(pendingJobHistory, processingJobHistory));
-
-            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
-
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
-            ButtonStateBuilder sut = GetSut();
-
-            // Act
-            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            _stateManager.Received()
-                .GetButtonState(
-                    Arg.Any<ExportType>(),
-                    Arg.Any<ProviderType>(),
-                    Arg.Is(expectedHasJobsExecutingOrInQueue), // TODO
-                    Arg.Any<bool>(),
-                    Arg.Any<bool>(),
-                    Arg.Is(expectedHasStoppableJobs),
-                    Arg.Any<bool>(),
-                    Arg.Any<bool>());
-
-            _queueManager.DidNotReceive();
         }
 
         [TestCase(CalculationStatus.New, false)]
@@ -222,7 +176,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
             ButtonStateBuilder sut = GetSut();
 
             // Act
@@ -256,7 +209,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(true);
             ButtonStateBuilder sut = GetSut();
 
             // Act
@@ -313,7 +265,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 _providerTypeService,
                 _repositoryFactory,
                 _integrationPointService,
-                _syncConstrainsChecker,
                 _permissionValidator,
                 _managerFactory);
         }
