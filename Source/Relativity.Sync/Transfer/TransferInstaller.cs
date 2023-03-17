@@ -3,8 +3,6 @@ using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
-using Relativity.Sync.Transfer.ADLS;
-using Relativity.Sync.Transfer.ImportAPI;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
@@ -39,10 +37,6 @@ namespace Relativity.Sync.Transfer
             builder.RegisterType<AntiMalwareHandler>().As<IAntiMalwareHandler>();
             builder.RegisterType<AntiMalwareConfiguration>().As<IAntiMalwareConfiguration>();
             builder.RegisterType<FileStreamBuilder>().As<IFileStreamBuilder>();
-
-            builder.RegisterType<ImportSettingsBuilder>().As<IImportSettingsBuilder>();
-
-            builder.RegisterType<StorageAccessService>().As<IStorageAccessService>().SingleInstance();
         }
     }
 }

@@ -246,7 +246,7 @@ namespace Relativity.Sync.Tests.Integration
                 return typeof(DataSourceSnapshotNode);
             }
 
-            if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(IAPI2_SyncDocumentRunPipeline))
+            if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline))
             {
                 return typeof(DataSourceSnapshotNode);
             }

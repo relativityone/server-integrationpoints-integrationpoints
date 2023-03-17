@@ -84,7 +84,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _syncLog.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce());
         }
 
-        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), true)]

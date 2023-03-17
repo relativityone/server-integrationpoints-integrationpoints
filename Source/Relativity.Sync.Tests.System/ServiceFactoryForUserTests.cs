@@ -78,7 +78,7 @@ namespace Relativity.Sync.Tests.System
                 ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
                 PermissionType = PermissionType.Edit
             };
-            
+
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
             IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
