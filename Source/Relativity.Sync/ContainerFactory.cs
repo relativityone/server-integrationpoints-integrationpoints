@@ -46,8 +46,6 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
             containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
             containerBuilder.RegisterType<RipWorkarounds>().As<IRipWorkarounds>();
-            containerBuilder.RegisterType<IAPIv2RunChecker>().As<IIAPIv2RunChecker>().SingleInstance();
-            containerBuilder.RegisterType<ProgressHandler>().As<IProgressHandler>();
             containerBuilder.RegisterType<JobProgressUpdater>().As<IJobProgressUpdater>();
             containerBuilder.RegisterType<TimerFactory>().As<ITimerFactory>();
 
@@ -71,7 +69,7 @@ namespace Relativity.Sync
 
             containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
             containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
-            containerBuilder.RegisterType<IAPIv2RunCheckerConfiguration>().As<IIAPIv2RunCheckerConfiguration>();
+            containerBuilder.RegisterType<ImportServiceConfiguration>().As<IImportServiceConfiguration>();
 
             containerBuilder.RegisterType<RdoGuidProvider>().AsImplementedInterfaces();
             containerBuilder.RegisterType<RdoManager>().AsImplementedInterfaces();

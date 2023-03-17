@@ -7,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -17,17 +16,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 
         private Mock<INativeFileRepository> _nativeFileRepositoryMock;
-        private Mock<IFileLocationManager> _fileLocationManager;
-        private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
         private NativeInfoFieldsBuilder _sut;
 
         [SetUp]
         public void SetUp()
         {
             _nativeFileRepositoryMock = new Mock<INativeFileRepository>();
-            _fileLocationManager = new Mock<IFileLocationManager>();
-            _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
-            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger(), _fileLocationManager.Object, _isAdfTransferEnabledMock.Object);
+            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger());
         }
 
         [Test]
@@ -87,34 +82,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             fileInfoRowValuesBuilder.Should().NotBeNull();
             const int expectedNumberOfNotDuplicatedNatives = 2;
             fileInfoRowValuesBuilder.ArtifactIdToNativeFile.Count.Should().Be(expectedNumberOfNotDuplicatedNatives);
-        }
-
-        [Test]
-        public async Task GetRowValuesBuilderAsync_ShouldNotLaunchADLSPathTranslation_WhenUseFMSToggleIsDisabled()
-        {
-            // Arrange
-            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(false);
-
-            // Act
-            INativeSpecialFieldRowValuesBuilder result = await _sut
-                .GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
-
-            // Assert
-            _fileLocationManager.Verify(x => x.TranslateAndStoreFilePaths(It.IsAny<IDictionary<int, INativeFile>>()), Times.Never());
-        }
-
-        [Test]
-        public async Task GetRowValuesBuilderAsync_ShouldAlwaysLaunchADLSPathTranslationOnce_WhenUseFMSToggleIsEnabled()
-        {
-            // Arrange
-            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(true);
-
-            // Act
-            INativeSpecialFieldRowValuesBuilder result = await _sut
-                .GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, Array.Empty<int>()).ConfigureAwait(false);
-
-            // Assert
-            _fileLocationManager.Verify(x => x.TranslateAndStoreFilePaths(It.IsAny<IDictionary<int, INativeFile>>()), Times.Once());
         }
     }
 }

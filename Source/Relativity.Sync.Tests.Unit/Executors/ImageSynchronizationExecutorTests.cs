@@ -16,7 +16,6 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADLS;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -57,8 +56,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        private Mock<IAdlsUploader> _adlsUploaderMock;
-        private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -145,7 +142,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
-            _adlsUploaderMock = new Mock<IAdlsUploader>();
 
             _jobProgressHandlerFake = new Mock<IJobProgressHandler>();
             _jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
@@ -181,10 +177,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
-            _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
-
-            Mock<IFileLocationManager> fileLocationManager = new Mock<IFileLocationManager>();
-
             _sut = new ImageSynchronizationExecutor(
                 _importJobFactoryFake.Object,
                 _batchRepositoryMock.Object,
@@ -196,10 +188,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _stopwatchFactoryFake.Object,
                 _syncMetricsMock.Object,
                 _documentTaggerFake.Object,
-                _adlsUploaderMock.Object,
                 _userContextConfigurationStub.Object,
-                _isAdfTransferEnabledMock.Object,
-                fileLocationManager.Object,
                 new EmptyLogger());
         }
 

@@ -17,5 +17,6 @@
     <Parameter name="ArmCacheLocationId" value="1015534" />
     <Parameter name="ArmFileRepositoryId" value="1014887" />
     <Parameter name="RelativityImportRAPPath" value="Relativity.Import\lib\Relativity.Import.rap" />
+    <Parameter name="DataTransferLegacyPath" value="DataTransfer.Legacy\lib\DataTransfer.Legacy.rap" />
   </TestRunParameters>
 </RunSettings>

@@ -73,6 +73,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
         [IdentifiedTest("215AD6CF-A79A-45A9-AEE2-22C4848F1F8B")]
         [TestType.MainFlow]
+        [TestType.Critical]
         public async Task SyncJob_Should_SyncDocuments_And_NotCreateErrors_WhenDisabled()
         {
             // Arrange
@@ -117,6 +118,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
         [IdentifiedTest("4be91e77-327d-41d6-afcc-a9d1090f0b04")]
         [TestType.MainFlow]
+        [TestType.Critical]
         public async Task SyncJob_Should_SyncDocuments_WithCustomRDOs()
         {
             // Arrange
@@ -145,6 +147,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
         [IdentifiedTest("e4451454-ea17-4d0e-b45a-a2c43ad35add")]
         [TestType.MainFlow]
+        [TestType.Critical]
         public async Task SyncJob_Should_RetryDocuments()
         {
             // Arrange

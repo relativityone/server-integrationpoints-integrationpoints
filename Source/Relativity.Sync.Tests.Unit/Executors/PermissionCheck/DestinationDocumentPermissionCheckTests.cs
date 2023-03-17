@@ -19,6 +19,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
     [TestFixture]
     public class DestinationDocumentPermissionCheckTests
     {
+        private const string _EXPECTED_MISSING_FOLDER_PERMISSION_MESSAGE = "User does not have Folder View/Edit/Create permission.";
+
         private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
         private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
 
@@ -236,8 +238,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_DOCUMENT);
-            actualResult.Messages.First().ShortMessage.Should().Be(
-                "User does not have permission to access the folder in the destination workspace or the folder does not exist.");
+            actualResult.Messages.First().ShortMessage.Should().Be(_EXPECTED_MISSING_FOLDER_PERMISSION_MESSAGE);
             actualResult.Messages.First().ErrorCode.Should().Be("20.009");
         }
 
@@ -263,8 +264,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
-            actualResult.Messages.First().ShortMessage.Should().Be(
-                "User does not have permission to access the folder in the destination workspace or the folder does not exist.");
+            actualResult.Messages.First().ShortMessage.Should().Be(_EXPECTED_MISSING_FOLDER_PERMISSION_MESSAGE);
             actualResult.Messages.First().ErrorCode.Should().Be("20.009");
         }
 

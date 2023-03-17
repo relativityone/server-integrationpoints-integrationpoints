@@ -11,23 +11,19 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
     public class PipelineSelectorTests
     {
         private Mock<IPipelineSelectorConfiguration> _configurationMock;
-        private Mock<IIAPIv2RunChecker> _iApiv2RunChecker;
         private Mock<IAPILog> _loggerMock;
         private PipelineSelector _sut;
 
         [SetUp]
         public void Setup()
         {
-            _iApiv2RunChecker = new Mock<IIAPIv2RunChecker>();
-            _iApiv2RunChecker.Setup(x => x.ShouldBeUsed()).Returns(false);
-
             _configurationMock = new Mock<IPipelineSelectorConfiguration>();
             _configurationMock.SetupGet(x => x.RdoArtifactTypeId)
                 .Returns((int)ArtifactType.Document);
 
             _loggerMock = new Mock<IAPILog>();
 
-            _sut = new PipelineSelector(_configurationMock.Object, _iApiv2RunChecker.Object, _loggerMock.Object);
+            _sut = new PipelineSelector(_configurationMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -78,19 +74,6 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
 
             // Assert
             pipeline.GetType().Should().Be<SyncImageRunPipeline>();
-        }
-
-        [Test]
-        public void GetPipeline_Should_ReturnIAPI2_SyncDocumentRunPipeline_When_IIAPIv2RunChecker_ShouldBeUsed()
-        {
-            // Arrange
-            _iApiv2RunChecker.Setup(x => x.ShouldBeUsed()).Returns(true);
-
-            // Act
-            ISyncPipeline pipeline = _sut.GetPipeline();
-
-            // Assert
-            pipeline.GetType().Should().Be<IAPI2_SyncDocumentRunPipeline>();
         }
     }
 }

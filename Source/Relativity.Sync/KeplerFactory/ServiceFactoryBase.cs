@@ -1,26 +1,25 @@
 using System;
 using System.Threading.Tasks;
 using Polly;
+using Polly.Contrib.WaitAndRetry;
 using Polly.Retry;
+using Polly.Wrap;
 using Relativity.API;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
     internal abstract class ServiceFactoryBase
     {
-        protected readonly IRandom Random;
         protected readonly IAPILog Logger;
 
         protected int RetryMaxCount = 2;
         protected int AuthTokenRetriesMaxCount = 2;
 
-        internal double SecondsBetweenRetries { get; set; } = 2;
+        internal TimeSpan TimeBetweenRetries { get; set; } = TimeSpan.FromSeconds(2);
 
-        protected ServiceFactoryBase(IRandom random, IAPILog logger)
+        protected ServiceFactoryBase(IAPILog logger)
         {
-            Random = random;
             Logger = logger;
         }
 
@@ -28,8 +27,8 @@ namespace Relativity.Sync.KeplerFactory
         {
             RetryPolicy errorsPolicy = GetErrorsPolicy();
             RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy();
-            Policy.WrapAsync(errorsPolicy, authTokenPolicy);
-            T proxy = await errorsPolicy.ExecuteAsync(
+            PolicyWrap wrappedPolicy = Policy.WrapAsync(errorsPolicy, authTokenPolicy);
+            T proxy = await wrappedPolicy.ExecuteAsync(
                     async () => await CreateProxyInternalAsync<T>().ConfigureAwait(false))
                 .ConfigureAwait(false);
 
@@ -42,19 +41,13 @@ namespace Relativity.Sync.KeplerFactory
         {
             RetryPolicy errorsPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(RetryMaxCount, retryAttempt =>
-                {
-                    const int maxJitterMs = 100;
-                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(SecondsBetweenRetries, retryAttempt));
-                    TimeSpan jitter = TimeSpan.FromMilliseconds(Random.Next(0, maxJitterMs));
-                    return delay + jitter;
-                },
-                (ex, waitTime, retryCount, context) =>
-                {
-                    Logger.LogWarning(
-                        ex,
-                        $"Encountered error for {nameof(CreateProxyInternalAsync)}, attempting retry. Retry count: {retryCount} Wait time: {waitTime.TotalMilliseconds} (ms)");
-                });
+                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeBetweenRetries, RetryMaxCount),
+                    (ex, waitTime, retryCount, context) =>
+                    {
+                        Logger.LogWarning(
+                            ex,
+                            $"Encountered error for {nameof(CreateProxyInternalAsync)}, attempting retry. Retry count: {retryCount} Wait time: {waitTime.TotalMilliseconds} (ms)");
+                    });
 
             return errorsPolicy;
         }

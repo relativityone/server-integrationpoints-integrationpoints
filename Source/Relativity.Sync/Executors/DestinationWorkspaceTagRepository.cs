@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
 
         public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
         {
-            _logger.LogVerbose(
+            _logger.LogInformation(
                 $"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
                 "Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
                 sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Executors
 
         public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
         {
-            _logger.LogVerbose(
+            _logger.LogInformation(
                 $"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
                     "Destination workspace ID: {destinationWorkspaceArtifactId}",
                 sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
@@ -146,36 +146,17 @@ namespace Relativity.Sync.Executors
         }
 
         protected override async Task<TagDocumentsResult<int>> TagDocumentsBatchAsync(
-            ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
+            ISynchronizationConfiguration synchronizationConfiguration, IList<int> batch, CancellationToken token)
         {
-            var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
-            {
-                Objects = ConvertArtifactIdsToObjectRefs(batch),
-                FieldValues = fieldValues
-            };
-
-            TagDocumentsResult<int> result;
             IStopwatch stopwatch = _stopwatch();
-            try
-            {
-                using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-                {
-                    stopwatch.Start();
-                    MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
-                    result = GenerateTagDocumentsResult(updateResult, batch);
-                    stopwatch.Stop();
-                }
-            }
-            catch (Exception updateException)
-            {
-                const string exceptionMessage = "Mass tagging Documents with Destination Workspace and Job History fields failed.";
-                const string exceptionTemplate =
-                    "Mass tagging documents in source workspace {SourceWorkspace} with destination workspace field {DestinationWorkspaceField} and job history field {JobHistoryField} failed.";
+            stopwatch.Start();
 
-                _logger.LogError(updateException, exceptionTemplate,
-                    synchronizationConfiguration.SourceWorkspaceArtifactId, synchronizationConfiguration.DestinationWorkspaceTagArtifactId, synchronizationConfiguration.JobHistoryArtifactId);
-                result = new TagDocumentsResult<int>(batch, exceptionMessage, false, 0);
-            }
+            Func<IList<int>, int, Task<MassUpdateResult>> taggingFuncAsync =
+                (IList<int> batch, int workspaceId) => TagDocumentsInSourceAsync(batch, workspaceId, synchronizationConfiguration, token);
+
+            TagDocumentsResult<int> result = await TagDocumentsBatchInternalAsync(taggingFuncAsync, batch, synchronizationConfiguration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+
+            stopwatch.Stop();
 
             _syncMetrics.Send(new DestinationWorkspaceTagMetric
             {
@@ -186,6 +167,26 @@ namespace Relativity.Sync.Executors
             });
 
             return result;
+        }
+
+        private async Task<MassUpdateResult> TagDocumentsInSourceAsync(
+            IList<int> batch, int workspaceId, ISynchronizationConfiguration configuration, CancellationToken token)
+        {
+            using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                var massUpdateOptions = new MassUpdateOptions
+                {
+                    UpdateBehavior = FieldUpdateBehavior.Merge
+                };
+
+                var updateByIdentifiersRequest = new MassUpdateByObjectIdentifiersRequest
+                {
+                    Objects = ConvertArtifactIdsToObjectRefs(batch),
+                    FieldValues = GetDocumentFieldTags(configuration)
+                };
+
+                return await objectManager.UpdateAsync(workspaceId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
+            }
         }
 
         protected override FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration)

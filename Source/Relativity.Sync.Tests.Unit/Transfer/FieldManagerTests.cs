@@ -11,7 +11,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -34,7 +33,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminFake;
         private Mock<IAPILog> _syncLogFake;
-        private Mock<IIAPIv2RunChecker> _iapiRunCheckerMock;
 
         private FieldManager _sut;
 
@@ -165,7 +163,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 It.IsAny<int>())).ReturnsAsync(queryResultForGetRdoTypeName);
 
             _syncLogFake = new Mock<IAPILog>();
-            _iapiRunCheckerMock = new Mock<IIAPIv2RunChecker>();
 
             _sut = new FieldManager(
                 _configuration.Object,
@@ -173,7 +170,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 nativeSpecialFieldBuilders,
                 imageSpecialFieldBuilders,
                 _serviceFactoryForAdminFake.Object,
-                _iapiRunCheckerMock.Object,
                 _syncLogFake.Object);
         }
 
@@ -484,7 +480,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 Enumerable.Empty<INativeSpecialFieldBuilder>(),
                 Enumerable.Empty<IImageSpecialFieldBuilder>(),
                 _serviceFactoryForAdminFake.Object,
-                _iapiRunCheckerMock.Object,
                 _syncLogFake.Object);
 
             // Act
@@ -565,19 +560,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // Assert
             await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
-        }
-
-        [Test]
-        public async Task GetNativeAllFieldsAsync_ShouldReturnSepcialFieldsWithIndexes_WhenIAPI2FlowEnabled()
-        {
-            // Arrange
-            _iapiRunCheckerMock.Setup(x => x.ShouldBeUsed()).Returns(true);
-
-            // Act
-            IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-
-            // Assert
-            result.All(x => x.DocumentFieldIndex >= 0).Should().BeTrue();
         }
 
         private static IEnumerable<FieldInfoDto> GetFieldsWithIndexes(params FieldInfoDto[] fields)

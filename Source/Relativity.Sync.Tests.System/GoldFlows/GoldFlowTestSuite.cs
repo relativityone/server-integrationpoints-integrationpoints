@@ -25,8 +25,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 {
     internal class GoldFlowTestSuite
     {
-		private static readonly Guid SourceCaseTagObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
-		private readonly TestEnvironment _environment;
+        private static readonly Guid SourceCaseTagObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
+        private readonly TestEnvironment _environment;
 
         public User User { get; }
 
@@ -247,26 +247,26 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
             public async Task<bool> DocumentsHaveTagsAsync(string expectedTagValue)
             {
-				QueryResult result;
-				using (IObjectManager objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
-				{
-					QueryRequest request = new QueryRequest()
-					{
-						ObjectType = new ObjectTypeRef { Guid = SourceCaseTagObjectTypeGuid },
-						IncludeNameInQueryResult = true
-					};
+                QueryResult result;
+                using (IObjectManager objectManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<IObjectManager>())
+                {
+                    QueryRequest request = new QueryRequest()
+                    {
+                        ObjectType = new ObjectTypeRef { Guid = SourceCaseTagObjectTypeGuid },
+                        IncludeNameInQueryResult = true
+                    };
                     try
                     {
-						result = await objectManager.QueryAsync(DestinationWorkspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
+                        result = await objectManager.QueryAsync(DestinationWorkspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
                     }
                     catch (NotFoundException)
                     {
                         return false;
-                    }					 
-				}
+                    }
+                }
 
                 return result.Objects.Any(x => x.Name == expectedTagValue);
-			}
+            }
         }
     }
 }

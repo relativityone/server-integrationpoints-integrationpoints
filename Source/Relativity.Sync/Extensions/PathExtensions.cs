@@ -47,18 +47,5 @@ namespace Relativity.Sync.Extensions
 
             return relativePath;
         }
-
-        /// <summary>
-        /// Creates file with recursive directories
-        /// </summary>
-        /// <param name="filePath">File location</param>
-        public static void CreateFileWithRecursiveDirectories(string filePath)
-        {
-            var longTextFile = new FileInfo(filePath);
-
-            longTextFile.Directory.Create();
-
-            longTextFile.Create().Dispose();
-        }
     }
 }

@@ -7,15 +7,13 @@ namespace Relativity.Sync.Pipelines
     {
         private readonly IPipelineSelectorConfiguration _pipelineSelectorConfiguration;
         private readonly IAPILog _logger;
-        private readonly IIAPIv2RunChecker _iApiv2RunChecker;
 
         private ISyncPipeline _selectedPipeline;
 
-        public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, IIAPIv2RunChecker iApiv2RunChecker, IAPILog logger)
+        public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, IAPILog logger)
         {
             _pipelineSelectorConfiguration = pipelineSelectorConfiguration;
             _logger = logger;
-            _iApiv2RunChecker = iApiv2RunChecker;
         }
 
         public ISyncPipeline GetPipeline()
@@ -51,16 +49,7 @@ namespace Relativity.Sync.Pipelines
 
         private ISyncPipeline GetDocumentPipeline(bool isRetryJob, bool isImageJob)
         {
-            bool isIApi2ShouldBeUsed = _iApiv2RunChecker.ShouldBeUsed();
-            if (isIApi2ShouldBeUsed)
-            {
-                _logger.LogInformation("Using Import API 2.0 to run the job");
-                return new IAPI2_SyncDocumentRunPipeline();
-            }
-            else
-            {
-                _logger.LogInformation("Using Import API 1.0 to run the job");
-            }
+            _logger.LogInformation("Using Import API 1.0 to run the job");
 
             ISyncPipeline selectedPipeline;
             switch (isImageJob)

@@ -9,7 +9,6 @@ namespace Relativity.Sync.KeplerFactory
     internal sealed class DynamicProxyFactory : IDynamicProxyFactory
     {
         private readonly Func<IStopwatch> _stopwatch;
-        private readonly IRandom _random;
         private readonly IAPILog _logger;
 
         // If you have a long running process and you have to create many dynamic proxies, you should make sure to reuse the same ProxyGenerator instance.
@@ -18,16 +17,15 @@ namespace Relativity.Sync.KeplerFactory
         // We also have to set disableSignedModule to true to prevent Castle from signing the dynamic proxy dll which can lead to FileLoadException
         private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator(true);
 
-        public DynamicProxyFactory(Func<IStopwatch> stopwatch, IRandom random, IAPILog logger)
+        public DynamicProxyFactory(Func<IStopwatch> stopwatch, IAPILog logger)
         {
             _stopwatch = stopwatch;
-            _random = random;
             _logger = logger;
         }
 
         public T WrapKeplerService<T>(T keplerService, Func<Task<T>> keplerServiceFactory) where T : class
         {
-            KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_stopwatch, keplerServiceFactory, _random, _logger);
+            KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_stopwatch, keplerServiceFactory, _logger);
 
             return _proxyGenerator.CreateInterfaceProxyWithTargetInterface<T>(keplerService, interceptor);
         }

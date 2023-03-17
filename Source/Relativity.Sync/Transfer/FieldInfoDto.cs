@@ -12,6 +12,7 @@ namespace Relativity.Sync.Transfer
         private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
         private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
         private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
+        private const string _RELATIVITY_LONG_TEXT_TYPE_DISPLAY_NAME = "RelativityLongTextType";
         private const string _IMAGE_FILE_NAME_DISPLAY_NAME = "ImageFileName";
         private const string _IMAGE_FILE_LOCATION_DISPLAY_NAME = "ImageFileLocation";
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";

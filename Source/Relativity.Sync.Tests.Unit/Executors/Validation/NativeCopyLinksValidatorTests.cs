@@ -115,7 +115,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             result.Messages.Should().BeEmpty();
         }
 
-        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), false)]

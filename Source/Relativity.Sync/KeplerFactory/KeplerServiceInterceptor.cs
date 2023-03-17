@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Polly;
+using Polly.Contrib.WaitAndRetry;
 using Polly.Retry;
 using Polly.Wrap;
 using Relativity.API;
@@ -19,19 +20,17 @@ namespace Relativity.Sync.KeplerFactory
 
         private readonly Func<IStopwatch> _stopwatch;
         private readonly Func<Task<TService>> _keplerServiceFactory;
-        private readonly IRandom _random;
         private readonly IAPILog _logger;
         private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
-        private int _secondsBetweenHttpRetriesBase = 3;
+        private readonly TimeSpan _timeBetweenHttpRetriesBase = TimeSpan.FromSeconds(3);
 
         private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResultAsync), BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, IAPILog logger)
+        public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IAPILog logger)
         {
             _stopwatch = stopwatch;
             _keplerServiceFactory = keplerServiceFactory;
-            _random = random;
             _logger = logger;
             _currentInterceptorIndexField = typeof(AbstractInvocation).GetField("currentInterceptorIndex", BindingFlags.NonPublic | BindingFlags.Instance);
         }
@@ -75,8 +74,8 @@ namespace Relativity.Sync.KeplerFactory
 
         private async Task<TResult> HandleExceptionsAsync<TResult>(IInvocation invocation)
         {
+            bool success = true;
             string invocationKepler = invocation.Method.ReflectedType?.Name;
-            ExecutionStatus invocationStatus = ExecutionStatus.Completed;
 
             int httpRetries = 0;
             int authTokenRetries = 0;
@@ -87,24 +86,16 @@ namespace Relativity.Sync.KeplerFactory
             try
             {
                 RetryPolicy httpErrorsPolicy = Policy
-                    .Handle<ServiceNotFoundException>()                                             // Thrown when the service does not exist, the service isn't running yet or there are bad routing entries.
-                    .Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
-                    .Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
-                    .Or<ServiceException>(ex => ex.Message.Contains("Create Failed"))   // Thrown when the create call failed.
+                    .Handle<ServiceNotFoundException>() // Thrown when the service does not exist, the service isn't running yet or there are bad routing entries.
+                    .Or<TemporarilyUnavailableException>() // Thrown when the service is temporarily unavailable.
+                    .Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route")) // Thrown when there are bad routing entries.
+                    .Or<ServiceException>(ex => ex.Message.Contains("Create Failed")) // Thrown when the create call failed.
                     .Or<ServiceException>(ex => ex.Message.Contains("Bad Gateway"))
                     .Or<ConflictException>(ex => ex.Message.Contains("Create Ancestry Failed"))
-                    .Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
-                    .Or<Exception>(HasInInnerExceptions<Exception>)                                    // Thrown when there is an issue on networking layer
-                    .WaitAndRetryAsync(
-                        _MAX_NUMBER_OF_HTTP_RETRIES,
-                        retryAttempt =>
-                {
-                    const int maxJitterMs = 100;
-                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_secondsBetweenHttpRetriesBase, retryAttempt));
-                    TimeSpan jitter = TimeSpan.FromMilliseconds(_random.Next(0, maxJitterMs));
-                    return delay + jitter;
-                },
-                        (ex, waitTime, retryCount, context) =>
+                    .Or<TaskCanceledException>() // Timeout
+                    .Or<TimeoutException>() // Thrown when there is an infrastructure level timeout.
+                    .Or<Exception>(HasInInnerExceptions<Exception>) // Thrown when there is an issue on networking layer
+                    .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(_timeBetweenHttpRetriesBase, _MAX_NUMBER_OF_HTTP_RETRIES), (ex, waitTime, retryCount, context) =>
                     {
                         _logger.LogWarning(
                             ex,
@@ -118,9 +109,7 @@ namespace Relativity.Sync.KeplerFactory
 
                 RetryPolicy authTokenPolicy = Policy
                     .Handle<NotAuthorizedException>() // Thrown when token expired
-                    .RetryAsync(
-                        _MAX_NUMBER_OF_AUTH_TOKEN_RETRIES,
-                        async (ex, retryCount, context) =>
+                    .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(_timeBetweenHttpRetriesBase, _MAX_NUMBER_OF_AUTH_TOKEN_RETRIES), async (ex, waitTime, retryCount, context) =>
                     {
                         _logger.LogWarning(
                             ex,
@@ -169,7 +158,7 @@ namespace Relativity.Sync.KeplerFactory
             }
             catch (Exception invocationException)
             {
-                invocationStatus = ExecutionStatus.Failed;
+                success = false;
 
                 if (httpRetries == _MAX_NUMBER_OF_HTTP_RETRIES)
                 {
@@ -184,7 +173,7 @@ namespace Relativity.Sync.KeplerFactory
             {
                 stopwatch.Stop();
 
-                LogIfExecutionSuccessfullyRetried(invocationKepler, invocationStatus, httpRetries, authTokenRetries);
+                LogIfExecutionSuccessfullyRetried(invocationKepler, success, httpRetries, authTokenRetries);
             }
         }
 
@@ -227,9 +216,9 @@ namespace Relativity.Sync.KeplerFactory
             return false;
         }
 
-        private void LogIfExecutionSuccessfullyRetried(string invocationKepler, ExecutionStatus status, int numberOfHttpRetries, int authTokenExpirationCount)
+        private void LogIfExecutionSuccessfullyRetried(string invocationKepler, bool success, int numberOfHttpRetries, int authTokenExpirationCount)
         {
-            if (status == ExecutionStatus.Completed)
+            if (success)
             {
                 if (numberOfHttpRetries > 0)
                 {

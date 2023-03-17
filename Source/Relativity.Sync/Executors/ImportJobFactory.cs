@@ -14,7 +14,6 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
@@ -26,7 +25,6 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
-        private readonly IIsAdfTransferEnabled _isAdfTransferEnabled;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly ISyncToggles _syncToggles;
         private readonly IAPILog _logger;
@@ -37,7 +35,6 @@ namespace Relativity.Sync.Executors
             IJobHistoryErrorRepository jobHistoryErrorRepository,
             SyncJobParameters syncJobParameters,
             IFieldMappings fieldMappings,
-            IIsAdfTransferEnabled isAdfTransferEnabled,
             IAntiMalwareEventHelper antiMalwareEventHelper,
             ISyncToggles syncToggles,
             IAPILog logger)
@@ -47,7 +44,6 @@ namespace Relativity.Sync.Executors
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
             _syncJobParameters = syncJobParameters;
             _fieldMappings = fieldMappings;
-            _isAdfTransferEnabled = isAdfTransferEnabled;
             _antiMalwareEventHelper = antiMalwareEventHelper;
             _syncToggles = syncToggles;
             _logger = logger;
@@ -165,18 +161,8 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;
             importJob.Settings.NestedValueDelimiter = LoadFileOptions._DEFAULT_NESTED_VALUE_ASCII;
 
-            bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
-            if (shouldUseADFToCopyFiles)
-            {
-                _logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");
-                importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.SetFileLinks;
-                importJob.Settings.DisableNativeLocationValidation = true;
-            }
-            else
-            {
-                importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
-                importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
-            }
+            importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+            importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
 
             if (configuration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
             {

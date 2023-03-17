@@ -76,7 +76,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
             }
 
             const string errorCode = "20.009";
-            const string errorMessage = "User does not have permission to access the folder in the destination workspace or the folder does not exist.";
+            const string errorMessage = "User does not have Folder View/Edit/Create permission.";
 
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
         }

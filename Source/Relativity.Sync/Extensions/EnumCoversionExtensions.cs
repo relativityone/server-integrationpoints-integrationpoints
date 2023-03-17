@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using Banzai;
+
 namespace Relativity.Sync.Extensions
 {
     internal static class EnumConversionExtensions
@@ -30,6 +33,21 @@ namespace Relativity.Sync.Extensions
             }
 
             return batchStatus;
+        }
+
+        public static JobHistoryStatus ToJobHistoryStatus(this NodeResultStatus nodeStatus)
+        {
+            switch (nodeStatus)
+            {
+                case NodeResultStatus.Succeeded:
+                    return JobHistoryStatus.Completed;
+                case NodeResultStatus.SucceededWithErrors:
+                    return JobHistoryStatus.CompletedWithErrors;
+                case NodeResultStatus.Failed:
+                    return JobHistoryStatus.Failed;
+                default:
+                    throw new InvalidEnumArgumentException($"NodeResultStatus - {nodeStatus} is invalid. Contact with Relatity Support.");
+            }
         }
     }
 }

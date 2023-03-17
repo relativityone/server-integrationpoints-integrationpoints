@@ -11,6 +11,7 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
+using Relativity.Sync.Telemetry.RelEye;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -98,9 +99,12 @@ namespace Relativity.Sync.Tests.System
             fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMap);
 
             // Act
-            var repository = new SourceWorkspaceTagRepository(serviceFactoryStub, logger,
-                new SyncMetrics(Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub()),
-                fieldMappings.Object, () => new StopwatchWrapper());
+            var repository = new SourceWorkspaceTagRepository(
+                serviceFactoryStub,
+                logger,
+                EmptySyncMetrics(),
+                fieldMappings.Object,
+                () => new StopwatchWrapper());
 
             IList<TagDocumentsResult<string>> results = await repository.TagDocumentsAsync(configuration, documentsToTag, CancellationToken.None).ConfigureAwait(false);
 
@@ -133,6 +137,13 @@ namespace Relativity.Sync.Tests.System
             IList<string> documentIds = await Rdos.GetAllDocumentNamesAsync(ServiceFactory, _destinationWorkspaceArtifactId).ConfigureAwait(false);
             Assert.AreEqual(numDocuments, documentIds.Count, $"Unexpected number of documents in workspace {_destinationWorkspaceArtifactId}. Ensure test is run against clean workspace.");
             return documentIds;
+        }
+
+        private ISyncMetrics EmptySyncMetrics()
+        {
+            Mock<IEventPublisher> eventPublisher = new Mock<IEventPublisher>();
+
+            return new SyncMetrics(eventPublisher.Object, Enumerable.Empty<ISyncMetricsSink>(), new ConfigurationStub(), Logger);
         }
     }
 }

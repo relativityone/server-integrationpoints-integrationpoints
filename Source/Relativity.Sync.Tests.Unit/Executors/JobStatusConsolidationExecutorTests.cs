@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -24,6 +26,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobStatisticsContainer> _jobStatisticsContainerStub;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminStub;
         private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
+
+        private IFixture _fxt;
+
         private List<IBatch> _batches;
 
         private IExecutor<IJobStatusConsolidationConfiguration> _sut;
@@ -49,6 +54,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [SetUp]
         public void SetUp()
         {
+            _fxt = FixtureFactory.Create();
+
             _objectManagerFake = new Mock<IObjectManager>();
             _batchRepositoryStub = new Mock<IBatchRepository>();
             _jobStatisticsContainerStub = new Mock<IJobStatisticsContainer>();
@@ -64,11 +71,18 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _batchRepositoryStub
                 .Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(_batches);
+                .ReturnsAsync(() => _batches);
+
+            Mock<IAPILog> log = new Mock<IAPILog>();
 
             SetUpUpdateCall(success: true);
 
-            _sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryForAdminStub.Object);
+            _sut = new JobStatusConsolidationExecutor(
+                new ConfigurationStub(),
+                _batchRepositoryStub.Object,
+                _jobStatisticsContainerStub.Object,
+                _serviceFactoryForAdminStub.Object,
+                log.Object);
         }
 
         [Test]

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Banzai;
 using Relativity.API;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Progress;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
@@ -72,7 +73,7 @@ namespace Relativity.Sync
                     };
                     aggregatedProgress.AddRange(progressReporters);
 
-                    await InternalExecuteAsync(token, aggregatedProgress.ToArray()).ConfigureAwait(false);
+                    NodeResultStatus executionResult = await InternalExecuteAsync(token, aggregatedProgress.ToArray()).ConfigureAwait(false);
 
                     if (token.StopCancellationToken.IsCancellationRequested)
                     {
@@ -84,7 +85,8 @@ namespace Relativity.Sync
                     }
                     else
                     {
-                        await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Completed).ConfigureAwait(false);
+                        JobHistoryStatus jobHistoryStatus = executionResult.ToJobHistoryStatus();
+                        await jobProgressUpdater.UpdateJobStatusAsync(jobHistoryStatus).ConfigureAwait(false);
                     }
                 }
                 catch (OperationCanceledException)
@@ -123,7 +125,7 @@ namespace Relativity.Sync
             }
         }
 
-        private async Task InternalExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
+        private async Task<NodeResultStatus> InternalExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
         {
             NodeResult executionResult;
             try
@@ -170,6 +172,8 @@ namespace Relativity.Sync
                 _logger.LogError(errorMessage);
                 throw new SyncException(errorMessage, new AggregateException(failingExceptions), _syncJobParameters.WorkflowId);
             }
+
+            return executionResult.Status;
         }
     }
 }

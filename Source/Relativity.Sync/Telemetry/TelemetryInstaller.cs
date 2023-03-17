@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Relativity.Sync.Telemetry.RelEye;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Telemetry
@@ -22,6 +23,8 @@ namespace Relativity.Sync.Telemetry
                 .Where(t => !t.IsAbstract && t.IsAssignableTo<ISyncMetricsSink>())
                 .ToArray()).As<ISyncMetricsSink>();
             builder.Register(c => new Lazy<ISyncMetrics>(c.Resolve<ISyncMetrics>));
+
+            builder.RegisterType<EventPublisher>().As<IEventPublisher>();
         }
     }
 }

@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Executors;
-using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer.StreamWrappers;
 
 namespace Relativity.Sync.Transfer
@@ -20,8 +17,6 @@ namespace Relativity.Sync.Transfer
         private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
         private readonly IImportStreamBuilder _importStreamBuilder;
-        private readonly IIAPIv2RunChecker _iapiRunChecker;
-        private readonly ILoadFilePathService _filePathService;
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
         private readonly IAPILog _logger;
@@ -32,15 +27,11 @@ namespace Relativity.Sync.Transfer
             ISourceServiceFactoryForUser serviceFactoryForUser,
             IRetriableStreamBuilderFactory streamBuilderFactory,
             IImportStreamBuilder importStreamBuilder,
-            IIAPIv2RunChecker iapiRunChecker,
-            ILoadFilePathService filePathService,
             IAPILog logger)
         {
             _serviceFactoryForUser = serviceFactoryForUser;
             _streamBuilderFactory = streamBuilderFactory;
             _importStreamBuilder = importStreamBuilder;
-            _iapiRunChecker = iapiRunChecker;
-            _filePathService = filePathService;
             _logger = logger;
         }
 
@@ -74,39 +65,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
 
-            if (_iapiRunChecker.ShouldBeUsed())
-            {
-                Guid longTextId = Guid.NewGuid();
-                string longTextFile = await _filePathService.GenerateLongTextFilePathAsync(longTextId).ConfigureAwait(false);
-
-                WriteToFile(longTextFile, value);
-
-                return await _filePathService.GetLoadFileRelativeLongTextFilePathAsync(longTextFile).ConfigureAwait(false);
-            }
-
             return value;
-        }
-
-        private void WriteToFile(string file, object value)
-        {
-            PathExtensions.CreateFileWithRecursiveDirectories(file);
-
-            if (value is string)
-            {
-                File.WriteAllText(file, (string)value, Encoding.Unicode);
-                return;
-            }
-            else if (value is Stream stream)
-            {
-                using (Stream fileStream = new FileStream(file, FileMode.OpenOrCreate))
-                {
-                    stream.CopyTo(fileStream);
-                }
-            }
-            else
-            {
-                throw new SyncItemLevelErrorException($"Unable to write Long-Text value into file due to unsupported type: {value.GetType()}.");
-            }
         }
 
         private async Task<Stream> CreateLongTextStreamAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier, string sanitizingSourceFieldName)

@@ -33,30 +33,37 @@ namespace Relativity.Sync.Executors
                 return tagResults;
             }
 
-            IEnumerable<FieldRefValuePair> fieldValues = GetDocumentFieldTags(synchronizationConfiguration);
-            var massUpdateOptions = new MassUpdateOptions
-            {
-                UpdateBehavior = FieldUpdateBehavior.Merge
-            };
             IEnumerable<IList<TIdentifier>> documentArtifactIdBatches = documentIdentifiers.SplitList(_MAX_OBJECT_QUERY_BATCH_SIZE);
             foreach (IList<TIdentifier> documentArtifactIdBatch in documentArtifactIdBatches)
             {
-                TagDocumentsResult<TIdentifier> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
+                TagDocumentsResult<TIdentifier> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, token).ConfigureAwait(false);
                 tagResults.Add(tagResult);
             }
 
             return tagResults;
         }
 
-        protected abstract Task<TagDocumentsResult<TIdentifier>> TagDocumentsBatchAsync(
-            ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> batch,
-            IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token);
+        protected abstract Task<TagDocumentsResult<TIdentifier>> TagDocumentsBatchAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> batch, CancellationToken token);
 
         protected abstract FieldRefValuePair[] GetDocumentFieldTags(ISynchronizationConfiguration synchronizationConfiguration);
 
-        protected static IEnumerable<RelativityObjectRef> ToMultiObjectValue(params int[] artifactIds)
+        protected async Task<TagDocumentsResult<TIdentifier>> TagDocumentsBatchInternalAsync(
+            Func<IList<TIdentifier>, int, Task<MassUpdateResult>> taggingFuncAsync, IList<TIdentifier> batch, int workspaceId)
         {
-            return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
+            TagDocumentsResult<TIdentifier> result;
+            try
+            {
+                MassUpdateResult updateResult = await taggingFuncAsync(batch, workspaceId).ConfigureAwait(false);
+
+                result = GenerateTagDocumentsResult(updateResult, batch);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Documents Tagging in Workspace {workspaceId} failed.", workspaceId);
+                result = new TagDocumentsResult<TIdentifier>(batch, $"Documents Tagging in Workspace {workspaceId} failed.", false, 0);
+            }
+
+            return result;
         }
 
         protected TagDocumentsResult<TIdentifier> GenerateTagDocumentsResult(MassUpdateResult updateResult, IList<TIdentifier> batch)
@@ -78,6 +85,11 @@ namespace Relativity.Sync.Executors
 
             var result = new TagDocumentsResult<TIdentifier>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
             return result;
+        }
+
+        protected static IEnumerable<RelativityObjectRef> ToMultiObjectValue(params int[] artifactIds)
+        {
+            return artifactIds.Select(x => new RelativityObjectRef { ArtifactID = x });
         }
     }
 }

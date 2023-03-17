@@ -126,16 +126,7 @@ namespace Relativity.Sync.Progress
                         statusGuid = _rdoGuidConfiguration.JobHistoryStatus.ProcessingGuid;
                         break;
                     case JobHistoryStatus.Completed:
-                        hasErrors = await _jobHistoryErrorRepository.HasErrorsAsync(_workspaceArtifactId, _jobHistoryArtifactId).ConfigureAwait(false);
-                        if (hasErrors == true)
-                        {
-                            statusGuid = _rdoGuidConfiguration.JobHistoryStatus.CompletedWithErrorsGuid;
-                        }
-                        else
-                        {
-                            statusGuid = _rdoGuidConfiguration.JobHistoryStatus.CompletedGuid;
-                        }
-
+                        statusGuid = _rdoGuidConfiguration.JobHistoryStatus.CompletedGuid;
                         break;
                     case JobHistoryStatus.CompletedWithErrors:
                         statusGuid = _rdoGuidConfiguration.JobHistoryStatus.CompletedWithErrorsGuid;

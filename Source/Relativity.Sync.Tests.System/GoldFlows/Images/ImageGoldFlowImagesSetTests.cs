@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
         [IdentifiedTest("084CD14B-2D5C-4B7A-86DF-9C3C4606410B")]
         [TestType.MainFlow]
+        [TestType.Critical]
         public override Task SyncJob_Should_RetryImages()
         {
             return base.SyncJob_Should_RetryImages();

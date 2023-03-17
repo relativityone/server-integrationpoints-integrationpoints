@@ -107,8 +107,12 @@ namespace Relativity.Sync.RDOs.Framework
                 fieldInfo.PropertyInfo.SetValue(rdo, value);
 
                 _logger.LogInformation(
-                    "Set field {field} on object {artifactId} in workspace {workspaceId}",
-                    fieldGuid, rdo.ArtifactId, workspaceId);
+                    "Set field {field} on object {artifactId} " +
+                    "in workspace {workspaceId} - Value: {value}",
+                    fieldGuid,
+                    rdo.ArtifactId,
+                    workspaceId,
+                    value);
             }
         }
 
@@ -116,10 +120,6 @@ namespace Relativity.Sync.RDOs.Framework
             params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
-
-            _logger.LogInformation(
-                "Getting values for RDO of type {guid} with ArtifactId {artifactId} in workspace {workspaceId}",
-                typeInfo.TypeGuid, artifactId, workspaceId);
 
             HashSet<Guid> explicitlyRequestedFieldsGuids = GetFieldsGuidsFromExpressions(fields);
 
@@ -163,12 +163,13 @@ namespace Relativity.Sync.RDOs.Framework
                         fieldInfo.PropertyInfo.SetValue(result, value);
                     }
                 }
-                else
-                {
-                    _logger.LogInformation(
-                        "RDO of type {guid} with ArtifactId {artifactId} in workspace {workspaceId} does not exist",
-                        typeInfo.TypeGuid, artifactId, workspaceId);
-                }
+
+                _logger.LogInformation(
+                    "Getting values for RDO of type {guid} with ArtifactId {artifactId} in workspace {workspaceId}: {@rdoValues}",
+                    typeInfo.TypeGuid,
+                    artifactId,
+                    workspaceId,
+                    result);
 
                 return result;
             }

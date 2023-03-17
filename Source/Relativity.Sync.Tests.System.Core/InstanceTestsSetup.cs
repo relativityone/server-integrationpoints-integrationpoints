@@ -9,6 +9,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Services;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -36,6 +37,21 @@ namespace Relativity.Sync.Tests.System.Core
 
             RelativityFacade.Instance.RelyOn<CoreComponent>();
             RelativityFacade.Instance.RelyOn<ApiComponent>();
+
+            InstallDataTransferLegacy();
+
+            ConfigureRelativityInstanceURL();
+        }
+
+        private void ConfigureRelativityInstanceURL()
+        {
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>().UpdateValue("RelativityInstanceURL", "Relativity.Core", AppSettings.RelativityUrl.AbsoluteUri);
+        }
+
+        private void InstallDataTransferLegacy()
+        {
+            RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+                .InstallToLibrary(AppSettings.DataTransferLegacyPath);
         }
 
         private static void SuppressCertificateCheckingIfConfigured()

@@ -377,12 +377,11 @@ namespace Relativity.Sync.Tests.Unit
         public async Task UpdateJobStatusAsync_ShouldUpdateJobStatus_WhenCompletedWithErrors()
         {
             // Arrange
-            _jobHistoryErrorRepository.Setup(x => x.HasErrorsAsync(_WORKSPACE_ID, _JOB_HISTORY_ID)).ReturnsAsync(true);
             Guid statusGuid = SetupJobHistoryStatusGuid(JobHistoryStatus.CompletedWithErrors);
             JobProgressUpdater sut = PrepareSut();
 
             // Act
-            await sut.UpdateJobStatusAsync(JobHistoryStatus.Completed);
+            await sut.UpdateJobStatusAsync(JobHistoryStatus.CompletedWithErrors);
 
             // Assert
             FieldRefValuePair[] expectedFields = new[]
