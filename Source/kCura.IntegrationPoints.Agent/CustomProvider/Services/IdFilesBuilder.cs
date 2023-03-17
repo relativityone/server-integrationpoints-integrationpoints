@@ -63,6 +63,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     _logger.LogInformation("Finished writing ID file for batch index {batch}, file path: {path}", batchIndex, idFilePath);
                     batches.Add(new CustomProviderBatch()
                     {
+                        BatchGuid = Guid.NewGuid(),
                         BatchID = batchIndex,
                         IDsFilePath = idFilePath
                     });

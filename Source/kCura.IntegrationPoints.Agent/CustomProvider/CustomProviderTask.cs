@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
             try
             {
-                jobDetails = GetJobDetails(job);
+                jobDetails = GetJobDetails(job.JobDetails);
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
                 destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
                 storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
@@ -87,14 +87,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 string workspaceDirectoryPath = await _relativityStorageService.GetWorkspaceDirectoryPathAsync(job.WorkspaceID).ConfigureAwait(false);
                 importDirectory = new DirectoryInfo(Path.Combine(workspaceDirectoryPath, "RIP", "Import", jobDetails.ImportJobID.ToString()));
                 await storage.CreateDirectoryAsync(importDirectory.FullName).ConfigureAwait(false);
-                
+
                 IDataSourceProvider provider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
 
                 if (!jobDetails.Batches.Any())
                 {
                     jobDetails = await CreateBatchesAsync(jobDetails.ImportJobID, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
                 }
-                
+
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
 
                 List<IndexedFieldMap> fieldMapping = IndexFieldMappings(integrationPointDto.FieldMappings);
@@ -109,7 +109,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                         continue;
                     }
 
-                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(batch, provider, integrationPointDto, importDirectory.FullName, fieldMapping).ConfigureAwait(false);
+                    DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(
+                        batch,
+                        provider,
+                        new IntegrationPointInfo()
+                        {
+                            SourceConfiguration = integrationPointDto.SourceConfiguration,
+                            SecuredConfiguration = integrationPointDto.SecuredConfiguration,
+                            FieldMap = fieldMapping
+                        },
+                        importDirectory.FullName)
+                        .ConfigureAwait(false);
 
                     using (IImportSourceController importSourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                     {
@@ -159,9 +169,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private CustomProviderJobDetails GetJobDetails(Job job)
+        private CustomProviderJobDetails GetJobDetails(string details)
         {
-            CustomProviderJobDetails jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(job.JobDetails);
+            CustomProviderJobDetails jobDetails = null;
+            try
+            {
+                jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(details);
+            }
+            catch (RipSerializationException ex)
+            {
+                _logger.LogWarning(ex, $"Unexpected content inside job-details: {details}", ex.Value);
+            }
 
             if (jobDetails == null || jobDetails.ImportJobID == Guid.Empty)
             {

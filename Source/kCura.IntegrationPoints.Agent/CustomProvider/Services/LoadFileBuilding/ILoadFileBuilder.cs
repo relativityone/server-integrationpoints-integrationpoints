@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 {
     internal interface ILoadFileBuilder
     {
-        Task<DataSourceSettings> CreateDataFileAsync(CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<IndexedFieldMap> fieldMap);
+        Task<DataSourceSettings> CreateDataFileAsync(CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointInfo integrationPointInfo, string importDirectory);
     }
 }

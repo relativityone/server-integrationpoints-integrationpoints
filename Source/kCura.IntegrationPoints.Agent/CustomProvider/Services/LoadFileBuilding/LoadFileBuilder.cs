@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
-using kCura.IntegrationPoints.Core.Models;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
@@ -27,20 +26,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             _logger = logger;
         }
 
-        public async Task<DataSourceSettings> CreateDataFileAsync(CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory, List<IndexedFieldMap> fieldMap)
+        public async Task<DataSourceSettings> CreateDataFileAsync(CustomProviderBatch batch, IDataSourceProvider provider, IntegrationPointInfo integrationPointInfo, string importDirectory)
         {
             try
             {
                 _logger.LogInformation("Creating data file for batch index: {batchIndex}", batch.BatchID);
 
-                List<IndexedFieldMap> orderedFieldMap = fieldMap.OrderBy(x => x.ColumnIndex).ToList();
+                List<IndexedFieldMap> orderedFieldMap = integrationPointInfo.FieldMap.OrderBy(x => x.ColumnIndex).ToList();
 
-                IEnumerable<FieldEntry> fields = integrationPointDto.FieldMappings.Select(x => x.SourceField);
-                DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointDto.SourceConfiguration, integrationPointDto.SecuredConfiguration);
+                IEnumerable<FieldEntry> fields = integrationPointInfo.FieldMap.Select(x => x.FieldMap.SourceField);
+                DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointInfo.SourceConfiguration, integrationPointInfo.SecuredConfiguration);
                 IList<string> entryIds = await _relativityStorageService.ReadAllLinesAsync(batch.IDsFilePath).ConfigureAwait(false);
 
                 using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIds, providerConfig))
-                using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch.BatchID).ConfigureAwait(false))
+                using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch).ConfigureAwait(false))
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
@@ -97,22 +96,28 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 .WithDefaultEncoding()
                 .WithDefaultCultureInfo();
         }
-        
-        private async Task<StorageStream> GetDataFileStreamAsync(string directoryPath, int batchIndex)
+
+        private async Task<StorageStream> GetDataFileStreamAsync(string directoryPath, CustomProviderBatch batch)
         {
-            string batchDataFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.data";
-            string batchDataFilePath = Path.Combine(directoryPath, batchDataFileName);
+            PrepareBatchDataFilePath(directoryPath, batch);
 
             try
             {
-                StorageStream fileStream = await _relativityStorageService.CreateFileOrTruncateExistingAsync(batchDataFilePath).ConfigureAwait(false);
+                StorageStream fileStream = await _relativityStorageService.CreateFileOrTruncateExistingAsync(batch.DataFilePath).ConfigureAwait(false);
                 return fileStream;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to open file stream: {path}", batchDataFilePath);
+                _logger.LogError(ex, "Failed to open file stream: {path}", batch.DataFilePath);
                 throw;
             }
+        }
+
+        private void PrepareBatchDataFilePath(string directoryPath, CustomProviderBatch batch)
+        {
+            string batchDataFileName = $"{batch.BatchID.ToString().PadLeft(7, '0')}.data";
+            string batchDataFilePath = Path.Combine(directoryPath, batchDataFileName);
+            batch.DataFilePath = batchDataFilePath;
         }
     }
 }

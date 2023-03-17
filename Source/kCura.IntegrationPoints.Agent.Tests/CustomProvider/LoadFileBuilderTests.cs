@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
             };
-            
+
             CustomProviderBatch batch = new CustomProviderBatch()
             {
                 BatchID = 5
@@ -75,8 +75,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             IDataSourceProvider provider = new FakeSourceProvider(numberOfRecords);
 
             // Act
-            DataSourceSettings settings = await _sut.CreateDataFileAsync(batch, provider, integrationPointDto, importDirectory, fieldMap);
-            
+            DataSourceSettings settings = await _sut.CreateDataFileAsync(
+                batch,
+                provider,
+                new IntegrationPointInfo()
+                {
+                    SecuredConfiguration = integrationPointDto.SecuredConfiguration,
+                    SourceConfiguration = integrationPointDto.SourceConfiguration,
+                    FieldMap = fieldMap
+                },
+                importDirectory);
+
             // Assert
             settings.Path.Should().Be($"{importDirectory}000000{batch.BatchID}.data");
         }

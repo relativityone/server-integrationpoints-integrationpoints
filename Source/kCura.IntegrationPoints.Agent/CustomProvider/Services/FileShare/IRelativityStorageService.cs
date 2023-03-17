@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
 
         Task<StorageStream> CreateFileOrTruncateExistingAsync(string path);
 
-        Task<StorageStream> OpenFileAsync(string path, OpenBehavior openBehavior, ReadWriteMode readWriteMode, OpenFileOptions openFileOptions = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
         Task<IList<string>> ReadAllLinesAsync(string filePath);
 

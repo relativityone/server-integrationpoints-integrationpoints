@@ -47,10 +47,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
             return stream;
         }
 
-        public async Task<StorageStream> OpenFileAsync(string path, OpenBehavior openBehavior, ReadWriteMode readWriteMode, OpenFileOptions openFileOptions = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
         {
             IStorageAccess<string> storageAccess = await GetStorageAccessAsync().ConfigureAwait(false);
-            StorageStream stream = await storageAccess.OpenFileAsync(path, openBehavior, readWriteMode, openFileOptions, cancellationToken).ConfigureAwait(false);
+            StorageStream stream = await storageAccess.OpenFileAsync(
+                parameters.Path,
+                parameters.OpenBehavior,
+                parameters.ReadWriteMode,
+                parameters.OpenFileOptions,
+                cancellationToken)
+                .ConfigureAwait(false);
+
             return stream;
         }
 
@@ -62,7 +69,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
 
                 List<string> lines = new List<string>();
 
-                using (StorageStream storageStream = await OpenFileAsync(filePath, OpenBehavior.OpenExisting, ReadWriteMode.ReadOnly).ConfigureAwait(false))
+                OpenFileParameters parameters = new OpenFileParameters()
+                {
+                    Path = filePath,
+                    OpenBehavior = OpenBehavior.OpenExisting,
+                    ReadWriteMode = ReadWriteMode.ReadOnly
+                };
+
+                using (StorageStream storageStream = await OpenFileAsync(parameters).ConfigureAwait(false))
                 using (TextReader reader = new StreamReader(storageStream))
                 {
                     string line;

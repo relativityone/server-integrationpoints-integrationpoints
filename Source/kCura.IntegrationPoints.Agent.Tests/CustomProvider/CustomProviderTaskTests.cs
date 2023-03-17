@@ -118,8 +118,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(batches);
 
             _loadFileBuilder
-                .Setup(x => x.CreateDataFileAsync(It.IsAny<CustomProviderBatch>(), It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(),
-                    It.IsAny<string>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Setup(x => x.CreateDataFileAsync(It.IsAny<CustomProviderBatch>(), It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(),
+                    It.IsAny<string>()))
                 .ReturnsAsync(new DataSourceSettings());
 
             _importSourceController
