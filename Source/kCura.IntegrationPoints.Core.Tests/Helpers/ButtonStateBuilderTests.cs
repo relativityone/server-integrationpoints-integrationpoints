@@ -156,47 +156,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>());
         }
 
-        [TestCase(false, false, false, false)]
-        [TestCase(true, false, true, true)]
-        [TestCase(false, true, true, true)]
-        [TestCase(true, true, true, true)]
-        public void CreateButtonStateAsync_ShouldCreateBasedOnJobHistory_WhenSyncAppIsInUse(
-            bool pendingJobHistory,
-            bool processingJobHistory,
-            bool expectedHasStoppableJobs,
-            bool expectedHasJobsExecutingOrInQueue)
-        {
-            // Arrange
-            SetupIntegrationPoint(ProviderType.Relativity, false, false, ExportType.SavedSearch);
-
-            _permissionValidator.Validate(_WORKSPACE_ID)
-                .Returns(new ValidationResult());
-
-            _jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
-                .Returns(GetJobHistoryCollection(pendingJobHistory, processingJobHistory));
-
-            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
-
-            ButtonStateBuilder sut = GetSut();
-
-            // Act
-            sut.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            _stateManager.Received()
-                .GetButtonState(
-                    Arg.Any<ExportType>(),
-                    Arg.Any<ProviderType>(),
-                    Arg.Is(expectedHasJobsExecutingOrInQueue), // TODO
-                    Arg.Any<bool>(),
-                    Arg.Any<bool>(),
-                    Arg.Is(expectedHasStoppableJobs),
-                    Arg.Any<bool>(),
-                    Arg.Any<bool>());
-
-            _queueManager.DidNotReceive();
-        }
-
         [TestCase(CalculationStatus.New, false)]
         [TestCase(CalculationStatus.InProgress, true)]
         [TestCase(CalculationStatus.Error, false)]
