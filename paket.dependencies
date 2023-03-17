@@ -46,9 +46,6 @@ nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.HostingBridge.SDK 0.2.0
 
-// Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
-
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.19.4
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
