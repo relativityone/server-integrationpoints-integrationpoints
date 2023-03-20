@@ -1,33 +1,21 @@
 using System;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Storage;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Executors
 {
     internal sealed class JobCleanupExecutor : IExecutor<IJobCleanupConfiguration>
     {
         private readonly IBatchRepository _batchRepository;
-        private readonly IIAPIv2RunChecker _iapi2RunChecker;
-        private readonly ILoadFilePathService _pathService;
-        private readonly IStorageAccessService _storageAccessService;
         private readonly IAPILog _logger;
 
         public JobCleanupExecutor(
             IBatchRepository batchRepository,
-            IIAPIv2RunChecker iapi2RunChecker,
-            ILoadFilePathService pathService,
-            IStorageAccessService storageAccessService,
             IAPILog logger)
         {
             _batchRepository = batchRepository;
-            _iapi2RunChecker = iapi2RunChecker;
-            _pathService = pathService;
-            _storageAccessService = storageAccessService;
             _logger = logger;
         }
 
@@ -38,24 +26,6 @@ namespace Relativity.Sync.Executors
                 if (token.IsDrainStopRequested)
                 {
                     return ExecutionResult.Success();
-                }
-
-                if (_iapi2RunChecker.ShouldBeUsed())
-                {
-                    _logger.LogInformation("Removing job directory for ExportRunId: {exportRunId}", configuration.ExportRunId);
-                    string jobDirectoryPath = await _pathService.GetJobDirectoryPathAsync().ConfigureAwait(false);
-                    if (jobDirectoryPath != null && await _storageAccessService.DirectoryExistsAsync(jobDirectoryPath).ConfigureAwait(false))
-                    {
-                        await _storageAccessService.DeleteDirectoryAsync(
-                                jobDirectoryPath,
-                                new DeleteDirectoryOptions
-                                {
-                                    Recursive = true
-                                })
-                            .ConfigureAwait(false);
-                    }
-
-                    _logger.LogInformation("Job directory {jobDirectory} successfully removed", jobDirectoryPath);
                 }
 
                 await _batchRepository.DeleteAllForConfigurationAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);

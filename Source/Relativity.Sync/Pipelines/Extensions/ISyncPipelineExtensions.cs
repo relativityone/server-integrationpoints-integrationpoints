@@ -9,8 +9,7 @@ namespace Relativity.Sync.Pipelines.Extensions
             Type pipelineType = syncPipeline.GetType();
 
             return pipelineType == typeof(SyncDocumentRunPipeline)
-                || pipelineType == typeof(SyncDocumentRetryPipeline)
-                || pipelineType == typeof(IAPI2_SyncDocumentRunPipeline);
+                || pipelineType == typeof(SyncDocumentRetryPipeline);
         }
 
         public static bool IsImagePipeline(this ISyncPipeline syncPipeline)

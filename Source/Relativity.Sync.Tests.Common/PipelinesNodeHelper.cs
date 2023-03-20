@@ -34,11 +34,6 @@ namespace Relativity.Sync.Tests.Common
                 return GetSyncNonDocumentRunPipelineExpectedNodes();
             }
 
-            if (pipelineType == typeof(IAPI2_SyncDocumentRunPipeline))
-            {
-                return Get_IAPI2_SyncDocumentRunPipelineExpectedNodes();
-            }
-
             throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");
         }
 
@@ -121,38 +116,6 @@ namespace Relativity.Sync.Tests.Common
                 new[] { typeof(IDestinationWorkspaceSavedSearchCreationConfiguration) },
                 new[] { typeof(ISnapshotPartitionConfiguration) },
                 new[] { typeof(IDocumentSynchronizationConfiguration) },
-                new[] { typeof(IDataDestinationFinalizationConfiguration) },
-                new[] { typeof(IJobStatusConsolidationConfiguration) },
-                new[]
-                {
-                    typeof(INotificationConfiguration),
-                    typeof(IAutomatedWorkflowTriggerConfiguration),
-                },
-                new[] { typeof(IJobCleanupConfiguration) },
-            };
-        }
-
-        private static List<Type[]> Get_IAPI2_SyncDocumentRunPipelineExpectedNodes()
-        {
-            return new List<Type[]>
-            {
-                new[] { typeof(IPreValidationConfiguration) },
-                new[] { typeof(IDestinationWorkspaceObjectTypesCreationConfiguration) },
-                new[] { typeof(IPermissionsCheckConfiguration) },
-                new[] { typeof(IValidationConfiguration) },
-                new[] { typeof(IDataSourceSnapshotConfiguration) },
-                new[]
-                {
-                    typeof(IDocumentJobStartMetricsConfiguration),
-                    typeof(IDestinationWorkspaceTagsCreationConfiguration),
-                    typeof(ISourceWorkspaceTagsCreationConfiguration),
-                    typeof(IDataDestinationInitializationConfiguration),
-                },
-                new[] { typeof(IDestinationWorkspaceSavedSearchCreationConfiguration) },
-                new[] { typeof(IConfigureDocumentSynchronizationConfiguration) },
-                new[] { typeof(ISnapshotPartitionConfiguration) },
-                new[] { typeof(IBatchDataSourcePreparationConfiguration) },
-                new[] { typeof(IDocumentSynchronizationMonitorConfiguration) },
                 new[] { typeof(IDataDestinationFinalizationConfiguration) },
                 new[] { typeof(IJobStatusConsolidationConfiguration) },
                 new[]

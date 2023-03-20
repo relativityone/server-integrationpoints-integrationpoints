@@ -8,7 +8,6 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -26,9 +25,6 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
-            IAdlsUploader uploader,
-            IIsAdfTransferEnabled isAdfTransferEnabled,
-            IFileLocationManager fileLocationManager,
             IAPILog logger)
             : base(
                 importJobFactory,
@@ -42,9 +38,6 @@ namespace Relativity.Sync.Executors
                 stopwatchFactory,
                 syncMetrics,
                 userContextConfiguration,
-                uploader,
-                isAdfTransferEnabled,
-                fileLocationManager,
                 logger)
         {
         }

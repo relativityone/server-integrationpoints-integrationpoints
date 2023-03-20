@@ -7,7 +7,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 
@@ -19,7 +18,6 @@ namespace Relativity.Sync.Executors
         private readonly IBatchRepository _batchRepository;
         private readonly IJobStatisticsContainer _jobStatisticsContainer;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        private readonly IIAPIv2RunChecker _iapiv2Check;
         private readonly IAPILog _logger;
 
         public JobStatusConsolidationExecutor(
@@ -27,14 +25,12 @@ namespace Relativity.Sync.Executors
             IBatchRepository batchRepository,
             IJobStatisticsContainer jobStatisticsContainer,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IIAPIv2RunChecker iapiv2Check,
             IAPILog logger)
         {
             _rdoGuidConfiguration = rdoGuidConfiguration;
             _batchRepository = batchRepository;
             _jobStatisticsContainer = jobStatisticsContainer;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _iapiv2Check = iapiv2Check;
             _logger = logger;
         }
 
@@ -54,20 +50,10 @@ namespace Relativity.Sync.Executors
                         .GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, exportRunId.Value)
                         .ConfigureAwait(false)).ToList();
 
-                    if (_iapiv2Check.ShouldBeUsed())
-                    {
-                        completedItemsCount = batches.Sum(batch => batch.TransferredDocumentsCount);
-                        totalItemsCount = batches.Sum(batch => batch.TotalDocumentsCount);
-                        failedItemsCount = batches.Sum(batch => batch.FailedDocumentsCount);
-                        readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
-                    }
-                    else
-                    {
-                        completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
-                        totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
-                        failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
-                        readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
-                    }
+                    completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
+                    totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
+                    failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
+                    readItemsCount = batches.Sum(batch => batch.ReadDocumentsCount);
                 }
 
                 updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, readItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);

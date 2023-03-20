@@ -12,7 +12,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.Stubs;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -21,7 +20,6 @@ namespace Relativity.Sync.Tests.Unit
     {
         private BatchRepository _batchRepository;
         private Mock<IObjectManager> _objectManager;
-        private Mock<IDateTime> _dateTime;
         private FakeRdoManager _fakeRdoManager;
 
         private const int _WORKSPACE_ID = 433;

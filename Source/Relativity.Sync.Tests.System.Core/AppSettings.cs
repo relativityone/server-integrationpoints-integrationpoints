@@ -81,6 +81,8 @@ namespace Relativity.Sync.Tests.System.Core
 
         public static string RelativityImportRAPPath => Path.Combine(GetConfigValue("BuildToolsDirectory"), GetConfigValue("RelativityImportRAPPath"));
 
+        public static string DataTransferLegacyPath => Path.Combine(GetConfigValue("BuildToolsDirectory"), GetConfigValue("DataTransferLegacyPath"));
+
         private static Uri BuildHostNamedBasedUri(string path)
         {
             if (string.IsNullOrEmpty(RelativityHostName))

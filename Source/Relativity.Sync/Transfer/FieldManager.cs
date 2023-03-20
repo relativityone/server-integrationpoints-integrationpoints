@@ -8,7 +8,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -25,7 +24,6 @@ namespace Relativity.Sync.Transfer
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
         private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
-        private readonly IIAPIv2RunChecker _iapiRunChecker;
         private readonly IAPILog _logger;
 
         private List<FieldInfoDto> _mappedFieldsCache;
@@ -38,7 +36,6 @@ namespace Relativity.Sync.Transfer
             IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders,
             IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IIAPIv2RunChecker iAPIv2RunChecker,
             IAPILog logger)
         {
             _configuration = configuration;
@@ -46,7 +43,6 @@ namespace Relativity.Sync.Transfer
             _nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
             _imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _iapiRunChecker = iAPIv2RunChecker;
             _logger = logger;
         }
 
@@ -299,11 +295,10 @@ namespace Relativity.Sync.Transfer
 
         private List<FieldInfoDto> EnrichFieldsWithIndex(List<FieldInfoDto> fields)
         {
-            bool isIAPIv2flow = _iapiRunChecker.ShouldBeUsed();
             int currentIndex = 0;
             foreach (FieldInfoDto field in fields)
             {
-                if (field.IsDocumentField || isIAPIv2flow)
+                if (field.IsDocumentField)
                 {
                     field.DocumentFieldIndex = currentIndex;
                     currentIndex++;

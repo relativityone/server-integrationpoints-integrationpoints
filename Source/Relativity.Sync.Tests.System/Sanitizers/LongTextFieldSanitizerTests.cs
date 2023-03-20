@@ -5,12 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
-using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
@@ -130,9 +128,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
 
         private IExportFieldSanitizer GetSut(bool shouldUseNewImport)
         {
-            Mock<IIAPIv2RunChecker> newImportCheckMock = new Mock<IIAPIv2RunChecker>();
-            newImportCheckMock.Setup(x => x.ShouldBeUsed()).Returns(shouldUseNewImport);
-
             IFileShareService fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
 
             IContainer container = ContainerHelper.Create(
@@ -143,7 +138,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
                 },
                 mockActions: b =>
                 {
-                    b.RegisterInstance(newImportCheckMock.Object);
                     b.RegisterInstance(fileShareMock);
                 });
 

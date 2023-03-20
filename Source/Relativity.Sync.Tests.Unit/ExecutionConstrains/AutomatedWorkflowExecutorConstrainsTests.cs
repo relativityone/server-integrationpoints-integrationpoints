@@ -44,14 +44,14 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
                 It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType && qr.Condition == _RELATIVITY_APPLICATION_CONDITION),
                 It.Is<int>(start => start == 0),
                 It.Is<int>(length => length == 1))).Returns(Task.FromResult(new QueryResultSlim
-            {
-                TotalCount = 1,
-                ResultCount = 1,
-                Objects = new List<RelativityObjectSlim>
+                {
+                    TotalCount = 1,
+                    ResultCount = 1,
+                    Objects = new List<RelativityObjectSlim>
             {
                 new RelativityObjectSlim { ArtifactID = _RELATIVITY_APPLICATIONS_ARTIFACT_ID }
             }
-            }));
+                }));
 
             objectManagerFake.Setup(m => m.QuerySlimAsync(
                 It.Is<int>(workspaceId => workspaceId == _DESTINATION_WORKSPACE_ARTIFACT_ID),

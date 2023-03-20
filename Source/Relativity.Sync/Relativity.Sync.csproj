@@ -27,8 +27,6 @@
     <ItemGroup>
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
         <PackageReference Include="Relativity" />
-        <PackageReference Include="Relativity.Import.Private.SDK" Version="1.0.14" />
-        <PackageReference Include="Relativity.Import.SDK" Version="1.0.14" />
         <PackageReference Include="Relativity.Services.Interfaces" />
         <PackageReference Include="Relativity.Services.Interfaces.Private" />
     </ItemGroup>

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Relativity.Sync.Telemetry.Metrics
+﻿namespace Relativity.Sync.Telemetry.Metrics
 {
     internal sealed class JobStartMetric : MetricBase<JobStartMetric>
     {

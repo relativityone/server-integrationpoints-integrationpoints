@@ -9,12 +9,9 @@ using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
-using Relativity.Sync.HttpClient;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer.ADLS;
-using Relativity.Sync.Transfer.FileMovementService;
 
 namespace Relativity.Sync.Executors
 {
@@ -94,34 +91,14 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
             builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
-            builder.RegisterType<ConfigureDocumentSynchronizationExecutor>().As<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
-            builder.RegisterType<ConfigureDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<IConfigureDocumentSynchronizationConfiguration>>();
-            builder.RegisterType<BatchDataSourcePreparationExecutor>().As<IExecutor<IBatchDataSourcePreparationConfiguration>>();
-            builder.RegisterType<BatchDataSourcePreparationExecutionConstrains>().As<IExecutionConstrains<IBatchDataSourcePreparationConfiguration>>();
-            builder.RegisterType<DocumentSynchronizationMonitorExecutor>().As<IExecutor<IDocumentSynchronizationMonitorConfiguration>>();
-            builder.RegisterType<DocumentSynchronizationMonitorExecutionConstrains>().As<IExecutionConstrains<IDocumentSynchronizationMonitorConfiguration>>();
-
             builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
             builder.RegisterTypesInExecutingAssembly<IPreValidator>();
             builder.RegisterType<UserService>().As<IUserService>();
             builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
-            builder.RegisterType<AdlsMigrationStatus>().As<IAdlsMigrationStatus>().SingleInstance();
-            builder.RegisterType<IsAdfTransferEnabled>().As<IIsAdfTransferEnabled>().SingleInstance();
-            builder.RegisterType<AdlsUploader>().As<IAdlsUploader>().SingleInstance();
 
             builder.RegisterType<BatchRepository>().As<IBatchRepository>();
             builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
             builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
-
-            builder.RegisterType<SharedServiceHttpClientFactory>().As<ISharedServiceHttpClientFactory>();
-            builder.RegisterType<HttpClientRetryPolicyProvider>().As<IHttpClientRetryPolicyProvider>();
-            builder.RegisterType<FmsInstanceSettingsService>().As<IFmsInstanceSettingsService>();
-            builder.RegisterType<FmsClient>().As<IFmsClient>();
-            builder.RegisterType<FmsRunner>().As<IFmsRunner>();
-            builder.RegisterType<LoadFileGenerator>().As<ILoadFileGenerator>();
-            builder.RegisterType<LoadFilePathService>().As<ILoadFilePathService>();
-            builder.RegisterType<ItemLevelErrorHandler>().As<IItemLevelErrorHandler>();
-            builder.RegisterType<ImportService>().As<IImportService>();
 
             RegisterNonDocumentFlowComponents(builder);
         }
