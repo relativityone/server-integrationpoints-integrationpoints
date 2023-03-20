@@ -11,7 +11,6 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System.Sanitizers
@@ -26,7 +25,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
         private readonly Dataset _testData = Dataset.NativesAndExtractedText;
 
         private WorkspaceRef _workspace;
-        private string _workspaceFileSharePath;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -40,23 +38,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
             await import.ImportDataAsync(_workspace.ArtifactID, dataTableWrapper).ConfigureAwait(false);
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _workspaceFileSharePath = Path.Combine(Path.GetTempPath(), _workspace.Name);
-
-            Directory.CreateDirectory(_workspaceFileSharePath);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            if (Directory.Exists(_workspaceFileSharePath))
-            {
-                Directory.Delete(_workspaceFileSharePath, true);
-            }
-        }
-
         [Test]
         public async Task SanitizeAsync_ShouldReturnValue_WhenLongTextIsBelowLimit()
         {
@@ -64,7 +45,7 @@ namespace Relativity.Sync.Tests.System.Sanitizers
             object value = await GetExtractedText(_CONTROL_NUMBER_WITH_LONG_TEXT_BELOW_LIMIT).ConfigureAwait(false);
 
             // Act
-            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_BELOW_LIMIT, value, false).ConfigureAwait(false);
+            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_BELOW_LIMIT, value).ConfigureAwait(false);
 
             // Assert
             result.Should().Be(value);
@@ -77,46 +58,15 @@ namespace Relativity.Sync.Tests.System.Sanitizers
             object value = await GetExtractedText(_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT).ConfigureAwait(false);
 
             // Act
-            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT, value, false).ConfigureAwait(false);
+            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT, value).ConfigureAwait(false);
 
             // Assert
             result.Should().BeAssignableTo<Stream>();
         }
 
-        [Test]
-        public async Task SanitizeAsync_ShouldReturnRelativePathWithValue_WhenLongTextBelowLimitIsReadWithNewImport()
+        private async Task<object> RunTestCaseAsync(string identifier, object value)
         {
-            // Arrange
-            object value = await GetExtractedText(_CONTROL_NUMBER_WITH_LONG_TEXT_BELOW_LIMIT).ConfigureAwait(false);
-
-            string expectedText = value.ToString();
-
-            // Act
-            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_BELOW_LIMIT, value, true).ConfigureAwait(false);
-
-            // Assert
-            AssertLongTextGeneratedFile(result, expectedText);
-        }
-
-        [Test]
-        public async Task SanitizeAsync_ShouldReturnRelativePathWithValue_WhenLongTextAboveLimitIsReadWithNewImport()
-        {
-            // Arrange
-            object value = await GetExtractedText(_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT).ConfigureAwait(false);
-
-            string expectedText = File.ReadAllText(
-                Path.Combine(_testData.FolderPath, "TEXT", $"{_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT}.txt"));
-
-            // Act
-            var result = await RunTestCaseAsync(_CONTROL_NUMBER_WITH_LONG_TEXT_ABOVE_LIMIT, value, true).ConfigureAwait(false);
-
-            // Assert
-            AssertLongTextGeneratedFile(result, expectedText);
-        }
-
-        private async Task<object> RunTestCaseAsync(string identifier, object value, bool useNewImport)
-        {
-            IExportFieldSanitizer sut = GetSut(useNewImport);
+            IExportFieldSanitizer sut = GetSut();
 
             return await sut.SanitizeAsync(
                 _workspace.ArtifactID,
@@ -126,19 +76,13 @@ namespace Relativity.Sync.Tests.System.Sanitizers
                 value);
         }
 
-        private IExportFieldSanitizer GetSut(bool shouldUseNewImport)
+        private IExportFieldSanitizer GetSut()
         {
-            IFileShareService fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
-
             IContainer container = ContainerHelper.Create(
                 new Common.ConfigurationStub()
                 {
                     SourceWorkspaceArtifactId = _workspace.ArtifactID,
                     ExportRunId = _EXPORT_RUN_ID
-                },
-                mockActions: b =>
-                {
-                    b.RegisterInstance(fileShareMock);
                 });
 
             return container.Resolve<IEnumerable<IExportFieldSanitizer>>().Single(x => x is LongTextFieldSanitizer);
@@ -164,22 +108,6 @@ namespace Relativity.Sync.Tests.System.Sanitizers
 
                 return result.Objects.Single().Values[0];
             }
-        }
-
-        private void AssertLongTextGeneratedFile(object result, string expectedText)
-        {
-            string longTextPath = result.ToString();
-
-            Path.IsPathRooted(longTextPath).Should().BeFalse();
-
-            string fullPath = Path.Combine(GetSyncJobPath(), longTextPath);
-
-            File.ReadAllText(fullPath).Should().Be(expectedText);
-        }
-
-        private string GetSyncJobPath()
-        {
-            return Path.Combine(_workspaceFileSharePath, "Sync", _EXPORT_RUN_ID.ToString());
         }
     }
 }
