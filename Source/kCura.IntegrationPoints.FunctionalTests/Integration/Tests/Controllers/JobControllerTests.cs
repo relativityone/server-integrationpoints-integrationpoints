@@ -384,7 +384,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             HttpResponseMessage response = sut.Run(payload);
 
             // Assert
-            response.IsSuccessStatusCode.Should().BeTrue();
+            response.IsSuccessStatusCode.Should().BeFalse();
             response.Content.Should()
                 .BeAssignableTo<ObjectContent<JobActionResult>>()
                 .Which.Value.Should().BeAssignableTo<JobActionResult>()

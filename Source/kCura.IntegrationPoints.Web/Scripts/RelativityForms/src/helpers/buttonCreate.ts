@@ -27,9 +27,7 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise
                                 .then(function (result) {
-                                    if (result.ok) {
-                                        return result.json();
-                                    }
+                                    return result.json();
                                 })
                                 .then(function (result) {
                                     if (!result.isValid) {
@@ -112,9 +110,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
                 acceptAction: function () {
                     return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Stop")
                         .then(function (result) {
-                            if (result.ok) {
-                                return result.json();
-                            }
+                            return result.json();
                         })
                         .then(function (result) {
                             if (!result.isValid) {
@@ -189,9 +185,7 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
                 let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action);
                 promise
                     .then(function (result) {
-                        if (result.ok) {
-                            return result.json();
-                        }
+                        return result.json();
                     })
                     .then(function (result) {
                         if (!result.isValid) {

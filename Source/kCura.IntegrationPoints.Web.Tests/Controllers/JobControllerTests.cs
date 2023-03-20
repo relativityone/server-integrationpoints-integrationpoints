@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _auditRepository.Received(1)
                 .CreateAuditRecord(_payload.ArtifactId,
                 Arg.Is<AuditElement>(audit => audit.AuditMessage == _RUN_AUDIT_MESSAGE));
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 
             JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
 
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             HttpResponseMessage response = _instance.Run(_payload);
 
             // Assert
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 
             JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
 
@@ -295,7 +295,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
             _integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0, switchToAppendOverlayMode: false);
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 
             JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
 
@@ -358,7 +358,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .Received(1)
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
 
             errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
         }
@@ -391,7 +391,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .Received(1)
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be BadRequest");
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
 
             errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
         }

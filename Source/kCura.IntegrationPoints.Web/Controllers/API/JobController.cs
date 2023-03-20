@@ -77,7 +77,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             catch (Exception ex)
             {
                 _log.LogError(ex, "Failed to Run job.");
-                throw;
+
+                var result = new JobActionResult();
+                result.Errors.Add(ex.Message);
+
+                return Request.CreateResponse(HttpStatusCode.BadRequest, result);
             }
         }
 
@@ -105,6 +109,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             try
             {
                 _integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (AggregateException exception)
             {
@@ -127,7 +133,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 result.Errors.Add(exception.Message);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, result);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
         }
 
         private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, ActionType action, bool switchToAppendOverlayMode = false)
@@ -146,6 +152,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 {
                     _integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
                 }
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (AggregateException exception)
             {
@@ -167,7 +175,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 result.Errors.Add(exception.Message);
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, result);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
         }
 
         private ValidationResultDTO CreateResponseForFailedValidation(IntegrationPointValidationException exception)
