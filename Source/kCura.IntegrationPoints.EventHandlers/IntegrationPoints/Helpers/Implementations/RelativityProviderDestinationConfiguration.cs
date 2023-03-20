@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Artifact = kCura.EventHandler.Artifact;
 
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             try
             {
                 int transferredObjArtifactTypeId = ParseValue<int>(settings,
-                    nameof(DestinationConfiguration.ArtifactTypeId));
+                    nameof(ImportSettings.ArtifactTypeId));
 
                 IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(Helper.GetActiveCaseID());
                 ObjectTypeDTO objectType = objectTypeRepository.GetObjectType(transferredObjArtifactTypeId);
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private void SetDestinationInstanceName(IDictionary<string, object> settings)
         {
             int federatedInstanceArtifactId = ParseValue<int>(settings,
-                nameof(DestinationConfiguration.FederatedInstanceArtifactId));
+                nameof(ImportSettings.FederatedInstanceArtifactId));
             if (federatedInstanceArtifactId != default(int))
             {
                 FederatedInstanceDto federatedInstanceDto = _federatedInstanceManager.RetrieveFederatedInstanceByArtifactId(federatedInstanceArtifactId);

@@ -355,6 +355,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
                 { "r1.team.id", "PTCI-2456712" },
+                { "service.name", "integrationpoints-repo" },
                 { "r1.job.id", _jobId.ToString() },
                 { "JobType", _jobType },
                 { "WorkflowId", _jobDetails },

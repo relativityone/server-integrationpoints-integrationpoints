@@ -25,7 +25,6 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -42,7 +41,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
     public class ImportServiceManager : ServiceManagerBase
     {
-        private const int _MAX_NUMBER_OF_RAW_RETRIES = 4;
         private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
         private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
         private readonly IHelper _helper;
@@ -61,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         public ImportServiceManager(
             IHelper helper,
-            IRetryHandlerFactory retryHandlerFactory,
+            IRetryHandler retryHandler,
             ICaseServiceContext caseServiceContext,
             ISynchronizerFactory synchronizerFactory,
             IManagerFactory managerFactory,
@@ -97,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 diagnosticLog)
         {
             _helper = helper;
-            _automatedWorkflowsRetryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RAW_RETRIES);
+            _automatedWorkflowsRetryHandler = retryHandler;
             _dataReaderFactory = dataReaderFactory;
             _importFileLocationService = importFileLocationService;
             _jobStatusUpdater = jobStatusUpdater;
@@ -197,7 +195,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void MarkJobAsDrainStoppedIfNeeded(Job job)
         {
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
-            JobHistory = JobHistoryService.GetRdo(batchInstance);
+            JobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
 
             DiagnosticLog.LogDiagnostic("Processed ItemsCount: {itemsCount}", processedItemsCount);
@@ -257,7 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
+            JobHistory jobHistory = JobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
             ChoiceRef status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
             if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
@@ -377,7 +375,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 lock (_syncRoot)
                 {
-                    JobHistory = JobHistoryService.GetRdo(Identifier);
+                    JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
                     JobHistory.TotalItems = recordCount;
                     UpdateJobStatus(JobHistory);
 

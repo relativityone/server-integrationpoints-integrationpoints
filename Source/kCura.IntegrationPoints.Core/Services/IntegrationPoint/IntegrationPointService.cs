@@ -22,7 +22,6 @@ using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     public class IntegrationPointService : IntegrationPointServiceBase, IIntegrationPointService
     {
         private const string _VALIDATION_FAILED = "Failed to submit integration job. Integration Point validation failed.";
-        private readonly IAPILog _logger;
+        private readonly ILogger<IntegrationPointService> _logger;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobManager _jobManager;
@@ -49,7 +48,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IDateTimeHelper _dateTimeHelper;
 
         public IntegrationPointService(
-            IHelper helper,
             ICaseServiceContext context,
             ISerializer serializer,
             IChoiceQuery choiceQuery,
@@ -66,10 +64,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
             IRelativitySyncAppIntegration relativitySyncAppIntegration,
             IAgentLauncher agentLauncher,
-            IDateTimeHelper dateTimeHelper)
-            : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
+            IDateTimeHelper dateTimeHelper,
+            IRetryHandler retryHandler,
+            ILogger<IntegrationPointService> logger)
+            : base(context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
+            _logger = logger;
             _jobManager = jobManager;
             _jobHistoryService = jobHistoryService;
             _jobHistoryErrorService = jobHistoryErrorService;
@@ -83,8 +83,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
             _agentLauncher = agentLauncher;
             _dateTimeHelper = dateTimeHelper;
-
-            _retryHandler = new RetryHandlerFactory(_logger).Create();
+            _retryHandler = retryHandler;
         }
 
         protected override string UnableToSaveFormat
@@ -417,7 +416,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 try
                 {
                     jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-                    _jobHistoryService.UpdateRdo(jobHistory);
+                    _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 
                     Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
 
@@ -642,7 +641,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (switchToAppendOverlayMode)
             {
                 jobHistory.Overwrite = OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name;
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
         }
 
@@ -651,7 +650,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (jobHistory != null)
             {
                 jobHistory.JobStatus = status;
-                _jobHistoryService.UpdateRdo(jobHistory);
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
             }
             else
             {

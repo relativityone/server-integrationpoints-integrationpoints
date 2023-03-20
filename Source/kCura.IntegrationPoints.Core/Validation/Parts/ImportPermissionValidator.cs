@@ -1,5 +1,4 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -8,6 +7,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
         {
             var result = new ValidationResult();
-            DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
+            var destinationConfiguration = Serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
 
             var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 

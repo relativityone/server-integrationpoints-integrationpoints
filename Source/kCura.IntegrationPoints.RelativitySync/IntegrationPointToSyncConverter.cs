@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
@@ -80,7 +79,6 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointDto.SourceConfiguration);
             ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointDto.DestinationConfiguration);
-            FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointDto.DestinationConfiguration);
 
             ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
                 Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
@@ -107,7 +105,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
                 return importSettings.ImageImport ?
                     await CreateImageSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings).ConfigureAwait(false)
-                    : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
+                    : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings).ConfigureAwait(false);
             }
         }
 
@@ -161,7 +159,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         }
 
         private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
+            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
         {
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
@@ -176,7 +174,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
                 .DestinationFolderStructure(
-                    GetFolderStructureOptions(folderConf, importSettings))
+                    GetFolderStructureOptions(importSettings))
                 .EmailNotifications(
                     GetEmailOptions(job))
                 .OverwriteMode(
@@ -249,17 +247,17 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
         }
 
-        private DestinationFolderStructureOptions GetFolderStructureOptions(FolderConf folderConf, ImportSettings settings)
+        private DestinationFolderStructureOptions GetFolderStructureOptions(ImportSettings settings)
         {
-            if (folderConf.UseFolderPathInformation)
+            if (settings.UseFolderPathInformation)
             {
-                DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(folderConf.FolderPathSourceField);
+                DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(settings.FolderPathSourceField);
                 folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
 
                 return folderOptions;
             }
 
-            if (folderConf.UseDynamicFolderPath)
+            if (settings.UseDynamicFolderPath)
             {
                 DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
                 folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;

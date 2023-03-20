@@ -250,15 +250,6 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private void MarkJobHistoryAsFailed(IntegrationPointDto integrationPoint, Job job)
-        {
-            ITaskFactoryJobHistoryService jobHistoryService =
-                Container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
-                    .CreateJobHistoryService(integrationPoint);
-            jobHistoryService.SetJobIdOnJobHistory(job);
-            jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
-        }
-
         private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
         {
             ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();

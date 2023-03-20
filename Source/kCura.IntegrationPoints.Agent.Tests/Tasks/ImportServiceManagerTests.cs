@@ -59,7 +59,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private TaskParameters _taskParameters;
         private IHelper _helper;
         private IRetryHandler _retryHandler;
-        private IRetryHandlerFactory _retryHandlerFactory;
         private IObjectManager _objectManager;
         private IAutomatedWorkflowsManager _automatedWorkflowsManager;
         private IJobStatusUpdater _jobStatusUpdater;
@@ -98,9 +97,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _retryHandler = Substitute.For<IRetryHandler>();
             _retryHandler.ExecuteWithRetriesAsync(Arg.Any<Func<Task>>(), Arg.Any<string>()).Returns(callInfo => ((Func<Task>)callInfo[0])());
-
-            _retryHandlerFactory = Substitute.For<IRetryHandlerFactory>();
-            _retryHandlerFactory.Create().ReturnsForAnyArgs(_retryHandler);
 
             _objectManager = Substitute.For<IObjectManager>();
             _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_objectManager);
@@ -198,10 +194,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             serializer.Deserialize<TaskParameters>(job.JobDetails)
                 .Returns(_taskParameters);
-            jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
+            jobHistoryService.GetRdoWithoutDocuments(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);
             _instance = new ImportServiceManager(
                 _helper,
-                _retryHandlerFactory,
+                _retryHandler,
                 caseContext,
                 synchronizerFactory,
                 managerFactory,

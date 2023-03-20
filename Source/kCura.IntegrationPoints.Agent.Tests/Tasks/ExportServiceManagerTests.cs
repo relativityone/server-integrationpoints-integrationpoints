@@ -227,7 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
             _serializer.Deserialize<TaskParameters>(job.JobDetails)
                 .Returns(_taskParameters);
-            _jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);
 
             _managerFactory.CreateTagsCreator().Returns(tagsCreator);
             _managerFactory.CreateTaggingSavedSearchManager().Returns(tagSavedSearchManager);
@@ -294,19 +294,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         }
 
         [Test]
-        [TestCase(OverwriteModeNames.AppendOnlyModeName, OverwriteModeEnum.Append)]
-        [TestCase(OverwriteModeNames.AppendOverlayModeName, OverwriteModeEnum.AppendOverlay)]
-        [TestCase(OverwriteModeNames.OverlayOnlyModeName, OverwriteModeEnum.Overlay)]
-        public void Execute_EnsureToAssignCorrectOverwriteModeFromJobHistory(string initialOverwriteMode, OverwriteModeEnum expectedOverwriteSetting)
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, ImportOverwriteModeEnum.AppendOnly)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, ImportOverwriteModeEnum.AppendOverlay)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, ImportOverwriteModeEnum.OverlayOnly)]
+        public void Execute_EnsureToAssignCorrectOverwriteModeFromJobHistory(string initialOverwriteMode, ImportOverwriteModeEnum expectedOverwriteSetting)
         {
             // ARRANGE
-             _jobHistory.Overwrite = initialOverwriteMode;
+            _jobHistory.Overwrite = initialOverwriteMode;
 
             // ACT
             _instance.Execute(_job);
 
             // ASSERT
-            Assert.AreEqual(expectedOverwriteSetting, _importSettings.OverwriteMode);
+            Assert.AreEqual(expectedOverwriteSetting, _importSettings.ImportOverwriteMode);
         }
 
         [Test]
@@ -684,7 +684,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .Build();
             SetUp(job);
             _serializer.Serialize(Arg.Any<TaskParameters>()).Returns(newConfig);
-            _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
 
             // ACT
             _instance.Execute(job);
@@ -704,7 +704,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             // ASSERT
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
 
-            _jobHistoryService.Received(1).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(1).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         [Test]
@@ -725,7 +725,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
 
-            _jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         [Test]
@@ -745,7 +745,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             action.ShouldThrow<IntegrationPointValidationException>();
 
             _agentValidator.Received(1).Validate(_integrationPointDto, _job.SubmittedBy);
-            _jobHistoryService.Received(2).UpdateRdo(Arg.Is<JobHistory>(x => x == _jobHistory));
+            _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x == _jobHistory));
         }
 
         private void AssertFinalizedJob(Job job)
@@ -780,7 +780,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
         private void EnsureToUpdateTotalItemCount()
         {
-            _jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(rdo => rdo.TotalItems == _EXPORT_DOC_COUNT));
         }
 
         private void AssertRetrySavedSearch(bool expectToCreate)

@@ -134,14 +134,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-            jobHistoryService.CreateRdo(
-                _integrationPoint,
-                _taskParams.BatchInstance,
-                JobTypeChoices.JobHistoryRun,
-                Arg.Any<DateTime>())
-                .Returns(_jobHistory);
+            jobHistoryService.GetRdoWithoutDocuments(_taskParams.BatchInstance).Returns(_jobHistory);
 
-            jobHistoryService.GetRdo(Guid.Empty).Returns(_jobHistory);
+            jobHistoryService.GetRdoWithoutDocuments(Guid.Empty).Returns(_jobHistory);
 
             managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);

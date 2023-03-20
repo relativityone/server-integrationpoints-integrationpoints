@@ -293,7 +293,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
 
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
-            JobHistory = JobHistoryService.GetRdo(batchInstance);
+            JobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
             int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
             bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);

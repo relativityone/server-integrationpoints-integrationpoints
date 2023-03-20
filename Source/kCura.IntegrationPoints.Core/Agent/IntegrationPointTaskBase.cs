@@ -193,31 +193,31 @@ namespace kCura.IntegrationPoints.Core.Agent
 
         protected void SetIntegrationPoint(Job job)
         {
-            if (IntegrationPointDto != null)
-            {
-                return;
-            }
-
-            int integrationPointId = job.RelatedObjectArtifactID;
-            IntegrationPointDto = IntegrationPointService.Read(integrationPointId);
             if (IntegrationPointDto == null)
             {
-                LogSettingIntegrationPointError(job);
-                throw new ArgumentException("Failed to retrieve corresponding Integration Point Rdo.");
+                IntegrationPointDto = IntegrationPointService.Read(job.RelatedObjectArtifactID);
+                if (IntegrationPointDto == null)
+                {
+                    _logger.LogWarning("Failed to retrieve corresponding Integration Point for Job {JobId}.", job.JobId);
+                    throw new ArgumentException("Failed to retrieve corresponding Integration Point.");
+                }
             }
         }
 
         protected void SetJobHistory()
         {
-            if (JobHistory != null)
+            if (JobHistory == null)
             {
-                return;
-            }
+                JobHistory = JobHistoryService.GetRdoWithoutDocuments(BatchInstance);
+                if (JobHistory == null)
+                {
+                    _logger.LogWarning("Failed to retrieve corresponding Job History for BatchInstance {JobId}.", BatchInstance);
+                    throw new ArgumentException("Failed to retrieve corresponding Job History.");
+                }
 
-            // TODO: it is possible here that the Job Type is not Run Now - verify expected usage
-            JobHistory = JobHistoryService.CreateRdo(IntegrationPointDto, BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
-            JobHistoryErrorService.JobHistory = JobHistory;
-            JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
+                JobHistoryErrorService.JobHistory = JobHistory;
+                JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
+            }
         }
 
         #region Logging
@@ -235,11 +235,6 @@ namespace kCura.IntegrationPoints.Core.Agent
         private static void LogRetrievingRecipientEmailsError(Exception e, IAPILog logger)
         {
             logger.LogError(e, "Failed to retrieve recipient emails.");
-        }
-
-        private void LogSettingIntegrationPointError(Job job)
-        {
-            _logger.LogError("Failed to retrieve corresponding Integration Point Rdo for Job {JobId}.", job.JobId);
         }
 
         private void LogGetDestinationProviderSuccesfulEnd(Job job, IDataSynchronizer sourceProvider)
