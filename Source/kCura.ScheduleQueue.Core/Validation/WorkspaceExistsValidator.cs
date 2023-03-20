@@ -34,6 +34,7 @@ namespace kCura.ScheduleQueue.Core.Validation
                 : PreValidationResult.InvalidJob(
                     $"Workspace {job.WorkspaceID} does not exist anymore",
                     false,
+                    true,
                     false);
         }
     }
