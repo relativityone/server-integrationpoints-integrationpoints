@@ -10,6 +10,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json.Linq;
@@ -74,13 +75,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Act
             var response = sut.Run(payload);
-            var response2 = sut.Run(payload);
+
+            sut.Run(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
             FakeRelativityInstance.JobsInQueue.Single().RelatedObjectArtifactID.Should()
                 .Be(integrationPoint.ArtifactId);
-            response2.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [IdentifiedTest("2C155261-868D-4723-A7D5-4A9DC17C309A")]
@@ -159,10 +160,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             JobController sut = PrepareSut(HttpMethod.Post, "/retry");
 
             // Act
-            var response = sut.Retry(payload);
+            sut.Retry(payload);
 
             // Assert
-            response.IsSuccessStatusCode.Should().BeFalse();
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
@@ -230,7 +230,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var result = sut.Stop(payload);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [IdentifiedTest("63B88DB8-C459-4608-A92E-B39E15EEA138")]
@@ -264,7 +264,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var result = sut.Stop(payload);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [IdentifiedTest("63B88DB8-C459-4608-A92E-B39E15EEA138")]
@@ -384,10 +384,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             HttpResponseMessage response = sut.Run(payload);
 
             // Assert
-            response.IsSuccessStatusCode.Should().BeFalse();
+            response.IsSuccessStatusCode.Should().BeTrue();
             response.Content.Should()
-                .BeAssignableTo<ObjectContent<ValidationResultDTO>>()
-                .Which.Value.Should().BeAssignableTo<ValidationResultDTO>()
+                .BeAssignableTo<ObjectContent<JobActionResult>>()
+                .Which.Value.Should().BeAssignableTo<JobActionResult>()
                 .Which.IsValid.Should().BeFalse();
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();

@@ -27,16 +27,16 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
                             promise
                                 .then(function (result) {
-                                    if (!result.ok) {
+                                    if (result.ok) {
                                         return result.json();
                                     }
                                 })
                                 .then(function (result) {
-                                    if (result) {
+                                    if (!result.isValid) {
                                         let header = "Failed to submit integration point job.";
                                         let messages = '[';
                                         result.errors.forEach(x => {
-                                            messages += '"' + x.message + '",';
+                                            messages += '"' + x + '",';
                                         })
 
                                         messages = messages.slice(0, -1) + ']';
@@ -112,7 +112,12 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
                 acceptAction: function () {
                     return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Stop")
                         .then(function (result) {
-                            if (!result.ok) {
+                            if (result.ok) {
+                                return result.json();
+                            }
+                        })
+                        .then(function (result) {
+                            if (!result.isValid) {
                                 console.log(result);
                                 return ctx.setErrorSummary(["Failed to stop the job. Check Errors tab for details."]);
                             }
@@ -182,16 +187,18 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
 
                 let action = 'Retry?switchToAppendOverlayMode=' + switchToAppendOverlayMode;
                 let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action);
-                promise.then(function (result) {
-                    console.log(result.ok);
-                    if (!result.ok) {
-                        let res = result.json();
-
-                        res.then(res => {
-                            let header = "Failed to submit retry job: ";
-                            let messages = '["';
-                            res.errors.forEach(x => {
-                                messages += x.message + '",';
+                promise
+                    .then(function (result) {
+                        if (result.ok) {
+                            return result.json();
+                        }
+                    })
+                    .then(function (result) {
+                        if (!result.isValid) {
+                            let header = "Failed to submit integration point job.";
+                            let messages = '[';
+                            result.errors.forEach(x => {
+                                messages += '"' + x + '",';
                             })
 
                             messages = messages.slice(0, -1) + ']';
@@ -200,14 +207,13 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
 
                             // @ts-ignore
                             model.close("Close model");
-                        })
-                    } else {
-                        createMessageContainer('["Retry job started!"]', "success", lqMessageContainer, "");
+                        } else {
+                            createMessageContainer('["Retry job started!"]', "success", lqMessageContainer, "");
 
-                        // @ts-ignore
-                        model.accept("Accept run");
-                    }
-                })
+                            // @ts-ignore
+                            model.accept("Accept run");
+                        }
+                    })
                     .catch(err => {
                         console.log(err);
                         // @ts-ignore
