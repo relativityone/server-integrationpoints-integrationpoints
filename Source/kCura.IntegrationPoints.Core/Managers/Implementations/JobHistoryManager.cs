@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 "Retrieved {resultCount} Stoppable Job Histories for Integration Point {integrationPointId} in {queryTime}",
                 stoppableJobHistories.Count,
                 integrationPointArtifactId,
-                sw.Elapsed);
+                sw.ElapsedMilliseconds);
 
             IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
                 .Where(x => x.JobStatus != null)
