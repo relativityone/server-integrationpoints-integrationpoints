@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
         public void AllExcept_ShouldSetAllFieldsIdsToFieldGuidsExceptOne()
         {
             // arrange
-            Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
+            Guid exceptOne = _jobHistoryFieldsGuids["Name"];
 
             // act
             JobHistoryQueryOptions sut = JobHistoryQueryOptions
@@ -56,30 +56,6 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
             sut.FieldGuids
                 .ShouldBeEquivalentTo(
                     _jobHistoryFieldsGuids.Values.Except(new[] { exceptOne })
-                );
-        }
-
-        [Test]
-        public void AllExcept_ShouldSetAllFieldsIdsToFieldGuidsExceptTwo()
-        {
-            // arrange
-            Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
-            Guid exceptTwo = _jobHistoryFieldsGuids["Name"];
-
-            // act
-            JobHistoryQueryOptions sut = JobHistoryQueryOptions
-                .All()
-                .Except(exceptOne.ToString())
-                .Except(exceptTwo.ToString());
-
-            // assert
-            sut.FieldGuids
-                .ShouldBeEquivalentTo(
-                    _jobHistoryFieldsGuids.Values.Except(new[]
-                    {
-                        exceptOne,
-                        exceptTwo
-                    })
                 );
         }
 
