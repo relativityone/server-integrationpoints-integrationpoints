@@ -364,7 +364,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 Exceptions = new List<Exception> { validationResult.Exception }
             };
 
-            job.MarkJobAsFailed(validationResult.Exception, true, validationResult.MaximumConsecutiveFailuresReached);
+            job.MarkJobAsFailed(validationResult.Exception, validationResult.ShouldBreakSchedule, validationResult.MaximumConsecutiveFailuresReached);
             FinalizeJobExecution(job, failedJobResult);
         }
 

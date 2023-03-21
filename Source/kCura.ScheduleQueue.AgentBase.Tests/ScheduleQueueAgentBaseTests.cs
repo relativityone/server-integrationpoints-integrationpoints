@@ -133,7 +133,27 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             // Assert
             sut.ProcessedJobs.Should().BeEmpty();
             expectedJob.JobFailed.Should().NotBeNull();
-            expectedJob.JobFailed.ShouldBreakSchedule.Should().BeTrue();
+        }
+
+        [Test]
+        public void Execute_ShouldNotBreakSchedule_WhenJobValidationThrowsException()
+        {
+            // Arrange
+            Job expectedJob = new JobBuilder().WithJobId(1).Build();
+
+            TestAgent sut = GetSut();
+
+            SetupJobQueue(expectedJob);
+
+            _queueJobValidatorFake.Setup(x => x.ValidateAsync(expectedJob))
+                .Throws<Exception>();
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.ProcessedJobs.Should().BeEmpty();
+            expectedJob.JobFailed.ShouldBreakSchedule.Should().BeFalse();
         }
 
         [Test]
