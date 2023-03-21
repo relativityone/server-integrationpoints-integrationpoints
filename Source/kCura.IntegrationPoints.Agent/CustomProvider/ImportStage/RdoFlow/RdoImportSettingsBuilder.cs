@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Rdos;
@@ -13,23 +11,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     /// <inheritdoc />
     internal class RdoImportSettingsBuilder : IRdoImportSettingsBuilder
     {
-        private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
-        public RdoImportSettingsBuilder(IInstanceSettings instanceSettings, IAPILog logger)
+        public RdoImportSettingsBuilder(IAPILog logger)
         {
-            _instanceSettings = instanceSettings;
             _logger = logger;
         }
 
         /// <inheritdoc />
-        public async Task<RdoImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public RdoImportConfiguration Build(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
-            AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
-
             IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
+
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
@@ -41,20 +36,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 fieldMappings);
 
             ImportRdoSettings importSettings = ConfigureArtifactType(withRdo, destinationConfiguration);
+            _logger.LogInformation("Job Import Settings: {@settings}", importSettings);
+
+            AdvancedImportSettings advancedSettings = CreateAdvancedImportSettings();
+            _logger.LogInformation("Job Advanced Import Settings: {@advancedSettings}", advancedSettings);
 
             return new RdoImportConfiguration(importSettings, advancedSettings);
         }
 
-        private async Task<AdvancedImportSettings> CreateAdvancedImportSettingsAsync()
+        private AdvancedImportSettings CreateAdvancedImportSettings()
         {
             var advancedSettings = new AdvancedImportSettings()
             {
-                Folder = new AdvancedFolderSettings(),
-                Other = new AdvancedOtherSettings()
+                Other = new AdvancedOtherSettings
+                {
+                    AuditLevel = AuditLevel.FullAudit
+                }
             };
-
-            advancedSettings.Other.AuditLevel = AuditLevel.FullAudit;
-            advancedSettings.Other.BatchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
 
             return advancedSettings;
         }
@@ -76,6 +74,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     return overlayModeSettings.WithAppendOverlayMode(
                         x => x.WithKeyField(identifierFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
+
                 case ImportOverwriteModeEnum.OverlayOnly:
                     return overlayModeSettings.WithOverlayMode(
                         x => x.WithKeyField(identifierFieldName)
@@ -105,15 +104,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IWithRdo withRdo,
             ImportSettings importSettings)
         {
-            return withRdo.WithRdo(f => f
-                .WithArtifactTypeId(importSettings.ArtifactTypeId)
-                .WithoutParentColumnIndex());
-        }
-
-        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
-        {
-            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return indexedField?.ColumnIndex ?? -1;
+            return withRdo
+                .WithRdo(f => f
+                    .WithArtifactTypeId(importSettings.ArtifactTypeId)
+                    .WithoutParentColumnIndex());
         }
 
         private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)

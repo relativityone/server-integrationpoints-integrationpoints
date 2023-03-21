@@ -204,12 +204,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManager
                 .Received(1)
                 .Update(
-                    Arg.Is<int>(actualArtifactId => actualArtifactId == artifactId),
-                    Arg.Is<List<FieldRefValuePair>>(actualFieldRefValuePairs => actualFieldRefValuePairs.Count == 2
-                        && actualFieldRefValuePairs.Count(x => x.Field.Guid.ToString() == JobHistoryFieldGuids.Name
-                                                               && (string)x.Value == name) == 1
-                        && actualFieldRefValuePairs.Count(x => x.Field.Guid.ToString() == JobHistoryFieldGuids.JobID
-                                                               && (string)x.Value == jobID) == 1));
+                    Arg.Is<Data.JobHistory>(x => x.ArtifactId == artifactId),
+                    Arg.Any<ExecutionIdentity>());
         }
 
         [Test]

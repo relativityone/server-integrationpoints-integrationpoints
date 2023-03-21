@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Import;
@@ -36,6 +35,7 @@ using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public const string RAW_STATE_COMPLETE = "complete";
         public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
         public const string RAW_TRIGGER_INPUT_ID = "type";
-        public const string RAW_TRIGGER_INPUT_VALUE = "rip";
+        public const string RAW_TRIGGER_INPUT_VALUE = Constants.IntegrationPoints.APPLICATION_NAME;
 
         public ImportServiceManager(
             IHelper helper,
@@ -272,7 +272,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workspaceId, triggerName, state);
+                Logger.LogInformation("For workspace artifact ID : {AutomatedWorkflow.DestinationWorkspaceArtifactId} {AutomatedWorkflow.TriggerName} trigger {AutomatedWorkflow.TriggerValue} called with status {AutomatedWorkflow.Status}.", workspaceId, triggerName, RAW_TRIGGER_INPUT_VALUE, state);
 
                 if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId).ConfigureAwait(false))
                 {

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         {
             _logger.LogInformation("ImportApiRunner for rdo flow started. ImportJobId: {jobId}", importJobContext.ImportJobId);
 
-            RdoImportConfiguration configuration = await _importSettingsBuilder.BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
+            RdoImportConfiguration configuration = _importSettingsBuilder.Build(destinationConfiguration, fieldMappings);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 

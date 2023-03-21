@@ -596,20 +596,6 @@ namespace kCura.IntegrationPoints.Data
     [DynamicObject(ObjectTypes.JobHistory, ObjectTypes.Workspace, "", ObjectTypeGuids.JobHistory)]
     public partial class JobHistory : BaseRdo
     {
-        [DynamicField(JobHistoryFields.Documents, JobHistoryFieldGuids.Documents, FieldTypes.MultipleObject)]
-        public int[] Documents
-        {
-            get
-            {
-                return GetField<int[]>(new System.Guid(JobHistoryFieldGuids.Documents));
-            }
-
-            set
-            {
-                SetField<int[]>(new System.Guid(JobHistoryFieldGuids.Documents), value);
-            }
-        }
-
         [DynamicField(JobHistoryFields.IntegrationPoint, JobHistoryFieldGuids.IntegrationPoint, FieldTypes.MultipleObject)]
         public int[] IntegrationPoint
         {
