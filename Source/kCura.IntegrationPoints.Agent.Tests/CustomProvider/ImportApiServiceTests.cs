@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [Category("Unit")]
     internal class ImportApiServiceTests
     {
-        private const string RIP_APPLICATION_NAME = "Integration Points";
+        private const string RIP_APPLICATION_NAME = "rip";
         private IFixture _fxt;
         private ImportJobContext _importJobContext;
         private Response _successResponse;
