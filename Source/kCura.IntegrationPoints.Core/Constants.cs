@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core
     {
         public static class IntegrationPoints
         {
-            public const string APPLICATION_NAME = "Integration Points";
+            public const string APPLICATION_NAME = "rip";
             public const string APPLICATION_GUID_STRING = Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
             public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
             public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
