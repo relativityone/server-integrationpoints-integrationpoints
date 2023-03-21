@@ -34,12 +34,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             base.SetField(guid, value);
         }
 
-        public int[] Documents
-        {
-            get => GetField(JobHistoryFieldGuids.DocumentsGuid) as int[];
-            set => SetField(JobHistoryFieldGuids.DocumentsGuid, value);
-        }
-
         public int[] IntegrationPoint
         {
             get => GetField(JobHistoryFieldGuids.IntegrationPointGuid) as int[];
@@ -148,18 +142,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Name = Name,
                 FieldValues = new List<FieldValuePair>()
                 {
-                    new FieldValuePair()
-                    {
-                        Field = new Field()
-                        {
-                            Name = JobHistoryFields.Documents,
-                            Guids = new List<Guid>()
-                            {
-                                JobHistoryFieldGuids.DocumentsGuid
-                            }
-                        },
-                        Value = Documents
-                    },
                     new FieldValuePair()
                     {
                         Field = new Field()

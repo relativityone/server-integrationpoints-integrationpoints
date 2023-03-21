@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -38,8 +39,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId)
         {
+            IStopwatch sw = new StopwatchWrapper();
+            sw.Start();
             IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             IList<JobHistory> stoppableJobHistories = jobHistoryRepository.GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
+
+            sw.Stop();
+            _logger.LogInformation(
+                "Retrieved {resultCount} Stoppable Job Histories for Integration Point {integrationPointId} in {queryTime}",
+                stoppableJobHistories.Count,
+                integrationPointArtifactId,
+                sw.ElapsedMilliseconds);
 
             IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
                 .Where(x => x.JobStatus != null)

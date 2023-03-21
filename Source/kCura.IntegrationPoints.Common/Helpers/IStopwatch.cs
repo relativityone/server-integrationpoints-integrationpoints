@@ -14,5 +14,9 @@ namespace kCura.IntegrationPoints.Common.Helpers
         /// <summary>Gets the total elapsed time measured by the current instance.</summary>
         /// <returns>A read-only <see cref="System.TimeSpan" /> representing the total elapsed time measured by the current instance.</returns>
         TimeSpan Elapsed { get; }
+
+        /// <summary>Gets the total elapsed milliseconds measured by the current instance.</summary>
+        /// <returns>A read-only <see cref="System.long" /> representing the total elapsed milliseconds measured by the current instance.</returns>
+        long ElapsedMilliseconds { get; }
     }
 }
