@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
     {
         private readonly IDictionary<string, Guid> _jobHistoryFieldsGuids = new Dictionary<string, Guid>
         {
-            ["Documents"] = new Guid("5d99f717-3b5e-4773-9f51-9ca5d4c1a0fc"),
             ["IntegrationPoint"] = new Guid("d3e791d3-2e21-45f4-b403-e7196bd25eea"),
             ["JobStatus"] = new Guid("5c28ce93-c62f-4d25-98c9-9a330a6feb52"),
             ["ItemsTransferred"] = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c"),
@@ -95,22 +94,6 @@ namespace kCura.IntegrationPoints.Data.Tests.QueryOptions
 
             // assert
             sut.Should().BeTrue();
-        }
-
-        [Test]
-        public void ContainsAll_ShouldReturnFalseIfNotAllFieldsGuidsAreSet()
-        {
-            // arrange
-            Guid exceptOne = _jobHistoryFieldsGuids["Documents"];
-            JobHistoryQueryOptions options = JobHistoryQueryOptions
-                .All()
-                .Except(exceptOne.ToString());
-
-            // act
-            bool sut = options.ContainsAll();
-
-            // assert
-            sut.Should().BeFalse();
         }
     }
 }
