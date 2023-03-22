@@ -6,6 +6,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.Installer;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
@@ -192,6 +193,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         {
             Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
             Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
         }
 
         private void RegisterScheduleAgentBase()

@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
                         Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
                         .Returns(destinationRdoPermissions);
 
+            _objectTypeRepository.GetObjectType(_ARTIFACT_TYPE_ID).Returns(new Domain.Models.ObjectTypeDTO { Name = "Document" });
+
             var importPermissionValidator = new ImportPermissionValidator(_repositoryFactory, _serializer, ServiceContextHelper);
 
             // act

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Import.V1;
-using Relativity.Import.V1.Models.Settings;
-using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -39,8 +33,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IRdoImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
-                .ReturnsAsync(_importConfiguration);
+                .Setup(x => x.Build(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Returns(_importConfiguration);
 
             _sut = new RdoImportApiRunner(
                 _settingsBuilderMock.Object,
@@ -59,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             await _sut.RunImportJobAsync(_importJobContext, configuration, fieldMappings);
 
             // Assert
-            _settingsBuilderMock.Verify(x => x.BuildAsync(configuration, fieldMappings), Times.Once);
+            _settingsBuilderMock.Verify(x => x.Build(configuration, fieldMappings), Times.Once);
         }
 
         [Test]

@@ -60,12 +60,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         read = reader.Read();
                     }
 
-                    _logger.LogInformation("Finished writing ID file for batch index {batch}, file path: {path}", batchIndex, idFilePath);
-                    batches.Add(new CustomProviderBatch()
+                    CustomProviderBatch batch = new CustomProviderBatch()
                     {
+                        BatchGuid = Guid.NewGuid(),
                         BatchID = batchIndex,
                         IDsFilePath = idFilePath
-                    });
+                    };
+
+                    _logger.LogInformation("Finished writing ID file for batch index {batch}, file path: {path}, batch GUID: {guid}", batchIndex, idFilePath, batch.BatchGuid);
+                    batches.Add(batch);
 
                     batchIndex++;
                     numberOfRecordsInBatch = 0;
@@ -77,16 +80,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private async Task<StorageStream> GetFileStreamAsync(string directoryPath, int batchIndex)
         {
+            string batchIDsFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.id";
+            string batchIDsFilePath = Path.Combine(directoryPath, batchIDsFileName);
+
             try
             {
-                string batchIDsFileName = $"{batchIndex.ToString().PadLeft(7, '0')}.id";
-                string batchIDsFilePath = Path.Combine(directoryPath, batchIDsFileName);
                 StorageStream fileStream = await _storageService.CreateFileOrTruncateExistingAsync(batchIDsFilePath).ConfigureAwait(false);
                 return fileStream;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to open file stream");
+                _logger.LogError(ex, "Failed to open file stream: {path}", batchIDsFilePath);
                 throw;
             }
         }

@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core
     {
         public static class IntegrationPoints
         {
-            public const string APPLICATION_NAME = "Integration Points";
+            public const string APPLICATION_NAME = "rip";
             public const string APPLICATION_GUID_STRING = Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
             public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
             public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
@@ -67,7 +67,6 @@ namespace kCura.IntegrationPoints.Core
                 public const string INTEGRATION_POINT_INSTANCE_NO_EDIT = "User does not have permission to edit this Integration Point.";
                 public const string INTEGRATION_POINT_TYPE_NO_CREATE = "User does not have permission to create Integration Points.";
                 public const string JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs.";
-                public const string MISSING_DESTINATION_RDO_PERMISSIONS = "User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
                 public const string DESTINATION_WORKSPACE_NO_IMPORT = "User does not have permission to import in the destination workspace.";
                 public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
                 public const string MISSING_SOURCE_RDO_PERMISSIONS = "User does not have all required source RDO permissions. Please make sure the user has view permissions for the source RDO.";
@@ -84,6 +83,18 @@ namespace kCura.IntegrationPoints.Core
                 public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
                 public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
                 public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
+                public const string INTEGRATION_POINT_RUN_RDO_PERMISSION = "User does not have Integration Point View/Edit permission.";
+                public const string JOB_HISTORY_RUN_RDO_PERMISSION = "User does not have Job History View/Edit/Create permission.";
+                public const string JOB_HISTORY_ERROR_RUN_RDO_PERMISSION = "User does not have Job History Error View/Edit/Create permission.";
+                public const string INTEGRATION_POINT_TYPE_RUN_RDO_PERMISSION = "User does not have Integration Point Type View permission.";
+                public const string SOURCE_PROVIDER_RUN_RDO_PERMISSION = "User does not have Source Provider View permission.";
+                public const string DESTINATION_PROVIDER_RUN_RDO_PERMISSION = "User does not have Destination Provider View permission.";
+
+                public const string DESTINATION_DOCUMENT_NO_CREATE_PERMISSION = "User does not have Document Create permission in Destination Workspace.";
+                public const string DESTINATION_DOCUMENT_NO_DELETE_PERMISSION = "User does not have Document Delete permission in Destination Workspace.";
+                public const string DESTINATION_FOLDER_NO_CREATE_PERMISSION = "User does not have Folder Create permission in Destination Workspace.";
+
+                public static string MissingDestinationRdoPermission(string typeName) => $"User does not have {typeName} View/Edit/Create permission in Destination Workspace";
             }
 
             public static class Telemetry

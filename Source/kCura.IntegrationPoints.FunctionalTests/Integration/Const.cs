@@ -94,7 +94,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             {
                 public static readonly List<Guid> Guids = new List<Guid>
                 {
-                    JobHistoryFieldGuids.DocumentsGuid,
                     JobHistoryFieldGuids.IntegrationPointGuid,
                     JobHistoryFieldGuids.JobStatusGuid,
                     JobHistoryFieldGuids.ItemsTransferredGuid,

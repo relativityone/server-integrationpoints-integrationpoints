@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent
             }
             finally
             {
-                Container.Dispose();
+                Container?.Dispose();
                 Container = null;
             }
         }
@@ -248,15 +248,6 @@ namespace kCura.IntegrationPoints.Agent
                 Logger.LogWarning(ex, "Error occurred while retrieving batch instance for job: {jobId}", job.JobId);
             }
             return result;
-        }
-
-        private void MarkJobHistoryAsFailed(IntegrationPointDto integrationPoint, Job job)
-        {
-            ITaskFactoryJobHistoryService jobHistoryService =
-                Container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
-                    .CreateJobHistoryService(integrationPoint);
-            jobHistoryService.SetJobIdOnJobHistory(job);
-            jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
         }
 
         private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)

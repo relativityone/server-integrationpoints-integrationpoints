@@ -27,13 +27,13 @@ using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             };
             jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
                 .Returns(jobHistoryDto);
-            jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
+            jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
             // Logging
             IAPILog logger = Substitute.For<IAPILog>();
@@ -154,13 +154,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             _serializer = _windsorContainer.Resolve<ISerializer>();
             IDataReaderFactory dataReaderFactory = _windsorContainer.Resolve<IDataReaderFactory>();
 
-            IRetryHandlerFactory retryHandlerFactory = new RetryHandlerFactory(helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>());
+            IRetryHandler retryHandler = new RetryHandler(helper.GetLoggerFactory().GetLogger().ForContext<RetryHandlerFactory>());
 
             IAutomatedWorkflowsManager automatedWorkflowsManager = new AutomatedWorkflowsManager(helper);
 
             _instanceUnderTest = new ImportServiceManager(
                 helper,
-                retryHandlerFactory,
+                retryHandler,
                 caseServiceContext,
                 synchronizerFactory,
                 managerFactory,

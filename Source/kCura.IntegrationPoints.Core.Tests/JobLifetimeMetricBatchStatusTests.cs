@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private void SetupJobHistory(DateTime? endTimeUtc = null, int totalItems = 0,
             int itemsTransferred = 0, int itemsWithErrors = 0)
         {
-            _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
+            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(It.IsAny<Guid>()))
                 .Returns(new JobHistory
                 {
                     StartTimeUTC = _JOB_HISTORY_START_TIME_UTC,

@@ -26,5 +26,8 @@ namespace kCura.IntegrationPoints.Common.Helpers
 
         /// <inheritdoc />
         public TimeSpan Elapsed => _stopwatch.Elapsed;
+
+        /// <inheritdoc />
+        public long ElapsedMilliseconds => _stopwatch.ElapsedMilliseconds;
     }
 }

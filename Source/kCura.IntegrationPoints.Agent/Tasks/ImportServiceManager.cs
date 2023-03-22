@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Import;
@@ -25,7 +24,6 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -37,12 +35,12 @@ using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
     public class ImportServiceManager : ServiceManagerBase
     {
-        private const int _MAX_NUMBER_OF_RAW_RETRIES = 4;
         private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000014;
         private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
         private readonly IHelper _helper;
@@ -57,11 +55,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public const string RAW_STATE_COMPLETE = "complete";
         public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
         public const string RAW_TRIGGER_INPUT_ID = "type";
-        public const string RAW_TRIGGER_INPUT_VALUE = "rip";
+        public const string RAW_TRIGGER_INPUT_VALUE = Constants.IntegrationPoints.APPLICATION_NAME;
 
         public ImportServiceManager(
             IHelper helper,
-            IRetryHandlerFactory retryHandlerFactory,
+            IRetryHandler retryHandler,
             ICaseServiceContext caseServiceContext,
             ISynchronizerFactory synchronizerFactory,
             IManagerFactory managerFactory,
@@ -97,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 diagnosticLog)
         {
             _helper = helper;
-            _automatedWorkflowsRetryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RAW_RETRIES);
+            _automatedWorkflowsRetryHandler = retryHandler;
             _dataReaderFactory = dataReaderFactory;
             _importFileLocationService = importFileLocationService;
             _jobStatusUpdater = jobStatusUpdater;
@@ -197,7 +195,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void MarkJobAsDrainStoppedIfNeeded(Job job)
         {
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
-            JobHistory = JobHistoryService.GetRdo(batchInstance);
+            JobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
 
             DiagnosticLog.LogDiagnostic("Processed ItemsCount: {itemsCount}", processedItemsCount);
@@ -257,7 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = JobHistoryService.GetRdo(taskParameters.BatchInstance);
+            JobHistory jobHistory = JobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
             ChoiceRef status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
             if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))
@@ -274,7 +272,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                Logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", workspaceId, triggerName, state);
+                Logger.LogInformation("For workspace artifact ID : {AutomatedWorkflow.DestinationWorkspaceArtifactId} {AutomatedWorkflow.TriggerName} trigger {AutomatedWorkflow.TriggerValue} called with status {AutomatedWorkflow.Status}.", workspaceId, triggerName, RAW_TRIGGER_INPUT_VALUE, state);
 
                 if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId).ConfigureAwait(false))
                 {
@@ -377,7 +375,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 lock (_syncRoot)
                 {
-                    JobHistory = JobHistoryService.GetRdo(Identifier);
+                    JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
                     JobHistory.TotalItems = recordCount;
                     UpdateJobStatus(JobHistory);
 

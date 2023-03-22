@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Extensions;
 using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
 using Relativity.Import.V1;
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         correlationID: importJobContext.RipJobId.ToString())
                     .ConfigureAwait(false);
 
-                ValidateOrThrow(response);
+                response.Validate();
             }
         }
 
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         importJobContext.ImportJobId)
                     .ConfigureAwait(false);
 
-                ValidateOrThrow(response);
+                response.Validate();
             }
         }
 
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         settings)
                     .ConfigureAwait(false);
 
-                ValidateOrThrow(response);
+                response.Validate();
             }
         }
 
@@ -109,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         settings)
                     .ConfigureAwait(false);
 
-                ValidateOrThrow(response);
+                response.Validate();
             }
         }
 
@@ -128,15 +129,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         settings)
                     .ConfigureAwait(false);
 
-                ValidateOrThrow(response);
-            }
-        }
-
-        private static void ValidateOrThrow(Response response)
-        {
-            if (response?.IsSuccess != true)
-            {
-                throw new ImportApiResponseException(response);
+                response.Validate();
             }
         }
     }

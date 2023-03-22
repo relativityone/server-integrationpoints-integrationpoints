@@ -220,7 +220,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
             Job job = PrepareJob(StopState.Stopping);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
             sut.Execute();
 
             // act & assert
@@ -237,7 +237,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
             Job job = PrepareJob(StopState.Stopping);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
             sut.Execute();
 
             // act & assert
@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             JobStopManager sut = PrepareSut(false);
             Job job = PrepareJob(StopState.None);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
             sut.Execute();
 
             // act & assert
@@ -267,7 +267,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             sut.StopRequestedEvent += (sender, args) => eventTriggered = true;
             Job job = PrepareJob(StopState.None);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdo(_jobHistoryInstanceGuid)).Returns(_jobHistory);
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
             sut.Execute();
 
             // act & assert

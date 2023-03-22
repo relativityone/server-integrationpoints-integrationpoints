@@ -2,7 +2,7 @@
 import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
-    return consoleApi.generate.button({
+    let runButton = consoleApi.generate.button({        
         innerText: "Run",
         disabled: !enabled,
         onclick: function (e) {
@@ -25,22 +25,32 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                             model.actions = [];
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
-                            promise.then(function (result) {
-                                if (!result.ok) {
+                            promise
+                                .then(function (result) {
+                                    return result.json();
+                                })
+                                .then(function (result) {
+                                    if (!result.isValid) {
+                                        let header = "Failed to submit integration point job.";
+                                        let messages = '[';
+                                        result.errors.forEach(x => {
+                                            messages += '"' + x + '",';
+                                        })
 
-                                    var message = '["Failed to submit integration point job."]';
-                                    createMessageContainer(message, "error", lqMessageContainer, "");
+                                        messages = messages.slice(0, -1) + ']';
 
-                                    // @ts-ignore
-                                    model.close("Close model");                                   
+                                        createMessageContainer(messages, "error", lqMessageContainer, header);
 
-                                } else {
-                                    createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
+                                        // @ts-ignore
+                                        model.close("Close model");
 
-                                    // @ts-ignore
-                                    model.accept("Accept run");
-                                }
-                            })
+                                    } else {
+                                        createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
+
+                                        // @ts-ignore
+                                        model.accept("Accept run");
+                                    }
+                                })
                                 .catch(err => {
                                     console.log(err);
                                     // @ts-ignore
@@ -61,15 +71,16 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
             return convenienceApi.modalService.openCustomModal(model);
         }
     });
+    runButton.setAttribute("data-heap-id", "integrationPoints-run-button")
+    return runButton;
 }
 
 function createMessageContainer(message: string, theme: string, lqMessageContainer: Element, title: string) {
     let messageContainer = document.createElement("rwc-message-container");
     messageContainer.setAttribute("class", "RIPCustomMessageBar");
     messageContainer.setAttribute("theme", theme);
-    if (theme === "error") {
-        messageContainer.setAttribute("message-collection-title-prefix", title);
-    }
+
+    messageContainer.title = title;
     messageContainer.setAttribute("messages", message);
     lqMessageContainer.appendChild(messageContainer);
 }
@@ -87,7 +98,7 @@ export function removeMessageContainers() {
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.button({
+    let stopButton = consoleApi.generate.button({
         innerText: "Stop",
         disabled: !enabled,
         onclick: function () {
@@ -99,7 +110,10 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
                 acceptAction: function () {
                     return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Stop")
                         .then(function (result) {
-                            if (!result.ok) {
+                            return result.json();
+                        })
+                        .then(function (result) {
+                            if (!result.isValid) {
                                 console.log(result);
                                 return ctx.setErrorSummary(["Failed to stop the job. Check Errors tab for details."]);
                             }
@@ -108,6 +122,8 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
             })
         }
     });
+    stopButton.setAttribute("data-heap-id", "integrationPoints-stop-button")
+    return stopButton;
 }
 
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
@@ -118,7 +134,7 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
         operationType = "Saved Search";
     }
 
-    return consoleApi.generate.button({
+    let calculateStatsButton = consoleApi.generate.button({
         innerText: "Calculate statistics",
         disabled: !enabled,
         onclick: function () {
@@ -134,11 +150,14 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
             });
         }
     });
+
+    calculateStatsButton.setAttribute("data-heap-id", "integrationPoints-calculate-stats-button")
+    return calculateStatsButton;
 }
 
 export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string, lqMessageContainer: Element) {
 
-    return consoleApi.generate.button({
+    let retryButton = consoleApi.generate.button({
         innerText: "Retry Errors",
         disabled: !enabled,
         onclick: function () {
@@ -164,16 +183,16 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
 
                 let action = 'Retry?switchToAppendOverlayMode=' + switchToAppendOverlayMode;
                 let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action);
-                promise.then(function (result) {
-                    console.log(result.ok);
-                    if (!result.ok) {
-                        let res = result.json();
-
-                        res.then(res => {
-                            let header = "Failed to submit retry job: ";
-                            let messages = '["';
-                            res.errors.forEach(x => {
-                                messages += x.message + '",';
+                promise
+                    .then(function (result) {
+                        return result.json();
+                    })
+                    .then(function (result) {
+                        if (!result.isValid) {
+                            let header = "Failed to submit integration point job.";
+                            let messages = '[';
+                            result.errors.forEach(x => {
+                                messages += '"' + x + '",';
                             })
 
                             messages = messages.slice(0, -1) + ']';
@@ -182,14 +201,13 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
 
                             // @ts-ignore
                             model.close("Close model");
-                        })
-                    } else {
-                        createMessageContainer('["Retry job started!"]', "success", lqMessageContainer, "");
+                        } else {
+                            createMessageContainer('["Retry job started!"]', "success", lqMessageContainer, "");
 
-                        // @ts-ignore
-                        model.accept("Accept run");
-                    }
-                })
+                            // @ts-ignore
+                            model.accept("Accept run");
+                        }
+                    })
                     .catch(err => {
                         console.log(err);
                         // @ts-ignore
@@ -257,10 +275,13 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
             }
         }
     });
+
+    retryButton.setAttribute("data-heap-id", "integrationPoints-retry-button")
+    return retryButton;
 }
 
 export function createViewErrorsLink(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.buttonStyledAsLink({
+    let viewErrorsLink = consoleApi.generate.buttonStyledAsLink({
         innerText: "View Errors",
         disabled: !enabled,
         onclick: function () {
@@ -281,10 +302,13 @@ export function createViewErrorsLink(consoleApi, convenienceApi: IConvenienceApi
             })
         }
     });
+
+    viewErrorsLink.setAttribute("data-heap-id", "integrationPoints-view-errors-link")
+    return viewErrorsLink;
 }
 
 export function createSaveAsProfileButton(consoleApi, convenienceApi: IConvenienceApi, ctx, workspaceId: number, integrationPointId: number, integrationPoint: object) {
-    return consoleApi.generate.button({
+    let saveAsProfileButton = consoleApi.generate.button({
         innerText: "Save as Profile",
         onclick: function (e) {
             var contentContainer = document.createElement("div");
@@ -324,10 +348,13 @@ export function createSaveAsProfileButton(consoleApi, convenienceApi: IConvenien
             return convenienceApi.modalService.openCustomModal(model);
         }
     });
+
+    saveAsProfileButton.setAttribute("data-heap-id", "integrationPoints-save-as-profile-button")
+    return saveAsProfileButton;
 }
 
 export function createDownloadErrorFileLink(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
-    return consoleApi.generate.buttonStyledAsLink({
+    let downloadErrorFileLink = consoleApi.generate.buttonStyledAsLink({
         innerText: "Download Error File",
         disabled: !enabled,
         onclick: function (e) {
@@ -345,4 +372,7 @@ export function createDownloadErrorFileLink(consoleApi, convenienceApi: IConveni
                 });
         }
     });
+
+    downloadErrorFileLink.setAttribute("data-heap-id", "integrationPoints-download-error-file-link")
+    return downloadErrorFileLink;
 }

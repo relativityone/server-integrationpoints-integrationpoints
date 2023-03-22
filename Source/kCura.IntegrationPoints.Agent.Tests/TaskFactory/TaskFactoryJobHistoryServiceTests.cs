@@ -5,8 +5,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -63,13 +61,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 JobID = null
             };
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             // Act
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(h => h.JobID == jobId.ToString()));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(h => h.JobID == jobId.ToString()));
         }
 
         [Test]
@@ -90,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdo(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [Test]
@@ -105,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdo(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [Test]
@@ -121,7 +119,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.SetJobIdOnJobHistory(job);
 
             // Assert
-            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdo(Arg.Any<JobHistory>());
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdoWithoutDocuments(Arg.Any<JobHistory>());
         }
 
         [TestCase(new[] { 123 }, 123, new int[] { })]
@@ -140,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
@@ -160,13 +158,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             Job job = JobExtensions.CreateJob();
             var jobHistory = new JobHistory();
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
 
             // Assert
-            _jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(x => x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
+            _jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
         }
 
         [Test]
@@ -183,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryArtifactId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
@@ -204,7 +202,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryArtifactId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             // Act
             _sut.UpdateJobHistoryOnFailure(job, null);
@@ -223,12 +221,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             SetUp(ip);
 
             Job job = JobExtensions.CreateJob();
-            int jobHistoryArtifactId = 654;
             var jobHistory = new JobHistory
             {
-                ArtifactId = jobHistoryArtifactId
+                ArtifactId = 654,
             };
-            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
             string expectedExceptionMessage = "Expected exception message";
             var exception = new Exception(expectedExceptionMessage);
@@ -238,7 +235,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             // Assert
             Assert.AreEqual(integrationPointArtifactId, _jobHistoryErrorService.IntegrationPointDto.ArtifactId);
-            Assert.AreEqual(jobHistoryArtifactId, _jobHistoryErrorService.JobHistory.ArtifactId);
+            Assert.AreEqual(jobHistory.ArtifactId, _jobHistoryErrorService.JobHistory.ArtifactId);
             _jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), exception);
         }
 
