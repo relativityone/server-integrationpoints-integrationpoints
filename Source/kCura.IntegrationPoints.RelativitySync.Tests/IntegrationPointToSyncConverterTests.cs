@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -20,7 +21,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
-using Relativity.Toggles;
 using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ISerializer> _serializerFake;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
-        private Mock<IToggleProvider> _toggleProviderFake;
+        private Mock<IRipToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
         private ImportSettings _destinationConfiguration;
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateNativeDestinationConfiguration();
             _sourceConfiguration = CreateSourceConfiguration();
 
-            _toggleProviderFake = new Mock<IToggleProvider>();
+            _toggleProviderFake = new Mock<IRipToggleProvider>();
 
             _sut = new IntegrationPointToSyncConverter(
                 _serializerFake.Object,

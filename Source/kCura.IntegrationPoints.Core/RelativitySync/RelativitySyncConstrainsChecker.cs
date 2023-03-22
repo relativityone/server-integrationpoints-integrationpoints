@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.RelativitySync
 {
@@ -19,14 +18,14 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
     {
         private readonly IAPILog _logger;
         private readonly IProviderTypeService _providerTypeService;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly ISerializer _serializer;
 
         public RelativitySyncConstrainsChecker(
             IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
-            IToggleProvider toggleProvider,
+            IRipToggleProvider toggleProvider,
             ISerializer serializer,
             IAPILog logger)
         {

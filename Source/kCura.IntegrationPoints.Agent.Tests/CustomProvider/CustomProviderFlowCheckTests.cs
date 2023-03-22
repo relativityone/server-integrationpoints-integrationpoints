@@ -6,12 +6,12 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [Category("Unit")]
     internal class CustomProviderFlowCheckTests
     {
-        private Mock<IToggleProvider> _toggleProviderFake;
+        private Mock<IRipToggleProvider> _toggleProviderFake;
         private Mock<ISerializer> _serializerFake;
         private IFixture _fxt;
         private CustomProviderFlowCheck _sut;
@@ -29,10 +29,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             _fxt = FixtureFactory.Create();
 
-            _toggleProviderFake = new Mock<IToggleProvider>();
+            _toggleProviderFake = new Mock<IRipToggleProvider>();
 
             _serializerFake = new Mock<ISerializer>();
-            
+
             Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new CustomProviderFlowCheck(
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
 
-            _toggleProviderFake.Setup(x => x.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>())
+            _toggleProviderFake.Setup(x => x.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>())
                 .Throws<Exception>();
 
             // Act

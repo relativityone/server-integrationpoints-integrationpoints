@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
     internal class JobHistorySyncService : IJobHistorySyncService
     {
         private readonly IRelativityObjectManager _relativityObjectManager;
-        private readonly IToggleProvider _toggles;
+        private readonly IRipToggleProvider _toggles;
         private readonly IAPILog _logger;
 
-        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager, IToggleProvider toggles, IAPILog logger)
+        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager, IRipToggleProvider toggles, IAPILog logger)
         {
             _relativityObjectManager = relativityObjectManager;
             _toggles = toggles;

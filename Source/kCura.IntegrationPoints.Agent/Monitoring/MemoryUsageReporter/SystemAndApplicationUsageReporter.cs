@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using Relativity.API;
 using Relativity.Telemetry.APM;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private ITimer _timer;
 
         private readonly IRemovableAgent _agent;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly ITimerFactory _timerFactory;
         private readonly ISystemHealthReporter _systemHealthReporter;
         private readonly IAPM _apmClient;
@@ -35,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         public SystemAndApplicationUsageReporter(IAPM apmClient, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper,
             IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent,
-            IToggleProvider toggleProvider, ITimerFactory timerFactory, ISystemHealthReporter systemHealthReporter, IAPILog logger)
+            IRipToggleProvider toggleProvider, ITimerFactory timerFactory, ISystemHealthReporter systemHealthReporter, IAPILog logger)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;

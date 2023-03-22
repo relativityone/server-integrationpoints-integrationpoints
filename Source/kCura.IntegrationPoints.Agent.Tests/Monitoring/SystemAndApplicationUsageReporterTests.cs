@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<ISystemHealthReporter> _systemHealthReporterMock;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private Mock<IRemovableAgent> _agentMock;
-        private Mock<IToggleProvider> _toggleProviderFake;
+        private Mock<IRipToggleProvider> _toggleProviderFake;
         private Mock<ITimerFactory> _timerFactory;
         private TimerFake _timer;
         private SystemAndApplicationUsageReporter _sut;
@@ -90,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
             _agentMock.Setup(x => x.AgentInstanceGuid).Returns(_agentInstanceGuid);
 
-            _toggleProviderFake = new Mock<IToggleProvider>();
+            _toggleProviderFake = new Mock<IRipToggleProvider>();
             _toggleProviderFake.Setup(x => x.IsEnabled<EnableMemoryUsageReportingToggle>()).Returns(true);
 
             _timer = new TimerFake();

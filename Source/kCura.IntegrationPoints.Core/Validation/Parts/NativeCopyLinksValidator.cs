@@ -1,4 +1,7 @@
-﻿using kCura.Apps.Common.Utils.Serializers;
+﻿using System;
+using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain;
@@ -8,9 +11,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
-using System;
-using System.Linq;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -25,11 +25,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         private readonly IHelper _helper;
         private readonly ISerializer _serializer;
         private readonly IManagerFactory _managerFactory;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
 
         public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
-        public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IToggleProvider toggleProvider)
+        public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IRipToggleProvider toggleProvider)
         {
             _logger = logger;
             _helper = helper;
