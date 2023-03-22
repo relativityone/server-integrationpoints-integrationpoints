@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using Relativity.API;
+using Relativity.Import.V1.Services;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Environmental;
@@ -47,6 +48,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IViewManager>(proxy.ViewManager.Object);
             RegisterProxyInServiceManagerMock<IFileShareServerManager>(proxy.FileShareServerManager.Object);
             RegisterProxyInServiceManagerMock<IPingService>(proxy.PingService.Object);
+            RegisterProxyInServiceManagerMock<IImportJobController>(proxy.ImportJobController.Object);
+            RegisterProxyInServiceManagerMock<IDocumentConfigurationController>(proxy.DocumentConfigurationController.Object);
+            RegisterProxyInServiceManagerMock<IAdvancedConfigurationController>(proxy.AdvancedConfigurationController.Object);
         }
 
         public Mock<IDBContext> DbContextMock => _dbContext;

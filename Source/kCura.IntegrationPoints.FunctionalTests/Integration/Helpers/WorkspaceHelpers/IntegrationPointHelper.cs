@@ -322,6 +322,68 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
+        public IntegrationPointTest CreateImportObjectFromLdapIntegrationPoint(bool linkEntityManagers = false, bool isMappingIdentifierOnly = false)
+        {
+            const string ou = "ou=Management";
+
+            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+
+            integrationPoint.Name = $"Import Object LDAP - {Guid.NewGuid()}";
+
+            List<FieldMap> fieldsMapping = isMappingIdentifierOnly
+                ? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
+                : Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
+            integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+
+            SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP);
+
+            integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+
+            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.Single(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+
+            integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+
+            integrationPoint.Type = Workspace.IntegrationPointTypes.Single(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
+                    .ImportGuid.ToString()).ArtifactId;
+
+            LDAPSettings sourceConfiguration = new LDAPSettings
+            {
+                ConnectionPath = GlobalConst.LDAP._OPEN_LDAP_CONNECTION_PATH(ou),
+                ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind,
+                ImportNested = false
+            };
+
+            integrationPoint.SourceConfiguration = _serializer.Serialize(sourceConfiguration);
+
+            ImportSettings destinationConfiguration = new ImportSettings
+            {
+                ArtifactTypeId = GetArtifactTypeIdByName(Const.Document._DOCUMENT_NAME),
+                DestinationProviderType = destinationProvider.Identifier,
+                EntityManagerFieldContainsLink = linkEntityManagers,
+                CaseArtifactId = Workspace.ArtifactId,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+                WebServiceURL = @"// some/service/url/relativity"
+            };
+
+            integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationConfiguration);
+
+            LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
+            {
+                UserName = GlobalConst.LDAP._OPEN_LDAP_USER,
+                Password = GlobalConst.LDAP._OPEN_LDAP_PASSWORD
+            };
+
+            integrationPoint.SecuredConfiguration = Guid.NewGuid().ToString();
+
+            integrationPoint.SecuredConfigurationDecrypted = _serializer.Serialize(securedConfiguration);
+
+            return integrationPoint;
+        }
+
+
         public IntegrationPointDto CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
         {
             IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
