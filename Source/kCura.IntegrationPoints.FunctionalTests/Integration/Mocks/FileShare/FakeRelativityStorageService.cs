@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using Relativity.Storage;
@@ -17,6 +19,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
         public Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
         {
             return Task.FromResult<StorageStream>(new FakeStream());
+        }
+
+        public Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<IList<string>> ReadAllLinesAsync(string filePath)
+        {
+            throw new System.NotImplementedException();
         }
 
         public Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId)
