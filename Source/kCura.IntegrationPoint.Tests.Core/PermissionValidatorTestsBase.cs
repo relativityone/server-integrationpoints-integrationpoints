@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         protected IPermissionRepository _destinationPermissionRepository;
         protected ISerializer _serializer;
         protected IServiceContextHelper ServiceContextHelper;
+        protected IObjectTypeRepository _objectTypeRepository;
         protected IntegrationPointProviderValidationModel _validationModel;
 
         [SetUp]
@@ -58,10 +59,12 @@ namespace kCura.IntegrationPoint.Tests.Core
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
             _sourcePermissionRepository = Substitute.For<IPermissionRepository>();
             _destinationPermissionRepository = Substitute.For<IPermissionRepository>();
+            _objectTypeRepository = Substitute.For<IObjectTypeRepository>();
             ServiceContextHelper = Substitute.For<IServiceContextHelper>();
             ServiceContextHelper.WorkspaceID.Returns(_SOURCE_WORKSPACE_ID);
             _repositoryFactory.GetPermissionRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourcePermissionRepository);
             _repositoryFactory.GetPermissionRepository(Arg.Is(_DESTINATION_WORKSPACE_ID)).Returns(_destinationPermissionRepository);
+            _repositoryFactory.GetObjectTypeRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_objectTypeRepository);
             _serializer = Substitute.For<ISerializer>();
 
             _validationModel = new IntegrationPointProviderValidationModel()

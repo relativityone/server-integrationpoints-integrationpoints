@@ -7,16 +7,20 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Hosting;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -31,7 +35,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         private ICPHelper _helper;
         private IIntegrationPointService _integrationPointService;
         private IManagerFactory _managerFactory;
+        private IRepositoryFactory _repositoryFactory;
         private IRelativityAuditRepository _auditRepository;
+        private IPermissionRepository _permissionRepository;
         private JobController _instance;
         private JobController.Payload _payload;
         private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
@@ -58,9 +64,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _managerFactory.CreateAuditManager(_WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
             _auditManager.RelativityAuditRepository.Returns(_auditRepository);
 
+            _permissionRepository = Substitute.For<IPermissionRepository>();
+            _permissionRepository.UserHasArtifactTypePermissions(Arg.Any<Guid>(), Arg.Any<IEnumerable<ArtifactPermission>>()).Returns(true);
+            _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), Arg.Any<ArtifactPermission>()).Returns(true);
+
+            _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _repositoryFactory.GetPermissionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_permissionRepository);
+
             IAPILog log = Substitute.For<IAPILog>();
 
             _instance = new JobController(
+                _repositoryFactory,
                 _managerFactory,
                 _integrationPointService,
                 log)
@@ -97,7 +111,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .CreateAuditRecord(_payload.ArtifactId,
                 Arg.Is<AuditElement>(audit => audit.AuditMessage == _RUN_AUDIT_MESSAGE));
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+
+            JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
+
+            body.Errors.Should().Contain(expectedErrorMessage);
         }
 
         [TestCase(null)]
@@ -110,10 +127,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 new Claim("rel_uai", _userIdString)
             };
             _instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-            const string expectedErrorMessage = @"ABC : 123,456";
+
+            const string expectedErrorMessage1 = "ABC";
+            const string expectedErrorMessage2 = "456";
+            const string expectedErrorMessage3 = "123";
+
+            List<string> expectedErrorMessages = new List<string> { expectedErrorMessage1, expectedErrorMessage2, expectedErrorMessage3 };
 
             AggregateException exceptionToBeThrown =
-                new AggregateException("ABC", new AccessViolationException("123"), new Exception("456"));
+                new AggregateException(expectedErrorMessage1, new AccessViolationException(expectedErrorMessage3), new Exception(expectedErrorMessage2));
 
             var integrationPoint = new IntegrationPointSlimDto()
             {
@@ -131,7 +153,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             // Assert
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+
+            JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
+
+            body.Errors.Should().Contain(expectedErrorMessage1)
+                .And.Contain(expectedErrorMessage2);
         }
 
         [TestCase(null)]
@@ -152,7 +178,39 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             // Assert
             _integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Test]
+        public void Run_ShouldCheckRdoPermissions()
+        {
+            // Arrange
+            var integrationPoint = new IntegrationPointSlimDto();
+
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+            // Act
+            _instance.Run(_payload);
+
+            // Assert
+            AssertRDOsPermissions();
+        }
+
+        [Test]
+        public void Retry_ShouldCheckRdoPermissions()
+        {
+            // Arrange
+            var integrationPoint = new IntegrationPointSlimDto();
+
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+            // Act
+            _instance.Run(_payload);
+
+            // Assert
+            AssertRDOsPermissions();
         }
 
         [TestCase(null)]
@@ -178,7 +236,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             // Assert
             _integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
         [TestCase(null)]
@@ -208,7 +266,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                             .CreateAuditRecord(_payload.ArtifactId,
                             Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
             _integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID, switchToAppendOverlayMode: false);
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
         [TestCase(null)]
@@ -236,8 +294,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .CreateAuditRecord(_payload.ArtifactId,
                 Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
             _integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0, switchToAppendOverlayMode: false);
+
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().GetAwaiter().GetResult().Trim('"'));
+
+            JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
+
+            body.Errors.Should().Contain(Core.Constants.IntegrationPoints.NO_USERID);
         }
 
         [Test]
@@ -257,8 +319,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .Received(1)
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
-            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, "The HTTPStatusCode should be OK");
-            Assert.IsNull(response.Content, "The response's Content should be null");
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be OK");
+
+            JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
+
+            body.IsValid.Should().BeTrue();
         }
 
         [Test]
@@ -295,12 +360,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
 
-            byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
-            Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
-            Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
-            Assert.AreEqual(expectedErrorMessage, stringContent, "The response's Content should be correct.");
-
             errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
         }
 
@@ -333,14 +392,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
-            Assert.AreEqual("text/plain", response.Content.Headers.ContentType.MediaType, "The response's media type should be correct.");
-            Assert.AreEqual("utf-8", response.Content.Headers.ContentType.CharSet, "The response's char set should be correct.");
-
-            byte[] utf8Bytes = response.Content.ReadAsByteArrayAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            string stringContent = System.Text.Encoding.UTF8.GetString(utf8Bytes);
-            Assert.AreEqual(exception.Message, stringContent, "The response's Content should be correct.");
 
             errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
+        }
+
+        private void AssertRDOsPermissions()
+        {
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.IntegrationPointGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryErrorGuid, Arg.Any<IEnumerable<ArtifactPermission>>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.IntegrationPointTypeGuid, Arg.Any<ArtifactPermission>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.SourceProviderGuid, Arg.Any<ArtifactPermission>());
+            _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.DestinationProviderGuid, Arg.Any<ArtifactPermission>());
+
         }
     }
 }

@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
+using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
@@ -19,27 +20,26 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
         public ValidationResult Validate(int destinationFolderArtifactId, bool useFolderPathInfo, bool moveExistingDocuments)
         {
-            bool canAddDocument = _permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Document,
-                destinationFolderArtifactId, ArtifactPermission.Create);
-            bool isValid = canAddDocument;
+            ValidationResult result = new ValidationResult();
 
-            if (useFolderPathInfo && isValid)
+            bool canAddDocument = _permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Document, destinationFolderArtifactId, ArtifactPermission.Create);
+
+            if (!canAddDocument)
             {
-                bool canAddSubfolders = _permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Folder,
-                    destinationFolderArtifactId, ArtifactPermission.Create);
-                isValid &= canAddSubfolders;
+                result.Add(PermissionErrors.DESTINATION_DOCUMENT_NO_CREATE_PERMISSION);
             }
 
-            if (moveExistingDocuments && isValid)
+            if (useFolderPathInfo && !_permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Folder, destinationFolderArtifactId, ArtifactPermission.Create))
             {
-                bool canDeleteDocument = _permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Document,
-                    destinationFolderArtifactId, ArtifactPermission.Delete);
-                isValid &= canDeleteDocument;
+                result.Add(PermissionErrors.DESTINATION_FOLDER_NO_CREATE_PERMISSION);
             }
 
-            return isValid
-                ? new ValidationResult()
-                : new ValidationResult(ValidationMessages.MissingDestinationFolderItemLevelPermissions);
+            if (moveExistingDocuments && !_permissionManager.UserHasArtifactInstancePermission(_workspaceId, (int)ArtifactType.Document, destinationFolderArtifactId, ArtifactPermission.Delete))
+            {
+                result.Add(PermissionErrors.DESTINATION_DOCUMENT_NO_DELETE_PERMISSION);
+            }
+
+            return result;
         }
     }
 }
