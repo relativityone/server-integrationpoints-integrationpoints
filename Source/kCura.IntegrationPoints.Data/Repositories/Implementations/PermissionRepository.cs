@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity;
 using Relativity.API;
+using Relativity.Data.Permissions;
 using Relativity.Services;
 using Relativity.Services.Permission;
 
@@ -149,6 +150,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public bool UserHasArtifactTypePermission(Guid artifactTypeGuid, ArtifactPermission artifactPermission)
         {
             return UserHasArtifactTypePermissions(artifactTypeGuid, new[] { artifactPermission });
+        }
+
+        bool IPermissionRepository.UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions)
+        {
+            return UserHasArtifactTypePermissions(artifactTypeGuid, artifactPermissions);
         }
 
         public bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission)
