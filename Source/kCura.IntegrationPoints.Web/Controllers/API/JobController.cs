@@ -10,13 +10,19 @@ using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
+using Microsoft.Owin.Security.Provider;
 using Relativity.API;
+using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -26,12 +32,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private const string _RUN_AUDIT_MESSAGE = "Transfer was attempted.";
         private const string _RETRY_AUDIT_MESSAGE = "Retry error was attempted.";
         private const string _STOP_AUDIT_MESSAGE = "Stop transfer was attempted.";
+        private readonly IRepositoryFactory _repositoryFactory;
         private readonly IManagerFactory _managerFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
-        public JobController(IManagerFactory managerFactory, IIntegrationPointService integrationPointService, IAPILog log)
+        public JobController(IRepositoryFactory repositoryFactory, IManagerFactory managerFactory, IIntegrationPointService integrationPointService, IAPILog log)
         {
+            _repositoryFactory = repositoryFactory;
             _managerFactory = managerFactory;
             _integrationPointService = integrationPointService;
             _log = log;
@@ -62,18 +70,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                                                          "Please try to edit integration point configuration and reenter credentials.");
                 }
 
-                HttpResponseMessage httpResponseMessage = RunInternal(
-                    payload.AppId,
-                    payload.ArtifactId,
-                    ActionType.Run
-                );
+                HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, ActionType.Run);
 
                 return httpResponseMessage;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex, "Failed to Run job.");
-                throw;
+
+                var result = new JobActionResult();
+                result.Errors.Add(ex.Message);
+
+                return Request.CreateResponse(HttpStatusCode.BadRequest, result);
             }
         }
 
@@ -86,12 +94,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-            HttpResponseMessage httpResponseMessage = RunInternal(
-                payload.AppId,
-                payload.ArtifactId,
-                ActionType.Retry,
-                switchToAppendOverlayMode
-            );
+            HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, ActionType.Retry, switchToAppendOverlayMode);
+
             return httpResponseMessage;
         }
 
@@ -101,47 +105,44 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             AuditAction(payload, _STOP_AUDIT_MESSAGE);
 
-            string errorMessage = null;
-            HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
-
+            JobActionResult result = new JobActionResult();
             try
             {
                 _integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (AggregateException exception)
             {
                 // TODO: Add an extension to aggregate messages without stack traces. Place it in ExceptionExtensions.cs
                 IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-                errorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
-                httpStatusCode = HttpStatusCode.BadRequest;
-                CreateRelativityError(errorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
+                string aggregatedErrorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
+                CreateRelativityError(aggregatedErrorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
+
+                result.Errors.AddRange(innerExceptions);
             }
             catch (IntegrationPointValidationException exception)
             {
-                return CreateResponseForFailedValidation(exception);
+                ValidationResultDTO validationResult = CreateResponseForFailedValidation(exception);
+                result.Errors.AddRange(validationResult.Errors.Select(x => x.Message));
             }
             catch (Exception exception)
             {
-                errorMessage = exception.Message;
-                httpStatusCode = HttpStatusCode.BadRequest;
-                CreateRelativityError(errorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
+                CreateRelativityError(exception.Message, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
+
+                result.Errors.Add(exception.Message);
             }
 
-            HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
-            }
-
-            return response;
+            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
         }
 
         private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, ActionType action, bool switchToAppendOverlayMode = false)
         {
-            string errorMessage = null;
-            HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
+            JobActionResult result = new JobActionResult();
             try
             {
+                ValidateRDOPermission(workspaceId);
+
                 int userId = GetUserIdIfExists();
                 if (action == ActionType.Run)
                 {
@@ -151,40 +152,36 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 {
                     _integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
                 }
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (AggregateException exception)
             {
                 IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-                errorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
-                httpStatusCode = HttpStatusCode.BadRequest;
+
+                result.Errors.Add(exception.Message);
+                result.Errors.AddRange(innerExceptions);
             }
             catch (IntegrationPointValidationException exception)
             {
-                return CreateResponseForFailedValidation(exception);
+                ValidationResultDTO validationResult = CreateResponseForFailedValidation(exception);
+                result.Errors.AddRange(validationResult.Errors.Select(x => x.Message));
             }
             catch (Exception exception)
             {
-                _log.LogError(exception, "Error ocurred in Run request: WorkspaceId {workspaceId}, IntegrationPointId {integrationPointId}, Action: {action}",
+                _log.LogError(exception, "Error occurred in Run request: WorkspaceId {workspaceId}, IntegrationPointId {integrationPointId}, Action: {action}",
                     workspaceId, relatedObjectArtifactId, action);
 
-                errorMessage = exception.Message;
-                httpStatusCode = HttpStatusCode.BadRequest;
+                result.Errors.Add(exception.Message);
             }
 
-            HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
-            }
-
-            return response;
+            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
         }
 
-        private HttpResponseMessage CreateResponseForFailedValidation(IntegrationPointValidationException exception)
+        private ValidationResultDTO CreateResponseForFailedValidation(IntegrationPointValidationException exception)
         {
             var validationResultMapper = new ValidationResultMapper();
-            ValidationResultDTO validationResultDto = validationResultMapper.Map(exception.ValidationResult);
-            return Request.CreateResponse(HttpStatusCode.BadRequest, validationResultDto);
+            return validationResultMapper.Map(exception.ValidationResult);
         }
 
         private void AuditAction(Payload payload, string auditMessage)
@@ -218,7 +215,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 Message = message,
                 FullText = fullText,
-                Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
+                Source = APPLICATION_NAME,
                 WorkspaceId = workspaceArtifactId
             };
 
@@ -236,6 +233,48 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             Run,
             Retry
+        }
+
+        private void ValidateRDOPermission(int workspaceId)
+        {
+            ValidationResult validationResult = new ValidationResult();
+
+            IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceId);
+
+            if (!permissionRepository.UserHasArtifactTypePermissions(ObjectTypeGuids.IntegrationPointGuid, new[] { ArtifactPermission.View, ArtifactPermission.Edit }))
+            {
+                validationResult.Add(PermissionErrors.INTEGRATION_POINT_RUN_RDO_PERMISSION);
+            }
+
+            if (!permissionRepository.UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryGuid, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
+            {
+                validationResult.Add(PermissionErrors.JOB_HISTORY_RUN_RDO_PERMISSION);
+            }
+
+            if (!permissionRepository.UserHasArtifactTypePermissions(ObjectTypeGuids.JobHistoryErrorGuid, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
+            {
+                validationResult.Add(PermissionErrors.JOB_HISTORY_ERROR_RUN_RDO_PERMISSION);
+            }
+
+            if (!permissionRepository.UserHasArtifactTypePermission(ObjectTypeGuids.IntegrationPointTypeGuid, ArtifactPermission.View))
+            {
+                validationResult.Add(PermissionErrors.INTEGRATION_POINT_TYPE_RUN_RDO_PERMISSION);
+            }
+
+            if (!permissionRepository.UserHasArtifactTypePermission(ObjectTypeGuids.SourceProviderGuid, ArtifactPermission.View))
+            {
+                validationResult.Add(PermissionErrors.SOURCE_PROVIDER_RUN_RDO_PERMISSION);
+            }
+
+            if (!permissionRepository.UserHasArtifactTypePermission(ObjectTypeGuids.DestinationProviderGuid, ArtifactPermission.View))
+            {
+                validationResult.Add(PermissionErrors.DESTINATION_PROVIDER_RUN_RDO_PERMISSION);
+            }
+
+            if (!validationResult.IsValid)
+            {
+                throw new IntegrationPointValidationException(validationResult);
+            }
         }
     }
 }

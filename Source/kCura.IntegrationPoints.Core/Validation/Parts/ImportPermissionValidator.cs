@@ -1,9 +1,11 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
@@ -33,10 +35,15 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
                 result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
             }
 
-            if (!permissionRepository.UserHasArtifactTypePermissions(destinationConfiguration.ArtifactTypeId,
+            if (!permissionRepository.UserHasArtifactTypePermissions(
+                destinationConfiguration.ArtifactTypeId,
                 new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
             {
-                result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
+                IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(ContextHelper.WorkspaceID);
+
+                ObjectTypeDTO objectType = objectTypeRepository.GetObjectType(destinationConfiguration.ArtifactTypeId);
+
+                result.Add(Constants.IntegrationPoints.PermissionErrors.MissingDestinationRdoPermission(objectType.Name));
             }
 
             return result;
