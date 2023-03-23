@@ -37,6 +37,7 @@ namespace kCura.ScheduleQueue.Core.Validation
             return PreValidationResult.InvalidJob(
                     $"Integration Point {job.RelatedObjectArtifactID} does not exist anymore",
                     false,
+                    true,
                     false);
         }
     }

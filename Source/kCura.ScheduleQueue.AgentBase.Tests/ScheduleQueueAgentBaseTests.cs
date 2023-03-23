@@ -133,7 +133,27 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             // Assert
             sut.ProcessedJobs.Should().BeEmpty();
             expectedJob.JobFailed.Should().NotBeNull();
-            expectedJob.JobFailed.ShouldBreakSchedule.Should().BeTrue();
+        }
+
+        [Test]
+        public void Execute_ShouldNotBreakSchedule_WhenJobValidationThrowsException()
+        {
+            // Arrange
+            Job expectedJob = new JobBuilder().WithJobId(1).Build();
+
+            TestAgent sut = GetSut();
+
+            SetupJobQueue(expectedJob);
+
+            _queueJobValidatorFake.Setup(x => x.ValidateAsync(expectedJob))
+                .Throws<Exception>();
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.ProcessedJobs.Should().BeEmpty();
+            expectedJob.JobFailed.ShouldBreakSchedule.Should().BeFalse();
         }
 
         [Test]
@@ -470,7 +490,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             const string exceptionMessage = "Invalid job";
             _queueJobValidatorFake.Setup(x => x.ValidateAsync(It.Is<Job>(y => y.JobId == jobId)))
-                .ReturnsAsync(PreValidationResult.InvalidJob(exceptionMessage, false, false));
+                .ReturnsAsync(PreValidationResult.InvalidJob(exceptionMessage, false, true, false));
 
             // Act
             sut.Execute();
@@ -547,10 +567,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             }
         }
 
-        private void SetupJobAsInvalid(Job job, bool shouldExecute = false, bool maximumConsecutiveFailuresReached = false)
+        private void SetupJobAsInvalid(Job job, bool shouldExecute = false, bool shouldBreakScheudle = false, bool maximumConsecutiveFailuresReached = false)
         {
             _queueJobValidatorFake.Setup(x => x.ValidateAsync(job))
-                .ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), shouldExecute, maximumConsecutiveFailuresReached));
+                .ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), shouldExecute, shouldBreakScheudle, maximumConsecutiveFailuresReached));
         }
 
         private class TestAgent : ScheduleQueueAgentBase

@@ -27,6 +27,7 @@ namespace kCura.ScheduleQueue.Core.Validation
                 result = PreValidationResult.InvalidJob(
                     $"Scheduled Job reached maximum number of consecutive fails and therefore was stopped by the system. The schedule won't be restored until Integration Point update.",
                     true,
+                    true,
                     true);
             }
 
