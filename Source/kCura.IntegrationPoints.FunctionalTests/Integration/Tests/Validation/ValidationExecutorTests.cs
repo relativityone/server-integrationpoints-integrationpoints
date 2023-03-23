@@ -178,9 +178,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
         private void SetupNonDocumentFlowToggle(bool enable)
         {
-            Mock<IToggleProvider> toggleProvider = new Mock<IToggleProvider>();
-            toggleProvider.Setup(x => x.IsEnabled<EnableSyncNonDocumentFlowToggle>()).Returns(enable);
-            Container.Register(Component.For<IToggleProvider>().Instance(toggleProvider.Object).IsDefault());
+            Context.ToggleValues.SetValue<EnableSyncNonDocumentFlowToggle>(enable);
         }
     }
 }
