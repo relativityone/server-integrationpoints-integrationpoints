@@ -168,7 +168,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.Read(It.IsAny<int>()))
                 .Throws<InvalidOperationException>();
 
-            Job job = new Job();
+            Job job = new Job()
+            {
+                JobDetails = string.Empty
+            };
 
             CustomProviderTask sut = PrepareSut();
 
