@@ -43,7 +43,7 @@
 
         public static class EventNames
         {
-            public const string Toggle = "toggle_read";
+            public const string ToggleRead = "toggle_read";
         }
     }
 }

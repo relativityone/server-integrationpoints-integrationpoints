@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Common.Toggles
                     { Names.ToggleValue, toggleValue.ToString() },
                 };
 
-                _apm.CountOperation(EventNames.Toggle, customData: attrs).Write();
+                _apm.CountOperation(EventNames.ToggleRead, customData: attrs).Write();
             }
             catch (Exception e)
             {
