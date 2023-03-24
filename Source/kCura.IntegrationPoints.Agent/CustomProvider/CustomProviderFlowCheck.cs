@@ -2,21 +2,21 @@
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
     internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly ISerializer _serializer;
         private readonly IAPILog _log;
 
         public CustomProviderFlowCheck(
-            IToggleProvider toggleProvider,
+            IRipToggleProvider toggleProvider,
             ISerializer serializer,
             IAPILog log)
         {

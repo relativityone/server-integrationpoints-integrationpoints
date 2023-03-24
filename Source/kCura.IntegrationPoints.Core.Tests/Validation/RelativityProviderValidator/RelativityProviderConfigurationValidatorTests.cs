@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Managers;
@@ -16,7 +15,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private IRelativityObjectManager _objectManagerMock;
         private IRelativityProviderValidatorsFactory _validatorsFactoryMock;
         private ISavedSearchQueryRepository _savedSearchRepositoryMock;
-        private IToggleProvider _toggleProvider;
+        private IRipToggleProvider _toggleProvider;
         private IWorkspaceManager _workspaceManagerMock;
         private JSONSerializer _serializerMock;
         private RelativityProviderWorkspaceNameValidator _workspaceValidatorMock;
@@ -61,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _logger = Substitute.For<IAPILog>();
             _serializerMock = new JSONSerializer();
-            _toggleProvider = Substitute.For<IToggleProvider>();
+            _toggleProvider = Substitute.For<IRipToggleProvider>();
             _validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
             _workspaceManagerMock = Substitute.For<IWorkspaceManager>();
             _workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceNameValidator>(_workspaceManagerMock, string.Empty);

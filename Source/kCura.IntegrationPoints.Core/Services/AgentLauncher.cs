@@ -4,18 +4,17 @@ using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.HostingBridge.V1.AgentStatusManager;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
     public class AgentLauncher : IAgentLauncher
     {
         private readonly IServicesMgr _serviceManager;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly IAPILog _logger;
         private Guid _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-        public AgentLauncher(IServicesMgr serviceManager, IToggleProvider toggleProvider, IAPILog logger)
+        public AgentLauncher(IServicesMgr serviceManager, IRipToggleProvider toggleProvider, IAPILog logger)
         {
             _serviceManager = serviceManager;
             _toggleProvider = toggleProvider;

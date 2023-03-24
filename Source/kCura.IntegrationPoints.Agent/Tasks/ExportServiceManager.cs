@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -30,13 +31,11 @@ using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Toggles;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -49,7 +48,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
         private readonly IExporterFactory _exporterFactory;
         private readonly IRepositoryFactory _repositoryFactory;
-        private readonly IToggleProvider _toggleProvider;
         private readonly IDocumentRepository _documentRepository;
         private readonly IExportDataSanitizer _exportDataSanitizer;
         private readonly object _syncRoot = new object();
@@ -72,7 +70,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobHistoryService jobHistoryService,
             IJobHistoryErrorService jobHistoryErrorService,
             IJobStatisticsService statisticsService,
-            IToggleProvider toggleProvider,
+            IRipToggleProvider toggleProvider,
             IAgentValidator agentValidator,
             IIntegrationPointService integrationPointService,
             IDocumentRepository documentRepository,
@@ -94,7 +92,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 diagnosticLog)
         {
             _repositoryFactory = repositoryFactory;
-            _toggleProvider = toggleProvider;
             _exportServiceObserversFactory = exportServiceObserversFactory;
             _exporterFactory = exporterFactory;
             _documentRepository = documentRepository;
