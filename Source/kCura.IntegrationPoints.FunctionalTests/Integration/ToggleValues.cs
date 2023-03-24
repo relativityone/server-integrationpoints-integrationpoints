@@ -1,26 +1,30 @@
-﻿using Relativity.Toggles;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration
 {
     public class ToggleValues
     {
-        private IDictionary<Type, bool> _values { get; } = new Dictionary<Type, bool>();
+        private IDictionary<string, bool> _values { get; } = new Dictionary<string, bool>();
 
-        public void SetValue<T>(bool value) where T: IToggle
+        public void SetValue<T>(bool value) where T : IToggle
         {
-            _values[typeof(T)] = value;
+            _values[typeof(T).FullName] = value;
         }
 
-        public bool? GetValue<T>() where T: IToggle
+        public bool GetValue<T>() where T : IToggle
         {
-            if (_values.ContainsKey(typeof(T)))
+            return GetValue(typeof(T).FullName);
+        }
+
+        public bool GetValue(string name)
+        {
+            if (_values.ContainsKey(name))
             {
-                return _values[typeof(T)];
+                return _values[name];
             }
 
-            return null;
+            return false;
         }
     }
 }

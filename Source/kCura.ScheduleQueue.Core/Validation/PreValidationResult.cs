@@ -18,12 +18,12 @@ namespace kCura.ScheduleQueue.Core.Validation
 
         public static PreValidationResult Success => new PreValidationResult();
 
-        public static PreValidationResult InvalidJob(string message, bool shouldExecute, bool maximumConsecutiveFailuresReached) => new PreValidationResult
+        public static PreValidationResult InvalidJob(string message, bool shouldExecute, bool shouldBreakSchedule, bool maximumConsecutiveFailuresReached) => new PreValidationResult
         {
             IsValid = false,
             ShouldExecute = shouldExecute,
             ShouldError = true,
-            ShouldBreakSchedule = true,
+            ShouldBreakSchedule = shouldBreakSchedule,
             MaximumConsecutiveFailuresReached = maximumConsecutiveFailuresReached,
             Exception = new InvalidOperationException(message)
         };
