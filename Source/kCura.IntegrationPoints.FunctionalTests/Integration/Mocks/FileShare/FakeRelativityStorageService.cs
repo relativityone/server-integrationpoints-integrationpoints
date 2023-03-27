@@ -18,7 +18,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
 
         public Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
         {
-            return Task.FromResult<StorageStream>(new FakeStream());
+            var fileInfo = new FileInfo(path);
+            fileInfo.Directory.Create();
+            fileInfo.Create().Dispose();
+            Stream stream = File.Open(path, FileMode.OpenOrCreate);
+            return Task.FromResult<StorageStream>(new FakeStream(stream, path));
         }
 
         public Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken))
@@ -26,9 +30,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
-        public Task<IList<string>> ReadAllLinesAsync(string filePath)
+        public async Task<IList<string>> ReadAllLinesAsync(string filePath)
         {
-            throw new System.NotImplementedException();
+            Stream stream = File.OpenRead(filePath);
+            List<string> lines = new List<string>();
+            using (TextReader reader = new StreamReader(stream))
+            {
+                string line;
+                while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
+                {
+                    lines.Add(line);
+                }
+            }
+            return lines;
         }
 
         public Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId)
@@ -38,26 +52,44 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
 
         private class FakeStream : StorageStream
         {
+            private readonly Stream _stream;
+            private readonly string _storagePath;
+
+            public FakeStream(Stream stream, string storagePath)
+            {
+                _stream = stream;
+                _storagePath = storagePath;
+            }
+
             public override void Flush()
             {
+                _stream.Flush();
+            }
+
+            public override void Close()
+            {
+                base.Close();
+                _stream.Close();
             }
 
             public override long Seek(long offset, SeekOrigin origin)
             {
-                return 0;
+                return _stream.Seek(offset, origin);
             }
 
             public override void SetLength(long value)
             {
+                _stream.SetLength(value);
             }
 
             public override int Read(byte[] buffer, int offset, int count)
             {
-                return 0;
+                return _stream.Read(buffer, offset, count);
             }
 
             public override void Write(byte[] buffer, int offset, int count)
             {
+                _stream.Write(buffer, offset, count);
             }
 
             public override bool CanWrite => true;
@@ -70,7 +102,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
 
             public override long Position { get; set; }
 
-            public override string StoragePath { get; }
+            public override string StoragePath => _storagePath;
 
             public override StorageInterface StorageInterface { get; }
         }

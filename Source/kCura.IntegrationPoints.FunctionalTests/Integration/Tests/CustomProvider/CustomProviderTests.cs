@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -40,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         public void CustomProviderTest_SystemTest()
         {
             // Arrange
-            ScheduleImportCustomProviderJob();
+            var job = ScheduleImportCustomProviderJob();
 
             Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) => { importJob.Complete(_managementTestData.Data.Count); })).LifestyleSingleton());
 
@@ -51,11 +55,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             // Assert
             VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
+            VerifyFileExistanceAndContent(job);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
-        private void ScheduleImportCustomProviderJob()
+        private JobTest ScheduleImportCustomProviderJob()
         {
             Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
 
@@ -70,6 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             InsertBatchToJobTrackerTable(job, jobHistory);
+            return job;
         }
 
         private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
@@ -88,6 +94,39 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         {
             JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
             jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
+        }
+
+        private void VerifyFileExistanceAndContent(JobTest job)
+        {
+            CustomProviderJobDetails jobDetails = GetJobDetails(job.JobDetails);
+            string idFullFilePath = jobDetails.Batches.First().IDsFilePath;
+
+            File.Exists(idFullFilePath).Should().BeTrue();
+            FileShouldNotBeEmpty(idFullFilePath).Should().BeTrue();
+
+            string dataFullFilePath = Path.Combine(Path.GetDirectoryName(idFullFilePath), Path.GetFileNameWithoutExtension(idFullFilePath) + ".data");
+            File.Exists(dataFullFilePath).Should().BeTrue();
+            FileShouldNotBeEmpty(dataFullFilePath).Should().BeTrue();
+        }
+
+        private bool FileShouldNotBeEmpty(string filePath)
+        {
+            Stream stream = File.OpenRead(filePath);
+            string fileContent;
+
+            using (TextReader reader = new StreamReader(stream))
+            {
+                fileContent = reader.ReadToEnd();
+            }
+
+            return fileContent != string.Empty;
+        }
+
+        private CustomProviderJobDetails GetJobDetails(string details)
+        {
+            var serializer = new JSONSerializer();
+            CustomProviderJobDetails jobDetails = serializer.Deserialize<CustomProviderJobDetails>(details);
+            return jobDetails;
         }
     }
 }
