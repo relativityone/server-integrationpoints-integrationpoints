@@ -8,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.HostingBridge.V1.AgentStatusManager;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -16,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
     [Category("Unit")]
     public class AgentLauncherTests : TestBase
     {
-        private Mock<IToggleProvider> _toggleProviderMock;
+        private Mock<IRipToggleProvider> _toggleProviderMock;
         private Mock<IAgentStatusManagerService> _agentStatusManagerServiceMock;
         private Mock<IServicesMgr> _servicesMgrMock;
         private Mock<IAPILog> _logMock;
@@ -25,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
         public override void SetUp()
         {
-            _toggleProviderMock = new Mock<IToggleProvider>();
+            _toggleProviderMock = new Mock<IRipToggleProvider>();
             _agentStatusManagerServiceMock = new Mock<IAgentStatusManagerService>();
             _servicesMgrMock = new Mock<IServicesMgr>();
             _logMock = new Mock<IAPILog>();

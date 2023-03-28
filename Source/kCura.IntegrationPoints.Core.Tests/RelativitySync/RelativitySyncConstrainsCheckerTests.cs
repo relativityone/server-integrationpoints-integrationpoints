@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -18,7 +17,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 {
@@ -33,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         private const string _DESTINATION_CONFIGURATION = "Destination Configuration";
         private Mock<IProviderTypeService> _providerTypeService;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
-        private Mock<IToggleProvider> _toggleProvider;
+        private Mock<IRipToggleProvider> _toggleProvider;
         private Job _job;
         private Mock<ISerializer> _configurationDeserializer;
         private SourceConfiguration _sourceConfiguration;
@@ -105,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                     DestinationProvider = _DESTINATION_PROVIDER_ID,
                 });
 
-            _toggleProvider = new Mock<IToggleProvider>();
+            _toggleProvider = new Mock<IRipToggleProvider>();
             _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
                 .ReturnsAsync(false);
 

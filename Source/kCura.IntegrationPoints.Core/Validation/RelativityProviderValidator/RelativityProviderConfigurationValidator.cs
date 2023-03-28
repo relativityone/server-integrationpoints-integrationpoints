@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
@@ -20,9 +19,9 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
         private readonly IAPILog _logger;
         private readonly ISerializer _serializer;
         private readonly IRelativityProviderValidatorsFactory _validatorsFactory;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
 
-        public RelativityProviderConfigurationValidator(IAPILog logger, ISerializer serializer, IRelativityProviderValidatorsFactory validatorsFactory, IToggleProvider toggleProvider)
+        public RelativityProviderConfigurationValidator(IAPILog logger, ISerializer serializer, IRelativityProviderValidatorsFactory validatorsFactory, IRipToggleProvider toggleProvider)
         {
             _logger = logger;
             _serializer = serializer;

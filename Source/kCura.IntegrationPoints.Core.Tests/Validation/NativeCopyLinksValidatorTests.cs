@@ -1,5 +1,10 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
+using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -8,13 +13,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
-using kCura.IntegrationPoints.Core.Factories;
 using Relativity.Services.Interfaces.Group;
-using Relativity.Toggles;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         private Mock<IGroupManager> _groupManager;
         private Mock<IInstanceSettingsManager> _instanceSettingsFake;
         private Mock<IManagerFactory> _managerFactoryFake;
-        private Mock<IToggleProvider> _toggleProviderFake;
+        private Mock<IRipToggleProvider> _toggleProviderFake;
         private const int _SOURCE_WORKSPACE_ID = 10000;
         private const int _ADMIN_GROUP_ID = 100;
         private const int _USER_IS_ADMIN_ID = 1;
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             _managerFactoryFake = new Mock<IManagerFactory>();
             _managerFactoryFake.Setup(m => m.CreateInstanceSettingsManager()).Returns(_instanceSettingsFake.Object);
 
-            _toggleProviderFake = new Mock<IToggleProvider>();
+            _toggleProviderFake = new Mock<IRipToggleProvider>();
 
             _sut = new NativeCopyLinksValidator(_loggerFake.Object, _helperFake.Object, _serializerFake.Object, _managerFactoryFake.Object, _toggleProviderFake.Object);
         }

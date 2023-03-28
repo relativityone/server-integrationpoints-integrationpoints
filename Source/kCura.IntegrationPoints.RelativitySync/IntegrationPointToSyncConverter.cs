@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.RelativitySync;
@@ -21,7 +22,6 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
-using Relativity.Toggles;
 using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
-        private readonly IToggleProvider _toggleProvider;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly IAPILog _logger;
 
         public IntegrationPointToSyncConverter(
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             IJobHistoryService jobHistoryService,
             IJobHistorySyncService jobHistorySyncService,
             ISyncOperationsWrapper syncOperations,
-            IToggleProvider toggleProvider,
+            IRipToggleProvider toggleProvider,
             IAPILog logger)
         {
             _serializer = serializer;

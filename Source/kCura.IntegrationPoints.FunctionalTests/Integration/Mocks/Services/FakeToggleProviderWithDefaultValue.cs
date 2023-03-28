@@ -37,18 +37,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
         public bool IsEnabledByName(string toggleName)
         {
-            switch (toggleName)
-            {
-                case "Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle":
-                    return false;
-                default:
-                    return false;
-            }
+            return _testCtx.ToggleValues.GetValue(toggleName);
         }
 
         public Task<bool> IsEnabledByNameAsync(string toggleName)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(IsEnabledByName(toggleName));
         }
 
         public Task SetAsync<T>(bool enabled) where T : IToggle

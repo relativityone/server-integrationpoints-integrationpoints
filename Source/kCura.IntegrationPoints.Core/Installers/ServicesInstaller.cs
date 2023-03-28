@@ -7,6 +7,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -36,6 +37,7 @@ using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
@@ -59,7 +61,6 @@ using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using SystemInterface.IO;
-using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -178,10 +179,11 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
 
             container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
+            container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleTransient());
 
             container.Register(Component.For<IDiagnosticLog>().UsingFactoryMethod<IDiagnosticLog>(c =>
             {
-                IToggleProvider toggle = c.Resolve<IToggleProvider>();
+                IRipToggleProvider toggle = c.Resolve<IRipToggleProvider>();
 
                 IAPILog log = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
 

@@ -39,6 +39,7 @@ namespace kCura.ScheduleQueue.Core.Validation
                 $"User (userId - {job.SubmittedBy}) who scheduled the job no longer exists, so the job schedule will be cancelled. " +
                 $"To enable the schedule again, edit the Integration Point and on Save schedule will be restored",
                 true,
+                true,
                 false);
         }
     }
