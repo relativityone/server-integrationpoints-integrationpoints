@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Telemetry.APM;
@@ -11,11 +11,12 @@ namespace kCura.IntegrationPoints.Common.Toggles
 {
     public class RipToggleProvider : IRipToggleProvider
     {
-        private readonly ConcurrentDictionary<string, bool> _cache = new ConcurrentDictionary<string, bool>();
+        private readonly Dictionary<string, bool> _cache = new Dictionary<string, bool>();
 
         private readonly IToggleProvider _toggleProvider;
         private readonly IAPM _apm;
         private readonly IAPILog _logger;
+        private readonly SemaphoreSlim _dictionarySemaphore = new SemaphoreSlim(1, 1);
 
         public RipToggleProvider(IToggleProvider toggleProvider, IAPM apm, IAPILog logger)
         {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Common.Toggles
 
         public bool IsEnabled<T>() where T : IToggle
         {
-            return IsEnabledAsync<T>().GetAwaiter().GetResult();
+            return IsEnabledByName(typeof(T).FullName);
         }
 
         public async Task<bool> IsEnabledAsync<T>() where T : IToggle
@@ -34,29 +35,54 @@ namespace kCura.IntegrationPoints.Common.Toggles
             return await IsEnabledByNameAsync(typeof(T).FullName).ConfigureAwait(false);
         }
 
-        public bool IsEnabledByName(string name)
+        public bool IsEnabledByName(string toggleName)
         {
-            return IsEnabledByNameAsync(name).GetAwaiter().GetResult();
-        }
-
-        public async Task<bool> IsEnabledByNameAsync(string name)
-        {
-            if (!_cache.ContainsKey(name))
+            _dictionarySemaphore.WaitAsync().GetAwaiter().GetResult();
+            try
             {
-                bool isEnabled = await _toggleProvider.IsEnabledByNameAsync(name).ConfigureAwait(false);
-                _cache[name] = isEnabled;
-                _logger.LogInformation("Toggle {toggleName} is enabled: {isEnabled}", name, isEnabled);
+                bool toggleValue;
+                if (!_cache.TryGetValue(toggleName, out toggleValue))
+                {
+                    toggleValue = _toggleProvider.IsEnabledByName(toggleName);
+                    SendToggleLog(toggleName, toggleValue);
+                    _cache.Add(toggleName, toggleValue);
+                }
 
-                SendToggleEvent(name, isEnabled);
+                return toggleValue;
             }
-
-            return _cache[name];
+            finally
+            {
+                _dictionarySemaphore.Release();
+            }
         }
 
-        private void SendToggleEvent(string toggleName, bool toggleValue)
+        public async Task<bool> IsEnabledByNameAsync(string toggleName)
+        {
+            await _dictionarySemaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                bool toggleValue;
+                if (!_cache.TryGetValue(toggleName, out toggleValue))
+                {
+                    toggleValue = await _toggleProvider.IsEnabledByNameAsync(toggleName).ConfigureAwait(false);
+                    SendToggleLog(toggleName, toggleValue);
+                    _cache.Add(toggleName, toggleValue);
+                }
+
+                return toggleValue;
+            }
+            finally
+            {
+                _dictionarySemaphore.Release();
+            }
+        }
+
+        private void SendToggleLog(string toggleName, bool toggleValue)
         {
             try
             {
+                _logger.LogInformation("Toggle {toggleName} value: {isEnabled}", toggleName, toggleValue);
+
                 Dictionary<string, object> attrs = new Dictionary<string, object>
                 {
                     { Names.R1TeamID, Values.R1TeamID },
