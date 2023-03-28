@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-    public abstract class InstanceSettingConditionBuilder
+    public class InstanceSettingConditionBuilder
     {
         public static string GetCondition(string name, string section)
         {
