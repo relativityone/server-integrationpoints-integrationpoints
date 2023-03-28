@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
 
             container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
-            container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleSingleton());
+            container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleTransient());
 
             container.Register(Component.For<IDiagnosticLog>().UsingFactoryMethod<IDiagnosticLog>(c =>
             {
