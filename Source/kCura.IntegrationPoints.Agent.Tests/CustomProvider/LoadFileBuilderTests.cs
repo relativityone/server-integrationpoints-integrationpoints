@@ -22,6 +22,7 @@ using Relativity.Storage;
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
     [TestFixture]
+    [Category("Unit")]
     public class LoadFileBuilderTests
     {
         private Mock<IRelativityStorageService> _storageService;
