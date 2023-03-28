@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -82,8 +83,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _importApiFactoryMock = new Mock<IImportApiFactory>();
             _importApiMock = new Mock<IImportAPI>();
             _importApiFacadeMock = new Mock<IImportApiFacade>();
-            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<ImportSettings>())).Returns(_importApiMock.Object);
-            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<ImportSettings>())).Returns(_importApiFacadeMock.Object);
+            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<string>())).Returns(_importApiMock.Object);
+            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<string>())).Returns(_importApiFacadeMock.Object);
         }
 
         [Test]
@@ -599,10 +600,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(artifactTypeId)).Returns(new List<RelativityObject>());
             _importApiMock.Setup(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId)).Returns(new List<kCura.Relativity.ImportAPI.Data.Field>());
-            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<ImportSettings>())).Returns(_importApiMock.Object);
+            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<string>())).Returns(_importApiMock.Object);
 
-            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<ImportSettings>()))
-                .Returns(new ImportApiFacade(_importApiFactoryMock.Object, new ImportSettings(), new Mock<IAPILog>().Object));
+            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<string>()))
+                .Returns(new ImportApiFacade(_importApiFactoryMock.Object, string.Empty, new Mock<ILogger<ImportApiFacade>>().Object));
 
             var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object);
 
@@ -611,7 +612,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             // Assert
             _relativityFieldQuery.Verify(x => x.GetFieldsForRdo(artifactTypeId), Times.Once);
-            _importApiFactoryMock.Verify(x => x.GetImportAPI(It.IsAny<ImportSettings>()), Times.Once);
+            _importApiFactoryMock.Verify(x => x.GetImportAPI(It.IsAny<string>()), Times.Once);
             _importApiMock.Verify(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId), Times.Once);
         }
 

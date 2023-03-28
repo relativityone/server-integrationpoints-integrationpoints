@@ -195,14 +195,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         internal void Connect(ImportSettings settings)
         {
-            _importApi = _factory.GetImportAPI(settings);
+            _importApi = _factory.GetImportAPI(settings.WebServiceURL);
         }
 
         internal void SetupFieldDictionary()
         {
             try
             {
-                IImportApiFacade facade = _factory.GetImportApiFacade(Settings);
+                IImportApiFacade facade = _factory.GetImportApiFacade(Settings.WebServiceURL);
                 _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.CaseArtifactId, Settings.ArtifactTypeId);
             }
             catch (Exception e)

@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         protected IImportAPI GetImportApi(ImportSettings settings)
         {
-            return _api ?? (_api = _factory.GetImportAPI(settings));
+            return _api ?? (_api = _factory.GetImportAPI(settings.WebServiceURL));
         }
 
         #region Logging

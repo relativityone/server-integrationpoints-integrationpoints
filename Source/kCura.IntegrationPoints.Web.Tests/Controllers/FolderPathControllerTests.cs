@@ -99,8 +99,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             var workspaceId = 123;
             var documentArtifactTypeId = 10;
 
-            var settings = new ImportSettings { WebServiceURL = webServiceUrl };
-
             var listOfFields = new List<FieldEntry> { new FieldEntry()};
             _choiceService.GetChoiceFields(workspaceId, Arg.Any<int>()).Returns(listOfFields);
 
@@ -108,7 +106,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             _config.WebApiPath.Returns(webServiceUrl);
 
-            _importApiFactory.GetImportAPI(settings).Returns(importApi);
+            _importApiFactory.GetImportAPI(webServiceUrl).Returns(importApi);
 
             importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId).Returns(new List<Field> { new Field() });
 

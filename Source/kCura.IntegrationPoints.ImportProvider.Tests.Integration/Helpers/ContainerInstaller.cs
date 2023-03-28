@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataExchange;
 using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
@@ -78,7 +79,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
         public static void RegisterSyncClasses(WindsorContainer windsorContainer)
         {
+            windsorContainer.Register(Component.For<IRetryHandlerFactory>().ImplementedBy<RetryHandlerFactory>().LifestyleTransient());
             windsorContainer.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
+            windsorContainer.Register(Component.For<IImportApiBuilder>().ImplementedBy<ImportApiBuilder>().LifestyleTransient());
+            windsorContainer.Register(Component.For<IRelativityTokenProvider>().ImplementedBy<RelativityTokenProvider>().LifestyleTransient());
             windsorContainer.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
             windsorContainer.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
 

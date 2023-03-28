@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Common
             _logger = logger;
         }
 
-        public IRetryHandler Create(ushort maxNumberOfRetries = 3, ushort exponentialWaitTimeBaseInSeconds = 3)
+        public IRetryHandler Create(ushort maxNumberOfRetries = 3, ushort exponentialWaitTimeBaseInSeconds = 2)
         {
             return new RetryHandler(_logger, maxNumberOfRetries, exponentialWaitTimeBaseInSeconds);
         }
