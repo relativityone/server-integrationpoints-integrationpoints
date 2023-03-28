@@ -61,10 +61,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
             {
                 using (IInstanceSettingManager instanceSettingManager = await _serviceFactory.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
                 {
-                    Query query = new Query
-                    {
-                        Condition = InstanceSettingConditionBuilder.GetCondition(name, section)
-                    };
+                    Query query = BuildInstanceSettingQuery(name, section);
                     InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query, 1).ConfigureAwait(false);
                     return resultSet;
                 }
@@ -77,6 +74,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
                     Message = ex.Message
                 };
             }
+        }
+
+        private static Query BuildInstanceSettingQuery(string name, string section)
+        {
+            return new Query
+            {
+                Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
+            };
         }
 
         private bool TryConvertValue<T>(object value, out T outVal)

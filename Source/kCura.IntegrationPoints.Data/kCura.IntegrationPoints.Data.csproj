@@ -118,7 +118,6 @@
     <Compile Include="Queries\CreateJobTrackingEntry.cs" />
     <Compile Include="Queries\GetJobIdsFromTrackingEntry.cs" />
     <Compile Include="Queries\IJobTrackerQueryManager.cs" />
-    <Compile Include="Queries\InstanceSettingConditionBuilder.cs" />
     <Compile Include="Queries\JobTrackerQueryManager.cs" />
     <Compile Include="Queries\RemoveEntryAndCheckBatchStatus.cs" />
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
