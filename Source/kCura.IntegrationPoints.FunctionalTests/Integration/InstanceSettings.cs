@@ -17,5 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         public TimeSpan DrainStopTimeout { get; set; }
 
         public int IApiBatchSize { get; set; }
+
+        public int CustomProviderBatchSize { get; set; }
     }
 }
