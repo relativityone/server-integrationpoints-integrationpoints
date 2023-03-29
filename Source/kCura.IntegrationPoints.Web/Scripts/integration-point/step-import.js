@@ -68,6 +68,7 @@
 						if (state) {
 							var stateObject = JSON.parse(state);
 							stateObject.SecuredConfiguration = self.model.SecuredConfiguration;
+							stateObject.CreateSavedSearchForTagging = JSON.parse(self.model.destination).CreateSavedSearchForTagging;
 							state = JSON.stringify(stateObject);
 						}
 
