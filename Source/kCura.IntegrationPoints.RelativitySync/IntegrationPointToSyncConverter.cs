@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -22,6 +23,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using Enumerable = System.Linq.Enumerable;
 using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
@@ -161,6 +163,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
             SourceConfiguration sourceConfiguration, ImportSettings importSettings)
         {
+            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(importSettings, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
+
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureDocumentSync(
@@ -169,7 +173,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         importSettings.DestinationFolderArtifactId)
                     {
                         CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        EnableTagging = importSettings.EnableTagging
+                        EnableTagging = importSettings.EnableTagging,
+                        // SmartOverwriteDate = smartOverwriteDate
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
@@ -200,6 +205,31 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
 
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
+        }
+
+        private async Task<DateTime?> GetSmartOverwriteDateAsync(ImportSettings importSettings, int workspaceId, int integrationPointId)
+        {
+            if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>())
+            {
+                return null;
+            }
+
+            if (importSettings.EnableTagging || !importSettings.UseSmartOverwrite)
+            {
+                return null;
+            }
+
+            RelativityObject jobHistory = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunAsync(workspaceId, integrationPointId).ConfigureAwait(false);
+
+            if (jobHistory != null)
+            {
+                DateTime startTime = (DateTime)jobHistory[JobHistoryFieldGuids.StartTimeUTCGuid].Value;
+                return startTime;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private async Task<int> CreateNonDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,

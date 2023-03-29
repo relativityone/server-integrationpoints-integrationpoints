@@ -9,11 +9,9 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -158,31 +156,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
                     x.Condition.Contains(artifactId.ToString())));
         }
-
-        [Test]
-        public void GetJobHistory_Succeeds_Test()
-        {
-            // Arrange
-            IList<int> jobHistoryArtifactIds = new[] { 123, 456, 789 };
-            string conditionValue = string.Join(",", jobHistoryArtifactIds);
-
-            _relativityObjectManager
-                .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x => x.Condition.Contains(conditionValue)))
-                .Returns(new List<Data.JobHistory>(1) { new Data.JobHistory() });
-
-            // Act
-            IList<Data.JobHistory> actual = _instance.GetJobHistory(jobHistoryArtifactIds);
-
-            // Assert
-            Assert.IsNotNull(actual);
-
-            _relativityObjectManager
-                .Received(1)
-                .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
-                    !string.IsNullOrEmpty(x.Condition) &&
-                        x.Condition.Contains(conditionValue)));
-        }
-
+        
         [Test]
         public void UpdateRdoWithoutDocuments_Succeeds_Test()
         {

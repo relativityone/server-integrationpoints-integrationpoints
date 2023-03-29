@@ -56,22 +56,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             return GetRdo(GetArtifactIdQueryCondition(artifactId), queryOptions);
         }
-
-        public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
-        {
-            _logger.LogInformation("Getting JobHistory list for [{jobHistoryArtifactIds}]",
-                string.Join(",", jobHistoryArtifactIds?.ToList() ?? new List<int>()));
-
-            var request = new QueryRequest
-            {
-                Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", jobHistoryArtifactIds.ToList())}]",
-                Fields = RDOConverter.GetFieldList<Data.JobHistory>()
-            };
-
-            IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
-            return jobHistories;
-        }
-
+        
         public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc)
         {
             Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);
