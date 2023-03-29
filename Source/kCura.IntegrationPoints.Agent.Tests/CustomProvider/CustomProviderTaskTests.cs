@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Import.V1;
@@ -29,8 +30,11 @@ using Relativity.Storage;
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
     [TestFixture]
+    [Category("Unit")]
     public class CustomProviderTaskTests
     {
+        private const int _destinationWorkspaceId = 111;
+
         private Mock<IKeplerServiceFactory> _serviceFactory;
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<ISourceProviderService> _sourceProviderService;
@@ -79,25 +83,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Returns(_importApiRunner.Object);
 
             _importJobController = new Mock<IImportJobController>();
+            _importJobController
+                .Setup(x => x.CancelAsync(_destinationWorkspaceId, It.IsAny<Guid>()))
+                .ReturnsAsync(new Response(Guid.Empty, true, string.Empty, string.Empty));
 
             _serviceFactory
                 .Setup(x => x.CreateProxyAsync<IImportJobController>())
                 .ReturnsAsync(_importJobController.Object);
 
-            IntegrationPointDto dto = new IntegrationPointDto();
-            _integrationPointService.Setup(x => x.Read(It.IsAny<int>())).Returns(dto);
-        }
-
-        [Test]
-        public void Execute_GoldFlow()
-        {
-            // Arrange
-            const int destinationWorkspaceId = 111;
-            const int numberOfBatches = 3;
-
             ImportSettings destinationConfiguration = new ImportSettings()
             {
-                CaseArtifactId = destinationWorkspaceId
+                CaseArtifactId = _destinationWorkspaceId
             };
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto()
@@ -107,6 +103,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             };
 
             _integrationPointService.Setup(x => x.Read(It.IsAny<int>())).Returns(integrationPointDto);
+        }
+
+        [Test]
+        public void Execute_GoldFlow()
+        {
+            // Arrange
+            const int numberOfBatches = 3;
 
             List<CustomProviderBatch> batches = Enumerable.Range(0, numberOfBatches).Select(x => new CustomProviderBatch()
             {
@@ -123,21 +126,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(new DataSourceSettings());
 
             _importSourceController
-                .Setup(x => x.AddSourceAsync(destinationWorkspaceId, It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()))
+                .Setup(x => x.AddSourceAsync(_destinationWorkspaceId, It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()))
                 .ReturnsAsync(new Response(Guid.Empty, true, string.Empty, string.Empty));
 
             _importJobController
-                .Setup(x => x.GetDetailsAsync(destinationWorkspaceId, It.IsAny<Guid>()))
+                .Setup(x => x.GetDetailsAsync(_destinationWorkspaceId, It.IsAny<Guid>()))
                 .ReturnsAsync(new ValueResponse<ImportDetails>(Guid.Empty, true, string.Empty, string.Empty, new ImportDetails(ImportState.Scheduled, string.Empty, 777, DateTime.Now, 777, DateTime.Now)));
 
             _importJobController
-                .Setup(x => x.EndAsync(destinationWorkspaceId, It.IsAny<Guid>()))
+                .Setup(x => x.EndAsync(_destinationWorkspaceId, It.IsAny<Guid>()))
                 .ReturnsAsync(new Response(Guid.Empty, true, string.Empty, string.Empty));
 
-            Job job = new Job()
-            {
-                JobDetails = string.Empty
-            };
+            Job job = new Job();
 
             CustomProviderTask sut = PrepareSut();
 
@@ -157,25 +157,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _importSourceController.Verify(x => x.AddSourceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()),
                 Times.Exactly(numberOfBatches));
-
         }
 
         [Test]
         public void Execute_ShouldCleanupImportDirectory_WhenExceptionIsThrown()
         {
             // Arrange
-            _integrationPointService
-                .Setup(x => x.Read(It.IsAny<int>()))
+            _sourceProviderService
+                .Setup(x => x.GetSourceProviderAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Throws<InvalidOperationException>();
 
             Job job = new Job();
 
             CustomProviderTask sut = PrepareSut();
 
-            // Act
-            sut.Execute(job);
+            // Act & Assert
+            Assert.Throws<InvalidOperationException>(() => sut.Execute(job));
 
-            // Assert
             _storageAccess
                 .Verify(x => x.DeleteDirectoryAsync(It.IsAny<string>(), It.IsAny<DeleteDirectoryOptions>(), It.IsAny<CancellationToken>()),
                     Times.Once);
