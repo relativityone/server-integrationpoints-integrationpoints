@@ -28,7 +28,7 @@ multibranchPipelineJob('IntegrationPoints-Jobs/IntegrationPoints-Nightly/Integra
         def traits = it / sources / data / 'jenkins.branch.BranchSource' / source / traits
         traits << 'jenkins.plugins.git.traits.BranchDiscoveryTrait'()
         traits << 'jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait' {
-            includes('master')
+            includes('develop master')
         }
         traits << 'jenkins.plugins.git.traits.CleanAfterCheckoutTrait' {
             extension(class:'hudson.plugins.git.extensions.impl.CleanCheckout')
