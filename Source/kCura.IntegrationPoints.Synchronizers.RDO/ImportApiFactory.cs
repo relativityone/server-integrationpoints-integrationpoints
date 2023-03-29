@@ -1,57 +1,53 @@
 ﻿using System;
 using System.Security.Authentication;
-using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
-using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Exceptions;
-using Polly;
-using Polly.Retry;
-using Relativity.API;
-using Relativity.DataExchange;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-    public class ImportApiFactory : IImportApiFactory
+    public sealed class ImportApiFactory : IImportApiFactory
     {
         private readonly IInstanceSettingsManager _instanceSettingsManager;
-        private readonly IAPILog _logger;
-        private readonly IAuthTokenGenerator _authTokenGenerator;
+        private readonly IImportApiBuilder _importApiBuilder;
+        private readonly IRetryHandler _retryHandler;
+        private readonly ILogger<ImportApiFactory> _logger;
 
         public ImportApiFactory(
-            IAuthTokenGenerator authTokenGenerator,
             IInstanceSettingsManager instanceSettingsManager,
-            IAPILog logger)
+            IImportApiBuilder importApiBuilder,
+            IRetryHandlerFactory retryHandlerFactory,
+            ILogger<ImportApiFactory> logger)
         {
-            _authTokenGenerator = authTokenGenerator;
             _instanceSettingsManager = instanceSettingsManager;
-            _logger = logger.ForContext<ImportApiFactory>();
+            _importApiBuilder = importApiBuilder;
+            _retryHandler = retryHandlerFactory.Create(7, 2);
+            _logger = logger;
         }
 
-        public virtual IImportAPI GetImportAPI(ImportSettings settings)
+        public IImportAPI GetImportAPI(string webServiceUrl)
         {
-            LogImportSettings(settings);
-
-            const int maxRetryCount = 7;
-
-            RetryPolicy policy = Policy
-                .Handle<Exception>()
-                .WaitAndRetry(retryCount: maxRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(ex, "Failed to create Import API. Retry {retry} of {maxRetryCount}", retryCount, maxRetryCount);
-                });
-
             try
             {
-                return policy.Execute(() => CreateImportAPI(settings));
+                return _retryHandler.Execute<IImportAPI, Exception>(
+                    () => CreateImportAPI(webServiceUrl),
+                    exception =>
+                    {
+                        _logger.LogWarning(
+                            exception,
+                            "Failed to create Import API for url: {webServiceUrl}. Operation will be retried.",
+                            webServiceUrl);
+                    });
             }
             catch (InvalidLoginException ex)
             {
-                LogLoginFailed(ex, settings.WebServiceURL);
+                LogLoginFailed(ex, webServiceUrl);
                 var authException = new AuthenticationException(ErrorMessages.Login_Failed, ex);
                 throw new IntegrationPointsException(ErrorMessages.Login_Failed, authException)
                 {
@@ -61,50 +57,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
             catch (Exception ex)
             {
-                LogCreatingImportApiError(ex, settings.WebServiceURL);
+                LogCreatingImportApiError(ex, webServiceUrl);
                 throw;
             }
         }
 
-        public IImportApiFacade GetImportApiFacade(ImportSettings settings)
+        public IImportApiFacade GetImportApiFacade(string webServiceUrl)
         {
-            return new ImportApiFacade(this, settings, _logger);
+            return new ImportApiFacade(this, webServiceUrl, _logger.ForContext<ImportApiFacade>());
         }
 
-        protected virtual IImportAPI CreateImportAPIForSettings(ImportSettings settings)
+        private IImportAPI CreateImportAPI(string webServiceUrl)
         {
-            if (settings.FederatedInstanceArtifactId != null)
-            {
-                throw new NotSupportedException("Instance-to-instance import is not supported.");
-            }
-
-            return CreateImportAPI(settings.WebServiceURL);
-        }
-
-        protected virtual IImportAPI CreateImportAPI(string webServiceUrl)
-        {
-            IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_authTokenGenerator);
-            AppSettings.Instance.ImportBatchSize = _instanceSettingsManager.GetIApiBatchSize();
-            return ExtendedImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
-        }
-
-        private IImportAPI CreateImportAPI(ImportSettings settings)
-        {
-            IImportAPI importApi = CreateImportAPIForSettings(settings);
-            var concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
-            concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
+            IImportAPI importApi = _importApiBuilder.CreateImportAPI(webServiceUrl, _instanceSettingsManager.GetIApiBatchSize());
             LogImportApiCreated();
             return importApi;
         }
 
         #region Logging
-
-        private void LogImportSettings(ImportSettings importSettings)
-        {
-            var importSettingsForLogging = new ImportSettingsForLogging(importSettings);
-
-            _logger.LogInformation("ImportSettings: {@importSettings}", importSettingsForLogging);
-        }
 
         private void LogCreatingImportApiError(Exception ex, string url)
         {
@@ -122,20 +92,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         #endregion
-
-        private class RelativityTokenProvider : IRelativityTokenProvider
-        {
-            private readonly IAuthTokenGenerator _authTokenGenerator;
-
-            public RelativityTokenProvider(IAuthTokenGenerator authTokenGenerator)
-            {
-                _authTokenGenerator = authTokenGenerator;
-            }
-
-            public string GetToken()
-            {
-                return _authTokenGenerator.GetAuthToken();
-            }
-        }
     }
 }

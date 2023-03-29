@@ -1,4 +1,7 @@
 ﻿using System;
+using FluentAssertions;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.ImportAPI;
@@ -11,80 +14,50 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
     [TestFixture]
     [Category("Unit")]
-    public class ImportApiFactoryTests : ImportApiFactory
+    public class ImportApiFactoryTests
     {
-        private bool _shouldThrowInvalidLoginException;
-        private bool _shouldThrowInvalidOperationException;
         private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
-        private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
+        private const string _LOCAL_INVALID_INSTANCE_ADDRESS = "http://fake-invalid-address.com/Relativity";
+
+        private ImportApiFactory _sut;
 
         public ImportApiFactoryTests()
-            : base(null, new Mock<IInstanceSettingsManager>().Object, PrepareLoggerStub())
-        { }
+        {
+            var retryHandlerFactoryMock = new Mock<IRetryHandlerFactory>();
+            var retryHandler = new RetryHandler(new Mock<IAPILog>().Object, 1, 1);
+            retryHandlerFactoryMock.Setup(x => x.Create(It.IsAny<ushort>(), It.IsAny<ushort>())).Returns(retryHandler);
+
+            var importApiBuilderMock = new Mock<IImportApiBuilder>();
+            importApiBuilderMock.Setup(x => x.CreateImportAPI(_LOCAL_INSTANCE_ADDRESS, It.IsAny<int>()))
+                .Returns(new Mock<IImportAPI>().Object);
+            importApiBuilderMock.Setup(x => x.CreateImportAPI(_LOCAL_INVALID_INSTANCE_ADDRESS, It.IsAny<int>()))
+                .Throws(new InvalidLoginException());
+
+            _sut = new ImportApiFactory(new Mock<IInstanceSettingsManager>().Object, importApiBuilderMock.Object, retryHandlerFactoryMock.Object, PrepareLoggerStub());
+        }
 
         [Test]
-        public void GetImportAPI_ShouldThrowNotSupportedException_WhenInstanceToInstance()
+        public void GetImportAPI_GoldFlow()
         {
-            // arrange
-            ImportSettings settings = new ImportSettings
-            {
-                WebServiceURL = _LOCAL_INSTANCE_ADDRESS,
-                FederatedInstanceArtifactId = _FEDERATED_INSTANCE_ARTIFACTID
-            };
-
             // act
-            TestDelegate createImportApiAction = () => GetImportAPI(settings);
+            var importApi = _sut.GetImportAPI(_LOCAL_INSTANCE_ADDRESS);
 
             // assert
-            Assert.Throws<NotSupportedException>(createImportApiAction);
+            importApi.Should().NotBeNull();
         }
 
         [Test]
         public void GetImportAPI_ShouldThrowIntegrationPointsException_WhenIAPICannotLogIn()
         {
-            // arrange
-            ImportSettings settings = new ImportSettings();
-            _shouldThrowInvalidLoginException = true;
-            _shouldThrowInvalidOperationException = false;
-
             // act & assert
-            Assert.Throws<IntegrationPointsException>(() => GetImportAPI(settings));
+            Assert.Throws<IntegrationPointsException>(() => _sut.GetImportAPI(_LOCAL_INVALID_INSTANCE_ADDRESS));
         }
 
-        [Test]
-        public void GetImportAPI_ShouldRethrowInvalidOperationException()
-        {
-            // arrange
-            ImportSettings settings = new ImportSettings();
-            _shouldThrowInvalidLoginException = false;
-            _shouldThrowInvalidOperationException = true;
-
-            // act & assert
-            Assert.Throws<InvalidOperationException>(() => GetImportAPI(settings));
-        }
-
-        protected override IImportAPI CreateImportAPI(string webServiceUrl)
-        {
-            if (_shouldThrowInvalidLoginException)
-            {
-                throw new InvalidLoginException("Login failed.");
-            }
-            else if (_shouldThrowInvalidOperationException)
-            {
-                throw new InvalidOperationException();
-            }
-            else
-            {
-                return new Mock<IImportAPI>().Object;
-            }
-        }
-
-        private static IAPILog PrepareLoggerStub()
+        private static ILogger<ImportApiFactory> PrepareLoggerStub()
         {
             Mock<IAPILog> loggerStub = new Mock<IAPILog>();
             loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
-
-            return loggerStub.Object;
+            return new Logger<ImportApiFactory>(loggerStub.Object);
         }
     }
 }

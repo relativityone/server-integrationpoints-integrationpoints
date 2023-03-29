@@ -511,7 +511,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private IImportApiFacade GetImportApiFacade(ImportSettings settings)
         {
-            return _factory.GetImportApiFacade(settings);
+            return _factory.GetImportApiFacade(settings.WebServiceURL);
         }
 
         private IEnumerable<FieldEntry> GetFieldsInternal(string options)
