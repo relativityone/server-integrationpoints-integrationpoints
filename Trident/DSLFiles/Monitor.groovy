@@ -5,7 +5,7 @@ buildMonitorView('IntegrationPoints-Jobs/Nightly-Monitor') {
     description('All jobs for IntegrationPoints-Nightly')
 	recurse(true)
 	jobs {
-		regex('(IntegrationPoints-Nightly.*)((release(.*))|(develop))')	
+		regex('(IntegrationPoints-Nightly.*)(master)')
 	}
 	statusFilter(StatusFilter.ENABLED)
 }
