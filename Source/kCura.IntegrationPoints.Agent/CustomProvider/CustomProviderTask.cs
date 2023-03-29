@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             CustomProviderJobDetails jobDetails = null;
             try
             {
-                jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(details);
+                jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(details ?? string.Empty);
             }
             catch (RipSerializationException ex)
             {

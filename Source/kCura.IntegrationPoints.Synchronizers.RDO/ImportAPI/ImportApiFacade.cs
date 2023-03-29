@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
@@ -16,19 +16,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.1 There was an error in Import API when fetching workspace fields.";
         private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
             "EC: 4.1 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
-        private readonly Lazy<IImportAPI> _importApi;
-        private readonly IAPILog _logger;
 
-        public ImportApiFacade(IImportApiFactory importApiFactory, IConfig config, IAPILog logger)
+        private readonly Lazy<IImportAPI> _importApi;
+        private readonly ILogger<ImportApiFacade> _logger;
+
+        public ImportApiFacade(IImportApiFactory importApiFactory, IConfig config, ILogger<ImportApiFacade> logger)
         {
-            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(new ImportSettings { WebServiceURL = config.WebApiPath }));
-            _logger = logger.ForContext<ImportApiFacade>();
+            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(config.WebApiPath));
+            _logger = logger;
         }
 
-        public ImportApiFacade(IImportApiFactory importApiFactory, ImportSettings importSettings, IAPILog logger)
+        public ImportApiFacade(IImportApiFactory importApiFactory, string webServiceUrl, ILogger<ImportApiFacade> logger)
         {
-            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(importSettings));
-            _logger = logger.ForContext<ImportApiFacade>();
+            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(webServiceUrl));
+            _logger = logger;
         }
 
         public HashSet<int> GetMappableArtifactIdsWithNotIdentifierFieldCategory(int workspaceArtifactID, int artifactTypeID)
