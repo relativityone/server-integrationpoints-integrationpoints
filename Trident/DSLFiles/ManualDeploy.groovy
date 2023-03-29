@@ -16,7 +16,7 @@ pipelineJob("IntegrationPoints-ManualDeploy/ManualDeploy") {
         booleanParam('overrideAutoPromote', false, 'Check this box to override auto promote logic and only deploy to the specified ring.')
     }
     definition {
-        cpsScm {           
+        cpsScm {
             scm {
                 git {
                     remote{
