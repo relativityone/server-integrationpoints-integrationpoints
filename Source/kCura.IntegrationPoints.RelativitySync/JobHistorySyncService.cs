@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactId}])";
             string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
-            string jobStatusCondition = $"('{JobHistoryFields.JobStatus}' IN CHOICE [{JobStatusChoices.JobHistoryCompletedGuid}])"; // only Completed?
+            string jobStatusCondition = $"('{JobHistoryFields.JobStatus}' IN CHOICE [{JobStatusChoices.JobHistoryCompletedGuid}])";
             string jobTypeCondition = $"('{JobHistoryFields.JobType}' IN CHOICE [{JobTypeChoices.JobHistoryRunGuid}])";
 
             string condition = $"{integrationPointCondition} AND {notRunningCondition} AND {jobStatusCondition} AND {jobTypeCondition}";
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         Direction = SortEnum.Descending,
                         FieldIdentifier = new FieldRef
                         {
-                            Guid = JobHistoryFieldGuids.EndTimeUTCGuid
+                            Guid = JobHistoryFieldGuids.StartTimeUTCGuid
                         }
                     }
                 }

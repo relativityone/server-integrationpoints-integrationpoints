@@ -173,8 +173,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         importSettings.DestinationFolderArtifactId)
                     {
                         CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        EnableTagging = importSettings.EnableTagging,
-                        // SmartOverwriteDate = smartOverwriteDate
+                        EnableTagging = importSettings.EnableTagging
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
@@ -186,7 +185,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                     new OverwriteOptions(
                         importSettings.ImportOverwriteMode.ToSyncImportOverwriteMode())
                     {
-                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
+                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior(),
+                        SmartOverwriteDate = smartOverwriteDate
                     })
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private async Task<DateTime?> GetSmartOverwriteDateAsync(ImportSettings importSettings, int workspaceId, int integrationPointId)
         {
-            if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>())
+            if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>().ConfigureAwait(false))
             {
                 return null;
             }
