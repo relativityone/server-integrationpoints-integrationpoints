@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Tests.Functional.DataModels;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework.Api.Kepler;
@@ -32,6 +33,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 }).ConfigureAwait(false);
 
                 integrationPoint.ArtifactId = result.ArtifactId;
+            }
+        }
+
+        public async Task<IntegrationPointTestModel> GetIntegrationPointAsync(int integrationPointId, int workspaceId)
+        {
+            using (var manager = _serviceFactory.GetServiceProxy<IObjectManager>())
+            {
+                var request = new QueryRequest()
+                {
+                    ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuids.IntegrationPointGuid },
+                    Condition = $"'ArtifactID' == {integrationPointId}",
+                    Fields = new FieldRef[] { new FieldRef { Name = "*" } }
+                };
+
+                QueryResult result = await manager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+
+                return IntegrationPointTestModel.ConvertFrom(result.Objects.Single());
             }
         }
 
