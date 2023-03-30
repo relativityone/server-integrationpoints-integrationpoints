@@ -1029,7 +1029,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             string queryObjectType = $"({q?.ObjectType?.Name}: {q?.ObjectType?.Guid})";
             string fields = ConvertFieldsToStringRepresentation(q);
 
-            return $"Cannot QUERY object of type '{rdoType}' with ObjectManager (Workspace: {_workspaceArtifactId}). Condition string length: {queryCondition?.Length}, Fields: {fields}, ObjectType: {queryObjectType}";
+            return $"Cannot QUERY object of type '{rdoType}' with ObjectManager (Workspace: {_workspaceArtifactId}). Condition: {queryCondition}, Fields: {fields}, ObjectType: {queryObjectType}";
         }
 
         private string ConvertFieldsToStringRepresentation(QueryRequest queryRequest)
