@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
             ErrorFilePath = string.Empty;
             EnableTagging = true;
+            UseSmartOverwrite = false;
         }
 
         #region "Public Properties"
@@ -183,6 +184,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public bool UseFolderPathInformation { get; set; }
 
         public int FolderPathSourceField { get; set; }
+
+        public bool UseSmartOverwrite { get; set; }
 
         #endregion "Public Properties"
 

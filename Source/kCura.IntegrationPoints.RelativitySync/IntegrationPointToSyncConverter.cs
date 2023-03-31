@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -22,6 +23,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using Enumerable = System.Linq.Enumerable;
 using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
@@ -161,6 +163,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
             SourceConfiguration sourceConfiguration, ImportSettings importSettings)
         {
+            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(importSettings, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
+
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureDocumentSync(
@@ -181,7 +185,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                     new OverwriteOptions(
                         importSettings.ImportOverwriteMode.ToSyncImportOverwriteMode())
                     {
-                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
+                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior(),
+                        SmartOverwriteDate = smartOverwriteDate
                     })
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
@@ -200,6 +205,22 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
 
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
+        }
+
+        private async Task<DateTime?> GetSmartOverwriteDateAsync(ImportSettings importSettings, int workspaceId, int integrationPointId)
+        {
+            if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>().ConfigureAwait(false))
+            {
+                return null;
+            }
+
+            if (importSettings.EnableTagging || !importSettings.UseSmartOverwrite)
+            {
+                return null;
+            }
+
+            DateTime? date = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId).ConfigureAwait(false);
+            return date;
         }
 
         private async Task<int> CreateNonDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,

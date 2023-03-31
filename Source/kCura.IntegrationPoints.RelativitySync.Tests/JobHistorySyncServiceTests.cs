@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -189,6 +190,55 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             VerifyJobHistoryStatus(JobStatusChoices.JobHistoryErrorJobFailedGuid);
 
             VerifyErrorsWereAdded();
+        }
+
+        [Test]
+        public async Task GetLastCompletedJobHistoryForRunAsync_ShouldReturnRecentJobHistory()
+        {
+            int workspaceId = 1000;
+            int integrationPointId = 111;
+            DateTime baseTime = new DateTime(2000, 1, 1);
+
+            // Arrange
+            const int numberOfJobHistories = 3;
+
+            List<RelativityObject> response = Enumerable
+                .Range(1, numberOfJobHistories)
+                .Select(x => new RelativityObject()
+                {
+                    FieldValues = new List<FieldValuePair>()
+                    {
+                        new FieldValuePair()
+                        {
+                            Field = new Field()
+                            {
+                                Guids = new List<Guid>()
+                                {
+                                    JobHistoryFieldGuids.StartTimeUTCGuid
+                                }
+                            },
+                            Value = baseTime.AddMinutes(x)
+                        }
+                    }
+                })
+                .Reverse()
+                .ToList();
+
+            _relativityObjectManagerFake
+                .Setup(x => x.QueryAsync(It.Is<QueryRequest>(request => 
+                    request.ObjectType.Guid == ObjectTypeGuids.JobHistoryGuid &&
+                    request.Sorts.Single().Direction == SortEnum.Descending &&
+                    request.Sorts.Single().FieldIdentifier.Guid == JobHistoryFieldGuids.StartTimeUTCGuid &&
+                    request.Condition == $"('Integration Point' INTERSECTS MULTIOBJECT [{integrationPointId}]) AND ('End Time (UTC)' ISSET) AND ('Job Status' IN CHOICE [c7d1eb34-166e-48d0-bce7-0be0df43511c]) AND ('Job Type' IN CHOICE [86c8c17d-74ec-4187-bdb1-9380252f4c20])"), It.IsAny<ExecutionIdentity>()))
+                .ReturnsAsync(response);
+
+            // Act
+            DateTime? actualDate = await _sut.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId)
+                .ConfigureAwait(false);
+            
+            // Assert
+            actualDate.Should().NotBeNull();
+            actualDate.Should().Be(baseTime.AddMinutes(numberOfJobHistories));
         }
 
         private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
