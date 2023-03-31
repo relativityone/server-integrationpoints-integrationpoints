@@ -103,6 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             await _toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
             await _toggleProvider.SetAsync<EnableTaggingToggle>(true).ConfigureAwait(false);
+            await _toggleProvider.SetAsync("Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle", true).ConfigureAwait(false);
 
             await _toggleProvider.SetAsync("Relativity.Core.Toggle.EnableClickTracking", true);
         }

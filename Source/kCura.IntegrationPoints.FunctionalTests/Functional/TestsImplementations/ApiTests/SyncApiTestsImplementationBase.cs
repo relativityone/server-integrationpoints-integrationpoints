@@ -78,8 +78,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
-            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
-                    expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
+            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID, expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
 
             // Assert
             List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -92,6 +91,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             itemsRead.Should().Be(destinationWorkspaceAllDocs.Count);
 
             destinationWorkspaceAllDocs.Should().HaveSameCount(sourceWorkspaceAlldocs);
+
+            IntegrationPointTestModel expectedIntegrationPoint = await _ripApi.GetIntegrationPointAsync(integrationPoint.ArtifactId, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+            expectedIntegrationPoint.HasErrors.Should().BeFalse();
+            expectedIntegrationPoint.LastRuntimeUTC.Should().NotBeNull();
         }
 
         protected async Task RunAndRetryIntegrationPointExecution(Action<Workspace> importAction)
@@ -109,12 +112,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             // 1. Job first run:
 
             // Arrange
-
             List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
-            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName,
-                    ImportOverwriteModeEnum.OverlayOnly, destinationWorkspaceDataService)
+            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName, ImportOverwriteModeEnum.OverlayOnly, destinationWorkspaceDataService)
                 .ConfigureAwait(false);
 
             await _ripApi.CreateIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -125,12 +126,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
             // Assert
-            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
-                expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
+            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID, expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
 
             (int runTransferredItems, int runItemsWithErrors, int itemsRead) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
 
             runItemsWithErrors.Should().Be(expectedItemErrorsToRetry);
+
+            IntegrationPointTestModel expectedIntegrationPoint = await _ripApi.GetIntegrationPointAsync(integrationPoint.ArtifactId, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+            expectedIntegrationPoint.HasErrors.Should().BeTrue();
+            expectedIntegrationPoint.LastRuntimeUTC.Should().NotBeNull();
+
+            DateTime lastRuntimeUTCOnRun = expectedIntegrationPoint.LastRuntimeUTC.Value;
 
             // 2. Job retry:
 
@@ -145,6 +151,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             retryItemsWithErrors.Should().Be(0);
             retryTransferredItems.Should().Be(expectedItemErrorsToRetry);
+
+            expectedIntegrationPoint = await _ripApi.GetIntegrationPointAsync(integrationPoint.ArtifactId, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+            expectedIntegrationPoint.HasErrors.Should().BeFalse();
+            expectedIntegrationPoint.LastRuntimeUTC.Should().BeAfter(lastRuntimeUTCOnRun);
         }
 
         protected int CreateSavedSearch(int workspaceId)
