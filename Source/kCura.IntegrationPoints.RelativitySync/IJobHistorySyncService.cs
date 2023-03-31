@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.RelativitySync
     {
         Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceId, int integrationPointArtifactId);
 
-        Task<RelativityObject> GetLastCompletedJobHistoryForRunAsync(int workspaceId, int integrationPointArtifactId);
+        Task<DateTime?> GetLastCompletedJobHistoryForRunDateAsync(int workspaceId, int integrationPointArtifactId);
 
         Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job);
 

@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             return results.FirstOrDefault();
         }
 
-        public async Task<RelativityObject> GetLastCompletedJobHistoryForRunAsync(int workspaceId, int integrationPointArtifactId)
+        public async Task<DateTime?> GetLastCompletedJobHistoryForRunDateAsync(int workspaceId, int integrationPointArtifactId)
         {
             string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactId}])";
             string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
@@ -100,7 +100,17 @@ namespace kCura.IntegrationPoints.RelativitySync
             };
 
             List<RelativityObject> results = await _relativityObjectManager.QueryAsync(queryRequest, executionIdentity: ExecutionIdentity.System).ConfigureAwait(false);
-            return results.FirstOrDefault();
+            RelativityObject jobHistory = results.FirstOrDefault();
+
+            if (jobHistory != null)
+            {
+                DateTime startTime = (DateTime)jobHistory[JobHistoryFieldGuids.StartTimeUTCGuid].Value;
+                return startTime;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job)

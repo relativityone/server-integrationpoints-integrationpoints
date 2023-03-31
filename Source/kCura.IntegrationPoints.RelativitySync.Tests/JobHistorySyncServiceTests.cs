@@ -233,12 +233,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .ReturnsAsync(response);
 
             // Act
-            RelativityObject actualJobHistory = await _sut.GetLastCompletedJobHistoryForRunAsync(workspaceId, integrationPointId)
+            DateTime? actualDate = await _sut.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId)
                 .ConfigureAwait(false);
             
             // Assert
-            DateTime actualDateTime = (DateTime)actualJobHistory.FieldValues.Single().Value;
-            actualDateTime.Should().Be(baseTime.AddMinutes(numberOfJobHistories));
+            actualDate.Should().NotBeNull();
+            actualDate.Should().Be(baseTime.AddMinutes(numberOfJobHistories));
         }
 
         private void VerifyJobHistoryStatus(Guid expectedStatusGuid)

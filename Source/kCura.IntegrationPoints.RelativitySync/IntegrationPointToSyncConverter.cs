@@ -219,17 +219,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return null;
             }
 
-            RelativityObject jobHistory = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunAsync(workspaceId, integrationPointId).ConfigureAwait(false);
-
-            if (jobHistory != null)
-            {
-                DateTime startTime = (DateTime)jobHistory[JobHistoryFieldGuids.StartTimeUTCGuid].Value;
-                return startTime;
-            }
-            else
-            {
-                return null;
-            }
+            DateTime? date = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId).ConfigureAwait(false);
+            return date;
         }
 
         private async Task<int> CreateNonDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
