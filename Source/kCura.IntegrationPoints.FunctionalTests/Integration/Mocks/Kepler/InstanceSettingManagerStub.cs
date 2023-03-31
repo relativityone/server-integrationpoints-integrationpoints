@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Queries;
 using Moq;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
@@ -55,16 +56,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 RipInstanceSettings.IAPI_BATCH_SIZE,
                 RipInstanceSettings.INTEGRATION_POINTS_SECTION,
                 settings => settings.IApiBatchSize.ToString());
+
+            SetupInstanceSettingInternal(_context.InstanceSettings,
+                RipInstanceSettings.CUSTOM_PROVIDER_BATCH_SIZE,
+                RipInstanceSettings.INTEGRATION_POINTS_SECTION,
+                settings => settings.CustomProviderBatchSize.ToString());
         }
 
         private void SetupInstanceSettingInternal(InstanceSettings settings,
             string name, string section, Expression<Func<InstanceSettings, string>> returnedValueFunc)
         {
-            Mock.Setup(x => x.QueryAsync(It.Is<Relativity.Services.Query>(q => q.Condition ==
-                    $"('Name' == '{name}' AND 'Section' == '{section}')"), 1))
+            Mock.Setup(x => x.QueryAsync(
+                It.Is<Relativity.Services.Query>(q => q.Condition ==
+                                                      $"('Name' == '{name}' AND 'Section' == '{section}')"), 1))
                 .Returns(() =>
                 {
-                    var result =  new InstanceSettingQueryResultSet
+                    var result = new InstanceSettingQueryResultSet
                     {
                         Results = new List<Result<Relativity.Services.InstanceSetting.InstanceSetting>>
                         {

@@ -79,25 +79,18 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
+    Move-TestSettings $LogsDir
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
     
     if($Env:BRANCH_NAME -eq 'master') {
-        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
-    }
-    elseif($Env:BRANCH_NAME -eq 'develop'){
         $OneTimeSetupLogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
         Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
 
-        Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
     }
     else {
         Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
     }
-}
-
-Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -110,7 +103,7 @@ Task Package -Description "Package up the build artifacts" {
     $RAPBuilder = Join-Path $buildTools "Relativity.RAPBuilder\tools\Relativity.RAPBuilder.exe"
     $BuildXML = Join-Path $developmentScripts "build.xml"
 
-     exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
+    exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
 
     exec { & $RAPBuilder `
         "--source" "$PSScriptRoot" `
@@ -162,13 +155,13 @@ Task Help -Alias ? -Description "Display task information" {
 }
 
 Task OneTimeTestsSetup -Description "Should be run always before running tests that require setup in deployed environment." {
-    Move-TestSettings $LogsDir
-
     $LogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
     Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $LogPath
 }
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
+    Move-TestSettings $LogsDir
+
     Invoke-MyTest
 }
 
