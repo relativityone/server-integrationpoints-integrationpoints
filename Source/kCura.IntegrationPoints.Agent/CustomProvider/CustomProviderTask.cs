@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
-using Relativity;
 using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
@@ -175,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             CustomProviderJobDetails jobDetails = null;
             try
             {
-                jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(details);
+                jobDetails = _serializer.Deserialize<CustomProviderJobDetails>(details ?? string.Empty);
             }
             catch (RipSerializationException ex)
             {

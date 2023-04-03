@@ -15,8 +15,8 @@ namespace kCura.IntegrationPoints.Data
 {
     public class RetryHandler : IRetryHandler
     {
-        private const ushort _MAX_NUMBER_OF_RETRIES = 3;
-        private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
+        private const ushort _DEFAULT_MAX_NUMBER_OF_RETRIES = 3;
+        private const ushort _DEFAULT_EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 2;
         private const string _CALLER_NAME_KEY = "CallerName";
         private const int _secondsBetweenSqlRetriesBase = 4;
         private readonly ushort _maxNumberOfRetries;
@@ -24,13 +24,8 @@ namespace kCura.IntegrationPoints.Data
         private readonly IAPILog _logger;
         private readonly Random _random;
 
-        public RetryHandler(IAPILog logger)
+        public RetryHandler(IAPILog logger) : this(logger, _DEFAULT_MAX_NUMBER_OF_RETRIES, _DEFAULT_EXPONENTIAL_WAIT_TIME_BASE_IN_SEC)
         {
-            _maxNumberOfRetries = _MAX_NUMBER_OF_RETRIES;
-            _exponentialWaitTimeBaseInSeconds = _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC;
-            _logger = logger?.ForContext<RetryHandler>();
-
-            _random = new Random((int)DateTimeOffset.Now.ToUnixTimeSeconds());
         }
 
         public RetryHandler(IAPILog logger, ushort maxNumberOfRetries, ushort exponentialWaitTimeBaseInSeconds)

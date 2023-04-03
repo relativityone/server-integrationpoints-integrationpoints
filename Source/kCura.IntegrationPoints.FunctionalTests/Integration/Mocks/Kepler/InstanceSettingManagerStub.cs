@@ -68,7 +68,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             Mock.Setup(x => x.QueryAsync(
                 It.Is<Relativity.Services.Query>(q => q.Condition ==
-                                                      InstanceSettingConditionBuilder.GetCondition(name, section)), 1))
+                                                      $"('Name' == '{name}' AND 'Section' == '{section}')"), 1))
                 .Returns(() =>
                 {
                     var result = new InstanceSettingQueryResultSet

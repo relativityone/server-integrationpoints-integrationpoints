@@ -25,9 +25,9 @@ namespace kCura.IntegrationPoints.RelativitySync
             _logger = logger.ForContext<JobHistorySyncService>();
         }
 
-        public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID, int integrationPointArtifactID)
+        public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceId, int integrationPointArtifactId)
         {
-            string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactID}])";
+            string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactId}])";
             string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
             string jobStatusCondition = $"('{JobHistoryFields.JobStatus}' IN CHOICE [{JobStatusChoices.JobHistoryCompletedWithErrorsGuid}, {JobStatusChoices.JobHistoryErrorJobFailedGuid}])";
             string condition = $"{integrationPointCondition} AND {notRunningCondition} AND {jobStatusCondition}";
@@ -61,6 +61,56 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             List<RelativityObject> results = await _relativityObjectManager.QueryAsync(queryRequest, executionIdentity: ExecutionIdentity.System).ConfigureAwait(false);
             return results.FirstOrDefault();
+        }
+
+        public async Task<DateTime?> GetLastCompletedJobHistoryForRunDateAsync(int workspaceId, int integrationPointArtifactId)
+        {
+            string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactId}])";
+            string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
+            string jobStatusCondition = $"('{JobHistoryFields.JobStatus}' IN CHOICE [{JobStatusChoices.JobHistoryCompletedGuid}])";
+            string jobTypeCondition = $"('{JobHistoryFields.JobType}' IN CHOICE [{JobTypeChoices.JobHistoryRunGuid}])";
+
+            string condition = $"{integrationPointCondition} AND {notRunningCondition} AND {jobStatusCondition} AND {jobTypeCondition}";
+
+            var queryRequest = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef()
+                {
+                    Guid = ObjectTypeGuids.JobHistoryGuid
+                },
+                Condition = condition,
+                Fields = new[]
+                {
+                    new FieldRef
+                    {
+                        Guid = JobHistoryFieldGuids.StartTimeUTCGuid
+                    }
+                },
+                Sorts = new List<Sort>
+                {
+                    new Sort
+                    {
+                        Direction = SortEnum.Descending,
+                        FieldIdentifier = new FieldRef
+                        {
+                            Guid = JobHistoryFieldGuids.StartTimeUTCGuid
+                        }
+                    }
+                }
+            };
+
+            List<RelativityObject> results = await _relativityObjectManager.QueryAsync(queryRequest, executionIdentity: ExecutionIdentity.System).ConfigureAwait(false);
+            RelativityObject jobHistory = results.FirstOrDefault();
+
+            if (jobHistory != null)
+            {
+                DateTime startTime = (DateTime)jobHistory[JobHistoryFieldGuids.StartTimeUTCGuid].Value;
+                return startTime;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job)

@@ -61,6 +61,7 @@ using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using SystemInterface.IO;
+using Relativity.DataExchange;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -137,6 +138,8 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifestyleTransient());
             container.Register(Component.For<IJobTracker>().ImplementedBy<JobTracker>().LifestyleTransient());
             container.Register(Component.For<ITaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
+            container.Register(Component.For<IImportApiBuilder>().ImplementedBy<ImportApiBuilder>().LifestyleTransient());
+            container.Register(Component.For<IRelativityTokenProvider>().ImplementedBy<RelativityTokenProvider>().LifestyleTransient());
             container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
             container.Register(Component.For<IImportApiFacade>().ImplementedBy<ImportApiFacade>().LifestyleTransient());
             container.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
@@ -179,7 +182,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
 
             container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
-            container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleSingleton());
+            container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleTransient());
 
             container.Register(Component.For<IDiagnosticLog>().UsingFactoryMethod<IDiagnosticLog>(c =>
             {
