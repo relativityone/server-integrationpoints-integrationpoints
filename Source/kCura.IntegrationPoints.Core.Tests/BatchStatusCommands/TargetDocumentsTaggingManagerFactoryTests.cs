@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private ISerializer _serializer;
         private FieldMap[] _fields;
         private TargetDocumentsTaggingManagerFactory _instance;
-        private ImportSettings _destinationConfiguration;
+        private ImportSettings _importSettings;
         private IDataSynchronizer _dataSynchronizer;
         private IDiagnosticLog _diagnosticLog;
         private const int _JOBHISTORY_ARTIFACT_ID = 321;
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _helper = Substitute.For<IHelper>();
             _diagnosticLog = Substitute.For<IDiagnosticLog>();
             _fields = new FieldMap[0];
-            _destinationConfiguration = new ImportSettings();
+            _importSettings = new ImportSettings(new DestinationConfiguration());
         }
 
         [Test]
@@ -65,21 +65,21 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _serializer,
                 _fields,
                 _sourceConfiguration,
-                _destinationConfiguration,
+                _importSettings,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
                 _diagnosticLog
             );
 
             // ASSERT
-            Assert.AreEqual(ImportOverwriteModeEnum.OverlayOnly, _destinationConfiguration.ImportOverwriteMode);
-            Assert.AreEqual(ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE, _destinationConfiguration.FieldOverlayBehavior);
-            Assert.IsFalse(_destinationConfiguration.CopyFilesToDocumentRepository);
-            Assert.IsNull(_destinationConfiguration.FileNameColumn);
-            Assert.IsNull(_destinationConfiguration.NativeFilePathSourceFieldName);
-            Assert.IsNull(_destinationConfiguration.FolderPathSourceFieldName);
-            Assert.That(_destinationConfiguration.Provider, Is.Null.Or.Empty);
-            Assert.IsFalse(_destinationConfiguration.ImportNativeFile);
+            Assert.AreEqual(ImportOverwriteModeEnum.OverlayOnly, _importSettings.DestinationConfiguration.ImportOverwriteMode);
+            Assert.AreEqual(ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE, _importSettings.DestinationConfiguration.FieldOverlayBehavior);
+            Assert.IsFalse(_importSettings.DestinationConfiguration.CopyFilesToDocumentRepository);
+            Assert.IsNull(_importSettings.FileNameColumn);
+            Assert.IsNull(_importSettings.NativeFilePathSourceFieldName);
+            Assert.IsNull(_importSettings.FolderPathSourceFieldName);
+            Assert.That(_importSettings.DestinationConfiguration.Provider, Is.Null.Or.Empty);
+            Assert.IsFalse(_importSettings.DestinationConfiguration.ImportNativeFile);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 SourceWorkspaceArtifactId = 1,
                 TargetWorkspaceArtifactId = 2
             };
-            _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfiguration).Returns(_dataSynchronizer);
+            _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _importSettings.DestinationConfiguration).Returns(_dataSynchronizer);
             _instance = new TargetDocumentsTaggingManagerFactory
             (
                 _repositoryFactory,
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _serializer,
                 _fields,
                 _sourceConfiguration,
-                _destinationConfiguration,
+                _importSettings,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
                 _diagnosticLog

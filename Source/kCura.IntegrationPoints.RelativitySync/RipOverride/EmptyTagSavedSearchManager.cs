@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RipOverride
     // This way we can disable creation of saved search in destination workspace.
     internal sealed class EmptyTagSavedSearchManager : ITagSavedSearchManager
     {
-        public void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, ImportSettings importSettings, TagsContainer tagsContainer)
+        public void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, DestinationConfiguration destinationConfiguration, TagsContainer tagsContainer)
         {
             // method intentionally left empty
         }

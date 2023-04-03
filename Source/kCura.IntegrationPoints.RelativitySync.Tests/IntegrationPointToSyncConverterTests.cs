@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         private Mock<IRipToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;
@@ -412,9 +412,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
 
-        private static ImportSettings CreateNativeDestinationConfiguration()
+        private static DestinationConfiguration CreateNativeDestinationConfiguration()
         {
-            return new ImportSettings
+            return new DestinationConfiguration()
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -425,13 +425,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             };
         }
 
-        private static ImportSettings CreateImageDestinationConfiguration(
+        private static DestinationConfiguration CreateImageDestinationConfiguration(
             ImportNativeFileCopyModeEnum importFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks,
             bool includeOriginalImages = true,
             int productionPrecedence = 0,
             IEnumerable<ProductionDTO> imagePrecedence = null)
         {
-            return new ImportSettings
+            return new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -446,9 +446,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             };
         }
 
-        private static ImportSettings CreateNonDocumentDestinationConfiguration()
+        private static DestinationConfiguration CreateNonDocumentDestinationConfiguration()
         {
-            return new ImportSettings
+            return new DestinationConfiguration
             {
                 ArtifactTypeId = _SOURCE_ARTIFACT_TYPE_ID,
                 DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,

@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core
 {
     public interface ITaskParametersBuilder
     {
-        TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, ImportSettings destinationConfiguration);
+        TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, DestinationConfiguration destinationConfiguration);
     }
 }

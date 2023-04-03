@@ -145,9 +145,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return _integrationPointRepository.GetSourceConfigurationAsync(artifactId).GetAwaiter().GetResult();
         }
 
-        public ImportSettings GetDestinationConfiguration(int artifactId)
+        public DestinationConfiguration GetDestinationConfiguration(int artifactId)
         {
-            return ReadLongTextWithRetries<ImportSettings>(_integrationPointRepository.GetDestinationConfigurationAsync, artifactId);
+            return ReadLongTextWithRetries<DestinationConfiguration>(_integrationPointRepository.GetDestinationConfigurationAsync, artifactId);
         }
 
         public CalculationState GetCalculationState(int artifactId)
@@ -840,7 +840,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception("Cannot find choice by the name " + dto.SelectedOverwrite);
             }
 
-            var IntegrationPointRdo = new Data.IntegrationPoint
+            var integrationPointRdo = new Data.IntegrationPoint
             {
                 ArtifactId = dto.ArtifactId,
                 Name = dto.Name,
@@ -850,7 +850,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     : dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new ImportSettings()),
+                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new DestinationConfiguration()),
                 FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,
@@ -863,18 +863,18 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 JobHistory = dto.JobHistory?.ToArray(),
             };
 
-            if (IntegrationPointRdo.EnableScheduler.GetValueOrDefault(false))
+            if (integrationPointRdo.EnableScheduler.GetValueOrDefault(false))
             {
-                IntegrationPointRdo.ScheduleRule = rule.ToSerializedString();
-                IntegrationPointRdo.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
+                integrationPointRdo.ScheduleRule = rule.ToSerializedString();
+                integrationPointRdo.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
             }
             else
             {
-                IntegrationPointRdo.ScheduleRule = string.Empty;
-                IntegrationPointRdo.NextScheduledRuntimeUTC = null;
+                integrationPointRdo.ScheduleRule = string.Empty;
+                integrationPointRdo.NextScheduledRuntimeUTC = null;
             }
 
-            return IntegrationPointRdo;
+            return integrationPointRdo;
         }
 
         private bool FilterSyncAppJobHistory(Data.JobHistory jobHistory)

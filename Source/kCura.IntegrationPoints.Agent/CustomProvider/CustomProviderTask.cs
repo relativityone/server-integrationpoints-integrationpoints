@@ -52,12 +52,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
-                ImportSettings destinationConfiguration = integrationPointDto.DestinationConfiguration;
 
                 CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);
 
                 await _importJobRunner
-                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, destinationConfiguration, token)
+                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, token)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

@@ -54,10 +54,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             yield return new TestCaseData(
                 true,
                 0,
-                new ImportSettings
+                new DestinationConfiguration()
                 {
                     ArtifactTypeId = 10,
-                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                     CaseArtifactId = 1075642,
                     ProductionArtifactId = _PRODUCTION_ARTIFACT_ID
                 });
@@ -65,10 +64,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             yield return new TestCaseData(
                 true,
                 0,
-                new ImportSettings
+                new DestinationConfiguration
                 {
                     ArtifactTypeId = 10,
-                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                     CaseArtifactId = 1075642,
                     DestinationFolderArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID
                 });
@@ -76,10 +74,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             yield return new TestCaseData(
                 false,
                 1,
-                new ImportSettings
+                new DestinationConfiguration
                 {
                     ArtifactTypeId = 10,
-                    DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                     CaseArtifactId = 1075642,
                 });
         }
@@ -108,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         }
 
         [TestCaseSource(typeof(RelativityProviderConfigurationValidatorTests), nameof(ConfigurationTestsData))]
-        public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, ImportSettings destinationConfiguration)
+        public void ItShouldValidateConfiguration(bool expectedValidationResult, int numberOfErrorMessages, DestinationConfiguration destinationConfiguration)
         {
             // arrange
             _workspaceValidatorMock.Validate(Arg.Any<int>())

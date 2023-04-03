@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
                 DestinationProvider = _DEST_PROVIDER_ID,
                 Name = "Name",
                 SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.Name,
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SourceConfiguration = string.Empty,
                 Scheduler = null,
                 EmailNotificationRecipients = string.Empty,

@@ -73,13 +73,13 @@ namespace kCura.IntegrationPoint.Tests.Core
                 ArtifactId = INTEGRATION_POINT_ID,
                 SourceConfiguration =
                     $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
-                DestinationConfiguration = new ImportSettings { ArtifactTypeId = _ARTIFACT_TYPE_ID },
+                DestinationConfiguration = new DestinationConfiguration { ArtifactTypeId = _ARTIFACT_TYPE_ID },
                 SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
                 DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
                 ObjectTypeGuid = Guid.Empty
             };
 
-            _validationModel.DestinationConfiguration = new ImportSettings
+            _validationModel.DestinationConfiguration = new DestinationConfiguration()
             {
                 ArtifactTypeId = _ARTIFACT_TYPE_ID,
                 DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,

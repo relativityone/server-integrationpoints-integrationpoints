@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.AutoNumberImages = autoNumberImages;
+            importSettings.DestinationConfiguration.AutoNumberImages = autoNumberImages;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.ProductionImport = forProduction;
+            importSettings.DestinationConfiguration.ProductionImport = forProduction;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.ProductionArtifactId = productionArtifactId;
+            importSettings.DestinationConfiguration.ProductionArtifactId = productionArtifactId;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.ExtractedTextFileEncoding = encoding;
+            importSettings.DestinationConfiguration.ExtractedTextFileEncoding = encoding;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.ExtractedTextFieldContainsFilePath = containsPath;
+            importSettings.DestinationConfiguration.ExtractedTextFieldContainsFilePath = containsPath;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.SelectedCaseFileRepoPath = casePath;
+            importSettings.DestinationConfiguration.SelectedCaseFileRepoPath = casePath;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.DestinationFolderArtifactId = artifactId;
+            importSettings.DestinationConfiguration.DestinationFolderArtifactId = artifactId;
             var imageSettings = GetImageSettings();
 
             // Act
@@ -188,13 +188,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         {
             // Arrange
             var importSettings = GetImportSettings();
-            importSettings.AutoNumberImages = autoNumberImages;
-            importSettings.ProductionImport = forProduction;
-            importSettings.ExtractedTextFieldContainsFilePath = containsPath;
-            importSettings.ProductionArtifactId = productionArtifactId;
-            importSettings.DestinationFolderArtifactId = artifactId;
-            importSettings.ExtractedTextFileEncoding = encoding;
-            importSettings.SelectedCaseFileRepoPath = casePath;
+            importSettings.DestinationConfiguration.AutoNumberImages = autoNumberImages;
+            importSettings.DestinationConfiguration.ProductionImport = forProduction;
+            importSettings.DestinationConfiguration.ExtractedTextFieldContainsFilePath = containsPath;
+            importSettings.DestinationConfiguration.ProductionArtifactId = productionArtifactId;
+            importSettings.DestinationConfiguration.DestinationFolderArtifactId = artifactId;
+            importSettings.DestinationConfiguration.ExtractedTextFileEncoding = encoding;
+            importSettings.DestinationConfiguration.SelectedCaseFileRepoPath = casePath;
 
             var imageSettings = GetImageSettings();
 
@@ -228,9 +228,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
 
         protected ImportSettings GetImportSettings()
         {
-            var importSettings = new ImportSettings();
-            importSettings.ExtractedTextFileEncoding = "UTF-8";
-            return importSettings;
+            return new ImportSettings(new DestinationConfiguration { ExtractedTextFileEncoding = "UTF-8" });
         }
 
         protected ImageSettings GetImageSettings()

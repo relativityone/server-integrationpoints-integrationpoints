@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected override IDataSynchronizer GetDestinationProvider(
             DestinationProvider destinationProviderRdo,
-            ImportSettings configuration,
+            DestinationConfiguration configuration,
             Job job)
         {
             var providerGuid = new Guid(destinationProviderRdo.Identifier);
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         protected override void ExecuteImport(
             IEnumerable<FieldMap> fieldMap,
             DataSourceProviderConfiguration configuration,
-            ImportSettings destinationConfiguration,
+            DestinationConfiguration destinationConfiguration,
             List<string> entryIDs,
             SourceProvider sourceProviderRdo,
             DestinationProvider destinationProvider,

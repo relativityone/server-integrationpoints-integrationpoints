@@ -148,9 +148,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             return Serializer.Serialize(sourceConfiguration);
         }
 
-        protected ImportSettings CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
+        protected DestinationConfiguration CreateDestinationConfigWithTargetWorkspace(ImportOverwriteModeEnum overwriteMode, int targetWorkspaceId)
         {
-            return new ImportSettings
+            return new DestinationConfiguration()
             {
                 ArtifactTypeId = 10,
                 CaseArtifactId = targetWorkspaceId,
@@ -159,9 +159,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                 ImportNativeFile = false,
                 ExtractedTextFieldContainsFilePath = false,
                 FieldOverlayBehavior = "Use Field Settings",
-                RelativityUsername = SharedVariables.RelativityUserName,
-                RelativityPassword = SharedVariables.RelativityPassword,
-                DestinationProviderType = "74A863B9-00EC-4BB7-9B3E-1E22323010C6",
                 DestinationFolderArtifactId = GetRootFolder(Helper, targetWorkspaceId),
                 ExtractedTextFileEncoding = "utf-8"
             };

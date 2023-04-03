@@ -1,5 +1,6 @@
 ﻿using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -24,9 +25,9 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
         public SourceProvider SourceProvider { get; set; }
 
-        public IDataSynchronizer CreateSynchronizer(Guid identifier, ImportSettings options)
+        public IDataSynchronizer CreateSynchronizer(Guid identifier, DestinationConfiguration options)
         {
-            return options.IsRelativityProvider()
+            return string.Equals(options.Provider, nameof(ProviderType.Relativity), StringComparison.InvariantCultureIgnoreCase)
                 ? _relativityRdoSynchronizerFactory.CreateSynchronizer(options, SourceProvider, _diagnosticLog)
                 : _importProviderRdoSynchronizerFactory.CreateSynchronizer(options, TaskJobSubmitter, _diagnosticLog);
         }

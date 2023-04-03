@@ -5,8 +5,8 @@ namespace kCura.IntegrationPoints.Core
 {
     public interface IImportFileLocationService
     {
-        string ErrorFilePath(int integrationPointArtifactId, string integrationPointName, string sourceConfiguration, ImportSettings destinationConfiguration);
+        string ErrorFilePath(int integrationPointArtifactId, string integrationPointName, string sourceConfiguration, DestinationConfiguration destinationConfiguration);
 
-        LoadFileInfo LoadFileInfo(string sourceConfiguration, ImportSettings destinationConfiguration);
+        LoadFileInfo LoadFileInfo(string sourceConfiguration, DestinationConfiguration destinationConfiguration);
     }
 }

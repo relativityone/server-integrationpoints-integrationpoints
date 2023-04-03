@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public void Setup()
         {
             Mock<IImportFileLocationService> importFileLocationService = new Mock<IImportFileLocationService>();
-            importFileLocationService.Setup(x => x.LoadFileInfo(It.IsAny<string>(), It.IsAny<ImportSettings>()))
+            importFileLocationService.Setup(x => x.LoadFileInfo(It.IsAny<string>(), It.IsAny<DestinationConfiguration>()))
                 .Returns(new Data.LoadFileInfo
                 {
                     Size = _LOAD_FILE_SIZE,
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public void Build_ShouldReturnLoadFileInfo_WhenImportLoadFileTaskTypeIsSelected()
         {
             // Act
-            TaskParameters taskParameters = _sut.Build(TaskType.ImportService, _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<ImportSettings>());
+            TaskParameters taskParameters = _sut.Build(TaskType.ImportService, _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<DestinationConfiguration>());
 
             // Assert
             taskParameters.BatchInstance.Should().Be(_BATCH_INSTANCE_ID);
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public void Build_ShouldReturnEmptyTaskParameters_WhenAnyTaskTypeWasSelected()
         {
             // Act
-            TaskParameters taskParameters = _sut.Build(It.IsAny<TaskType>(), _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<ImportSettings>());
+            TaskParameters taskParameters = _sut.Build(It.IsAny<TaskType>(), _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<DestinationConfiguration>());
 
             // Assert
             taskParameters.BatchInstance.Should().Be(_BATCH_INSTANCE_ID);

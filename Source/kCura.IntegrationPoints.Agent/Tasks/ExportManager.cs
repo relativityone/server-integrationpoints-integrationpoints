@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return totalCount;
         }
 
-        private long GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, ImportSettings destinationConfiguration, Job job)
+        private long GetTotalExportItemsCount(ExportUsingSavedSearchSettings settings, DestinationConfiguration destinationConfiguration, Job job)
         {
             try
             {

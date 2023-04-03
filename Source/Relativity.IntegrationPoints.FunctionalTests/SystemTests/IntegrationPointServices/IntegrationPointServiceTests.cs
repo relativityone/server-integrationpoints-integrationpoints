@@ -180,9 +180,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
             return configuration;
         }
 
-        private ImportSettings CreateRelativityProviderDestinationConfiguration()
+        private DestinationConfiguration CreateRelativityProviderDestinationConfiguration()
         {
-            var configuration = new ImportSettings
+            var configuration = new DestinationConfiguration()
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 CaseArtifactId = _destinationWorkspaceID,
@@ -191,9 +191,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
                 ImportNativeFile = false,
                 ExtractedTextFieldContainsFilePath = false,
                 FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_DEFAULT,
-                RelativityUsername = SharedVariables.RelativityUserName,
-                RelativityPassword = SharedVariables.RelativityPassword,
-                DestinationProviderType = CoreConstants.IntegrationPoints.DestinationProviders.RELATIVITY,
                 DestinationFolderArtifactId = GetDestinationWorkspaceRootFolderID().GetAwaiter().GetResult(),
             };
 

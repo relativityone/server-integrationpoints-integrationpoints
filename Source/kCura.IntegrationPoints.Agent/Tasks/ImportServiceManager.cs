@@ -323,11 +323,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogGetImportApiSettingsObjectForUserStart(job);
             ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-            ImportSettings importSettings = IntegrationPointDto.DestinationConfiguration;
+            ImportSettings importSettings = new ImportSettings(IntegrationPointDto.DestinationConfiguration);
             importSettings.CorrelationId = ImportSettings.CorrelationId;
             importSettings.JobID = ImportSettings.JobID;
-            importSettings.Provider = nameof(ProviderType.ImportLoadFile);
-            importSettings.OnBehalfOfUserId = job.SubmittedBy;
+            importSettings.DestinationConfiguration.Provider = nameof(ProviderType.ImportLoadFile);
             importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(
                 IntegrationPointDto.ArtifactId,
                 IntegrationPointDto.Name,
@@ -337,7 +336,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
             // ImportAPI process. This is introduced by the fact that the first record is the column header row.
             // Opticon files have no column header row
-            if (importSettings.ImageImport)
+            if (importSettings.DestinationConfiguration.ImageImport)
             {
                 importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber);
             }
@@ -349,7 +348,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             int processedItemsCount = GetProcessedItemsCountFromJobDetails(job);
             importSettings.StartRecordNumber += processedItemsCount;
 
-            importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
+            importSettings.DestinationConfiguration.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
 
             // Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
             importSettings.MultiValueDelimiter = (char)providerSettings.AsciiMultiLine;
@@ -365,7 +364,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
                 int recordCount =
-                    settings.ImageImport ?
+                    settings.DestinationConfiguration.ImageImport ?
                     (int)((IOpticonDataReader)sourceReader).CountRecords() :
                     (int)((IArtifactReader)sourceReader).CountRecords();
 

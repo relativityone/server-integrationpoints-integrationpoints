@@ -270,7 +270,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Name = Name,
                 SelectedOverwrite = OverwriteFields == null ? string.Empty : OverwriteFields.Name,
                 SourceProvider = SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(DestinationConfiguration),
+                DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(DestinationConfiguration),
                 SourceConfiguration = SourceConfiguration,
                 DestinationProvider = DestinationProvider.GetValueOrDefault(0),
                 Type = Type,

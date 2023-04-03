@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         {
             var validationModel = new IntegrationPointProviderValidationModel()
             {
-                DestinationConfiguration = new ImportSettings
+                DestinationConfiguration = new DestinationConfiguration()
                 {
                     ImportNativeFileCopyMode = fileCopyMode,
                     CaseArtifactId = _SOURCE_WORKSPACE_ID,
@@ -167,11 +167,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
                 : new List<RelativityObjectSlim>();
             QueryResultSlim queryResultSlim = new QueryResultSlim { Objects = groups };
 
-            var importSettings = new ImportSettings() { ImportNativeFileCopyMode = fileCopyMode };
+            var importSettings = new DestinationConfiguration { ImportNativeFileCopyMode = fileCopyMode };
 
             _instanceSettingsFake.Setup(s => s.RetrieveRestrictReferentialFileLinksOnImport())
                 .Returns(restrictReferentialFileLinksOnImport);
-            _serializerFake.Setup(s => s.Deserialize<ImportSettings>(It.IsAny<string>()))
+            _serializerFake.Setup(s => s.Deserialize<DestinationConfiguration>(It.IsAny<string>()))
                 .Returns(importSettings);
             _groupManager.Setup(p => p.QueryGroupsByUserAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), validationModel.UserId))
                 .Returns(Task.FromResult(queryResultSlim));

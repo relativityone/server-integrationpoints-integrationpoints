@@ -94,7 +94,7 @@ Artifacts
 .vs/
 buildtools/
 !buildtools/packages.config
-FunctionalTest.runsettings
+*.runsettings
 FunctionalTestSettings
 .idea/
 /package-lock.json

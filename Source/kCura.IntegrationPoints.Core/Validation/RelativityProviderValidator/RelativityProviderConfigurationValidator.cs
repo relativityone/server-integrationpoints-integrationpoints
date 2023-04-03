@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
             return result;
         }
 
-        private ValidationResult ValidateSyncNonDocumentFlowToggle(ImportSettings destinationConfiguration)
+        private ValidationResult ValidateSyncNonDocumentFlowToggle(DestinationConfiguration destinationConfiguration)
         {
             var result = new ValidationResult();
 
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
                 sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
             result.Add(destinationWorkspaceNameValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-            ImportSettings destinationConfiguration = integrationModel.DestinationConfiguration;
+            DestinationConfiguration destinationConfiguration = integrationModel.DestinationConfiguration;
 
             if (!result.IsValid)
             {

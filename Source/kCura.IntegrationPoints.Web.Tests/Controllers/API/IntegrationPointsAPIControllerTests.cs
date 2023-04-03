@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             {
                 ArtifactId = 123,
                 SourceProvider = 9830,
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
 
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         {
             var model = new IntegrationPointDto()
             {
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
             var validationResult = new ValidationResult(false, "That's a damn shame.");
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             {
                 ArtifactId = 123,
                 SourceProvider = 9830,
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
 

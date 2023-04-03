@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _integrationPointDto = new IntegrationPointDto()
             {
                 SourceConfiguration = "source config",
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SourceProvider = 741,
                 SecuredConfiguration = "secured config",
                 FieldMappings = new List<FieldMap>(),

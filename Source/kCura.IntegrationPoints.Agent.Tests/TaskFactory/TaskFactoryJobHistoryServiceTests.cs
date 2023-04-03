@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             IAPILog logger = Substitute.For<IAPILog>();
             ISerializer serializer = Substitute.For<ISerializer>();
-            serializer.Deserialize<ImportSettings>(Arg.Any<string>()).Returns(new ImportSettings());
+            serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
             serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 
             _jobHistoryService = Substitute.For<IJobHistoryService>();
@@ -242,7 +242,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             return new IntegrationPointDto
             {
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = string.Empty
             };
         }

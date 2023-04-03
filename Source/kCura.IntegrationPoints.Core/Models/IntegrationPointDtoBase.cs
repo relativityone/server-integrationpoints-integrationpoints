@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public int Type { get; set; }
 
-        public ImportSettings DestinationConfiguration { get; set; }
+        public DestinationConfiguration DestinationConfiguration { get; set; }
 
         public Scheduler Scheduler { get; set; }
 

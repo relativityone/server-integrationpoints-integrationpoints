@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.Services.Extensions
 
             // FieldMappings and should be now properly mapped by AutoMapper
             dtoBase.SourceConfiguration = JsonConvert.SerializeObject(model.SourceConfiguration);
-            dtoBase.DestinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(JsonConvert.SerializeObject(model.DestinationConfiguration));
+            dtoBase.DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(JsonConvert.SerializeObject(model.DestinationConfiguration));
             dtoBase.EmailNotificationRecipients = model.EmailNotificationRecipients;
             dtoBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
             dtoBase.SelectedOverwrite = overwriteFieldsName;

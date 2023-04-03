@@ -224,7 +224,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
                 caseArtifactId: Workspace.ArtifactId,
-                destinationProviderType: destinationProvider.Identifier,
                 destinationFolderArtifactId: destinationFolder.ArtifactId);
 
             return integrationPoint;
@@ -270,7 +269,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
                 caseArtifactId: Workspace.ArtifactId,
                 artifactTypeId: GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME),
-                destinationProviderType: destinationProvider.Identifier,
                 entityManagerFieldContainsLink: linkEntityManagers);
 
             LDAPSecuredConfiguration securedConfiguration = new LDAPSecuredConfiguration
@@ -309,10 +307,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             int caseArtifactId,
             int destinationFolderArtifactId = 0,
             int artifactTypeId = (int)ArtifactType.Document,
-            string destinationProviderType = null,
             bool entityManagerFieldContainsLink = false)
         {
-            return _serializer.Serialize(new ImportSettings
+            return _serializer.Serialize(new DestinationConfiguration()
             {
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
@@ -321,9 +318,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 ArtifactTypeId = artifactTypeId,
                 DestinationArtifactTypeId = artifactTypeId,
                 DestinationFolderArtifactId = destinationFolderArtifactId,
-                DestinationProviderType = destinationProviderType,
                 EntityManagerFieldContainsLink = entityManagerFieldContainsLink,
-                WebServiceURL = "https://fake.uri"
             });
         }
     }

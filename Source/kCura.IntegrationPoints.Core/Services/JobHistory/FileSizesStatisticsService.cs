@@ -17,33 +17,33 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _errorFilesSizeStatistics = errorFilesSizeStatistics;
         }
 
-        public long CalculatePushedFilesSizeForJobHistory(int jobId, ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+        public long CalculatePushedFilesSizeForJobHistory(int jobId, DestinationConfiguration destinationConfiguration, SourceConfiguration sourceConfiguration)
         {
-            if (!IsImportWithNatives(importSettings) || sourceConfiguration == null)
+            if (!IsImportWithNatives(destinationConfiguration) || sourceConfiguration == null)
             {
                 return 0;
             }
 
-            long filesSize = CalculateAllFilesSize(importSettings, sourceConfiguration);
+            long filesSize = CalculateAllFilesSize(destinationConfiguration, sourceConfiguration);
             long errorsFileSize = CalculateErroredFilesSize(jobId, sourceConfiguration);
 
             long copiedFilesFileSize = filesSize - errorsFileSize;
             return copiedFilesFileSize;
         }
 
-        private static bool IsImportWithNatives(ImportSettings importSettings)
+        private static bool IsImportWithNatives(DestinationConfiguration destinationConfiguration)
         {
-            return (importSettings?.ImportNativeFile).GetValueOrDefault(false);
+            return (destinationConfiguration?.ImportNativeFile).GetValueOrDefault(false);
         }
 
-        private long CalculateAllFilesSize(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+        private long CalculateAllFilesSize(DestinationConfiguration destinationConfiguration, SourceConfiguration sourceConfiguration)
         {
             long filesSize = 0;
 
             switch (sourceConfiguration.TypeOfExport)
             {
                 case SourceConfiguration.ExportType.SavedSearch:
-                    filesSize = CalculateFileSizeForSavedSearchExport(importSettings, sourceConfiguration);
+                    filesSize = CalculateFileSizeForSavedSearchExport(destinationConfiguration, sourceConfiguration);
                     break;
                 case SourceConfiguration.ExportType.ProductionSet:
                     filesSize = CalculateFileSizeForProductionSetExport(sourceConfiguration);
@@ -58,9 +58,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return _imageFileSizeStatistics.ForProduction(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SourceProductionId);
         }
 
-        private long CalculateFileSizeForSavedSearchExport(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+        private long CalculateFileSizeForSavedSearchExport(DestinationConfiguration destinationConfiguration, SourceConfiguration sourceConfiguration)
         {
-            return importSettings.ImageImport
+            return destinationConfiguration.ImageImport
                 ? _imageFileSizeStatistics.ForSavedSearch(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId)
                 : _nativeFileSizeStatistics.ForSavedSearch(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
         }

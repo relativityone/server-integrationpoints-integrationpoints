@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<ISourceProviderService> _sourceProviderService;
         private Mock<IImportJobRunner> _importJobRunner;
-        private Mock<ISerializer> _serializer;
         private Mock<IAPILog> _logger;
 
         [SetUp]
@@ -49,10 +48,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _integrationPointService = new Mock<IIntegrationPointService>();
             _sourceProviderService = new Mock<ISourceProviderService>();
             _importJobRunner = new Mock<IImportJobRunner>();
-            _serializer = new Mock<ISerializer>();
             _logger = new Mock<IAPILog>();
 
-            ImportSettings destinationConfiguration = new ImportSettings()
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 CaseArtifactId = WorkspaceId
             };
@@ -77,7 +75,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
             {
                 JobHistoryGuid = batchInstance
-
             };
 
             _jobDetailsService.Setup(x => x.GetJobDetailsAsync(WorkspaceId, It.IsAny<string>()))
@@ -93,7 +90,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _agentValidator.Verify(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()), Times.Once);
             _jobDetailsService.Verify(x => x.GetJobDetailsAsync(WorkspaceId, It.Is<string>(str => str == job.JobDetails)));
             _sourceProviderService.Verify(x => x.GetSourceProviderAsync(WorkspaceId, SourceProviderId));
-            _serializer.Verify(x => x.Deserialize<ImportSettings>(It.IsAny<string>()));
             _cancellationTokenFactory.Verify(x => x.GetCancellationToken(batchInstance, job.JobId));
 
             _importJobRunner.Verify(x => x.RunJobAsync(
@@ -101,7 +97,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 It.IsAny<CustomProviderJobDetails>(),
                 It.IsAny<IntegrationPointDto>(),
                 It.IsAny<IDataSourceProvider>(),
-                It.IsAny<ImportSettings>(),
                 It.IsAny<CompositeCancellationToken>()));
         }
 
@@ -123,16 +118,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _jobDetailsService.Verify(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
             _sourceProviderService.Verify(x => x.GetSourceProviderAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-            _serializer.Verify(x => x.Deserialize<ImportSettings>(It.IsAny<string>()), Times.Never);
             _cancellationTokenFactory.Verify(x => x.GetCancellationToken(It.IsAny<Guid>(), It.IsAny<long>()), Times.Never);
 
-            _importJobRunner.Verify(x => x.RunJobAsync(
-                It.Is<Job>(j => j == job),
-                It.IsAny<CustomProviderJobDetails>(),
-                It.IsAny<IntegrationPointDto>(),
-                It.IsAny<IDataSourceProvider>(),
-                It.IsAny<ImportSettings>(),
-                It.IsAny<CompositeCancellationToken>()), Times.Never);
+            _importJobRunner.Verify(
+                x => x.RunJobAsync(
+                    It.Is<Job>(j => j == job),
+                    It.IsAny<CustomProviderJobDetails>(),
+                    It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<IDataSourceProvider>(),
+                    It.IsAny<CompositeCancellationToken>()),
+                Times.Never);
         }
 
         private Job PrepareJob(int workspaceId, Guid jobHistoryGuid, int jobId)
@@ -159,7 +154,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _integrationPointService.Object,
                 _sourceProviderService.Object,
                 _importJobRunner.Object,
-                _serializer.Object,
                 _logger.Object);
         }
 

@@ -58,26 +58,36 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory
                 .CreateDestinationWorkspacePermissionValidator(sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 
-            result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, model.DestinationConfiguration.DestinationArtifactTypeId, model.CreateSavedSearch));
+            result.Add(destinationWorkspacePermissionValidator.Validate(
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                model.DestinationConfiguration.GetDestinationArtifactTypeId(),
+                model.CreateSavedSearch));
 
             if (!result.IsValid)
             {
                 return result; // no permission to destination workspace
             }
 
-            result.Add(ValidateDestinationFolderPermissions(model, sourceConfiguration, model.DestinationConfiguration));
+            result.Add(ValidateDestinationFolderPermissions(model, sourceConfiguration));
 
             return result;
         }
 
-        private ValidationResult ValidateDestinationFolderPermissions(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+        private ValidationResult ValidateDestinationFolderPermissions(IntegrationPointProviderValidationModel model, SourceConfiguration sourceConfiguration)
         {
             ValidationResult result = new ValidationResult();
-            if (destinationConfiguration.DestinationFolderArtifactId > 0)
+            if (model.DestinationConfiguration.DestinationFolderArtifactId > 0)
             {
-                IRelativityProviderDestinationFolderPermissionValidator destinationFolderPermissionValidator =
-                    _validatorsFactory.CreateDestinationFolderPermissionValidator(destinationConfiguration.CaseArtifactId, sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-                result.Add(destinationFolderPermissionValidator.Validate(destinationConfiguration.DestinationFolderArtifactId, destinationConfiguration.UseFolderPath, destinationConfiguration.MoveExistingDocuments));
+                IRelativityProviderDestinationFolderPermissionValidator destinationFolderPermissionValidator = _validatorsFactory.CreateDestinationFolderPermissionValidator(
+                    model.DestinationConfiguration.CaseArtifactId,
+                    sourceConfiguration.FederatedInstanceArtifactId,
+                    model.SecuredConfiguration);
+
+                bool useFolderPath = model.DestinationConfiguration.UseFolderPathInformation || model.DestinationConfiguration.UseDynamicFolderPath;
+                result.Add(destinationFolderPermissionValidator.Validate(
+                    model.DestinationConfiguration.DestinationFolderArtifactId,
+                    useFolderPath,
+                    model.DestinationConfiguration.MoveExistingDocuments));
             }
 
             return result;

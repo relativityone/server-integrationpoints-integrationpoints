@@ -196,7 +196,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             {
                 SelectedOverwrite = "123",
                 SourceProvider = 284,
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SourceConfiguration = "559417",
                 DestinationProvider = 346,
                 Type = 190,

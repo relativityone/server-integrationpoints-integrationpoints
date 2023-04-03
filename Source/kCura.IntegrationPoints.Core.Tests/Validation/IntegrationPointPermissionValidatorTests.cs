@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         public void SetUp()
         {
             _serializer = Substitute.For<ISerializer>();
-            _model = new IntegrationPointDto { DestinationConfiguration = new ImportSettings { ArtifactTypeId = _artifactId } };
+            _model = new IntegrationPointDto { DestinationConfiguration = new DestinationConfiguration { ArtifactTypeId = _artifactId } };
             _sourceProvider = new SourceProvider { ArtifactId = 1000, Identifier = Guid.NewGuid().ToString() };
             _destinationProvider = new DestinationProvider { ArtifactId = 2000, Identifier = Guid.NewGuid().ToString() };
             _integrationPointType = new IntegrationPointType { Identifier = Guid.NewGuid().ToString() };

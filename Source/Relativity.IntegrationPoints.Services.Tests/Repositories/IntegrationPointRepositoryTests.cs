@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointProfileService _integrationPointProfileService;
         private Services.Repositories.IIntegrationPointAccessor _integrationPointAccessor;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private ICaseServiceContext _caseContext;
         private int _workspaceArtifactId = 100;
 
@@ -113,7 +113,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
         private IntegrationPointSlimDto SetUpGetDto(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123")
         {
-            _destinationConfiguration = new ImportSettings();
+            _destinationConfiguration = new DestinationConfiguration();
 
             var integrationPointSlim = CreateIntegrationPointSlim(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
 

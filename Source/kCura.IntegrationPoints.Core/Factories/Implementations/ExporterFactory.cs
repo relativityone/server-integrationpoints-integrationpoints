@@ -48,20 +48,20 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             FieldMap[] mappedFields,
             string serializedSourceConfiguration,
             int savedSearchArtifactID,
-            ImportSettings settings,
+            DestinationConfiguration destinationConfiguration,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer)
         {
-            LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, settings);
+            LogBuildExporterExecutionWithParameters(mappedFields, serializedSourceConfiguration, savedSearchArtifactID, destinationConfiguration);
 
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
 
-            IExporterService exporter = settings.ImageImport ?
+            IExporterService exporter = destinationConfiguration.ImageImport ?
                 CreateImageExporterService(
                     jobStopManager,
                     mappedFields,
                     savedSearchArtifactID,
-                    settings,
+                    destinationConfiguration,
                     sourceConfiguration,
                     documentRepository) :
                 CreateRelativityExporterService(
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                     mappedFields,
                     serializedSourceConfiguration,
                     savedSearchArtifactID,
-                    settings,
+                    destinationConfiguration,
                     documentRepository,
                     exportDataSanitizer);
             return exporter;
@@ -80,13 +80,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             FieldMap[] mappedFields,
             string serializedSourceConfiguration,
             int savedSearchArtifactID,
-            ImportSettings settings,
+            DestinationConfiguration destinationConfiguration,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer)
         {
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(serializedSourceConfiguration);
             int workspaceArtifactID = sourceConfiguration.SourceWorkspaceArtifactId;
-            bool useDynamicFolderPath = settings.UseDynamicFolderPath;
+            bool useDynamicFolderPath = destinationConfiguration.UseDynamicFolderPath;
             IFolderPathReader folderPathReader = _folderPathReaderFactory.Create(workspaceArtifactID, useDynamicFolderPath);
             const int startAtRecord = 0;
 
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             IJobStopManager jobStopManager,
             FieldMap[] mappedFiles,
             int savedSearchArtifactId,
-            ImportSettings settings,
+            DestinationConfiguration destinationConfiguration,
             SourceConfiguration sourceConfiguration,
             IDocumentRepository documentRepository)
         {
@@ -138,14 +138,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 startAtRecord,
                 sourceConfiguration,
                 searchArtifactId,
-                settings);
+                destinationConfiguration);
         }
 
         private void LogBuildExporterExecutionWithParameters(
             FieldMap[] mappedFields,
             string config,
             int savedSearchArtifactId,
-            ImportSettings userImportApiSettings)
+            DestinationConfiguration destinationConfiguration)
         {
             IEnumerable<FieldMap> mappedFieldsWithoutFieldNames = mappedFields.Select(mf => new FieldMap
             {
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 mappedFieldsWithoutFieldNames,
                 config,
                 savedSearchArtifactId,
-                userImportApiSettings);
+                destinationConfiguration);
         }
 
         private FieldEntry CreateFieldEntryWithoutName(FieldEntry entry)

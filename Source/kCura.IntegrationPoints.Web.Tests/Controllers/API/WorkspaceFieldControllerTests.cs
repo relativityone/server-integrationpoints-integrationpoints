@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         public void ItShouldGetFields()
         {
             // Arrange
-            _synchronizerFactoryMock.CreateSynchronizer(Guid.Empty, Arg.Any<ImportSettings>()).Returns(_dataSynchronizerMock);
+            _synchronizerFactoryMock.CreateSynchronizer(Guid.Empty, Arg.Any<DestinationConfiguration>()).Returns(_dataSynchronizerMock);
             _dataSynchronizerMock.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(_fields);
 
             // Act
@@ -92,8 +92,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             CollectionAssert.AreEqual(_fields.Select(x => x.FieldIdentifier), retValue.Select(x => x.FieldIdentifier));
 
             _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
-                (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
-                (_serializer.Deserialize<ImportSettings>(x.Configuration).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
+                (_serializer.Deserialize<DestinationConfiguration>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
+                (_serializer.Deserialize<DestinationConfiguration>(x.Configuration).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
                 (x.SecuredConfiguration == _CREDENTIALS)));
         }
     }

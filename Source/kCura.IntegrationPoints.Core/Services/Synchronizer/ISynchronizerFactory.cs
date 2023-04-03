@@ -14,6 +14,6 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
         /// <param name="identifier">A GUID identifying the synchronizer.</param>
         /// <param name="options">The options specific to the current integration point identifier.</param>
         /// <returns>A new instance of the data synchronizer.</returns>
-        IDataSynchronizer CreateSynchronizer(Guid identifier, ImportSettings options);
+        IDataSynchronizer CreateSynchronizer(Guid identifier, DestinationConfiguration options);
     }
 }

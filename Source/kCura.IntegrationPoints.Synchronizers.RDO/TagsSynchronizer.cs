@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
-            var importSettings = _serializer.Deserialize<ImportSettings>(providerConfiguration.Configuration);
-            UpdateImportSettingsForTagging(importSettings);
-            providerConfiguration.Configuration = _serializer.Serialize(importSettings);
+            var destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(providerConfiguration.Configuration);
+            UpdateImportSettingsForTagging(destinationConfiguration);
+            providerConfiguration.Configuration = _serializer.Serialize(destinationConfiguration);
             return _rdoSynchronizer.GetFields(providerConfiguration);
         }
 
@@ -43,10 +43,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             try
             {
-                UpdateImportSettingsForTagging(options);
+                UpdateImportSettingsForTagging(options.DestinationConfiguration);
                 _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager, diagnosticLog);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LogAndThrowSyncDataException(ex);
             }
@@ -61,10 +61,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             try
             {
-                UpdateImportSettingsForTagging(options);
+                UpdateImportSettingsForTagging(options.DestinationConfiguration);
                 _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager, diagnosticLog);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 LogAndThrowSyncDataException(ex);
             }
@@ -77,12 +77,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             throw new IntegrationPointsException(message, exception) { ShouldAddToErrorsTab = true };
         }
 
-        private static void UpdateImportSettingsForTagging(ImportSettings importSettings)
+        private static void UpdateImportSettingsForTagging(DestinationConfiguration destinationConfiguration)
         {
-            importSettings.ProductionImport = false;
-            importSettings.ImageImport = false;
-            importSettings.UseDynamicFolderPath = false;
-            importSettings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
+            destinationConfiguration.ProductionImport = false;
+            destinationConfiguration.ImageImport = false;
+            destinationConfiguration.UseDynamicFolderPath = false;
+            destinationConfiguration.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
         }
     }
 }

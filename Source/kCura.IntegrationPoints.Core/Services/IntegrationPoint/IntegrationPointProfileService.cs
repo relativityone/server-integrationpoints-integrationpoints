@@ -189,9 +189,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
         }
 
-        private ImportSettings GetDestinationConfiguration(int artifactId)
+        private DestinationConfiguration GetDestinationConfiguration(int artifactId)
         {
-            return ReadLongTextWithRetries<ImportSettings>(GetDestinationConfigurationString, artifactId);
+            return ReadLongTextWithRetries<DestinationConfiguration>(GetDestinationConfigurationString, artifactId);
         }
 
         private List<FieldMap> GetFieldMappings(int artifactId)
@@ -286,7 +286,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new ImportSettings()),
+                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new DestinationConfiguration()),
                 FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,

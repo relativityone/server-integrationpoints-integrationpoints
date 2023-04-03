@@ -43,12 +43,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             _integrationPoint.Name = _IP_NAME;
             _integrationPoint.ArtifactId = _IP_ARTIFACT_ID;
             _integrationPoint.SourceConfiguration = string.Empty;
-            _integrationPoint.DestinationConfiguration = new ImportSettings();
+            _integrationPoint.DestinationConfiguration = new DestinationConfiguration { CaseArtifactId = -1};
 
             _providerSettings = new ImportProviderSettings();
-            ImportSettings importApiSettings = new ImportSettings();
 
-            importApiSettings.CaseArtifactId = -1;
             _providerSettings.LoadFile = _LOAD_FILE_PATH;
 
             _locationService = Substitute.For<IDataTransferLocationService>();
@@ -64,7 +62,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             _fileInfoFactory.Create(_LOAD_FILE_LOCATION).Returns(_loadFileInfo.Object);
 
             _serializer.Deserialize<ImportProviderSettings>(Arg.Any<string>()).ReturnsForAnyArgs(_providerSettings);
-            _serializer.Deserialize<ImportSettings>(Arg.Any<string>()).ReturnsForAnyArgs(importApiSettings);
+            _serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).ReturnsForAnyArgs(_integrationPoint.DestinationConfiguration);
             _locationService.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).ReturnsForAnyArgs(_WORKSPACE_ROOT_LOCATION);
             _locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid).Returns(_DATA_TRANSFER_IMPORT_LOCATION);
         }

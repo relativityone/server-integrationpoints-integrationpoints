@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                 if (providerType == ProviderType.Relativity)
                 {
                     SourceConfiguration sourceConfiguration = VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-                    ImportSettings destinationConfiguration = VerboseDeserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+                    DestinationConfiguration destinationConfiguration = VerboseDeserialize<DestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
                     if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, destinationConfiguration))
                     {
@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             }
         }
 
-        private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
+        private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, DestinationConfiguration destinationConfiguration)
         {
             _logger.LogInformation(
                 "Checking if configurations allow using RelativitySync. " +
@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             return isSyncDocumentFlow || isSyncNonDocumentFlow;
         }
 
-        private bool IsNonDocumentFlow(ImportSettings destinationConfiguration)
+        private bool IsNonDocumentFlow(DestinationConfiguration destinationConfiguration)
         {
             return destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document;
         }

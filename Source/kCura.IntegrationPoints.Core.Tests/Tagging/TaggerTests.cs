@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                 }
             };
 
-            _importConfig = new ImportSettings();
+            _importConfig = new ImportSettings(new DestinationConfiguration());
 
             _instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig, _diagnosticLog);
         }

@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private JobHistoryService _instance;
         private ISerializer _serializer;
         private IntegrationPointDto _integrationPoint;
-        private ImportSettings _settings;
+        private DestinationConfiguration _destinationConfiguration;
         private WorkspaceDTO _workspace;
         private int _jobHistoryArtifactId;
         private Guid _batchGuid;
@@ -45,13 +45,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             {
                 ArtifactId = 98475,
                 Name = "RIP RIP",
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.ToString(),
                 JobHistory = new List<int> { 4543, 443 },
                 SourceProvider = 0,
                 DestinationProvider = 0
             };
-            _settings = new ImportSettings()
+            _destinationConfiguration = new DestinationConfiguration()
             {
                 CaseArtifactId = 987
             };
@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // ARRANGE
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
-            _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+            _workspaceManager.RetrieveWorkspace(_destinationConfiguration.CaseArtifactId).Returns(_workspace);
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
             // ACT
@@ -230,7 +230,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // ARRANGE
             _relativityObjectManager.Query<Data.JobHistory>(Arg.Any<QueryRequest>()).Returns(new List<Data.JobHistory>());
-            _workspaceManager.RetrieveWorkspace(_settings.CaseArtifactId).Returns(_workspace);
+            _workspaceManager.RetrieveWorkspace(_destinationConfiguration.CaseArtifactId).Returns(_workspace);
             _relativityObjectManager.Create(Arg.Any<Data.JobHistory>()).Returns(_jobHistoryArtifactId);
 
             // ACT

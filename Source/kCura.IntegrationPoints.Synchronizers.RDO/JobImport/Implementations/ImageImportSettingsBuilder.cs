@@ -15,13 +15,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         {
             base.PopulateFrom(importSettings, target);
 
-            target.AutoNumberImages = importSettings.AutoNumberImages;
-            target.ForProduction = importSettings.ProductionImport;
-            target.ProductionArtifactID = importSettings.ProductionArtifactId;
+            target.AutoNumberImages = importSettings.DestinationConfiguration.AutoNumberImages;
+            target.ForProduction = importSettings.DestinationConfiguration.ProductionImport;
+            target.ProductionArtifactID = importSettings.DestinationConfiguration.ProductionArtifactId;
             target.ExtractedTextEncoding = importSettings.ExtractedTextEncoding;
-            target.ExtractedTextFieldContainsFilePath = importSettings.ExtractedTextFieldContainsFilePath;
-            target.SelectedCasePath = importSettings.SelectedCaseFileRepoPath;
-            target.DestinationFolderArtifactID = importSettings.DestinationFolderArtifactId;
+            target.ExtractedTextFieldContainsFilePath = importSettings.DestinationConfiguration.ExtractedTextFieldContainsFilePath;
+            target.SelectedCasePath = importSettings.DestinationConfiguration.SelectedCaseFileRepoPath;
+            target.DestinationFolderArtifactID = importSettings.DestinationConfiguration.DestinationFolderArtifactId;
 
             target.FileNameField = Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME;
         }

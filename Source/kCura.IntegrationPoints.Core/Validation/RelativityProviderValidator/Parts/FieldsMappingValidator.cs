@@ -37,8 +37,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
             List<FieldMap> fieldsMap = value.FieldsMap;
 
-            List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId, value.DestinationConfiguration.ArtifactTypeId);
-            List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId, value.DestinationConfiguration.DestinationArtifactTypeId);
+            List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(
+                _sourcefieldManager,
+                sourceConfiguration.SourceWorkspaceArtifactId,
+                value.DestinationConfiguration.ArtifactTypeId);
+
+            List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(
+                _targetfieldManager,
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                value.DestinationConfiguration.GetDestinationArtifactTypeId());
 
             bool mappedIdentifier = false;
 
@@ -169,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             return result;
         }
 
-        private ValidationResult ValidateSettingsFieldOverlayBehavior(ImportSettings destinationConfig)
+        private ValidationResult ValidateSettingsFieldOverlayBehavior(DestinationConfiguration destinationConfig)
         {
             var result = new ValidationResult();
 
@@ -197,7 +204,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             return result;
         }
 
-        private ValidationResult ValidateSettingsFolderPathInformation(List<ArtifactDTO> sourceWorkpaceFields, ImportSettings destinationConfig)
+        private ValidationResult ValidateSettingsFolderPathInformation(List<ArtifactDTO> sourceWorkpaceFields, DestinationConfiguration destinationConfig)
         {
             var result = new ValidationResult();
 
@@ -218,7 +225,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             return result;
         }
 
-        private ValidationResult ValidateUseDynamicFolderPathSettings(ImportSettings destinationConfig)
+        private ValidationResult ValidateUseDynamicFolderPathSettings(DestinationConfiguration destinationConfig)
         {
             var result = new ValidationResult();
 
@@ -230,7 +237,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             return result;
         }
 
-        private ValidationResult ValidateImageSettings(ImportSettings destinationConfiguration, List<FieldMap> mappedFields)
+        private ValidationResult ValidateImageSettings(DestinationConfiguration destinationConfiguration, List<FieldMap> mappedFields)
         {
             var result = new ValidationResult();
 

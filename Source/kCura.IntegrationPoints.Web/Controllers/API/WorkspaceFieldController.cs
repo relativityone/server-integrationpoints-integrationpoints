@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             _apiLog.LogInformation("Import Settings has been extracted successfully for workspace field retrieval process");
 
-            IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, _serializer.Deserialize<ImportSettings>(settings.Settings));
+            IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, _serializer.Deserialize<DestinationConfiguration>(settings.Settings));
             List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(settings.Settings, settings.Credentials)).ToList();
 
             List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO

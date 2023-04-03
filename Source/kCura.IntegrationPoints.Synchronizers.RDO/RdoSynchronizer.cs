@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -19,7 +20,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Domain.Constants;
@@ -34,17 +34,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly IRelativityFieldQuery _fieldQuery;
+        private readonly IConfig _config;
         private bool _isJobComplete;
         private bool? _disableNativeLocationValidation;
         private bool? _disableNativeValidation;
         private HashSet<string> _ignoredList;
-        private string _webApiPath;
 
         protected ISerializer Serializer { get; }
 
         protected IImportService ImportService { get; private set; }
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, ISerializer serializer)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, IConfig config, ISerializer serializer)
         {
             _fieldQuery = fieldQuery;
             _factory = factory;
@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _helper = helper;
             _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
+            _config = config;
             Serializer = serializer;
         }
 
@@ -72,22 +73,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public Data.SourceProvider SourceProvider { get; set; }
 
         public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
-
-        public string WebAPIPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_webApiPath))
-                {
-                    _webApiPath = Config.Config.Instance.WebApiPath;
-                    LogNewWebAPIPathValue();
-                }
-
-                return _webApiPath;
-            }
-
-            set => _webApiPath = value;
-        }
 
         protected bool? DisableNativeLocationValidation
         {
@@ -148,8 +133,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     DocumentFields.JobHistory
                 };
 
-                var importSettings = Serializer.Deserialize<ImportSettings>(providerConfiguration.Configuration);
-                FieldEntry[] fields = GetFieldsInternal(importSettings).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
+                var destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(providerConfiguration.Configuration);
+                FieldEntry[] fields = GetFieldsInternal(destinationConfiguration).Where(f => !ignoreFields.Contains(f.ActualName)).Select(f => f).ToArray();
 
                 foreach (var field in fields.Where(field => field.IsIdentifier))
                 {
@@ -277,8 +262,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             LogRetrievingEmailBody();
 
-            ImportSettings settings = EnsureWebServiceUrl(Serializer.Deserialize<ImportSettings>(options));
-            WorkspaceRef destinationWorkspace = GetWorkspace(settings);
+            DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(options);
+            WorkspaceRef destinationWorkspace = GetWorkspace(destinationConfiguration);
 
             var emailBody = new StringBuilder();
             if (destinationWorkspace != null)
@@ -292,13 +277,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return emailBody.ToString();
         }
 
-        protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
+        protected List<RelativityObject> GetRelativityFields(DestinationConfiguration destinationConfiguration)
         {
             try
             {
-                List<RelativityObject> fields = _fieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-                HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApiFacade(settings)
-                    .GetWorkspaceFieldsNames(settings.CaseArtifactId, settings.ArtifactTypeId)
+                List<RelativityObject> fields = _fieldQuery.GetFieldsForRdo(destinationConfiguration.ArtifactTypeId);
+                HashSet<int> mappableArtifactIds = new HashSet<int>(_factory.GetImportApiFacade(_config.WebApiPath)
+                    .GetWorkspaceFieldsNames(destinationConfiguration.CaseArtifactId, destinationConfiguration.ArtifactTypeId)
                     .Keys);
                 List<RelativityObject> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
                 LogNumbersOfFieldAndMappableFields(fields.Count, mappableFields.Count);
@@ -337,7 +322,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        protected virtual IImportService InitializeImportService(
+        private IImportService InitializeImportService(
             ImportSettings settings,
             Dictionary<string, int> importFieldMap,
             NativeFileImportService nativeFileImportService,
@@ -355,6 +340,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 _jobFactory,
                 _helper,
                 jobStopManager,
+                _config,
                 diagnosticLog);
 
             importService.OnBatchComplete += Finish;
@@ -408,15 +394,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             {
                 LogRetrievingImportSettings();
 
-                ImportSettings settings = EnsureWebServiceUrl(options);
+                BootstrapParentObjectSettings(fieldMap, options);
+                BootstrapIdentityFieldSettings(fieldMap, options);
+                BootstrapImportNativesSettings(fieldMap, nativeFileImportService, options);
+                BootstrapFolderSettings(fieldMap, options);
+                BootstrapDestinationIdentityFieldSettings(fieldMap, options);
 
-                BootstrapParentObjectSettings(fieldMap, settings);
-                BootstrapIdentityFieldSettings(fieldMap, settings);
-                BootstrapImportNativesSettings(fieldMap, nativeFileImportService, settings);
-                BootstrapFolderSettings(fieldMap, settings);
-                BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
-
-                return settings;
+                return options;
             }
             catch (Exception ex)
             {
@@ -424,7 +408,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+        protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, DestinationConfiguration destinationConfiguration)
         {
             Dictionary<string, int> importFieldMap = null;
             try
@@ -454,21 +438,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
         }
 
-        protected ImportSettings EnsureWebServiceUrl(ImportSettings settings)
-        {
-            if (string.IsNullOrEmpty(settings.WebServiceURL))
-            {
-                settings.WebServiceURL = WebAPIPath;
-                if (string.IsNullOrEmpty(settings.WebServiceURL))
-                {
-                    LogMissingWebApiPath();
-                    throw new Exception("No WebAPI path set for integration points.");
-                }
-            }
-
-            return settings;
-        }
-
         protected bool IncludeFieldInImport(FieldMap fieldMap)
         {
             bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
@@ -482,16 +451,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return toInclude;
         }
 
-        protected virtual WorkspaceRef GetWorkspace(ImportSettings settings)
+        protected virtual WorkspaceRef GetWorkspace(DestinationConfiguration destinationConfiguration)
         {
             try
             {
                 WorkspaceRef workspaceRef = null;
-                Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaceNames();
-                if (workspaces.ContainsKey(settings.CaseArtifactId))
+                Dictionary<int, string> workspaces = _factory.GetImportApiFacade(_config.WebApiPath).GetWorkspaceNames();
+                if (workspaces.ContainsKey(destinationConfiguration.CaseArtifactId))
                 {
                     LogNullWorkspaceReturnedByIAPI();
-                    workspaceRef = new WorkspaceRef { Id = settings.CaseArtifactId, Name = workspaces[settings.CaseArtifactId] };
+                    workspaceRef = new WorkspaceRef { Id = destinationConfiguration.CaseArtifactId, Name = workspaces[destinationConfiguration.CaseArtifactId] };
                 }
 
                 return workspaceRef;
@@ -508,15 +477,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             OnJobError?.Invoke(exception);
         }
 
-        private IImportApiFacade GetImportApiFacade(ImportSettings settings)
+        private IEnumerable<FieldEntry> GetFieldsInternal(DestinationConfiguration options)
         {
-            return _factory.GetImportApiFacade(settings.WebServiceURL);
-        }
-
-        private IEnumerable<FieldEntry> GetFieldsInternal(ImportSettings options)
-        {
-            ImportSettings settings = EnsureWebServiceUrl(options);
-            List<RelativityObject> fields = GetRelativityFields(settings);
+            List<RelativityObject> fields = GetRelativityFields(options);
             return ParseFields(fields);
         }
 
@@ -557,7 +520,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
             ImportSettings = GetSyncDataImportSettings(fieldMap, options, NativeFileImportService);
 
-            Dictionary<string, int> importFieldMap = GetSyncDataImportFieldMap(fieldMap, ImportSettings);
+            Dictionary<string, int> importFieldMap = GetSyncDataImportFieldMap(fieldMap, ImportSettings.DestinationConfiguration);
 
             ImportService = InitializeImportService(
                 ImportSettings,
@@ -588,9 +551,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private void BootstrapIdentityFieldSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
         {
-            if ((settings.IdentityFieldId < 1) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+            if ((settings.DestinationConfiguration.IdentityFieldId < 1) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
             {
-                settings.IdentityFieldId =
+                settings.DestinationConfiguration.IdentityFieldId =
                     fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
                         .Select(x => int.Parse(x.DestinationField.FieldIdentifier))
                         .First();
@@ -615,7 +578,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
             }
 
-            if (settings.UseDynamicFolderPath)
+            if (settings.DestinationConfiguration.UseDynamicFolderPath)
             {
                 settings.FolderPathSourceFieldName = Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME;
             }
@@ -623,15 +586,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private void BootstrapImportNativesSettings(IEnumerable<FieldMap> fieldMap, NativeFileImportService nativeFileImportService, ImportSettings settings)
         {
-            if (settings.ImportNativeFile && settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
+            if (settings.DestinationConfiguration.ImportNativeFile && settings.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
             {
                 SetupSettingsWhenImportingNatives(fieldMap, nativeFileImportService, settings, true);
             }
-            else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
+            else if (settings.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.SetFileLinks)
             {
                 SetupSettingsWhenImportingNatives(fieldMap, nativeFileImportService, settings, false);
             }
-            else if (settings.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
+            else if (settings.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.DoNotImportNativeFiles)
             {
                 SetupSettingsWhenNotImportingNatives(nativeFileImportService, settings);
             }
@@ -642,7 +605,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             nativeFileImportService.ImportNativeFiles = false;
             settings.DisableNativeLocationValidation = null;
             settings.DisableNativeValidation = null;
-            settings.CopyFilesToDocumentRepository = false;
+            settings.DestinationConfiguration.CopyFilesToDocumentRepository = false;
 
             // NOTE :: Determines if we want to upload/delete native files and update "Has Native", "Supported by viewer" and "Relativity Native Type" fields
             settings.NativeFilePathSourceFieldName = string.Empty;
@@ -656,7 +619,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
             settings.DisableNativeLocationValidation = DisableNativeLocationValidation;
             settings.DisableNativeValidation = DisableNativeValidation;
-            settings.CopyFilesToDocumentRepository = copyFilesToRepository;
+            settings.DestinationConfiguration.CopyFilesToDocumentRepository = copyFilesToRepository;
             settings.OIFileIdMapped = true;
             settings.OIFileTypeColumnName = Constants.SPECIAL_FILE_TYPE_FIELD_NAME;
             settings.SupportedByViewerColumn = Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME;
@@ -779,19 +742,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _logger.LogError(ex, "Field Map is invalid.");
         }
 
-        private void LogMissingWebApiPath()
-        {
-            _logger.LogError("No WebAPI path set for integration points.");
-        }
-
         private void LogNewDisableNativeLocationValidationValue()
         {
             _logger.LogInformation("New value of DisableNativeLocationValidation retrieved from config: {value}", _disableNativeLocationValidation);
-        }
-
-        private void LogNewWebAPIPathValue()
-        {
-            _logger.LogInformation("New value of WebAPIPath retrieved from config: {value}", _webApiPath);
         }
 
         private void LogNewDisableNativeValidationValue()

@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Factories
             FieldMap[] mappedFields,
             string config,
             int savedSearchArtifactID,
-            ImportSettings userImportApiSettings,
+            DestinationConfiguration destinationConfiguration,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer);
     }

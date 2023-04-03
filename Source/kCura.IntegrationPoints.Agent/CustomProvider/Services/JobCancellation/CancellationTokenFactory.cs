@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Sync;
 
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation
                 drainStopCancellationTokenSource: drainStopTokenSource);
 
             _container.Register(Component.For<IJobStopManager>().Instance(jobStopManager).Named($"{nameof(jobStopManager)}-{Guid.NewGuid()}"));
-            
+
             return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token, _logger);
         }
     }

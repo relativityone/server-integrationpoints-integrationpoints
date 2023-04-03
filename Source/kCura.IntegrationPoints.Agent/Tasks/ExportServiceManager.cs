@@ -105,9 +105,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 InitializeService(job, supportsDrainStop: false);
                 JobStopManager.ThrowIfStopRequested();
 
-                ImportSettings importSettings = IntegrationPointDto.DestinationConfiguration;
+                ImportSettings importSettings = new ImportSettings(IntegrationPointDto.DestinationConfiguration);
                 AdjustImportApiSettingsForUser(job, importSettings);
-                IDataSynchronizer synchronizer = CreateDestinationProvider(importSettings);
+                IDataSynchronizer synchronizer = CreateDestinationProvider(importSettings.DestinationConfiguration);
 
                 try
                 {
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 IntegrationPointDto.FieldMappings.ToArray(),
                 IntegrationPointDto.SourceConfiguration,
                 savedSearchID,
-                userImportApiSettings,
+                userImportApiSettings.DestinationConfiguration,
                 _documentRepository,
                 _exportDataSanitizer))
             {
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     .Select(observer => observer.ScratchTableRepository).ToArray();
 
                 var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
-                    Identifier, userImportApiSettings);
+                    Identifier, userImportApiSettings.DestinationConfiguration);
 
                 IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
 
@@ -229,13 +229,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             importSettings.CorrelationId = ImportSettings.CorrelationId;
             importSettings.JobID = ImportSettings.JobID;
-            importSettings.Provider = nameof(ProviderType.Relativity);
+            importSettings.DestinationConfiguration.Provider = nameof(ProviderType.Relativity);
             AdjustImportApiSettings(job, importSettings);
         }
 
         private void AdjustImportApiSettings(Job job, ImportSettings importSettings)
         {
-            importSettings.OnBehalfOfUserId = job.SubmittedBy;
             SetOverwriteModeAccordingToUsersChoice(importSettings);
 
             bool shouldUseDgPaths = ShouldUseDgPaths(IntegrationPointDto.FieldMappings, SourceConfiguration);
@@ -248,7 +247,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (JobHistory != null)
             {
                 Logger.LogInformation($@"Overwrite mode set to: {JobHistory.Overwrite}");
-                importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);
+                importSettings.DestinationConfiguration.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);
             }
         }
 

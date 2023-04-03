@@ -18,16 +18,16 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             _objectTypeRepository = objectTypeRepository;
         }
 
-        public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, ITaskJobSubmitter taskJobSubmitter, IDiagnosticLog diagnosticLog)
+        public IDataSynchronizer CreateSynchronizer(DestinationConfiguration destinationConfiguration, ITaskJobSubmitter taskJobSubmitter, IDiagnosticLog diagnosticLog)
         {
-            return IsEntityObjectImport(importSettings) ?
+            return IsEntityObjectImport(destinationConfiguration) ?
                 CreateEntityImportSynchronizer(taskJobSubmitter) :
                 CreateGeneralRdoImportSynchronizer();
         }
 
-        private bool IsEntityObjectImport(ImportSettings importSettings)
+        private bool IsEntityObjectImport(DestinationConfiguration destinationConfiguration)
         {
-            ObjectTypeDTO rdoObjectType = _objectTypeRepository.GetObjectType(importSettings.ArtifactTypeId);
+            ObjectTypeDTO rdoObjectType = _objectTypeRepository.GetObjectType(destinationConfiguration.ArtifactTypeId);
             return rdoObjectType.Guids.Contains(ObjectTypeGuids.Entity);
         }
 

@@ -1,4 +1,5 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -17,13 +18,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IImportJobFactory jobFactory,
             IHelper helper,
             IDiagnosticLog diagnosticLog,
+            IConfig config,
             ISerializer serializer,
-            string webApiPath,
             bool disableNativeLocationValidation,
             bool disableNativeValidation)
-          : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, serializer)
+          : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, config, serializer)
         {
-            WebAPIPath = webApiPath;
             DisableNativeLocationValidation = disableNativeLocationValidation;
             DisableNativeValidation = disableNativeValidation;
         }

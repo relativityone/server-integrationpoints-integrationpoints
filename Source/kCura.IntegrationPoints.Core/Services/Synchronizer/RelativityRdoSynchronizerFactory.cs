@@ -18,9 +18,9 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             _container = container;
         }
 
-        public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, SourceProvider sourceProvider, IDiagnosticLog diagnosticLog)
+        public IDataSynchronizer CreateSynchronizer(DestinationConfiguration configuration, SourceProvider sourceProvider, IDiagnosticLog diagnosticLog)
         {
-            Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(importSettings);
+            Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(configuration);
 
             IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName, rdoSynchronizerParametersDictionary);
             RdoSynchronizer syncBase = (RdoSynchronizer)synchronizer;
@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             return syncBase;
         }
 
-        private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(ImportSettings importSettings)
+        private Dictionary<string, RelativityFieldQuery> CreateRdoSynchronizerParametersDictionary(DestinationConfiguration destinationConfiguration)
         {
             IHelper sourceInstanceHelper = _container.Resolve<IHelper>();
             IRelativityObjectManagerFactory relativityObjectManagerFactory = _container.Resolve<IRelativityObjectManagerFactory>();
-            IRelativityObjectManager relativityObjectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(importSettings.CaseArtifactId);
+            IRelativityObjectManager relativityObjectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(destinationConfiguration.CaseArtifactId);
 
             return new Dictionary<string, RelativityFieldQuery>
             {

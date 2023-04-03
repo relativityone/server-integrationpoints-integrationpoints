@@ -10,7 +10,6 @@ properties {
     $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
 
 	$FunctionalTestFilter = "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident"
-
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -164,14 +163,17 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
     Move-TestSettings $LogsDir
+    $LogPath = Join-Path $LogsDir "MyTestResults.xml"
 
 	if($TestFilter)
 	{
-	    Invoke-MyTest
+		Write-Output "Invoke Tests with custom filter: " $TestFilter
+		Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 	}
 	else
 	{
-		Invoke-Tests -WhereClause $FunctionalTestFilter -OutputFile $LogPath
+		Write-Output "Invoke Tests without filter - run all tests from entire solution"
+		Invoke-Tests -WhereClause "namespace =~ .*" -OutputFile $LogPath
 	}
 }
 
@@ -194,12 +196,6 @@ function Move-TestSettings
 
     $VS_TestSettings = Join-Path $PSScriptRoot FunctionalTest.runsettings
     if(Test-Path $VS_TestSettings) { Copy-Item -Path $VS_TestSettings -Destination $Destination -Force }
-}
-
-function Invoke-MyTest
-{
-    $LogPath = Join-Path $LogsDir "MyTestResults.xml"
-    Invoke-Tests -WhereClause $TestFilter -OutputFile $LogPath
 }
 
 function Invoke-Tests

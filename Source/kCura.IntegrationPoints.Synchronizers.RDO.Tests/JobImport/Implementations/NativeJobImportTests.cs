@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         [SetUp]
         public override void SetUp()
         {
-            _importSettings = Substitute.For<ImportSettings>();
+            _importSettings = new ImportSettings(new DestinationConfiguration());
             _importApi = Substitute.For<IImportAPI>();
             _builder = Substitute.For<IImportSettingsBaseBuilder<Settings>>();
             IDataTransferContext context = Substitute.For<IDataTransferContext>();
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         public void ItShouldCreateJob_byNewNativeDocumentImportJob()
         {
             // Arrange
-            _importSettings.ArtifactTypeId = (int)ArtifactType.Document;
+            _importSettings.DestinationConfiguration.ArtifactTypeId = (int)ArtifactType.Document;
             var expected = new ImportBulkArtifactJob();
             _importApi.NewNativeDocumentImportJob().Returns(expected);
 
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         public void ItShouldCreateJob_byNewObjectImportJob()
         {
             // Arrange
-            _importSettings.ArtifactTypeId = (int)ArtifactType.Document + 1;
+            _importSettings.DestinationConfiguration.ArtifactTypeId = (int)ArtifactType.Document + 1;
             var expected = new ImportBulkArtifactJob();
             _importApi.NewObjectImportJob(Arg.Any<int>()).Returns(expected);
 

@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
         private Data.IntegrationPoint _integrationPoint;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
         private int _WORKSPACE_ID;
         private int _USER_ID;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-            _destinationConfiguration = _fxt.Build<ImportSettings>()
+            _destinationConfiguration = _fxt.Build<DestinationConfiguration>()
                 .With(x => x.ArtifactTypeId, _fxt.Create<int>())
                 .Create();
             _sourceProvider = _fxt.Build<SourceProvider>()
@@ -899,7 +899,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Arrange
             IntegrationPointDto dtoToUpdate = CloneIntegrationPoint(_integrationPointDto);
 
-            dtoToUpdate.DestinationConfiguration = new ImportSettings
+            dtoToUpdate.DestinationConfiguration = new DestinationConfiguration()
             {
                 ArtifactTypeId = _fxt.Create<int>()
             };

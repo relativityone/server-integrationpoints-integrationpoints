@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private const string _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION = "'Name' == 'Automated Workflows'";
 
         private readonly DateTime _LOAD_FILE_MODIFIED_DATE = new DateTime(2020, 1, 1);
-        private readonly ImportSettings _IMPORTSETTINGS_FOR_DOC = new ImportSettings();
+        private readonly DestinationConfiguration _IMPORTSETTINGS_FOR_DOC = new DestinationConfiguration();
 
         [SetUp]
         public override void SetUp()
@@ -115,8 +115,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
 
             _importFileLocationService = Substitute.For<IImportFileLocationService>();
-            _importFileLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(_ERROR_FILE_PATH);
-            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(_loadFile);
+            _importFileLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DestinationConfiguration>()).Returns(_ERROR_FILE_PATH);
+            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<DestinationConfiguration>()).Returns(_loadFile);
 
             IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
             _synchronizer = Substitute.For<IDataSynchronizer>();
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _integrationPoint = new IntegrationPointDto
             {
                 SourceConfiguration = "source config",
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SourceProvider = 741,
                 SecuredConfiguration = "secured config",
                 FieldMappings = new List<FieldMap>(),
@@ -166,12 +166,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(_taskParameters);
             jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);
             caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
-            synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<ImportSettings>()).Returns(_synchronizer);
+            synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<DestinationConfiguration>()).Returns(_synchronizer);
             managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(jobStopManager);
 
-            ImportSettings imageSettings = new ImportSettings();
+            DestinationConfiguration imageSettings = new DestinationConfiguration();
             imageSettings.ImageImport = true;
-            ImportSettings documentSettings = new ImportSettings();
+            DestinationConfiguration documentSettings = new DestinationConfiguration();
             imageSettings.ImageImport = false;
             ImportProviderSettings providerSettingsForDoc = new ImportProviderSettings();
             ImportProviderSettings providerSettingsForImage = new ImportProviderSettings();
@@ -431,7 +431,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             const int sizeChanged = 10;
 
-            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<ImportSettings>())
+            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<DestinationConfiguration>())
                 .Returns(new LoadFileInfo
                 {
                     FullPath = _LOAD_FILE_PATH,
@@ -451,7 +451,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             const int modifiedMinutesLater = 10;
 
-            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<ImportSettings>())
+            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<DestinationConfiguration>())
                 .Returns(new LoadFileInfo
                 {
                     FullPath = _LOAD_FILE_PATH,

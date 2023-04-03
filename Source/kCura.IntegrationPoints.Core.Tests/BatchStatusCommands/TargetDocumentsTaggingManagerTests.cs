@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private int _destinationWorkspaceArtifactId;
         private int _jobHistoryArtifactId;
         private int? _federatedInstanceArtifactId;
-        private ImportSettings _importSettings;
+        private DestinationConfiguration _destinationConfiguration;
         private readonly string _uniqueJobId = "1_JobIdGuid";
         private TargetDocumentsTaggingManager _instance;
 
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _logger = Substitute.For<IAPILog>();
             _scratchTableRepository = Substitute.For<IScratchTableRepository>();
 
-            _importSettings = new ImportSettings();
+            _destinationConfiguration = new DestinationConfiguration();
             _sourceWorkspaceArtifactId = 320187;
             _destinationWorkspaceArtifactId = 648827;
             _federatedInstanceArtifactId = null;
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>().Returns(_logger);
 
             _instance = new TargetDocumentsTaggingManager(_repositoryFactory, _tagsCreator,
-                _tagger, _tagSavedSearchManager, helper, _importSettings, _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+                _tagger, _tagSavedSearchManager, helper, new ImportSettings(_destinationConfiguration), _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
                 _federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId);
         }
 
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _instance.OnJobComplete(null);
 
             // ASSERT
-            _tagSavedSearchManager.Received(1).CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _importSettings, tagsContainer);
+            _tagSavedSearchManager.Received(1).CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _destinationConfiguration, tagsContainer);
         }
 
         [Test]
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
             // ASSERT
             _tagger.DidNotReceiveWithAnyArgs().TagDocuments(Arg.Any<TagsContainer>(), Arg.Any<IScratchTableRepository>());
-            _tagSavedSearchManager.DidNotReceiveWithAnyArgs().CreateSavedSearchForTagging(Arg.Any<int>(), Arg.Any<ImportSettings>(), Arg.Any<TagsContainer>());
+            _tagSavedSearchManager.DidNotReceiveWithAnyArgs().CreateSavedSearchForTagging(Arg.Any<int>(), Arg.Any<DestinationConfiguration>(), Arg.Any<TagsContainer>());
         }
     }
 }

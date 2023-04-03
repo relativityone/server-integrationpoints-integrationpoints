@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogInitializeServiceStart(job);
             LoadIntegrationPointData(job);
             ConfigureBatchInstance(job);
-            StatisticsService?.SetIntegrationPointConfiguration(ImportSettings, SourceConfiguration);
+            StatisticsService?.SetIntegrationPointConfiguration(IntegrationPointDto.DestinationConfiguration, SourceConfiguration);
             ConfigureJobHistory();
             LoadSourceProvider();
             RunValidation(job);
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogFinalizeServiceEnd(job);
         }
 
-        protected IDataSynchronizer CreateDestinationProvider(ImportSettings configuration)
+        protected IDataSynchronizer CreateDestinationProvider(DestinationConfiguration configuration)
         {
             // if you want to create add another synchronizer aka exporter, you may add it here.
             // RDO synchronizer
@@ -300,7 +300,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             IntegrationPointDto = LoadIntegrationPointDto(job);
             SourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-            ImportSettings = IntegrationPointDto.DestinationConfiguration;
+            ImportSettings = new ImportSettings(IntegrationPointDto.DestinationConfiguration);
             JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
         }
 

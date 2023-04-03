@@ -241,7 +241,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             if (expectedProfile.DestinationConfiguration != null)
             {
-                ImportSettings expectedProfileDestinationConfig = JsonConvert.DeserializeObject<ImportSettings>(expectedProfile.DestinationConfiguration);
+                DestinationConfiguration expectedProfileDestinationConfig = JsonConvert.DeserializeObject<DestinationConfiguration>(expectedProfile.DestinationConfiguration);
                 expectedProfileDestinationConfig.ArtifactTypeId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ArtifactTypeID);
                 expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).CaseArtifactId);
                 expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ImportNativeFile);

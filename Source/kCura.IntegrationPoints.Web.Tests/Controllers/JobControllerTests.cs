@@ -248,7 +248,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             var integrationPoint = new IntegrationPointDto()
             {
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
@@ -272,7 +272,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             // Arrange
             var integrationPoint = new IntegrationPointDto()
             {
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 

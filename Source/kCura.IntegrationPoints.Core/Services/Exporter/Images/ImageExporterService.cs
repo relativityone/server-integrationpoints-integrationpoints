@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 {
     public class ImageExporterService : ExporterServiceBase
     {
-        private readonly ImportSettings _settings;
+        private readonly DestinationConfiguration _destinationConfiguration;
 
         public ImageExporterService(
             IDocumentRepository documentRepository,
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             int startAt,
             SourceConfiguration sourceConfiguration,
             int searchArtifactId,
-            ImportSettings settings)
+            DestinationConfiguration destinationConfiguration)
             : base(
                 documentRepository,
                 relativityObjectManager,
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
                 sourceConfiguration,
                 searchArtifactId)
         {
-            _settings = settings;
+            _destinationConfiguration = destinationConfiguration;
         }
 
         public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -81,13 +81,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             }
             else
             {
-                var productionPrecedenceType = (ExportSettings.ProductionPrecedenceType)_settings.ProductionPrecedence;
+                var productionPrecedenceType = (ExportSettings.ProductionPrecedenceType)_destinationConfiguration.ProductionPrecedence;
 
                 if (productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Produced)
                 {
-                    Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _settings.ImagePrecedence.Select(x => x.ArtifactID)));
+                    Logger.LogInformation("Processing production precedences: {productionPrecedences}", string.Join(", ", _destinationConfiguration.ImagePrecedence.Select(x => x.ArtifactID)));
 
-                    int[] productionsArtifactIds = _settings.ImagePrecedence.Select(x => Convert.ToInt32(x.ArtifactID)).ToArray();
+                    int[] productionsArtifactIds = _destinationConfiguration.ImagePrecedence.Select(x => Convert.ToInt32(x.ArtifactID)).ToArray();
 
                     foreach (var productionsArtifactId in productionsArtifactIds)
                     {
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
                     }
                 }
 
-                if (_settings.IncludeOriginalImages || productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Original)
+                if (_destinationConfiguration.IncludeOriginalImages || productionPrecedenceType == ExportSettings.ProductionPrecedenceType.Original)
                 {
                     ILookup<int, ImageFile> originalImageLocationsForDocuments = GetOriginalImages(documentsWithoutImages.ToArray());
 

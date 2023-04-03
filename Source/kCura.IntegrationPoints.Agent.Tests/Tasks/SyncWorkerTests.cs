@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SourceProvider = 852,
                 DestinationProvider = 942,
                 SourceConfiguration = "source config",
-                DestinationConfiguration = new ImportSettings(),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = "sec config",
                 FieldMappings = new List<FieldMap>(),
             };
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             // assert
             _batchStatus.Received(1).OnJobStart(_job);
             EnsureToSetJobHistroyErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager, Arg.Any<IDiagnosticLog>());
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), Arg.Any<ImportSettings>(), _jobStopManager, Arg.Any<IDiagnosticLog>());
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .SyncData(
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
-                    _integrationPoint.DestinationConfiguration,
+                    Arg.Any<ImportSettings>(),
                     _jobStopManager,
                     Arg.Any<IDiagnosticLog>());
             _batchStatus.Received(1).OnJobComplete(_job);
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .SyncData(
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
-                    _integrationPoint.DestinationConfiguration,
+                    Arg.Any<ImportSettings>(),
                     _jobStopManager,
                     Arg.Any<IDiagnosticLog>());
             _batchStatus.Received(1).OnJobComplete(_job);
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // assert
-            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager, null);
+            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager, null);
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.Unstoppable); // mark job as unstoppable while finalizing the job.
             EnsureToUpdateTheStopStateBackToNone();
         }
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // assert
-            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), _integrationPoint.DestinationConfiguration, _jobStopManager, null);
+            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager, null);
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.Unstoppable); // mark job as unstoppable while finalizing the job.
             EnsureToUpdateTheStopStateBackToNone();
         }
@@ -284,7 +284,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .SyncData(
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
-                    _integrationPoint.DestinationConfiguration,
+                    Arg.Any<ImportSettings>(),
                     _jobStopManager,
                     Arg.Any<IDiagnosticLog>());
             _batchStatus.Received(1).OnJobComplete(_job);

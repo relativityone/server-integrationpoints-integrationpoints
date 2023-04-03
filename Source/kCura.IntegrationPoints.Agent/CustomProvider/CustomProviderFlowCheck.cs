@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider

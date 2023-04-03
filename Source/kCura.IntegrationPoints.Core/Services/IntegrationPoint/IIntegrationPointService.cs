@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// Retrieves the destination configuration field value for given integration point.
         /// </summary>
         /// <param name="artifactId">Artifact id of the integration point.</param>
-        ImportSettings GetDestinationConfiguration(int artifactId);
+        DestinationConfiguration GetDestinationConfiguration(int artifactId);
 
         /// <summary>
         /// Retrieves the calculation state field value for given integration point.

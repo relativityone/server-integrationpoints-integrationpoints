@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             return fieldMap.Select(f => f.DestinationField).ToList();
         }
 
-        protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, ImportSettings configuration, Job job)
+        protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, DestinationConfiguration configuration, Job job)
         {
             LogGetDestinationProviderStart(job);
             Guid providerGuid = new Guid(destinationProviderRdo.Identifier);

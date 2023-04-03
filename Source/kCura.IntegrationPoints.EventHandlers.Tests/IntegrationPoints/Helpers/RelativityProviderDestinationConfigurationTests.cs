@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         {
             return new Dictionary<string, object>
             {
-                { nameof(ImportSettings.ArtifactTypeId), _ARTIFACT_TYPE_ID },
+                { nameof(ImportSettings.DestinationConfiguration.ArtifactTypeId), _ARTIFACT_TYPE_ID },
             };
         }
     }

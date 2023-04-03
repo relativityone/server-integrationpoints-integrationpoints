@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
         public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
         {
-            Tagger tagger = CreateTagger(_sourceConfig);
+            Tagger tagger = CreateTagger();
 
             IConsumeScratchTableBatchStatus taggingManager = new TargetDocumentsTaggingManager(
                 _repositoryFactory,
@@ -79,11 +79,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             return taggingManager;
         }
 
-        private Tagger CreateTagger(SourceConfiguration settings)
+        private Tagger CreateTagger()
         {
             IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(
                 Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID,
-                _destinationConfig);
+                _destinationConfig.DestinationConfiguration);
             var tagsSynchronizer = new TagsSynchronizer(_helper, synchronizer, _serializer);
 
             var tagger = new Tagger(
@@ -99,14 +99,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private void AdjustDestinationConfig(ImportSettings importSettings)
         {
             // specify settings to tag
-            importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-            importSettings.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
-            importSettings.CopyFilesToDocumentRepository = false;
+            importSettings.DestinationConfiguration.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
+            importSettings.DestinationConfiguration.FieldOverlayBehavior = ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE;
+            importSettings.DestinationConfiguration.CopyFilesToDocumentRepository = false;
             importSettings.FileNameColumn = null;
             importSettings.NativeFilePathSourceFieldName = null;
             importSettings.FolderPathSourceFieldName = null;
-            importSettings.Provider = string.Empty;
-            importSettings.ImportNativeFile = false;
+            importSettings.DestinationConfiguration.Provider = string.Empty;
+            importSettings.DestinationConfiguration.ImportNativeFile = false;
         }
     }
 }

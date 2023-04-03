@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
     public class RelativityProviderDestinationConfiguration : RelativityProviderConfiguration
     {
-        private readonly IFederatedInstanceManager _federatedInstanceManager;
         private readonly IRepositoryFactory _repositoryFactory;
         private const string ARTIFACT_TYPE_NAME = "ArtifactTypeName";
 
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             try
             {
                 int transferredObjArtifactTypeId = ParseValue<int>(settings,
-                    nameof(ImportSettings.ArtifactTypeId));
+                    nameof(DestinationConfiguration.ArtifactTypeId));
 
                 IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(Helper.GetActiveCaseID());
                 ObjectTypeDTO objectType = objectTypeRepository.GetObjectType(transferredObjArtifactTypeId);

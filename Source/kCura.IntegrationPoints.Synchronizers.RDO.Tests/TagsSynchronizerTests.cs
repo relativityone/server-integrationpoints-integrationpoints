@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         public void ItShouldUpdateImportSettingsForSyncData([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
             [Values(true, false)] bool useDynamicFolderPath)
         {
-            ImportSettings importSettings = new ImportSettings
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 ImageImport = imageImport,
                 ProductionImport = productionImport,
@@ -48,10 +48,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_data, _fieldMap, importSettings, null, new EmptyDiagnosticLog());
+            _instance.SyncData(_data, _fieldMap, new ImportSettings(destinationConfiguration), null, new EmptyDiagnosticLog());
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x)), null, Arg.Any<IDiagnosticLog>());
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null, Arg.Any<IDiagnosticLog>());
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         public void ItShouldUpdateImportSettingsForSyncData_Records([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
             [Values(true, false)] bool useDynamicFolderPath)
         {
-            ImportSettings importSettings = new ImportSettings
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 ImageImport = imageImport,
                 ProductionImport = productionImport,
@@ -67,10 +67,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_records, _fieldMap, importSettings, (IJobStopManager)null, null);
+            _instance.SyncData(_records, _fieldMap, new ImportSettings(destinationConfiguration), (IJobStopManager)null, null);
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x)), null, null);
+            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null, null);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         public void ItShouldUpdateImportSettingsForGetFields([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
             [Values(true, false)] bool useDynamicFolderPath)
         {
-            ImportSettings importSettings = new ImportSettings
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 ImageImport = imageImport,
                 ProductionImport = productionImport,
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings)));
+            _instance.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(new ImportSettings(destinationConfiguration))));
 
             // ASSERT
             _dataSynchronizer.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => AssertOptions(x.Configuration)));
@@ -94,12 +94,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
         private bool AssertOptions(string settings)
         {
-            return AssertOptions(JsonConvert.DeserializeObject<ImportSettings>(settings));
+            return AssertOptions(JsonConvert.DeserializeObject<DestinationConfiguration>(settings));
         }
 
-        private bool AssertOptions(ImportSettings importSettings)
+        private bool AssertOptions(DestinationConfiguration importSettings)
         {
-            return !importSettings.ImageImport && !importSettings.ProductionImport && !importSettings.UseDynamicFolderPath;
+            return !importSettings.ImageImport &&
+                   !importSettings.ProductionImport &&
+                   !importSettings.UseDynamicFolderPath;
         }
     }
 }

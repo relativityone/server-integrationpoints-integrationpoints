@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
         private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
 
-        private readonly ImportSettings DestinationConfiguration = new ImportSettings
+        private readonly DestinationConfiguration DestinationConfiguration = new DestinationConfiguration
         {
             ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
             UseFolderPathInformation = false,
@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [TestCase("{\"ImportOverwriteMode\":\"AppendOverlay\",\"UseFolderPathInformation\":\"false\",\"FieldOverlayBehavior\":\"Merge Values\"}")]
         public void ItShouldValidateValidSettings(string destinationConfigString)
         {
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(destinationConfigString);
+            DestinationConfiguration importSettings = _serializer.Deserialize<DestinationConfiguration>(destinationConfigString);
 
             // Arrange
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":\"Control Number\",\"isIdentifier\":true,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"Identifier\"}]";
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOnly(string fieldOverlayBehavior)
         {
             // Arrange
-            var configuration = new ImportSettings
+            var configuration = new DestinationConfiguration
             {
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 UseFolderPathInformation = false,
@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldValidateInvalidSettingsFieldOverlayBehavior_AppendOverlayAndOverlayOnly(ImportOverwriteModeEnum importOverwriteMode)
         {
             // Arrange
-            var configuration = new ImportSettings
+            var configuration = new DestinationConfiguration
             {
                 ImportOverwriteMode = importOverwriteMode,
                 UseFolderPathInformation = false,
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldValidateAsValidSettingsForFolderPathInformation_With_OverlayOnly()
         {
             // Arrange
-            var configuration = new ImportSettings
+            var configuration = new DestinationConfiguration
             {
                 ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly,
                 UseFolderPathInformation = true,
@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldValidateInvalidSettingsFolderPathInformation(ImportOverwriteModeEnum importOverwriteMode)
         {
             // Arrange
-            var configuration = new ImportSettings
+            var configuration = new DestinationConfiguration
             {
                 ImportOverwriteMode = importOverwriteMode,
                 UseFolderPathInformation = true,
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ItShouldNotAllowForUseFolderPathInformationAndUseDynamicFolderPathTogether()
         {
             const string fieldMap = "[{\"sourceField\":{\"displayName\":\"Path\",\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"destinationField\":{\"displayName\":null,\"isIdentifier\":false,\"fieldIdentifier\":\"1000186\",\"isRequired\":false},\"fieldMapType\":\"FolderPathInformation\"}]";
-            var destinationConfig = new ImportSettings
+            var destinationConfig = new DestinationConfiguration()
             {
                 UseDynamicFolderPath = true,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,

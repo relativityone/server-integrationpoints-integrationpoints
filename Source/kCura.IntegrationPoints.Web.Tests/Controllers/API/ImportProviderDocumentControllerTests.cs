@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnNoContentResultIfErrorFileExists()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DestinationConfiguration>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(true);
 
             IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnBadRequestResultIfErrorFileMissing()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DestinationConfiguration>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(false);
 
             IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
@@ -188,7 +188,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [Test]
         public void ItShouldReturnCorrectResponseMessageResultForDownload()
         {
-            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ImportSettings>()).Returns(string.Empty);
+            _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DestinationConfiguration>()).Returns(string.Empty);
             _memoryStream.GetBuffer().Returns(_FILE_CONTENT_MEM_STREAM_BYTES);
 
             IHttpActionResult result = _controller.DownloadErrorFile(-1, -1);

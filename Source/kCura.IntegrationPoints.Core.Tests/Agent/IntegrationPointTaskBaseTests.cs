@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             // ARRANGE
             const string jobDetailsText = "SERIALIZED";
             const long jobIdValue = 12321;
-            ImportSettings configuration = new ImportSettings();
+            DestinationConfiguration configuration = new DestinationConfiguration();
             IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
             var destinationProvider = new DestinationProvider()
             {
@@ -298,7 +298,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
         public new IDataSynchronizer GetDestinationProvider(
             DestinationProvider destinationProviderRdo,
-            ImportSettings configuration,
+            DestinationConfiguration configuration,
             Job job)
         {
             return base.GetDestinationProvider(destinationProviderRdo, configuration, job);

@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
             bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
 
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
+            var destinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPointProfile.DestinationConfiguration);
             bool isProductionAsDestination = destinationConfiguration.ProductionImport;
 
             bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;

@@ -99,9 +99,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             return JsonConvert.SerializeObject(CreateSourceConfiguration(importNativeFileFlagValue));
         }
 
-        private ImportSettings CreateSourceConfiguration(bool importNativeFileFlagValue)
+        private DestinationConfiguration CreateSourceConfiguration(bool importNativeFileFlagValue)
         {
-            return new ImportSettings
+            return new DestinationConfiguration
             {
                 ImportNativeFileCopyMode = (ImportNativeFileCopyModeEnum)int.MinValue,
                 ImportNativeFile = importNativeFileFlagValue
@@ -115,9 +115,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             return jObject.ToString();
         }
 
-        private ImportSettings DeserializeConfig(string sourceConfigurationString)
+        private DestinationConfiguration DeserializeConfig(string sourceConfigurationString)
         {
-            return JsonConvert.DeserializeObject<ImportSettings>(sourceConfigurationString);
+            return JsonConvert.DeserializeObject<DestinationConfiguration>(sourceConfigurationString);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public int DestinationProviderArtifactId { get; set; }
 
-        public ImportSettings DestinationConfiguration { get; set; }
+        public DestinationConfiguration DestinationConfiguration { get; set; }
 
         public string IntegrationPointTypeIdentifier { get; set; }
 

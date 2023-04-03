@@ -335,7 +335,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Name = rdo.Name,
                 SelectedOverwrite = rdo.OverwriteFields == null ? string.Empty : rdo.OverwriteFields.Name,
                 SourceProvider = rdo.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(rdo.DestinationConfiguration),
+                DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(rdo.DestinationConfiguration),
                 SourceConfiguration = rdo.SourceConfiguration,
                 DestinationProvider = rdo.DestinationProvider.GetValueOrDefault(0),
                 Type = rdo.Type.GetValueOrDefault(0),

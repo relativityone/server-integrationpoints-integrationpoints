@@ -118,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 Name = integrationPointProfile.Name,
                 SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
                 SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration),
+                DestinationConfiguration = _serializer.Deserialize<DestinationConfiguration>(integrationPointProfile.DestinationConfiguration),
                 SourceConfiguration = integrationPointProfile.SourceConfiguration,
                 DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
                 Type = integrationPointProfile.Type,
@@ -137,10 +137,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             int caseArtifactId,
             int destinationFolderArtifactId = 0,
             int artifactTypeId = (int)ArtifactType.Document,
-            string destinationProviderType = null,
             bool entityManagerFieldContainsLink = false)
         {
-            return _serializer.Serialize(new ImportSettings
+            return _serializer.Serialize(new DestinationConfiguration()
             {
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
@@ -149,9 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 ArtifactTypeId = artifactTypeId,
                 DestinationArtifactTypeId = artifactTypeId,
                 DestinationFolderArtifactId = destinationFolderArtifactId,
-                DestinationProviderType = destinationProviderType,
                 EntityManagerFieldContainsLink = entityManagerFieldContainsLink,
-                WebServiceURL = "https://fake.uri"
             });
         }
     }

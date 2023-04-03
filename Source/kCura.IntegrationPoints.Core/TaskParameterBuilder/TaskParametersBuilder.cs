@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core
             _importFileLocationService = importFileLocationService;
         }
 
-        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, ImportSettings destinationConfiguration)
+        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, DestinationConfiguration destinationConfiguration)
         {
             TaskParameters parameters = new TaskParameters
             {
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core
             return parameters;
         }
 
-        private LoadFileTaskParameters BuildLoadFileParameters(string sourceConfiguration, ImportSettings destinationConfiguration)
+        private LoadFileTaskParameters BuildLoadFileParameters(string sourceConfiguration, DestinationConfiguration destinationConfiguration)
         {
             LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(sourceConfiguration, destinationConfiguration);
 

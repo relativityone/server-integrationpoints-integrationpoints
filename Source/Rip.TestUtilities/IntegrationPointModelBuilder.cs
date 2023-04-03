@@ -26,7 +26,7 @@ namespace Rip.TestUtilities
         private int _sourceProvider;
         private int _destinationProvider;
         private string _sourceConfiguration;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private List<FieldMap> _fieldMapping;
         private string _overwriteMode = _APPEND_ONLY;
 
@@ -68,7 +68,7 @@ namespace Rip.TestUtilities
             return this;
         }
 
-        public IntegrationPointModelBuilder WithDestinationConfiguration(ImportSettings destinationConfiguration)
+        public IntegrationPointModelBuilder WithDestinationConfiguration(DestinationConfiguration destinationConfiguration)
         {
             _destinationConfiguration = destinationConfiguration;
             return this;

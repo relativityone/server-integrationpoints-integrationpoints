@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 SourceConfiguration = "Source Configuration",
-                DestinationConfiguration = new ImportSettings { ArtifactTypeId = artifactTypeId }
+                DestinationConfiguration = new DestinationConfiguration { ArtifactTypeId = artifactTypeId }
             };
             ExportUsingSavedSearchSettings sourceConfiguration = new ExportUsingSavedSearchSettings()
             {

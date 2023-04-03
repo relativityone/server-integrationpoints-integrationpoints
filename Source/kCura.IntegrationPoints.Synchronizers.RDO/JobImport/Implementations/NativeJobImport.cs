@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
         protected internal override ImportBulkArtifactJob CreateJob()
         {
-            int artifactTypeId = ImportSettings.ArtifactTypeId;
+            int artifactTypeId = ImportSettings.DestinationConfiguration.ArtifactTypeId;
             _logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}", artifactTypeId);
 
             if (artifactTypeId == (int)ArtifactType.Document)
