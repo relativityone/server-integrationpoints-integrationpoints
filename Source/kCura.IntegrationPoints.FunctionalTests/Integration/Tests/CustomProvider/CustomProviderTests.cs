@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;

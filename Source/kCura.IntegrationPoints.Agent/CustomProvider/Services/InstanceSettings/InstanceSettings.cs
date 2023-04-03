@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
         {
             return new Query
             {
-                Condition = $"'Name' == '{name}' AND 'Section' == '{section}'"
+                Condition = $"('Name' == '{name}' AND 'Section' == '{section}')"
             };
         }
 
