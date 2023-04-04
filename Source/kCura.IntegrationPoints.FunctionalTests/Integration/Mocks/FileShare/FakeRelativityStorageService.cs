@@ -20,7 +20,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
         {
             var fileInfo = new FileInfo(path);
             fileInfo.Directory.Create();
-            fileInfo.Create().Dispose();
             Stream stream = File.Open(path, FileMode.OpenOrCreate);
             return Task.FromResult<StorageStream>(new FakeStream(stream, path));
         }

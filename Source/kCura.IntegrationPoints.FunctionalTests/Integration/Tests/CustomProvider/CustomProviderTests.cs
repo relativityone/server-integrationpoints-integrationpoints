@@ -17,6 +17,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
+using FileInfo = System.IO.FileInfo;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 {
@@ -54,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             // Assert
             VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
-            VerifyFileExistanceAndContent(job);
+            VerifyFileExistenceAndContent(job);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
@@ -71,22 +72,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncManagerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
 
-            JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
-            InsertBatchToJobTrackerTable(job, jobHistory);
             return job;
-        }
-
-        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
-        {
-            string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
-
-            if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
-            {
-                FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
-            }
-
-            FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
         }
 
         private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
@@ -95,30 +83,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
         }
 
-        private void VerifyFileExistanceAndContent(JobTest job)
+        private void VerifyFileExistenceAndContent(JobTest job)
         {
             CustomProviderJobDetails jobDetails = GetJobDetails(job.JobDetails);
             string idFullFilePath = jobDetails.Batches.First().IDsFilePath;
 
             File.Exists(idFullFilePath).Should().BeTrue();
-            FileShouldNotBeEmpty(idFullFilePath).Should().BeTrue();
+            IsFileEmpty(idFullFilePath).Should().BeFalse();
 
             string dataFullFilePath = Path.Combine(Path.GetDirectoryName(idFullFilePath), Path.GetFileNameWithoutExtension(idFullFilePath) + ".data");
             File.Exists(dataFullFilePath).Should().BeTrue();
-            FileShouldNotBeEmpty(dataFullFilePath).Should().BeTrue();
+            IsFileEmpty(dataFullFilePath).Should().BeFalse();
         }
 
-        private bool FileShouldNotBeEmpty(string filePath)
+        private bool IsFileEmpty(string filePath)
         {
-            Stream stream = File.OpenRead(filePath);
-            string fileContent;
-
-            using (TextReader reader = new StreamReader(stream))
-            {
-                fileContent = reader.ReadToEnd();
-            }
-
-            return fileContent != string.Empty;
+            var fileInfo = new FileInfo(filePath);
+            return fileInfo.Length == 0;
         }
 
         private CustomProviderJobDetails GetJobDetails(string details)

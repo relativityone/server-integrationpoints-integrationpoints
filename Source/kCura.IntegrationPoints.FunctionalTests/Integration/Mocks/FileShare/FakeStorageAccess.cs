@@ -117,11 +117,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
-        public Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public StorageAccessKind StorageAccessKind { get; }
     }
 }
