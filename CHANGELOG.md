@@ -1,4 +1,4 @@
-## [11.1.15] - Unreleased
+## [11.1.1] - Unreleased
 - REL-825277: Code Isolation - integrationpoints-jsonloader
 - Upgraded Relativity.IntegrationPoints.Services.Interfaces.Private dependency version to 1.2.1
 - Upgraded Relativity.IntegrationPoints.SDK dependency version to 1.0.7
