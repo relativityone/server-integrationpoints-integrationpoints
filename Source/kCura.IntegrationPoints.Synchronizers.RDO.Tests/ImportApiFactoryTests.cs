@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -56,8 +57,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private static ILogger<ImportApiFactory> PrepareLoggerStub()
         {
             Mock<IAPILog> loggerStub = new Mock<IAPILog>();
+            Mock<ISerilogLoggerInstrumentationService> serilogLoggerInstrumentationStub =
+                new Mock<ISerilogLoggerInstrumentationService>();
             loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
-            return new Logger<ImportApiFactory>(loggerStub.Object);
+            return new Logger<ImportApiFactory>(loggerStub.Object, serilogLoggerInstrumentationStub.Object);
         }
     }
 }
