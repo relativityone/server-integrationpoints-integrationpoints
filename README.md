@@ -24,3 +24,9 @@ Buena Vista Coding Club
 ## Miscellaneous
   
 N/A
+
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 1.2.1
+Branch: server-main
