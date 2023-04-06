@@ -26,7 +26,8 @@ namespace kCura.IntegrationPoints.Common.Logger
         {
             var disposable = _serilogLogger as IDisposable;
             disposable?.Dispose();
-            _serilogLogger = null;        }
+            _serilogLogger = null;
+        }
 
         public ILogger GetLogger()
         {
@@ -88,6 +89,7 @@ namespace kCura.IntegrationPoints.Common.Logger
                 .Enrich.WithProperty(RelEye.Names.R1TeamID, RelEye.Values.R1TeamID)
                 .Enrich.FromLogContext()
                 .CreateLogger();
+            _internalLogger.LogInformation("SerilogLogger.OpenTelemetry properly initialized.");
         }
 
         private string GetRelEyeToken()
