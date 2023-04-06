@@ -71,7 +71,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private async Task ExecuteAsync(Job job)
         {
             CustomProviderJobDetails jobDetails = null;
-            IntegrationPointDto integrationPointDto = null;
             ImportSettings destinationConfiguration = null;
 
             IStorageAccess<string> storage = null;
@@ -80,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 jobDetails = GetJobDetails(job.JobDetails);
-                integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+                IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
                 destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
                 storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
 

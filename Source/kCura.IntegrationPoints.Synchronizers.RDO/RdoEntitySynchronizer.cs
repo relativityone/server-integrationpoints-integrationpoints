@@ -71,12 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
                 RelativityObject artifact = fieldLookup[fieldEntry.FieldIdentifier];
                 fieldEntry.IsIdentifier = IsField(artifact, Guid.Parse(EntityFieldGuids.UniqueID));
-
-                if (IsField(artifact, Guid.Parse(EntityFieldGuids.FullName)))
-                {
-                    continue;
-                }
-
+                
                 bool isRequired = IsField(artifact, Guid.Parse(EntityFieldGuids.FirstName)) ||
                                 IsField(artifact, Guid.Parse(EntityFieldGuids.LastName));
 
@@ -178,15 +173,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private void LoadFullNameField(List<RelativityObject> allRDOFields, Dictionary<string, int> importFieldMap)
         {
             HandleFullNamePopulation = false;
-            FieldEntry fullNameField =
-                allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.FullName)))
-                    .Select(x => new FieldEntry
-                    {
-                        DisplayName = x.Name,
-                        FieldIdentifier = x.ArtifactID.ToString(),
-                        IsIdentifier = false
-                    })
-                    .FirstOrDefault();
+            FieldEntry fullNameField = allRDOFields
+                .Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.FullName)))
+                .Select(x => new FieldEntry
+                {
+                    DisplayName = x.Name,
+                    FieldIdentifier = x.ArtifactID.ToString(),
+                    IsIdentifier = false
+                })
+                .FirstOrDefault();
             int fullNameFieldId = int.Parse(fullNameField.FieldIdentifier);
 
             if (!string.IsNullOrWhiteSpace(FirstNameSourceFieldId)
@@ -232,7 +227,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private void GenerateImportRowError(string sourceFieldId, string errorMessage)
         {
             RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
-            _logger.LogWarning("There was a problem with record: {sanitizedSourceFieldId}. {errorMessage}", SanitizeString(sourceFieldId), errorMessage );
+            _logger.LogWarning("There was a problem with record: {sanitizedSourceFieldId}. {errorMessage}", SanitizeString(sourceFieldId), errorMessage);
         }
 
         private string SanitizeString(string sensitiveString)
