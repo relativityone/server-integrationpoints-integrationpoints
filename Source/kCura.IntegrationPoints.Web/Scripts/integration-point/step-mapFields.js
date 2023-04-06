@@ -193,7 +193,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = model.SecuredConfiguration;
 		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
-		self.EnableTagging = destinationModel.EnableTagging;
+
+		self.EnableTagging = ko.observable();
+		self.EnableTagging(destinationModel.EnableTagging);
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -263,6 +265,10 @@ ko.validation.insertValidationMessage = function (element) {
 		self.IsNonDocumentObjectFlow = ko.observable();
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
+		var isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
+		self.IsSmartOverwriteToggleEnabled = ko.observable();
+		self.IsSmartOverwriteToggleEnabled(isSmartOverwriteToggleEnabled);
+
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
@@ -300,6 +306,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
+		this.UseSmartOverwrite = ko.observable(model.UseSmartOverwrite || false);
 
 		this.CheckRelativityProviderExportType = function (exportType) {
 			if (this.IsRelativityProvider()) {
@@ -352,7 +359,7 @@ ko.validation.insertValidationMessage = function (element) {
 					sourceField: [...self.sourceField()],
 					sourceMapped: [...self.sourceMapped()]
 				}
-				
+
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
 				self.UseDynamicFolderPath("false");
@@ -435,7 +442,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.FieldOverlayBehavior = ko.observable(model.FieldOverlayBehavior || 'Use Field Settings');
 
 		self.OverwriteOptions = this.OverwriteOptions;
-		self.FieldOverlayBehavior = this.FieldOverlayBehavior;		
+		self.FieldOverlayBehavior = this.FieldOverlayBehavior;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
 		this.SelectedOverwrite.subscribe(function (newValue) {
@@ -631,7 +638,7 @@ ko.validation.insertValidationMessage = function (element) {
 				url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationArtifactTypeId)
 			}).then(function (result) {
 				return result;
-			});			
+			});
 		}
 
 		var sourceFieldPromise =
@@ -659,8 +666,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.destinationCaseArtifactID = destination.CaseArtifactId;
 
 		self.findField = function (array, field) {
-			const fields = $.grep(array, function (value, _index) { 
-				return value.fieldIdentifier === field.fieldIdentifier || (value.name == field.displayName && value.type == field.type); 
+			const fields = $.grep(array, function (value, _index) {
+				return value.fieldIdentifier === field.fieldIdentifier || (value.name == field.displayName && value.type == field.type);
 			});
 			const fieldFound = fields.length > 0;
 			return {
@@ -972,7 +979,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
-		
+
 		/********** Submit Validation**********/
 		this.submit = function () {
 			this.showErrors(true);
@@ -1130,7 +1137,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.openRelativityProviderSettingsTooltip = function (data, event) {
 			settingsTooltipViewModel.open(event);
 		};
-		
+
 	};// end of the viewmodel
 
 
@@ -1150,7 +1157,7 @@ ko.validation.insertValidationMessage = function (element) {
 				UseDynamicFolderPath: model.UseDynamicFolderPath,
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior: model.FieldOverlayBehavior,
-				FolderPathSourceField: model.FolderPathSourceField,				
+				FolderPathSourceField: model.FolderPathSourceField,
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -1264,7 +1271,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.ImagePrecedence = this.model.ImagePrecedence();
 			this.returnModel.IncludeOriginalImages = this.model.IncludeOriginalImages();
 			this.returnModel.ProductionPrecedence = this.model.ProductionPrecedence();
-
+			this.returnModel.UseSmartOverwrite = this.model.UseSmartOverwrite();
 
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
@@ -1368,13 +1375,14 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.IncludeOriginalImages = this.model.IncludeOriginalImages();
 					_destination.IdentifierField = this.model.IdentifierField();
 					_destination.MoveExistingDocuments = this.model.MoveExistingDocuments();
+					_destination.UseSmartOverwrite = this.model.UseSmartOverwrite();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 
-                    // we need to add some default value before saving 'EnableTagging' setting to DB 
+                    // we need to add some default value before saving 'EnableTagging' setting to DB
                     if (this.model.EnableTagging == null) {
                         _destination.EnableTagging = "true";
                     }
