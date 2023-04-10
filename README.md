@@ -6,7 +6,7 @@ Json Loader is a custom provider compatible with Integration Points app. It allo
 
 The server-main branch was forked for Relativity Server by the Server Vertical.
 Tag: 11.1.14
-Branch: server-main
+Branch: release-12.3-sundrop-server
 
 
 ## Build Tasks
