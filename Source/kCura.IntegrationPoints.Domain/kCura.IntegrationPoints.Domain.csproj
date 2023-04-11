@@ -142,7 +142,6 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
       <Project>{faff9dbe-b607-45b3-8392-469b5eec5259}</Project>
@@ -150,11 +149,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup xmlns="">
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.SDK" />
@@ -163,8 +157,6 @@
     <PackageReference Include="Relativity.DataGrid" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="" />
-    <PackageReference Include="" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
