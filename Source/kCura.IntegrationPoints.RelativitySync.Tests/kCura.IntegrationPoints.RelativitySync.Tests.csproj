@@ -109,21 +109,18 @@
       <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup xmlns="">
+  <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
-    <PackageReference Include="" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
-    <PackageReference Include="" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
-    <PackageReference Include="" />
     <PackageReference Include="group Sync" />
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Banzai" />

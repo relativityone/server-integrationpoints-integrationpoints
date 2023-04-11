@@ -90,17 +90,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup xmlns="">
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
-    <PackageReference Include="" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NSubstitute" />

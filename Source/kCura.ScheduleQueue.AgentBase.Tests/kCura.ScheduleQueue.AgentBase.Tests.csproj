@@ -74,15 +74,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup xmlns="">
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
-    <PackageReference Include="" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />

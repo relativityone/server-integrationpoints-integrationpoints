@@ -65,15 +65,11 @@
       <Name>kCura.IntegrationPoints.Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup xmlns="">
+  <ItemGroup>
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.Telemetry.APM" />
-    <PackageReference Include="" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />

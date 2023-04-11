@@ -81,13 +81,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\..\.paket\paket.targets" />
-  <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup xmlns="">
+ <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
@@ -95,11 +89,9 @@
     <PackageReference Include="Relativity.Logging.Interfaces" />
     <PackageReference Include="Relativity.Logging" />
     <PackageReference Include="Relativity.Toggles" />
-    <PackageReference Include="" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
-    <PackageReference Include="" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
