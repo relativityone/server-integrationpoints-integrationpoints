@@ -29,6 +29,7 @@ param(
     [string]$Configuration = "Debug"
 )
 
+. $profile
 Set-StrictMode -Version 2.0
 
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
