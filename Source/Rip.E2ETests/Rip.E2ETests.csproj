@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\NUnit\build\NUnit.props" Condition="Exists('..\..\packages\NUnit\build\NUnit.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -50,7 +49,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
@@ -86,231 +84,20 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Xml">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Xml.Linq">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FluentAssertions">
-          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FluentAssertions.Core">
-          <HintPath>..\..\packages\FluentAssertions\lib\net45\FluentAssertions.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Moq">
-          <HintPath>..\..\packages\Moq\lib\net45\Moq.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="nunit.framework">
-          <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="NUnitExtras.HierarchicalCategories">
-          <HintPath>..\..\packages\NUnitExtras.HierarchicalCategories\lib\net45\NUnitExtras.HierarchicalCategories.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Polly">
-          <HintPath>..\..\packages\Polly\lib\net45\Polly.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Core">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Data">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Runtime.Serialization">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.XML">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.IntegrationPoints.Contracts">
-          <HintPath>..\..\packages\Relativity.IntegrationPoints.Contracts\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Data.DataSetExtensions">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.Net.Http">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private">
-          <HintPath>..\..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Kepler">
-          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Services.ServiceProxy">
-          <HintPath>..\..\packages\Relativity.Kepler.Client\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Services.DataContracts">
-          <HintPath>..\..\packages\Relativity.Services.DataContracts\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.ServiceModel">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.Services.Interfaces">
-          <HintPath>..\..\packages\Relativity.Services.Interfaces\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.APM">
-          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.DataContracts.Shared">
-          <HintPath>..\..\packages\Relativity.Telemetry.DataContracts.Shared\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Testing.Identification">
-          <HintPath>..\..\packages\Relativity.Testing.Identification\lib\net462\Relativity.Testing.Identification.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Serilog">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Serilog.FullNetFx">
-          <HintPath>..\..\packages\Serilog\lib\net45\Serilog.FullNetFx.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup xmlns="">
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Kepler.Client" />
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Relativity.Testing.Identification" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
+    <PackageReference Include="" />
+    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
+    <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
+  </ItemGroup>
 </Project>

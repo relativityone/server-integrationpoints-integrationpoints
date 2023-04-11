@@ -73,7 +73,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -84,53 +83,15 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Castle.Core">
-          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Castle.Windsor">
-          <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Renci.SshNet">
-          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup xmlns="">
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="SSH.NET" />
+    <PackageReference Include="Relativity.API" />
+  </ItemGroup>
 </Project>

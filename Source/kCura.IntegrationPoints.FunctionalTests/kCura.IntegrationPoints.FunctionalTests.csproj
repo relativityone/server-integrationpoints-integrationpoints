@@ -27,7 +27,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
@@ -120,4 +119,41 @@
     </Reference>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="ARMTestServices" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" />
+    <PackageReference Include="" />
+    <PackageReference Include="group Tests" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Agent" />
+    <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler.Client" />
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Relativity.Testing.Identification" />
+    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
+    <PackageReference Include="Microsoft.Web.Infrastructure" />
+    <PackageReference Include="" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Relativity.Testing.Framework" />
+    <PackageReference Include="Relativity.Testing.Framework.Api content: none // avoid including OutsideIn binaries" />
+    <PackageReference Include="Relativity.Testing.Framework.Web" />
+    <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
+    <PackageReference Include="IntegrationPoints.MyFirstProvider" />
+    <PackageReference Include="Relativity.Sync" />
+    <PackageReference Include="" />
+  </ItemGroup>
 </Project>

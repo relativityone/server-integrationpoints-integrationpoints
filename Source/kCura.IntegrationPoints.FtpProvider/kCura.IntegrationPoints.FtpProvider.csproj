@@ -76,7 +76,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -87,103 +86,16 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Castle.Core">
-          <HintPath>..\..\packages\Castle.Core\lib\net45\Castle.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Castle.Windsor">
-          <HintPath>..\..\packages\Castle.Windsor\lib\net45\Castle.Windsor.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
   <ItemGroup>
     <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Newtonsoft.Json">
-          <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.API">
-          <HintPath>..\..\packages\Relativity.API\lib\net462\Relativity.API.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="System.Runtime.Serialization">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="System.XML">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Relativity.IntegrationPoints.Contracts">
-          <HintPath>..\..\packages\Relativity.IntegrationPoints.Contracts\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Kepler">
-          <HintPath>..\..\packages\Relativity.Kepler\lib\net462\Relativity.Kepler.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.Telemetry.APM">
-          <HintPath>..\..\packages\Relativity.Telemetry.APM\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Renci.SshNet">
-          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup xmlns="">
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="SSH.NET" />
+  </ItemGroup>
 </Project>
