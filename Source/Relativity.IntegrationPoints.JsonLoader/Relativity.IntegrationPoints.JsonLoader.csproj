@@ -81,11 +81,11 @@
     <Reference Include="Relativity.DataTransfer.MessageService, Version=1.0.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.2.2\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.11.1.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.7\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>

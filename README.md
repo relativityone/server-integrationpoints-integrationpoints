@@ -2,6 +2,13 @@
 
 Json Loader is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from JSON file.
 
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 11.1.14
+Branch: server-main
+
+
 ## Build Tasks
 
 This repository builds with Powershell through the `.\build.ps1` script. 

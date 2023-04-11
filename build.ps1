@@ -41,7 +41,9 @@ param(
 	[ValidateSet("Debug","Release")]
 	[string]$Configuration = "Debug"
 	)
-	
+
+. $profile
+
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
@@ -67,7 +69,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Progress "Importing required Powershell modules..."
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
-Import-Module (Join-Path $ToolsDir "psake.*\tools\psake\psake.psd1") -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "psake-rel.*\tools\psake\psake.psd1") -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools.*\PSBuildTools.psd1") -ErrorAction Stop
 Install-Module VSSetup -Scope CurrentUser -Force
 
