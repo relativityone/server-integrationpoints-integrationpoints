@@ -1,5 +1,5 @@
- @Library('ProjectMayhem@v1')_
+ @Library('ProjectMayhem@vServer')_
 rapCD {
     slackChannel = "cd_trident_rip"
-    sutTemplate = "aio-prairiesmoke-0"
+    sutTemplate = "aio-mayapple-latest"
 }
