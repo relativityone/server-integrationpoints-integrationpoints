@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Moq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using FileInfo = System.IO.FileInfo;
@@ -39,14 +35,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
         }
 
-
         [Test]
         public void CustomProviderTest_SystemTest()
         {
             // Arrange
             var job = ScheduleImportCustomProviderJob();
-
-            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) => { importJob.Complete(_managementTestData.Data.Count); })).LifestyleSingleton());
 
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
@@ -64,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         {
             Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
 
-            Context.InstanceSettings.CustomProviderBatchSize = 1000;
+            Context.InstanceSettings.CustomProviderBatchSize = 5;
 
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportObjectFromLdapIntegrationPoint();
 

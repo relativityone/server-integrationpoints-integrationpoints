@@ -84,6 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                             }
                         },
                         Success = true,
+                        TotalCount = 1
                     };
 
                     return Task.FromResult(result);
