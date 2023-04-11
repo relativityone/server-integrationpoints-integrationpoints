@@ -122,13 +122,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Import Project="..\..\.paket\paket.targets" />
   <ItemGroup>
-    <Analyzer Include="..\..\packages\CSharpGuidelineAnalyzer\analyzers\dotnet\cs\CSharpGuidelineAnalyzer.dll">
-      <Paket>True</Paket>
-    </Analyzer>
-  </ItemGroup>
-  <ItemGroup xmlns="">
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
@@ -139,7 +133,6 @@
     <PackageReference Include="SystemWrapper.Interfaces" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
     <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
