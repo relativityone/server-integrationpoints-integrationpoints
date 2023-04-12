@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -171,6 +172,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.AddEmailSender();
 
             ConfigureOtherProviderFlow(container);
+
+            ConfigureScheduledSyncAppFlow(container);
         }
 
         private static void ConfigureContainer(IWindsorContainer container)
@@ -211,6 +214,11 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IRdoImportSettingsBuilder>().ImplementedBy<RdoImportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
+        }
+
+        private static void ConfigureScheduledSyncAppFlow(IWindsorContainer container)
+        {
+            container.Register(Component.For<IScheduledSyncTask>().ImplementedBy<ScheduledSyncTask>().LifestyleTransient());
         }
     }
 }

@@ -16,5 +16,7 @@ namespace kCura.IntegrationPoints.Common.RelativitySync
         /// </summary>
         /// <returns></returns>
         bool ShouldUseRelativitySync(int integrationPointId);
+
+        bool IsRelativitySyncAppEnabled();
     }
 }

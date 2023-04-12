@@ -5,9 +5,14 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Managers;
 using Moq;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -32,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
         }
 
-        [IdentifiedTest("1228BB49-8C07-4DAA-818F-1D736BDD8243")]
+        [Test]
         public void Agent_ShouldSuccessfullyProcessSyncJob()
         {
             // Arrange
@@ -46,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             VerifyJobHasBeenCompleted();
         }
 
-        [IdentifiedTest("947DBE0E-032B-4A54-A5C0-1B87361FDF65")]
+        [Test]
         public void Agent_ShouldSuccessfullyProcessSyncJob_WhenJobWasDrainStoppedAndResumed()
         {
             // Arrange
@@ -75,14 +80,40 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             VerifyJobHasBeenResumed();
         }
 
-        private void ScheduleSyncJob()
+        [Test]
+        public void Agent_ShouldUseScheduledSyncTask_WhenSyncAppShouldBeUsedForScheduledSyncJob()
+        {
+            // Arrange
+            ScheduleRuleTest scheduleRule = ScheduleRuleTest.CreateDailyRule(
+                Context.CurrentDateTime, Context.CurrentDateTime.AddDays(2), TimeZoneInfo.Utc);
+
+            int intgrationPointId = ScheduleSyncJob(scheduleRule);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
+
+            Context.ToggleValues.SetValue<EnableSyncAppScheduleToggle>(true);
+            Context.ToggleValues.SetValue<EnableRelativitySyncApplicationToggle>(true);
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            FakeRelativityInstance.JobsInQueue.Should().Contain(x => x.RelatedObjectArtifactID == intgrationPointId);
+
+            SourceWorkspace.JobHistory.Should().Contain(x => 
+                x.IntegrationPoint.Contains(intgrationPointId) &&
+                x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed));
+        }
+
+        private int ScheduleSyncJob(ScheduleRuleTest scheduleRule = null)
         {
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
                 .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
-            FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+            FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncIntegrationPointRunWithScheduleRule(SourceWorkspace, integrationPoint, scheduleRule);
+
+            return integrationPoint.ArtifactId;
         }
 
         private FakeAgent PrepareSutWithCustomSyncJob(Func<FakeAgent, CompositeCancellationToken, Task> action)
