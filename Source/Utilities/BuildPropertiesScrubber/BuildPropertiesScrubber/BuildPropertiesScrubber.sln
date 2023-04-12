@@ -1,13 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{EA9BDD9D-2CA9-4684-8F63-1B3AE83CCC5C}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\paket.dependencies = ..\..\..\..\paket.dependencies
-	EndProjectSection
-EndProject
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33502.453
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildPropertiesScrubber", "BuildPropertiesScrubber\BuildPropertiesScrubber.csproj", "{5519D827-6EC8-472A-8211-0D98EE8E5B25}"
 EndProject
 Global

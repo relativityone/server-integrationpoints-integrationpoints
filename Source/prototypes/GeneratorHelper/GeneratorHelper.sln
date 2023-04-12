@@ -1,11 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{6CED9097-9CB6-4A28-9636-F04E5D319E93}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\paket.dependencies = ..\..\..\paket.dependencies
-	EndProjectSection
-EndProject
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "GeneratorHelper", "GeneratorHelper.vbproj", "{7AB48BCA-5F97-4500-B2AD-7ED1C828AFC1}"
 EndProject
 Global
