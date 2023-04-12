@@ -1,4 +1,4 @@
- @Library('ProjectMayhem@v1')_
+ @Library('ProjectMayhem@vServer')_
 rapCD {
     slackChannel = "cd_rip_jsonloader"
     sutTemplate = "aio-osier-2"
