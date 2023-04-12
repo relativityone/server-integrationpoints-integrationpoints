@@ -666,10 +666,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="paket.references">
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj">
       <Project>{32BCB03B-4980-4434-9392-F72334E6E348}</Project>
       <Name>kCura.IntegrationPoints.Common</Name>
