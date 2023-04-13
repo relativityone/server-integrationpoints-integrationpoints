@@ -266,8 +266,8 @@ ko.validation.insertValidationMessage = function (element) {
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
 		var isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
-		self.IsSmartOverwriteToggleEnabled = ko.observable();
-		self.IsSmartOverwriteToggleEnabled(isSmartOverwriteToggleEnabled);
+		self.IsSmartOverwriteVisible = ko.observable();
+		self.IsSmartOverwriteVisible(isSmartOverwriteToggleEnabled && this.IsRelativityProvider());
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);

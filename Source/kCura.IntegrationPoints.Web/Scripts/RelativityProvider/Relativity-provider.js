@@ -214,7 +214,7 @@
         self.EnableTagging.subscribe(function (value) {
             // beware! bad programmers go to hell and develop type-converters for javascript
             if (value === "true") {
-                var model = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+                let model = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
                 model.UseSmartOverwrite = false;
             }
         });
