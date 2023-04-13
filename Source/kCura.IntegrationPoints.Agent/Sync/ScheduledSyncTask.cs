@@ -1,46 +1,81 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
-using Job = kCura.IntegrationPoints.Data.Job;
 
 namespace kCura.IntegrationPoints.Agent.Sync
 {
     internal class ScheduledSyncTask : IScheduledSyncTask
     {
         private readonly IJobHistoryService _jobHistoryService;
+        private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IIntegrationPointService _integrationPointService;
-        private readonly ISerializer _serializer;
+        private readonly ITaskParameterHelper _taskParameterHelper;
         private readonly IDateTime _dateTime;
 
-        public JobHistory JobHistory { get; private set; }
-
-        public ScheduledSyncTask(IJobHistoryService jobHistoryService, IIntegrationPointService integrationPointService, ISerializer serializer, IDateTime dateTime)
+        public ScheduledSyncTask(
+            IJobHistoryService jobHistoryService,
+            IJobHistoryErrorService jobHistoryErrorService,
+            IIntegrationPointService integrationPointService,
+            ITaskParameterHelper taskParameterHelper,
+            IDateTime dateTime)
         {
             _jobHistoryService = jobHistoryService;
+            _jobHistoryErrorService = jobHistoryErrorService;
             _integrationPointService = integrationPointService;
-            _serializer = serializer;
+            _taskParameterHelper = taskParameterHelper;
             _dateTime = dateTime;
         }
 
         public void Execute(Job job)
         {
-            PreExecute(job);
-
-            throw new NotImplementedException("This code path should not be reached. Contact Customer Support for help.");
+            ExecuteAsync(job).GetAwaiter().GetResult();
         }
 
-        private void PreExecute(Job job)
+        public async Task ExecuteAsync(Job job)
         {
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+            int jobHistoryId = await RequireJobHistoryAsync(job).ConfigureAwait(false);
+            try
+            {
+                throw new NotImplementedException("This code path should not be reached. Contact Customer Support for help.");
+            }
+            catch (Exception ex)
+            {
+                await _jobHistoryService.UpdateStatusAsync(
+                    job.WorkspaceID, jobHistoryId, JobStatusChoices.JobHistoryErrorJobFailedGuid)
+                .ConfigureAwait(false);
 
-            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
+                await _jobHistoryErrorService.AddJobErrorAsync(job.WorkspaceID, jobHistoryId, ex).ConfigureAwait(false);
+            }
+        }
 
-            JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(integrationPoint, taskParameters.BatchInstance, _dateTime.UtcNow);
+        private async Task<int> RequireJobHistoryAsync(Job job)
+        {
+            Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
+            JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryAsyncByGuidAsync(job.WorkspaceID, batchInstanceId).ConfigureAwait(false);
+            if (jobHistory == null)
+            {
+                IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
+
+                return await _jobHistoryService.CreateJobHistoryAsync(job.WorkspaceID, new JobHistory
+                {
+                    Name = integrationPoint.Name,
+                    IntegrationPoint = new[] { integrationPoint.ArtifactId },
+                    BatchInstance = batchInstanceId.ToString(),
+                    JobType = JobTypeChoices.JobHistoryScheduledRun,
+                    JobStatus = JobStatusChoices.JobHistoryPending,
+                    Overwrite = integrationPoint.SelectedOverwrite,
+                    JobID = job.JobId.ToString(),
+                    StartTimeUTC = _dateTime.UtcNow
+                });
+            }
+
+            return jobHistory.ArtifactId;
         }
     }
 }

@@ -99,9 +99,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             // Assert
             FakeRelativityInstance.JobsInQueue.Should().Contain(x => x.RelatedObjectArtifactID == intgrationPointId);
 
-            SourceWorkspace.JobHistory.Should().Contain(x => 
-                x.IntegrationPoint.Contains(intgrationPointId) &&
-                x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed));
+            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+
+            jobHistory.IntegrationPoint.Should().Contain(intgrationPointId);
+            jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed).Should().BeTrue();
+
+            SourceWorkspace.JobHistoryErrors.Should().Contain(x =>
+                x.ParentObjectArtifactId == jobHistory.ArtifactId);
         }
 
         private int ScheduleSyncJob(ScheduleRuleTest scheduleRule = null)

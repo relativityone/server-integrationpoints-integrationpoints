@@ -55,14 +55,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             ChoiceRef expectedStatus = JobStatusChoices.JobHistoryProcessing;
 
             // Act
-            await _sut.UpdateStatusAsync(workspaceId, jobHistoryId, expectedStatus);
+            await _sut.UpdateStatusAsync(workspaceId, jobHistoryId, expectedStatus.Guids.Single());
 
             // Assert
             _objectManager
                 .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
-                    request.FieldValues.Single().Value == expectedStatus)));
+                    ((ChoiceRef)request.FieldValues.Single().Value).Name == expectedStatus.Name)));
         }
 
         [Test]

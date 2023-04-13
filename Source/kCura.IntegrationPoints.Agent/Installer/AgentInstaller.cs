@@ -10,6 +10,8 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
@@ -206,6 +208,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
         private static void ConfigureOtherProviderFlow(IWindsorContainer container)
         {
+            container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
+            container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
             container.Register(Component.For<IImportApiRunnerFactory>().ImplementedBy<ImportApiRunnerFactory>().LifestyleTransient());
             container.Register(Component.For<IImportApiService>().ImplementedBy<ImportApiService>().LifestyleTransient());
