@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Kepler;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
