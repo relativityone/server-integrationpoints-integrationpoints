@@ -50,6 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IPingService>(proxy.PingService.Object);
             RegisterProxyInServiceManagerMock<IImportJobController>(proxy.ImportJobController.Object);
             RegisterProxyInServiceManagerMock<IDocumentConfigurationController>(proxy.DocumentConfigurationController.Object);
+            RegisterProxyInServiceManagerMock<IRDOConfigurationController>(proxy.RdoConfigurationController.Object);
             RegisterProxyInServiceManagerMock<IAdvancedConfigurationController>(proxy.AdvancedConfigurationController.Object);
         }
 

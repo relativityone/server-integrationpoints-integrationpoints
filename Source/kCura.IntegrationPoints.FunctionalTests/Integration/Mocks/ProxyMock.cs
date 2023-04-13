@@ -24,6 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             PingService = new PingServiceStub();
             ImportJobController = new ImportJobControllerStub();
             DocumentConfigurationController = new DocumentConfigurationControllerStub();
+            RdoConfigurationController = new RdoConfigurationControllerStub();
             AdvancedConfigurationController = new AdvancedConfigurationControllerStub();
         }
 
@@ -61,6 +62,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public DocumentConfigurationControllerStub DocumentConfigurationController { get; }
 
+        public RdoConfigurationControllerStub RdoConfigurationController { get; }
+
         public AdvancedConfigurationControllerStub AdvancedConfigurationController { get; }
 
         public void Setup(RelativityInstanceTest relativity)
@@ -79,6 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             PingService.Setup(relativity);
             ImportJobController.Setup(relativity);
             DocumentConfigurationController.Setup(relativity);
+            RdoConfigurationController.Setup(relativity);
             AdvancedConfigurationController.Setup(relativity);
 
             SetupFixedMocks();
@@ -102,6 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             PingService.SetupPingService();
             ImportJobController.SetupImportJobController();
             DocumentConfigurationController.SetupDocumentConfigurationController();
+            RdoConfigurationController.SetupRdoConfigurationController();
             AdvancedConfigurationController.SetupAdvancedConfigurationController();
         }
     }

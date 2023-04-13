@@ -59,7 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             Context.InstanceSettings.CustomProviderBatchSize = 5;
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportObjectFromLdapIntegrationPoint();
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint();
 
             Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
