@@ -162,7 +162,7 @@
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
   </ItemGroup>
 </Project>

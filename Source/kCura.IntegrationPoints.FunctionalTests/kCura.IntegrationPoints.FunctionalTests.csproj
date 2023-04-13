@@ -122,7 +122,6 @@
     <PackageReference Include="ARMTestServices" />
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="Microsoft.AspNet.Mvc" />
-    <PackageReference Include="group Tests" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Config" />

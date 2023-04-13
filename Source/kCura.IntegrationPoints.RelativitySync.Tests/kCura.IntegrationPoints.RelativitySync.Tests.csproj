@@ -116,12 +116,11 @@
     <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
-    <PackageReference Include="group Sync" />
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Banzai" />
   </ItemGroup>

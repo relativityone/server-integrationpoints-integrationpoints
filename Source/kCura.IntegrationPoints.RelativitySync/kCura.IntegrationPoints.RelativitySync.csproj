@@ -142,9 +142,8 @@
     <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
-    <PackageReference Include="group Sync" />
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
     <PackageReference Include="Relativity.Sync" />
   </ItemGroup>
 </Project>

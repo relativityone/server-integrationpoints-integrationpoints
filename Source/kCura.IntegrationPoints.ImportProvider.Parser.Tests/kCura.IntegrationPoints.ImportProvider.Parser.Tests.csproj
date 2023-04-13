@@ -127,8 +127,8 @@
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" />
-    <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" />
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
+    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
     <PackageReference Include="NUnit" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Moq" />
