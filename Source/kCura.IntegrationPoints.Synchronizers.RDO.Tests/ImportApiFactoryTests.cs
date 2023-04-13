@@ -10,6 +10,7 @@ using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Serilog;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -59,6 +60,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             Mock<IAPILog> loggerStub = new Mock<IAPILog>();
             Mock<ISerilogLoggerInstrumentationService> serilogLoggerInstrumentationStub =
                 new Mock<ISerilogLoggerInstrumentationService>();
+            Mock<ILogger> serilogLoggerMock = new Mock<ILogger>();
+            serilogLoggerInstrumentationStub.Setup(s => s.GetLogger()).Returns(serilogLoggerMock.Object);
             loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
             return new Logger<ImportApiFactory>(loggerStub.Object, serilogLoggerInstrumentationStub.Object);
         }
