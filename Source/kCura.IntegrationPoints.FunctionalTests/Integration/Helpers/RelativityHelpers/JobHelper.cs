@@ -78,6 +78,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
+        public JobTest ScheduleSyncManagerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint, object parameters, long? rootJobId = null)
+        {
+            JobTest job = CreateBasicJob(workspace, integrationPoint)
+                .WithJobDetails(parameters)
+                .WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncManager)
+                .Build();
+
+            job.RootJobId = rootJobId ?? JobId.Next;
+            return ScheduleJob(job);
+        }
+
         private JobBuilder CreateBasicJob(WorkspaceTest workspace)
         {
             IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
