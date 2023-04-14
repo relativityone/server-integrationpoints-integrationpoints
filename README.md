@@ -28,7 +28,7 @@ N/A
 ## History  
 
 The server-main branch was forked for Relativity Server by the Server Vertical.
-Tag: 1.0.8                                   
+Tag: 1.0.8   
 Branch: server-main
 
 ## Maintainers
