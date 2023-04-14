@@ -46,7 +46,7 @@
     <PackageVersion Include="kCura.OutsideIn.FI.Win32" Version="2020.7.0" />
     <PackageVersion Include="Relativity.OutsideIn" Version="2021.3.1" />
 <!-- # Other packages -->
-    <PackageVersion Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageVersion Include="Newtonsoft.Json" Version="6.0.8" />
     <PackageVersion Include="AutoMapper" Version="4.2.1" />
     <PackageVersion Include="Castle.Windsor" Version="3.3.0" />
     <PackageVersion Include="LanguageExt.Core" Version="3.1.15" />
@@ -98,6 +98,8 @@
     <PackageVersion Include="Relativity.Kepler.Service" Version="2.7.0" />
     <PackageVersion Include="Microsoft.AspNet.WebApi.WebHost" Version="4.0.20505" />
     <PackageVersion Include="SystemWrapper.Interfaces" Version="0.25.0.186"/>
-    <PackageVersion Include="SSH.NET" Version="2011.7.29"/> 
+    <PackageVersion Include="SSH.NET" Version="2011.7.29"/>
+    <PackageVersion Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3"/>
+    <PackageVersion Include="Microsoft.Web.Infrastructure" Version="1.0.0.0"/>  
   </ItemGroup>
 </Project>

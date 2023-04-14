@@ -144,7 +144,7 @@
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Relativity.Testing.Framework" />
-    <PackageReference Include="Relativity.Testing.Framework.Api content: none // avoid including OutsideIn binaries" />
+    <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
     <PackageReference Include="IntegrationPoints.MyFirstProvider" />
