@@ -22,6 +22,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             ViewManager = new ViewManagerStub();
             FileShareServerManager = new FileShareServerManagerStub();
             PingService = new PingServiceStub();
+            ImportJobController = new ImportJobControllerStub();
+            DocumentConfigurationController = new DocumentConfigurationControllerStub();
+            RdoConfigurationController = new RdoConfigurationControllerStub();
+            AdvancedConfigurationController = new AdvancedConfigurationControllerStub();
         }
 
         public ObjectManagerStub ObjectManager { get; }
@@ -54,6 +58,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public PingServiceStub PingService { get; set; }
 
+        public ImportJobControllerStub ImportJobController { get; }
+
+        public DocumentConfigurationControllerStub DocumentConfigurationController { get; }
+
+        public RdoConfigurationControllerStub RdoConfigurationController { get; }
+
+        public AdvancedConfigurationControllerStub AdvancedConfigurationController { get; }
+
         public void Setup(RelativityInstanceTest relativity)
         {
             ObjectManager.Setup(relativity);
@@ -68,6 +80,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             ViewManager.Setup(relativity);
             FileShareServerManager.Setup(relativity);
             PingService.Setup(relativity);
+            ImportJobController.Setup(relativity);
+            DocumentConfigurationController.Setup(relativity);
+            RdoConfigurationController.Setup(relativity);
+            AdvancedConfigurationController.Setup(relativity);
 
             SetupFixedMocks();
         }
@@ -88,6 +104,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             ViewManager.SetupViewManagerStub();
             FileShareServerManager.SetupFileShareServerManagerStub();
             PingService.SetupPingService();
+            ImportJobController.SetupImportJobController();
+            DocumentConfigurationController.SetupDocumentConfigurationController();
+            RdoConfigurationController.SetupRdoConfigurationController();
+            AdvancedConfigurationController.SetupAdvancedConfigurationController();
         }
     }
 }
