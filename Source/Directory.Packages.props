@@ -95,5 +95,9 @@
     <PackageVersion Include="Castle.Core" Version="3.3.0" />
     <PackageVersion Include="Banzai" Version="3.0" />
     <PackageVersion Include="kCura.Apps.Common.Utils" Version="2.1.9" />
+    <PackageVersion Include="Relativity.Kepler.Service" Version="2.7.0" />
+    <PackageVersion Include="Microsoft.AspNet.WebApi.WebHost" Version="4.0.20505" />
+    <PackageVersion Include="SystemWrapper.Interfaces" Version="0.25.0.186"/>
+    <PackageVersion Include="SSH.NET" Version="2011.7.29"/> 
   </ItemGroup>
 </Project>
