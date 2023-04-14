@@ -212,6 +212,13 @@ namespace kCura.IntegrationPoints.Data.Transformers
             return ConvertPropertiesToFields(rdo.GetType());
         }
 
+        public static IEnumerable<FieldRef> ToFieldList<T>() where T : BaseRdo, new()
+        {
+            T temp = new T();
+
+            return temp.ToFieldList();
+        }
+
         private static IEnumerable<FieldRef> ConvertPropertiesToFields(Type type)
         {
             BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;

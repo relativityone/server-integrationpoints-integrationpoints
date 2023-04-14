@@ -1,12 +1,18 @@
-﻿using System.Threading.Tasks;
-using Relativity.Services.Choice;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 {
     public interface IJobHistoryService
     {
-        Task UpdateStatusAsync(int workspaceId, int jobHistoryId, ChoiceRef status);
+        Task<Data.JobHistory> ReadJobHistoryAsyncByGuidAsync(int workspaceId, Guid jobHistoryGuid);
+
+        Task<int> CreateJobHistoryAsync(int workspaceId, Data.JobHistory jobHistory);
+
+        Task UpdateStatusAsync(int workspaceId, int jobHistoryId, Guid statusGuid);
+
         Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount);
+
         Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int readItemsCount, int transferredItemsCount);
     }
 }

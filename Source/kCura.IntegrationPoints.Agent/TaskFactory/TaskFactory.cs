@@ -2,7 +2,9 @@
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
+using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -76,6 +78,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                     case TaskType.SendEmailWorker:
                         return CheckForSynchronizationAndResolve<SendEmailWorker>(job, integrationPointDto, agentBase);
                     case TaskType.ExportService:
+                        if (RelativitySyncAppShouldBeUsed(integrationPointDto))
+                        {
+                            return _container.Resolve<IScheduledSyncTask>();
+                        }
+
                         return CheckForSynchronizationAndResolve<ExportServiceManager>(job, integrationPointDto, agentBase);
                     case TaskType.ImportService:
                         return CheckForSynchronizationAndResolve<ImportServiceManager>(job, integrationPointDto, agentBase);
@@ -109,6 +116,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _logger.LogInformation("Using new flow to execute Custom Provider import: {useNewFlow}", useNewFlow);
 
             return useNewFlow;
+        }
+
+        private bool RelativitySyncAppShouldBeUsed(IntegrationPointDto integrationPointDto)
+        {
+            return _container.Resolve<IRelativitySyncConstrainsChecker>().ShouldUseRelativitySyncApp(integrationPointDto.ArtifactId);
         }
 
         private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
