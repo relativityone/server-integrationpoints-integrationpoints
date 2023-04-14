@@ -216,5 +216,6 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Relativity" VersionOverride="15.4.13" />
   </ItemGroup>
 </Project>

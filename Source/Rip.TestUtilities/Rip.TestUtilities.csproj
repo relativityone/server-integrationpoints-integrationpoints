@@ -85,7 +85,7 @@
   <ItemGroup>
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
-    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity" VersionOverride="15.4.13" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Services.Interfaces" />

@@ -88,6 +88,6 @@
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="SSH.NET" />
+    <PackageReference Include="SSH.NET" VersionOverride="2016.0.0" />
   </ItemGroup>
 </Project>
