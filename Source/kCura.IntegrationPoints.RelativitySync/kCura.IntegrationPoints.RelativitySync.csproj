@@ -144,6 +144,6 @@
     <PackageReference Include="Relativity.Kepler.Service" />
     <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
     <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
-    <PackageReference Include="Relativity.Sync" />
+    <PackageReference Include="Relativity.Sync" VersionOverride="0.8.58" />
   </ItemGroup>
 </Project>
