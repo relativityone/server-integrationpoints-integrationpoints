@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
         }
 
-        public async Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int readItemsCount, int transferredItemsCount)
+        public async Task UpdateReadItemsCountAsync(int workspaceId, int jobHistoryId, int readItemsCount)
         {
             try
             {
@@ -85,14 +85,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
                             Guid = JobHistoryFieldGuids.ItemsReadGuid
                         },
                         Value = readItemsCount
-                    },
-                    new FieldRefValuePair()
-                    {
-                        Field = new FieldRef()
-                        {
-                            Guid = JobHistoryFieldGuids.ItemsTransferredGuid
-                        },
-                        Value = transferredItemsCount
                     }
                 };
 
@@ -100,8 +92,42 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to set read items count: {readItemsCount} and transferred items count: {transferredItemsCount} for Job History ID: {jobHistoryId}",
-                    readItemsCount, transferredItemsCount, jobHistoryId);
+                _logger.LogError(ex, "Failed to set read items count: {readItemsCount} for Job History ID: {jobHistoryId}",
+                    readItemsCount, jobHistoryId);
+                throw;
+            }
+        }
+
+        public async Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int importedItemsCount, int failedItemsCount)
+        {
+            try
+            {
+                FieldRefValuePair[] fieldsToUpdate = new[]
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.ItemsTransferredGuid
+                        },
+                        Value = importedItemsCount
+                    },
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.ItemsWithErrorsGuid
+                        },
+                        Value = failedItemsCount
+                    }
+                };
+
+                await UpdateJobHistoryAsync(workspaceId, jobHistoryId, fieldsToUpdate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to set imported items count: {importedItemsCount} and failed items count: {failedItemsCount} for Job History ID: {jobHistoryId}",
+                    importedItemsCount, failedItemsCount, jobHistoryId);
                 throw;
             }
         }

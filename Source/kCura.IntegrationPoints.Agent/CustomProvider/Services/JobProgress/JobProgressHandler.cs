@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -19,34 +17,63 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly ITimerFactory _timerFactory;
+        private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
-        public JobProgressHandler(IKeplerServiceFactory serviceFactory, IJobHistoryService jobHistoryService, ITimerFactory timerFactory, IAPILog logger)
+        public JobProgressHandler(IKeplerServiceFactory serviceFactory, IJobHistoryService jobHistoryService, ITimerFactory timerFactory, IInstanceSettings instanceSettings, IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _jobHistoryService = jobHistoryService;
             _timerFactory = timerFactory;
+            _instanceSettings = instanceSettings;
             _logger = logger.ForContext<JobProgressHandler>();
         }
 
-        public async Task BeginAsync(int workspaceId, CustomProviderJobDetails jobDetails)
+        public async Task<IDisposable> BeginUpdateAsync(int workspaceId, Guid importJobId, int jobHistoryId)
         {
-            int numberOfReadItems = jobDetails
-                .Batches
-                .Where(x => x.IsAddedToImportQueue)
-                .Sum(x => x.NumberOfRecords);
+            TimeSpan interval = await _instanceSettings.GetCustomProviderProgressUpdateIntervalAsync()
+                .ConfigureAwait(false);
 
-            Progress importJobProgress = await GetImportJobProgressAsync(workspaceId, jobDetails.ImportJobID).ConfigureAwait(false);
+            _logger.LogInformation("Progress update interval: {interval}", interval);
 
+            ITimer timer = _timerFactory.Create(async (state) => await UpdateProgressAsync(workspaceId, importJobId, jobHistoryId).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
+            return timer;
+        }
+
+        private async Task UpdateProgressAsync(int workspaceId, Guid importJobId, int jobHistoryId)
+        {
+            try
+            {
+                _logger.LogInformation("Updating job progress");
+
+                Progress importJobProgress = await GetImportJobProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
+
+                await _jobHistoryService.UpdateProgressAsync(workspaceId, jobHistoryId, importJobProgress.TransferredDocumentsCount, importJobProgress.FailedReadDocumentsCount)
+                    .ConfigureAwait(false);
+
+                _logger.LogInformation("Progress has been updated. Imported items count: {importedItemsCount} Failed items count: {failedItemsCount}", importJobProgress.TransferredDocumentsCount, importJobProgress.FailedReadDocumentsCount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update job progress");
+            }
         }
 
         private async Task<Progress> GetImportJobProgressAsync(int workspaceId, Guid importJobId)
         {
-            using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            try
             {
-                ValueResponse<ImportProgress> response = await jobController.GetProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
-                ImportProgress progress = response.UnwrapOrThrow();
-                return new Progress(0, progress.ErroredRecords, progress.ImportedRecords);
+                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                {
+                    ValueResponse<ImportProgress> response = await jobController.GetProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
+                    ImportProgress progress = response.UnwrapOrThrow();
+                    return new Progress(progress.ErroredRecords, progress.ImportedRecords);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get import job progress");
+                throw;
             }
         }
     }
