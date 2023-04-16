@@ -38,6 +38,9 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
 
             Mock<IAPILog> loggerFake = new Mock<IAPILog>();
             loggerFake.Setup(x => x.ForContext<AppDomainHelper>()).Returns(loggerFake.Object);
+            loggerFake.Setup(x => x.LogWarning(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()))
+                .Callback<Exception, string, object[]>((exception, s, arg3) =>
+                    Console.WriteLine($"Error: {exception}"));
 
             Mock<ILogFactory> logFactoryFake = new Mock<ILogFactory>();
             logFactoryFake.Setup(x => x.GetLogger()).Returns(loggerFake.Object);
