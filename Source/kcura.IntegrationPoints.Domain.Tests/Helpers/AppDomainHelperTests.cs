@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             }
         }
 
-        [Test]
+        [Test, Order(5)]
         public void LoadClientLibrariesShallLoadAllRequiredAssemblies()
         {
             // Arrange
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             loadedAssemblies.ShouldAllBeEquivalentTo(expectedAssembliesLocations);
         }
 
-        [Test]
+        [Test, Order(1)]
         public void ReleaseDomainShallRemoveBaseDirectory()
         {
             // Act
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             Directory.Exists(_tempDir).Should().Be(false);
         }
 
-        [Test]
+        [Test, Order(2)]
         public void CreateNewDomainShallRunInKubernetesModeWhenToggleIsTrue()
         {
             // Arrange
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             appDomain.Should().NotBeNull();
         }
 
-        [Test]
+        [Test, Order(3)]
         public void CreateNewDomainShallNotRunInKubernetesModeAsDefault()
         {
             // Act
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             appDomain.Should().NotBeNull();
         }
 
-        [Test]
+        [Test, Order(4)]
         public void SetupDomainAndCreateManagerShallBeCreated()
         {
             // Arrange
