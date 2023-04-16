@@ -94,5 +94,6 @@
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 </Project>

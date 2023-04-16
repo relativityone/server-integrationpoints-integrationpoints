@@ -124,6 +124,7 @@
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Banzai" />
   </ItemGroup>

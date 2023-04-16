@@ -107,6 +107,7 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
