@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +36,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -90,8 +92,6 @@
     <PackageReference Include="Relativity.Logging" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
-    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />

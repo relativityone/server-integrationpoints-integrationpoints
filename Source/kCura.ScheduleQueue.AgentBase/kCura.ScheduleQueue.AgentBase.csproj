@@ -23,6 +23,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\</OutputPath>
@@ -33,6 +34,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -84,6 +86,7 @@
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.Logging" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Services.Interfaces" />

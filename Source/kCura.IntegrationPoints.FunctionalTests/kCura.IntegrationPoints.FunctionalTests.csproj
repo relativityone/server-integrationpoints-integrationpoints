@@ -114,17 +114,13 @@
     <Folder Include="Functional\Helpers\LoadFiles\Natives\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="netDumbster">
-      <HintPath>..\..\packages\netDumbster\lib\net461\netDumbster.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="ARMTestServices" />
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="Microsoft.AspNet.Mvc" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="netDumbster" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.API" />
@@ -134,13 +130,16 @@
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Relativity.Testing.Identification" />
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
     <PackageReference Include="Microsoft.Web.Infrastructure" />
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Newtonsoft.Json" VersionOverride="12.0.3">
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Relativity.Testing.Framework" />

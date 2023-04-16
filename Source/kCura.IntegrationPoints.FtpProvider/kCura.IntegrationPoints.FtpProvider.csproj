@@ -86,8 +86,9 @@
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="SSH.NET" VersionOverride="2016.0.0" />
+    <PackageReference Include="SSH.NET" />
   </ItemGroup>
 </Project>

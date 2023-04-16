@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 		{
 			string location = GenerateTempLocation();
 
-			Assert.Throws<Exceptions.CantAccessSourceException>(
+			Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.CantAccessSourceException>(
 				() => new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }));
 		}
 
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
 			{
 				//Assert
-				Assert.Throws<Exceptions.NoColumnsException>(() => parser.ParseColumns());
+				Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.NoColumnsException>(() => parser.ParseColumns());
 			}
 		}
 
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "", "COlumn2"};
 
-				Assert.Throws<Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
+				Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "Column1", "Column2"};
 
-				Assert.Throws<Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
+				Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
 			}
 		}
 
@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			using (var dataReader = new DelimitedFileParser(streamInput,
 				new ParserOptions() {FirstLineContainsColumnNames = true, Delimiters = new[] {","}}))
 			{
-				Assert.Throws<Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException>(() => dataReader.Read());
+				Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException>(() => dataReader.Read());
 			}
 		}
 

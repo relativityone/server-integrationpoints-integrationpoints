@@ -21,6 +21,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.0</LangVersion>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DefineConstants>$(Injections)</DefineConstants>
@@ -33,6 +34,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <LangVersion>7.0</LangVersion>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -534,6 +536,7 @@
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="kCura.LongPath" />
     <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Mono.TextTransform" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
@@ -548,7 +551,5 @@
     <PackageReference Include="SystemWrapper.Wrappers" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
-    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Core.dll" /> -->
-    <!-- <PackageReference Include="exclude kCura.Vendor.Castle.Windsor.dll" /> -->
   </ItemGroup>
 </Project>
