@@ -8,6 +8,9 @@ properties {
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
     $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
+
+	$FunctionalTestFilter = "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident"
+
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -30,7 +33,7 @@ Task BuildNodePackagesJS{
     } -workingDirectory $JSDir
 }
 
-Task BuildLiquidFormsJS {   
+Task BuildLiquidFormsJS {
     Set-NodePath
     $liquidFormsJSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms"
 
@@ -41,7 +44,7 @@ Task BuildLiquidFormsJS {
     Invoke-NpmCommand {
         npx @('npm', 'install', '--registry', 'https://relativity.jfrog.io/relativity/api/npm/npm-anthology/')
     } -workingDirectory $liquidFormsJSDir
-   
+
     Invoke-NpmCommand {
         npm @('run', 'build')
     } -workingDirectory $liquidFormsJSDir
@@ -69,7 +72,7 @@ Task Compile -Depends NugetRestore,BuildNodePackagesJS,BuildLiquidFormsJS -Descr
     $publishPath = "$SourceDir\CustomPages\IntegrationPoints"
     if(Test-Path $publishPath) {
         Write-Host "Update web.config file"
-        Copy-Item -Path "$SourceDir\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config" 
+        Copy-Item -Path "$SourceDir\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config"
     }
 }
 
@@ -81,12 +84,12 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
     Move-TestSettings $LogsDir
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    
+
     if($Env:BRANCH_NAME -eq 'master') {
         $OneTimeSetupLogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
         Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
 
-        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
+        Invoke-Tests -WhereClause $FunctionalTestFilter -OutputFile $LogPath
     }
     else {
         Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
@@ -162,7 +165,14 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
     Move-TestSettings $LogsDir
 
-    Invoke-MyTest
+	if($TestFilter)
+	{
+	    Invoke-MyTest
+	}
+	else
+	{
+		Invoke-Tests -WhereClause $FunctionalTestFilter -OutputFile $LogPath
+	}
 }
 
 Task RegressionTest -Description "Regression Tests against one of Ring-0 Environments" {
@@ -212,7 +222,7 @@ function Invoke-Tests
 
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
-    
+
     if($WithCoverage)
     {
         $OpenCover = Join-Path $BuildToolsDir "opencover\tools\OpenCover.Console.exe"
@@ -238,7 +248,7 @@ function Invoke-Tests
 function Set-NodePath {
     $pathToNode = [System.IO.Path]::Combine("buildtools", 'Portable.NodeJS', 'tools', 'win-x64')
     $resolvedPathToNode = Resolve-Path "$pathToNode" | Select-Object -ExpandProperty Path
-    
+
     if (-Not ($env:Path -like "*$resolvedPathToNode*")) {
         Write-Output "Append PATH with $resolvedPathToNode"
         exec {

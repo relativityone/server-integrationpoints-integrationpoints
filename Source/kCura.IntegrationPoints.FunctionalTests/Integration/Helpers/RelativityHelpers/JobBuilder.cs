@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
         public JobBuilder WithScheduleRule(ScheduleRuleTest rule)
         {
             _job.ScheduleRuleType = kCura.ScheduleQueue.Core.Const._PERIODIC_SCHEDULE_RULE_TYPE;
-            _job.SerializedScheduleRule = rule.Serialize();
+            _job.SerializedScheduleRule = rule?.Serialize() ?? string.Empty;
 
             return this;
         }

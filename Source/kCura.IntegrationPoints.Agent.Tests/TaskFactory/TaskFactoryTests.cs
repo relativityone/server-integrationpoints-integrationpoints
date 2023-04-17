@@ -9,8 +9,10 @@ using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
+using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private ITaskFactoryJobHistoryService _jobHistoryService;
         private Mock<IWindsorContainer> _containerFake;
         private Mock<ICustomProviderFlowCheck> _newCustomProviderCheckFake;
+        private Mock<IRelativitySyncConstrainsChecker> _relativitySyncCheckerFake;
         private ITaskFactory _instance;
         private IFixture _fxt;
 
@@ -67,8 +70,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                         It.IsAny<IntegrationPointDto>()))
                 .ReturnsAsync(true);
 
+            _relativitySyncCheckerFake = new Mock<IRelativitySyncConstrainsChecker>();
+
             _containerFake = new Mock<IWindsorContainer>();
             _containerFake.Setup(x => x.Resolve<ICustomProviderFlowCheck>()).Returns(_newCustomProviderCheckFake.Object);
+            _containerFake.Setup(x => x.Resolve<IRelativitySyncConstrainsChecker>()).Returns(_relativitySyncCheckerFake.Object);
 
             _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
@@ -214,6 +220,30 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                 .ReturnsAsync(true);
 
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
+
+            // Act
+            ITask task = _instance.CreateTask(job, agentBase);
+
+            // Assert
+            task.Should().Be(expectedTask);
+        }
+
+        [Test]
+        public void CreateTask_ShouldCreateScheduledSyncTask_WhenCriteriaAreMet()
+        {
+            // Arrange
+            ScheduledSyncTask expectedTask = _fxt.Create<ScheduledSyncTask>();
+
+            Job job = _fxt.Build<Job>()
+                .With(x => x.TaskType, TaskType.ExportService.ToString())
+                .Create();
+
+            var agentBase = new TestAgentBase(Guid.NewGuid());
+
+            _relativitySyncCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(It.IsAny<int>()))
+                .Returns(true);
+
+            _containerFake.Setup(x => x.Resolve<IScheduledSyncTask>()).Returns(expectedTask);
 
             // Act
             ITask task = _instance.CreateTask(job, agentBase);

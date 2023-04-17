@@ -13,4 +13,5 @@ if($EmptySUT)
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter $TestFilter
+    &($TaskRunner) Compile, Package, MyTest -Configuration Release -TestFilter $TestFilter
+
