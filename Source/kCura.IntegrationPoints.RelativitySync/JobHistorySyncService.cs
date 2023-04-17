@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             if (SyncUpdatesJobHistory())
             {
-                return;
+                _logger.LogWarning("Job History is set to 'Error - Job Failed' by Integration Point even if the status is handled by Sync.");
             }
 
             await UpdateFinishedJobAsync(job, JobFailedStateRef(), true).ConfigureAwait(false);
