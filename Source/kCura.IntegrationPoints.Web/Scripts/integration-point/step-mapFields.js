@@ -194,8 +194,7 @@ ko.validation.insertValidationMessage = function (element) {
 		self.SecuredConfiguration = model.SecuredConfiguration;
 		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
 
-		self.EnableTagging = ko.observable();
-		self.EnableTagging(destinationModel.EnableTagging);
+		self.EnableTagging = ko.observable(destinationModel.EnableTagging);
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -265,10 +264,6 @@ ko.validation.insertValidationMessage = function (element) {
 		self.IsNonDocumentObjectFlow = ko.observable();
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
-		var isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
-		self.IsSmartOverwriteVisible = ko.observable();
-		self.IsSmartOverwriteVisible(isSmartOverwriteToggleEnabled && this.IsRelativityProvider());
-
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
@@ -302,11 +297,15 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 
-		var copyNativeFileText = "Copy Native Files:";
-		var copyFileToRepositoryText = "Copy Files to Repository:";
+		let copyNativeFileText = "Copy Native Files:";
+		let copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
-		this.UseSmartOverwrite = ko.observable(model.UseSmartOverwrite || false);
+
+		let isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
+		self.IsSmartOverwriteVisible = ko.observable(isSmartOverwriteToggleEnabled && this.IsRelativityProvider() && !isNonDocumentObjectFlow);
+		self.IsSmartOverwriteEnabled = ko.observable(self.EnableTagging() === "false" && self.ImageImport() === "false");
+		self.UseSmartOverwrite = ko.observable(model.UseSmartOverwrite || false);
 
 		this.CheckRelativityProviderExportType = function (exportType) {
 			if (this.IsRelativityProvider()) {
@@ -370,6 +369,8 @@ ko.validation.insertValidationMessage = function (element) {
 					self.IdentifierField(name);
 				});
 				self.ImportNativeFileCopyModeEnabled("false");
+				self.IsSmartOverwriteEnabled(false);
+				self.UseSmartOverwrite(false);
 			}
 			else {
 				self.workspaceFields(self.storeCurrentConfiguration.workspaceFields);
@@ -380,6 +381,7 @@ ko.validation.insertValidationMessage = function (element) {
 				root.utils.UI.disable("#fieldMappings", false);
 				self.ImportNativeFileCopyModeEnabled("true");
 				self.importNativeFileCopyMode("DoNotImportNativeFiles");
+				self.IsSmartOverwriteEnabled(self.EnableTagging() === "false");
 			}
 		});
 
