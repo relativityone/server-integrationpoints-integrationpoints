@@ -33,6 +33,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             };
 
             Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+            
+            Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
+
+            Context.InstanceSettings.CustomProviderBatchSize = 5;
+            Context.InstanceSettings.CustomProviderProgressUpdateInterval = TimeSpan.FromSeconds(100);
         }
 
         [Test]
@@ -55,10 +60,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
         private JobTest ScheduleImportCustomProviderJob()
         {
-            Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
-
-            Context.InstanceSettings.CustomProviderBatchSize = 5;
-
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint();
 
             Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);

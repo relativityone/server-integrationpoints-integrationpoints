@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update job progress");
+                _logger.LogError(ex, "Failed to update job progress for Job History ID: {jobHistoryId}", jobHistoryId);
             }
         }
 
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get import job progress");
+                _logger.LogError(ex, "Failed to get import job progress for job ID: {importJobId}", importJobId);
                 throw;
             }
         }

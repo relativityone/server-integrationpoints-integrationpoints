@@ -19,5 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         public int IApiBatchSize { get; set; }
 
         public int CustomProviderBatchSize { get; set; }
+
+        public TimeSpan CustomProviderProgressUpdateInterval { get; set; }
     }
 }
