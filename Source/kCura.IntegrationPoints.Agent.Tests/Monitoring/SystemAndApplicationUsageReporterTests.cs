@@ -106,7 +106,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _sut = new SystemAndApplicationUsageReporter(
                 _apmMock.Object,
-                _ripMetricMock.Object,
                 _processMemoryHelper.Object,
                 _appDomainMonitoringEnablerMock.Object,
                 _configFake.Object,
@@ -217,7 +216,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            SystemAndApplicationUsageReporter sutWithErrors = new SystemAndApplicationUsageReporter(apmMockWithErrors.Object, _ripMetricMock.Object,
+            SystemAndApplicationUsageReporter sutWithErrors = new SystemAndApplicationUsageReporter(apmMockWithErrors.Object,
                 _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
                 _toggleProviderFake.Object, _timerFactory.Object, _systemHealthReporterMock.Object, _loggerMock.Object);
 
@@ -261,7 +260,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             // Arrange
             string metricName = "IntegrationPoints.Performance.System";
-            string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
+            string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {correlationID}";
 
             // Act
             _sut.ActivateTimer(_jobId, _jobDetails, _jobType);

@@ -5,7 +5,6 @@ using System.Threading;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
@@ -23,7 +22,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private readonly ITimerFactory _timerFactory;
         private readonly ISystemHealthReporter _systemHealthReporter;
         private readonly IAPM _apmClient;
-        private readonly IRipMetrics _ripMetric;
         private readonly IProcessMemoryHelper _processMemoryHelper;
         private readonly IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
         private readonly IMonitoringConfig _config;
@@ -32,13 +30,12 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private static readonly string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static readonly string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
-        public SystemAndApplicationUsageReporter(IAPM apmClient, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper,
+        public SystemAndApplicationUsageReporter(IAPM apmClient, IProcessMemoryHelper processMemoryHelper,
             IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent,
             IRipToggleProvider toggleProvider, ITimerFactory timerFactory, ISystemHealthReporter systemHealthReporter, IAPILog logger)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
-            _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
             _agent = agent;
             _toggleProvider = toggleProvider;
@@ -48,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _logger = logger;
         }
 
-        public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
+        public IDisposable ActivateTimer(long jobId, string workflowId, string jobType)
         {
             if (!_toggleProvider.IsEnabled<EnableMemoryUsageReportingToggle>())
             {
@@ -58,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
             if (_appDomainMonitoringEnabler.EnableMonitoring())
             {
-                TimerCallback timerCallback = state => Execute(jobId, jobDetails, jobType);
+                TimerCallback timerCallback = state => Execute(jobId, workflowId, jobType);
                 _timer = _timerFactory.Create(timerCallback, null, _config.TimerStartDelay, _config.MemoryUsageInterval, "Memory Usage Timer");
 
                 return _timer;
@@ -91,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                 customData.AddDictionary(dict);
 
                 _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
-                _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());
+                _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {correlationID}", _METRIC_LOG_NAME, customData, workflowId);
             }
             catch (Exception ex)
             {

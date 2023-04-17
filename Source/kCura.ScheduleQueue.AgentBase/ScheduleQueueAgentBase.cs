@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -71,7 +72,8 @@ namespace kCura.ScheduleQueue.AgentBase
             IConfig config = null,
             IAPM apm = null,
             IDbContextFactory dbContextFactory = null,
-            IRelativityObjectManagerFactory objectManagerFactory = null)
+            IRelativityObjectManagerFactory objectManagerFactory = null,
+            ITaskParameterHelper taskParameterHelper = null)
         {
             // Lazy init is required for things depending on Helper
             // Helper property in base class is assigned AFTER object construction
@@ -95,6 +97,7 @@ namespace kCura.ScheduleQueue.AgentBase
             ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
             _objectManagerFactory = objectManagerFactory;
+            _taskParameterHelper = taskParameterHelper;
 
             _agentId = new Lazy<int>(GetAgentID);
             _agentInstanceGuid = Guid.NewGuid();
@@ -254,6 +257,12 @@ namespace kCura.ScheduleQueue.AgentBase
             }
 
             return AgentID;
+        }
+
+        protected Guid ParseWorkflowId(Job job)
+        {
+            Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
+            return batchInstanceId;
         }
 
         private void CleanupInvalidJobs()
@@ -511,8 +520,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private AgentCorrelationContext GetCorrelationContext(Job job)
         {
-            Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
-            string correlationId = batchInstanceId.ToString();
+            Guid correlationId = ParseWorkflowId(job);
 
             return new AgentCorrelationContext
             {
@@ -521,7 +529,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 WorkspaceId = job.WorkspaceID,
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
-                WorkflowId = correlationId,
+                WorkflowId = correlationId.ToString(),
                 ActionName = job.TaskType
             };
         }

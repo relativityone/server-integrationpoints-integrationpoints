@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Config;
@@ -89,7 +90,8 @@ namespace kCura.IntegrationPoints.Agent
             IConfig config = null,
             IAPM apm = null,
             IDbContextFactory dbContextFactory = null,
-            IRelativityObjectManagerFactory relativityObjectManagerFactory = null)
+            IRelativityObjectManagerFactory relativityObjectManagerFactory = null,
+            ITaskParameterHelper taskParameterHelper = null)
             : base(
                 agentGuid,
                 kubernetesMode,
@@ -103,7 +105,8 @@ namespace kCura.IntegrationPoints.Agent
                 config,
                 apm,
                 dbContextFactory,
-                relativityObjectManagerFactory)
+                relativityObjectManagerFactory,
+                taskParameterHelper)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -150,6 +153,7 @@ namespace kCura.IntegrationPoints.Agent
             try
             {
                 Container = CreateAgentLevelContainer();
+                SetWorkflowIdInMetrics(Container, ParseWorkflowId(job));
 
                 using (Container.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
@@ -226,7 +230,7 @@ namespace kCura.IntegrationPoints.Agent
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
-                .ActivateTimer(job.JobId, GetCorrelationId(job, container.Resolve<ISerializer>()), job.TaskType);
+                .ActivateTimer(job.JobId, GetWorkflowId(container), job.TaskType);
         }
 
         private IDisposable StartHeartbeatReporting(IWindsorContainer container, Job job)
@@ -235,27 +239,29 @@ namespace kCura.IntegrationPoints.Agent
                 .ActivateHeartbeat(job.JobId);
         }
 
-        private string GetCorrelationId(Job job, ISerializer serializer)
+        private void SetWorkflowIdInMetrics(IWindsorContainer container, Guid workflowId)
+        {
+            IRipMetrics ripMetrics = container.Resolve<IRipMetrics>();
+            ripMetrics.SetWorkflowId(workflowId);
+        }
+
+        private string GetWorkflowId(IWindsorContainer container)
         {
             string result = string.Empty;
             try
             {
-                TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-                result = taskParameters.BatchInstance.ToString();
+                IRipMetrics ripMetrics = container.Resolve<IRipMetrics>();
+                result = ripMetrics.GetWorkflowId();
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex, "Error occurred while retrieving batch instance for job: {jobId}", job.JobId);
+                Logger.LogWarning(ex, "Error occurred while retrieving workflowId");
             }
             return result;
         }
 
         private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
         {
-            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
-            Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-            string correlationId = batchInstanceId.ToString();
-
             var correlationContext = new AgentCorrelationContext
             {
                 JobId = job.JobId,
@@ -264,7 +270,7 @@ namespace kCura.IntegrationPoints.Agent
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
                 ActionName = _RELATIVITY_SYNC_JOB_TYPE,
-                WorkflowId = correlationId
+                WorkflowId = GetWorkflowId(container)
             };
             return correlationContext;
         }

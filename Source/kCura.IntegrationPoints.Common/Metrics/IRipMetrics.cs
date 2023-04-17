@@ -5,6 +5,8 @@ namespace kCura.IntegrationPoints.Common.Metrics
 {
     public interface IRipMetrics
     {
+        void SetWorkflowId(Guid workflowId);
+
         string GetWorkflowId();
 
         void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData);
