@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
+using ServiceChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -52,17 +53,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
-            ChoiceRef expectedStatus = JobStatusChoices.JobHistoryProcessing;
+            Guid expectedStatusGuid = JobStatusChoices.JobHistoryProcessingGuid;
 
             // Act
-            await _sut.UpdateStatusAsync(workspaceId, jobHistoryId, expectedStatus);
+            await _sut.UpdateStatusAsync(workspaceId, jobHistoryId, expectedStatusGuid);
 
             // Assert
             _objectManager
                 .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
-                    request.FieldValues.Single().Value == expectedStatus)));
+                    ((ChoiceRef)request.FieldValues.Single().Value).Guid == expectedStatusGuid)));
         }
 
         [Test]
