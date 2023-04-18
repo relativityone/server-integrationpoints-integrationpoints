@@ -70,11 +70,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         public void Execute(Job job)
         {
             IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
-            if (integrationPointDto != null)
-            {
-                _agentValidator.Validate(integrationPointDto, job.SubmittedBy);
-                ExecuteAsync(job, integrationPointDto).GetAwaiter().GetResult();
-            }
+
+            _agentValidator.Validate(integrationPointDto, job.SubmittedBy);
+            ExecuteAsync(job, integrationPointDto).GetAwaiter().GetResult();
+
         }
 
         private async Task ExecuteAsync(Job job, IntegrationPointDto integrationPointDto)
