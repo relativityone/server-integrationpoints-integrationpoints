@@ -12,6 +12,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[SetUpFixture]
+	[Ignore("TODO: Skip funcational test due to CI pipeline issue")]
 	public class TestsSetUpFixture
 	{
 		private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
