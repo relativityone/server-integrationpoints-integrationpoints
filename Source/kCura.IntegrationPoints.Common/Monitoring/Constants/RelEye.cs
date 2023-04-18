@@ -18,6 +18,12 @@
             public const string ServiceName = "service.name";
 
             /// <summary>
+            /// [string] Service name.
+            /// </summary>
+            public const string ServiceVersion = "service.version";
+
+
+            /// <summary>
             /// [string] Toggle name.
             /// </summary>
             public const string ToggleName = "toggle.name";
@@ -26,6 +32,11 @@
             /// [string] Toggle value.
             /// </summary>
             public const string ToggleValue = "toggle.value";
+
+            /// <summary>
+            /// [string] SourceId Name.
+            /// </summary>
+            public const string SourceId = "r1.source.id";
         }
 
         public static class Values
@@ -44,6 +55,15 @@
         public static class EventNames
         {
             public const string ToggleRead = "toggle_read";
+        }
+
+        public static class InstanceSettings
+        {
+            public const string REL_EYE_SECTION = "Relativity.Telemetry";
+            public const string REL_EYE_TOKEN = "ReleyeToken";
+            public const string REL_EYE_URI_LOGS = "ReleyeUriLogs";
+            public const string CORE_SECTION = "Relativity.Core";
+            public const string INSTANCE_IDENTIFIER = "InstanceIdentifier";
         }
     }
 }
