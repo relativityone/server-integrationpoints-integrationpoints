@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
             try
             {
-                JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryAsyncByGuidAsync(workspaceId, jobHistoryGuid).ConfigureAwait(false);
+                JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryByGuidAsync(workspaceId, jobHistoryGuid).ConfigureAwait(false);
                 jobHistoryId = jobHistory.ArtifactId;
             }
             catch (Exception ex)
