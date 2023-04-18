@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             };
 
             _jobHistoryService
-                .Setup(x => x.ReadJobHistoryAsyncByGuidAsync(workspaceId, batchInstance))
+                .Setup(x => x.ReadJobHistoryByGuidAsync(workspaceId, batchInstance))
                 .ReturnsAsync(jobHistory);
 
             _idFilesBuilder
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             JobHistory jobHistory = new JobHistory();
 
             _jobHistoryService
-                .Setup(x => x.ReadJobHistoryAsyncByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(jobHistory);
 
             _sourceProviderService
