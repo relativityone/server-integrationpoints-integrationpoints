@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Interfaces;
@@ -37,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly ISerializer _serializer;
         private readonly IJobService _jobService;
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
+        private readonly IAgentValidator _agentValidator;
         private readonly IAPILog _logger;
 
         public CustomProviderTask(
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             ISerializer serializer,
             IJobService jobService,
             IImportApiRunnerFactory importApiRunnerFactory,
+            IAgentValidator agentValidator,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
@@ -59,16 +62,21 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _serializer = serializer;
             _jobService = jobService;
             _importApiRunnerFactory = importApiRunnerFactory;
+            _agentValidator = agentValidator;
             _logger = logger;
             _loadFileBuilder = loadFileBuilder;
         }
 
         public void Execute(Job job)
         {
-            ExecuteAsync(job).GetAwaiter().GetResult();
+            IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+
+            _agentValidator.Validate(integrationPointDto, job.SubmittedBy);
+            ExecuteAsync(job, integrationPointDto).GetAwaiter().GetResult();
+
         }
 
-        private async Task ExecuteAsync(Job job)
+        private async Task ExecuteAsync(Job job, IntegrationPointDto integrationPointDto)
         {
             CustomProviderJobDetails jobDetails = null;
             ImportSettings destinationConfiguration = null;
@@ -79,7 +87,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 jobDetails = GetJobDetails(job.JobDetails);
-                IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
                 destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
                 storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
 
