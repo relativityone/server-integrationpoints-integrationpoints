@@ -96,8 +96,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 jobDetails = await GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
-
-                IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+                
                 destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
                 storage = await _relativityStorageService.GetStorageAccessAsync().ConfigureAwait(false);
 
