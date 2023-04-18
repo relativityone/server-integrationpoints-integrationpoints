@@ -292,6 +292,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 new JSONSerializer(),
                 _jobService.Object,
                 _importApiRunnerFactory.Object,
+                _jobProgressHandler.Object,
+                _jobHistoryService.Object,
                 _agentValidator.Object,
                 Mock.Of<IAPILog>());
         }
