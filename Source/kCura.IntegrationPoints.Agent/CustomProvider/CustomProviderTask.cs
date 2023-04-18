@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     jobDetails = await CreateBatchesAsync(jobDetails.ImportJobID, job, provider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
                 }
 
-                await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID,
+                await _jobProgressHandler.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID,
                     jobDetails.Batches.Sum(x => x.NumberOfRecords)).ConfigureAwait(false);
 
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                         batch.IsAddedToImportQueue = true;
                         UpdateJobDetails(job, jobDetails);
 
-                        await UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
+                        await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
                 }
 
@@ -230,19 +230,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
             return customProviderJobDetails;
         }
-
-        private async Task UpdateReadItemsCountAsync(Job job, CustomProviderJobDetails jobDetails)
-        {
-            int readItemsCount = jobDetails
-                .Batches
-                .Where(x => x.IsAddedToImportQueue)
-                .Sum(x => x.NumberOfRecords);
-
-            await _jobHistoryService
-                .UpdateReadItemsCountAsync(job.WorkspaceID, jobDetails.JobHistoryID, readItemsCount)
-                .ConfigureAwait(false);
-        }
-
+        
         private async Task EndImportJobAsync(int workspaceId, Guid importJobId)
         {
             try

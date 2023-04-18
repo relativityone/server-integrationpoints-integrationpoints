@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
@@ -38,6 +41,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
             ITimer timer = _timerFactory.Create(async (state) => await UpdateProgressAsync(workspaceId, importJobId, jobHistoryId).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
             return timer;
+        }
+
+        public async Task UpdateReadItemsCountAsync(Job job, CustomProviderJobDetails jobDetails)
+        {
+            int readItemsCount = jobDetails
+                .Batches
+                .Where(x => x.IsAddedToImportQueue)
+                .Sum(x => x.NumberOfRecords);
+
+            await _jobHistoryService
+                .UpdateReadItemsCountAsync(job.WorkspaceID, jobDetails.JobHistoryID, readItemsCount)
+                .ConfigureAwait(false);
+        }
+
+        public async Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount)
+        {
+            await _jobHistoryService.SetTotalItemsAsync(workspaceId, jobHistoryId, totalItemsCount).ConfigureAwait(false);
         }
 
         private async Task UpdateProgressAsync(int workspaceId, Guid importJobId, int jobHistoryId)
