@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Sync
         private async Task<int> RequireJobHistoryAsync(Job job)
         {
             Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
-            JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryAsyncByGuidAsync(job.WorkspaceID, batchInstanceId).ConfigureAwait(false);
+            JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryByGuidAsync(job.WorkspaceID, batchInstanceId).ConfigureAwait(false);
             if (jobHistory == null)
             {
                 IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(job.RelatedObjectArtifactID);

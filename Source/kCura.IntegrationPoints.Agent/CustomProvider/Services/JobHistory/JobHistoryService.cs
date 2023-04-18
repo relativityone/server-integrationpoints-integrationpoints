@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
         }
 
-        public async Task<Data.JobHistory> ReadJobHistoryAsyncByGuidAsync(int workspaceId, Guid batchInstanceId)
+        public async Task<Data.JobHistory> ReadJobHistoryByGuidAsync(int workspaceId, Guid batchInstanceId)
         {
             using (IObjectManager objectManager =
                    await _keplerServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))

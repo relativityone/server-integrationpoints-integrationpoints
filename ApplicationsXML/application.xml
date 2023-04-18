@@ -1913,6 +1913,26 @@
       <Name>Polly.Contrib.WaitAndRetry.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+        <Keywords />
+        <Name>Serilog.dll</Name>
+        <Notes />
+      </Assembly>
+    <Assembly>
+        <Keywords />
+        <Name>Serilog.Sinks.OpenTelemetry.dll</Name>
+        <Notes />
+      </Assembly>
+    <Assembly>
+        <Keywords />
+        <Name>Serilog.Sinks.PeriodicBatching.dll</Name>
+        <Notes />
+      </Assembly>
+    <Assembly>
+        <Keywords />
+        <Name>Grpc.Core.Api.dll</Name>
+        <Notes />
+      </Assembly>
   </Assemblies>
   <ResourceFiles>
     <ResourceFile>

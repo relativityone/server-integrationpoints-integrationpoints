@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 {
     public interface IJobHistoryService
     {
-        Task<Data.JobHistory> ReadJobHistoryAsyncByGuidAsync(int workspaceId, Guid jobHistoryGuid);
+        Task<Data.JobHistory> ReadJobHistoryByGuidAsync(int workspaceId, Guid jobHistoryGuid);
 
         Task<int> CreateJobHistoryAsync(int workspaceId, Data.JobHistory jobHistory);
 
