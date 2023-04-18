@@ -10,10 +10,10 @@ namespace kCura.IntegrationPoints.Common.Logger
 {
     public class SerilogLoggerInstrumentationService : ISerilogLoggerInstrumentationService, IDisposable
     {
-        private ILogger _serilogLogger;
         private readonly IInstanceSettingsBundle _instanceSettingsBundle;
         private readonly IRipAppVersionProvider _ripAppVersionProvider;
         private readonly IAPILog _internalLogger;
+        private ILogger _serilogLogger;
 
         public SerilogLoggerInstrumentationService(IInstanceSettingsBundle instanceSettingsBundle, IRipAppVersionProvider ripAppVersionProvider, IAPILog internalLogger)
         {
@@ -48,31 +48,30 @@ namespace kCura.IntegrationPoints.Common.Logger
         {
             if (_serilogLogger == null)
             {
-                InitLogger();
+                _serilogLogger = CreateLogger();
             }
         }
 
-        private void InitLogger()
+        private ILogger CreateLogger()
         {
-            var apikey = GetRelEyeToken();
+            string apikey = GetRelEyeToken();
             if (string.IsNullOrEmpty(apikey))
             {
                 _internalLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeToken is not defined.");
-                _serilogLogger = Serilog.Core.Logger.None;
-                return;
+                return Serilog.Core.Logger.None;
             }
 
-            var otlpEndpoint = GetRelEyeUriLogs();
+            string otlpEndpoint = GetRelEyeUriLogs();
             if (string.IsNullOrEmpty(apikey))
             {
                 _internalLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeUriLogs is not defined.");
                 _serilogLogger = Serilog.Core.Logger.None;
-                return;
+                return Serilog.Core.Logger.None;
             }
 
-            var instanceIdentifier = GetInstanceIdentifier();
+            string instanceIdentifier = GetInstanceIdentifier();
 
-            _serilogLogger = new LoggerConfiguration()
+            ILogger serilogLogger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.OpenTelemetry(
                     endpoint: otlpEndpoint,
@@ -81,8 +80,7 @@ namespace kCura.IntegrationPoints.Common.Logger
                     {
                         { "apikey", apikey }
                     },
-                    disableBatching : true
-                )
+                    disableBatching: true)
                 .Enrich.WithProperty(RelEye.Names.SourceId, instanceIdentifier.ToLower())
                 .Enrich.WithProperty(RelEye.Names.ServiceName, RelEye.Values.ServiceName)
                 .Enrich.WithProperty(RelEye.Names.ServiceVersion, _ripAppVersionProvider.Get())
@@ -90,6 +88,7 @@ namespace kCura.IntegrationPoints.Common.Logger
                 .Enrich.FromLogContext()
                 .CreateLogger();
             _internalLogger.LogInformation("SerilogLogger.OpenTelemetry properly initialized.");
+            return serilogLogger;
         }
 
         private string GetRelEyeToken()
