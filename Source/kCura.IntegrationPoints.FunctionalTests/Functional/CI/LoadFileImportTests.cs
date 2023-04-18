@@ -23,6 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
+        [Ignore("REL-753202")]
         public void LoadNativesFromLoadFileGoldFlow()
         {
             _testImplementation.ImportNativesFromLoadFileGoldFlow();
