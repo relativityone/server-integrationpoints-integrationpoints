@@ -4,21 +4,21 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 {
     internal sealed class Progress : IEquatable<Progress>
     {
-        public int FailedReadDocumentsCount { get; }
+        public int FailedDocumentsCount { get; }
 
         public int TransferredDocumentsCount { get; }
 
-        public Progress(int failedReadDocumentsCount, int transferredDocumentsCount)
+        public Progress(int failedDocumentsCount, int transferredDocumentsCount)
         {
-            if (failedReadDocumentsCount < 0 || transferredDocumentsCount < 0)
+            if (failedDocumentsCount < 0 || transferredDocumentsCount < 0)
             {
                 throw new ArgumentOutOfRangeException("All Progress parameters should has non negative values. " +
-                                                      $"failedReadDocumentsCount - {failedReadDocumentsCount}, " +
+                                                      $"failedDocumentsCount - {failedDocumentsCount}, " +
                                                       $"transferredDocumentsCount - {transferredDocumentsCount}.");
             }
             
             TransferredDocumentsCount = transferredDocumentsCount;
-            FailedReadDocumentsCount = failedReadDocumentsCount;
+            FailedDocumentsCount = failedDocumentsCount;
         }
 
         public override bool Equals(object obj)
@@ -45,18 +45,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
                 return true;
             }
 
-            return Equals(FailedReadDocumentsCount, other.FailedReadDocumentsCount) &&
+            return Equals(FailedDocumentsCount, other.FailedDocumentsCount) &&
                    Equals(TransferredDocumentsCount, other.TransferredDocumentsCount);
         }
 
         public override int GetHashCode()
         {
-            return FailedReadDocumentsCount.GetHashCode() ^ TransferredDocumentsCount.GetHashCode();
+            return FailedDocumentsCount.GetHashCode() ^ TransferredDocumentsCount.GetHashCode();
         }
 
         public static Progress operator +(Progress a, Progress b)
         {
-            int failedReadDocumentsCount = a.FailedReadDocumentsCount + b.FailedReadDocumentsCount;
+            int failedReadDocumentsCount = a.FailedDocumentsCount + b.FailedDocumentsCount;
             int transferredDocumentsCount = a.TransferredDocumentsCount + b.TransferredDocumentsCount;
 
             return new Progress(failedReadDocumentsCount, transferredDocumentsCount);
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public static Progress operator -(Progress a, Progress b)
         {
-            int failedReadDocumentsCount = a.FailedReadDocumentsCount - b.FailedReadDocumentsCount;
+            int failedReadDocumentsCount = a.FailedDocumentsCount - b.FailedDocumentsCount;
             int transferredDocumentsCount = a.TransferredDocumentsCount - b.TransferredDocumentsCount;
 
             return new Progress(failedReadDocumentsCount, transferredDocumentsCount);
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public static Progress operator *(Progress a, Progress b)
         {
-            int failedReadDocumentsCount = a.FailedReadDocumentsCount * b.FailedReadDocumentsCount;
+            int failedReadDocumentsCount = a.FailedDocumentsCount * b.FailedDocumentsCount;
             int transferredDocumentsCount = a.TransferredDocumentsCount * b.TransferredDocumentsCount;
 
             return new Progress(failedReadDocumentsCount, transferredDocumentsCount);
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public static Progress operator /(Progress a, Progress b)
         {
-            int failedReadDocumentsCount = a.FailedReadDocumentsCount / b.FailedReadDocumentsCount;
+            int failedReadDocumentsCount = a.FailedDocumentsCount / b.FailedDocumentsCount;
             int transferredDocumentsCount = a.TransferredDocumentsCount / b.TransferredDocumentsCount;
 
             return new Progress(failedReadDocumentsCount, transferredDocumentsCount);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public static Progress operator %(Progress a, Progress b)
         {
-            int failedReadDocumentsCount = a.FailedReadDocumentsCount % b.FailedReadDocumentsCount;
+            int failedReadDocumentsCount = a.FailedDocumentsCount % b.FailedDocumentsCount;
             int transferredDocumentsCount = a.TransferredDocumentsCount % b.TransferredDocumentsCount;
 
             return new Progress(failedReadDocumentsCount, transferredDocumentsCount);

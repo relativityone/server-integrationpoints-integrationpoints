@@ -44,14 +44,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
         {
             try
             {
-                _logger.LogInformation("Updating job progress");
-
                 Progress importJobProgress = await GetImportJobProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
 
-                await _jobHistoryService.UpdateProgressAsync(workspaceId, jobHistoryId, importJobProgress.TransferredDocumentsCount, importJobProgress.FailedReadDocumentsCount)
+                await _jobHistoryService.UpdateProgressAsync(workspaceId, jobHistoryId, importJobProgress.TransferredDocumentsCount, importJobProgress.FailedDocumentsCount)
                     .ConfigureAwait(false);
 
-                _logger.LogInformation("Progress has been updated. Imported items count: {importedItemsCount} Failed items count: {failedItemsCount}", importJobProgress.TransferredDocumentsCount, importJobProgress.FailedReadDocumentsCount);
+                _logger.LogInformation("Progress has been updated. Imported items count: {importedItemsCount} Failed items count: {failedItemsCount}", importJobProgress.TransferredDocumentsCount, importJobProgress.FailedDocumentsCount);
             }
             catch (Exception ex)
             {
