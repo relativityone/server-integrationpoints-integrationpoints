@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
