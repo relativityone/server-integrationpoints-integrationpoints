@@ -4,9 +4,9 @@ namespace kCura.IntegrationPoints.Common.Metrics.Sink
 {
     public class SplunkRipMetricSink : IRipMetricsSink
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<SplunkRipMetricSink> _logger;
 
-        public SplunkRipMetricSink(IAPILog logger)
+        public SplunkRipMetricSink(ILogger<SplunkRipMetricSink> logger)
         {
             _logger = logger;
         }

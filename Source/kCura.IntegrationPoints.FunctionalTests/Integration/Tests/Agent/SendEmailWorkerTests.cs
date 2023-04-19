@@ -126,8 +126,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             fakeInstanceSettingsBundle.SmtpConfigurationSettings.Add("SMTPUserName", _SMTP_USER_NAME_SETTING);
             fakeInstanceSettingsBundle.SmtpConfigurationSettings.Add("EmailFrom", _EMAIL_FROM_ADDRESS);
 
-            Container.Register(Component.For<IInstanceSettingsBundle>().Instance(fakeInstanceSettingsBundle).LifestyleTransient().IsDefault());
-
             SendEmailWorker sut = Container.Resolve<SendEmailWorker>();
 
             return sut;

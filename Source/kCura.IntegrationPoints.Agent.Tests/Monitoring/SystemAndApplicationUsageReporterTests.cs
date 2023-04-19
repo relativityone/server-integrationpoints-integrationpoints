@@ -4,6 +4,7 @@ using System.Threading;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private const long _jobId = 123456789;
         private const int _dummyMemorySize = 12345;
         private Mock<IAPM> _apmMock;
-        private Mock<IAPILog> _loggerMock;
+        private Mock<ILogger<SystemAndApplicationUsageReporter>> _loggerMock;
         private Mock<IRipMetrics> _ripMetricMock;
         private Mock<ICounterMeasure> _counterMeasure;
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _configFake.Setup(x => x.MemoryUsageInterval).Returns(_memoryUsageInterval);
 
             _counterMeasure = new Mock<ICounterMeasure>();
-            _loggerMock = new Mock<IAPILog>();
+            _loggerMock = new Mock<ILogger<SystemAndApplicationUsageReporter>>();
             _ripMetricMock = new Mock<IRipMetrics>();
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
