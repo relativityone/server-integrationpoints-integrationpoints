@@ -82,12 +82,13 @@
                                 <select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
                                 <div data-bind="visible: IsSmartOverwriteVisible()">
                                     <br />
-                                    <label><input id="smart-overview-checkbox" type="checkbox" data-bind="checked: UseSmartOverwrite, enable: IsSmartOverwriteEnabled()"> Smart Overview</label>
+                                    <label><input id="smart-overview-checkbox" type="checkbox" data-bind="checked: UseSmartOverwrite, enable: IsSmartOverwriteControlEnabled()"> Smart Overwrite</label>
                                     <div>
                                         <br />
                                         &emsp; NOTE: <br />
-                                        &emsp; <strong>Overlay only</strong> the documents that changed <br />
-                                        &emsp; <strong>Append only</strong> the new documents
+                                        &emsp; <strong>Overlay only</strong> sends documents that changed <br />
+                                        &emsp; <strong>Append only</strong> sends newly added documents <br />
+										&emsp; <strong>Append/Overlay</strong> sends new and changed documents since the last execution of this Integration Points
                                     </div>
                                 </div>
                             </div>

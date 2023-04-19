@@ -304,7 +304,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		let isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
 		self.IsSmartOverwriteVisible = ko.observable(isSmartOverwriteToggleEnabled && this.IsRelativityProvider() && !isNonDocumentObjectFlow);
-		self.IsSmartOverwriteEnabled = ko.observable(self.EnableTagging() === "false" && self.ImageImport() === "false");
+		self.IsSmartOverwriteControlEnabled = ko.observable(self.EnableTagging() === "false" && self.ImageImport() === "false");
 		self.UseSmartOverwrite = ko.observable(model.UseSmartOverwrite || false);
 
 		this.CheckRelativityProviderExportType = function (exportType) {
@@ -369,7 +369,7 @@ ko.validation.insertValidationMessage = function (element) {
 					self.IdentifierField(name);
 				});
 				self.ImportNativeFileCopyModeEnabled("false");
-				self.IsSmartOverwriteEnabled(false);
+				self.IsSmartOverwriteControlEnabled(false);
 				self.UseSmartOverwrite(false);
 			}
 			else {
@@ -381,7 +381,7 @@ ko.validation.insertValidationMessage = function (element) {
 				root.utils.UI.disable("#fieldMappings", false);
 				self.ImportNativeFileCopyModeEnabled("true");
 				self.importNativeFileCopyMode("DoNotImportNativeFiles");
-				self.IsSmartOverwriteEnabled(self.EnableTagging() === "false");
+				self.IsSmartOverwriteControlEnabled(self.EnableTagging() === "false");
 			}
 		});
 
