@@ -80,6 +80,17 @@
                             <div class="field-label required">Overwrite:</div>
                             <div class="field-value">
                                 <select id="overwrite" data-bind="options: OverwriteOptions, value: SelectedOverwrite, select2: {}"></select>
+                                <div data-bind="visible: IsSmartOverwriteVisible()">
+                                    <br />
+                                    <label><input id="smart-overview-checkbox" type="checkbox" data-bind="checked: UseSmartOverwrite, enable: IsSmartOverwriteControlEnabled()"> Smart Overwrite</label>
+                                    <div>
+                                        <br />
+                                        &emsp; NOTE: <br />
+                                        &emsp; <strong>Overlay only</strong> sends documents that changed <br />
+                                        &emsp; <strong>Append only</strong> sends newly added documents <br />
+										&emsp; <strong>Append/Overlay</strong> sends new and changed documents since the last execution of this Integration Points
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="field-row" data-bind="visible: SelectedOverwrite() != 'Append Only'">
@@ -157,83 +168,83 @@
                                 </ul>
                             </div>
                         </div>
-						<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
-							<div class="field-label required">Unique Identifier:</div>
-							<div class="field-value ">
-								<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'name', optionsText: 'name', select2: {}"></select>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: hasParent() && !IsNonDocumentObjectFlow()">
-							<div class="field-label required ">Parent Attribute:</div>
-							<div class="field-value ">
-								<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
-							<div class="field-label required ">Native File Path:</div>
-							<div class="field-value ">
-								<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: showManager() && !IsNonDocumentObjectFlow()">
-							<div class="field-label required ">
-								Entity Manager<br />
-								Contains Link:
-							</div>
-							<div class="field-value">
-								<ul>
-									<li>
-										<label><input type="radio" name="enable" value="true" data-bind="checked: EntityManagerFieldContainsLink">Yes</label>
-									</li>
-									<li>
-										<label><input type="radio" name="enable" value="false" data-bind="checked: EntityManagerFieldContainsLink">No</label>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
-							<div class="field-label required ">Use Folder Path Information:</div>
-							<div class="field-value">
-								<ul>
-									<li>
-										<label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
-									</li>
-									<li>
-										<label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
-							<div class="field-label required ">Use Folder Path Information:</div>
-							<div class="field-value">
-								<select id="folderPathInformationSelect" data-bind="options: FolderPathOptions, value: SelectedFolderPathType, select2: {}"></select>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
-							<div class="field-label required ">Folder Path Information:</div>
-							<div class="field-value ">
-								<div data-bind="if: IsRelativityProvider()">
-									<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-								</div>
-								<div data-bind="if: !IsRelativityProvider()">
-									<select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
-								</div>
-							</div>
-						</div>
-						<div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && SelectedOverwrite() != 'Append Only' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
-							<div class="field-label required ">Move Existing Documents:</div>
-							<div class="field-value">
-								<ul>
-									<li>
-										<label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
-									</li>
-									<li>
-										<label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
-									</li>
-								</ul>
-							</div>
-						</div>
+                        <div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
+                            <div class="field-label required">Unique Identifier:</div>
+                            <div class="field-value ">
+                                <select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'name', optionsText: 'name', select2: {}"></select>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: hasParent() && !IsNonDocumentObjectFlow()">
+                            <div class="field-label required ">Parent Attribute:</div>
+                            <div class="field-value ">
+                                <select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
+                            <div class="field-label required ">Native File Path:</div>
+                            <div class="field-value ">
+                                <select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: showManager() && !IsNonDocumentObjectFlow()">
+                            <div class="field-label required ">
+                                Entity Manager<br />
+                                Contains Link:
+                            </div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <label><input type="radio" name="enable" value="true" data-bind="checked: EntityManagerFieldContainsLink">Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input type="radio" name="enable" value="false" data-bind="checked: EntityManagerFieldContainsLink">No</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
+                            <div class="field-label required ">Use Folder Path Information:</div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <label><input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
+                            <div class="field-label required ">Use Folder Path Information:</div>
+                            <div class="field-value">
+                                <select id="folderPathInformationSelect" data-bind="options: FolderPathOptions, value: SelectedFolderPathType, select2: {}"></select>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true' && ImageImport() == 'false'">
+                            <div class="field-label required ">Folder Path Information:</div>
+                            <div class="field-value ">
+                                <div data-bind="if: IsRelativityProvider()">
+                                    <select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+                                </div>
+                                <div data-bind="if: !IsRelativityProvider()">
+                                    <select id="folderPath" data-bind="options: FolderPathImportProvider,  value: FolderPathSourceField,  optionsText: 'displayName',  optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImageImport() == 'false' && SelectedOverwrite() != 'Append Only' && (UseFolderPathInformation() == 'true' || UseDynamicFolderPath() == 'true')">
+                            <div class="field-label required ">Move Existing Documents:</div>
+                            <div class="field-value">
+                                <ul>
+                                    <li>
+                                        <label><input id="move-documents-radio-0" type="radio" name="import_MoveDocumntsToFolder" value="true" data-bind="checked: MoveExistingDocuments">Yes</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="move-documents-radio-1" type="radio" name="import_MoveDocumntsToFolder" value="false" data-bind="checked: MoveExistingDocuments">No</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                         <div data-bind="visible: !IsRelativityProvider() && isDocument() == 'true'">
                             <span class="extracted-label">Extracted Text</span>
                             <div class="margin-top-8px">
@@ -265,12 +276,12 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                       
-					</div>
-				</td>
-				<td style="width: 48%; vertical-align: top"></td>
-			</tr>
-		</table>
-	</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 48%; vertical-align: top"></td>
+            </tr>
+        </table>
+    </div>
 </script>
 <script src="~/node_modules/dompurify/dist/purify.min.js"></script>

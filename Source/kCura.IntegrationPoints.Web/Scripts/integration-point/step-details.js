@@ -154,6 +154,7 @@ var IP = IP || {};
 				self.UseDynamicFolderPath = destinationSettings.UseDynamicFolderPath;
 				self.FolderPathSourceField = destinationSettings.FolderPathSourceField;
 				self.ImageImport = destinationSettings.ImageImport;
+				self.UseSmartOverwrite = destinationSettings.UseSmartOverwrite;
 				self.MoveExistingDocuments = destinationSettings.MoveExistingDocuments;
 				self.LongTextColumnThatContainsPathToFullText = destinationSettings.LongTextColumnThatContainsPathToFullText;
 				self.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
@@ -314,7 +315,7 @@ var IP = IP || {};
 		this.isSyncFlow = function () {
 			var sourceProvider = (this.source.selectedType() || '').toUpperCase();
 			var destinationProvider = (this.destination.selectedDestinationTypeGuid() || '').toUpperCase();
-	
+
 			return sourceProvider === relativitySourceProviderGuid && destinationProvider === relativityDestinationProviderGuid;
 		};
 	};
@@ -360,7 +361,7 @@ var IP = IP || {};
 					destinationProviderType: ko.toJS(guid),
 					EntityManagerFieldContainsLink: ko.toJS(this.model.EntityManagerFieldContainsLink),
 					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging,
-					EnableTagging: ko.toJS(this.model.destination).settings.EnableTagging 
+					EnableTagging: ko.toJS(this.model.destination).settings.EnableTagging
 				};
 				if (this.model.destination.profile) {
 					destination = $.extend(this.model.destination.profile, destination);
