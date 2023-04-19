@@ -9,7 +9,7 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider
 {
     public class SourceProviderService : ISourceProviderService
     {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             Guid = ObjectTypeGuids.SourceProviderGuid
                         },
                         Condition = $"'ArtifactID' == {sourceProviderId}",
-                        Fields = new []
+                        Fields = new[]
                         {
                             new FieldRef()
                             {
