@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, ImportSettings destinationConfiguration)
         {
-            var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID);
+            var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID, jobDetails.JobHistoryID);
 
             DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.ImportJobID);
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
                 await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
                 using (await _jobProgressHandler
-                           .BeginUpdateAsync(job.WorkspaceID, jobDetails.ImportJobID, jobDetails.JobHistoryID)
+                           .BeginUpdateAsync(importJobContext)
                            .ConfigureAwait(false))
                 {
                     foreach (CustomProviderBatch batch in jobDetails.Batches)
@@ -97,6 +97,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
                         await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
+
+                    await _jobProgressHandler.WaitForJobToFinish(importJobContext).ConfigureAwait(false);
+                    await _jobProgressHandler.UpdateProgressAsync(importJobContext).ConfigureAwait(false);
                 }
 
                 await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);

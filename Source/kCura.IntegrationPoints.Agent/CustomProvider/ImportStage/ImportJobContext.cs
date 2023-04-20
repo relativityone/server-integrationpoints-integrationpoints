@@ -4,17 +4,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     internal class ImportJobContext
     {
-        public ImportJobContext(Guid importJobId, long ripJobId, int destinationWorkspaceId)
+        public ImportJobContext(Guid importJobId, long ripJobId, int workspaceId, int jobHistoryId)
         {
             ImportJobId = importJobId;
             RipJobId = ripJobId;
-            DestinationWorkspaceId = destinationWorkspaceId;
+            WorkspaceId = workspaceId;
+            JobHistoryId = jobHistoryId;
         }
 
         public Guid ImportJobId { get; }
 
         public long RipJobId { get; }
 
-        public int DestinationWorkspaceId { get; }
+        public int WorkspaceId { get; }
+
+        public int JobHistoryId { get; }
     }
 }

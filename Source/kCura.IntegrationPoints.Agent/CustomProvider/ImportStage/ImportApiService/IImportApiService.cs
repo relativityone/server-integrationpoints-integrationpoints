@@ -47,9 +47,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         Task EndJobAsync(ImportJobContext importJobContext);
 
-        Task<ImportProgress> GetJobImportProgressValueAsync();
+        Task<ImportProgress> GetJobImportProgressValueAsync(ImportJobContext importJobContext);
 
-        Task<ImportDetails> GetJobImportStatusAsync();
+        Task<ImportDetails> GetJobImportStatusAsync(ImportJobContext importJobContext);
 
         Task<ImportErrors> GetDataSourceErrorsAsync(Guid dataSourceId, int start, int length);
 
