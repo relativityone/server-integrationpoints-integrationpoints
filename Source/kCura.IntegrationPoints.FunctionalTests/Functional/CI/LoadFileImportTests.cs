@@ -22,7 +22,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation.OnSetUpFixture();
         }
 
-        [TestType.Critical]
         [Test]
         [Ignore("REL-753202")]
         public void LoadNativesFromLoadFileGoldFlow()

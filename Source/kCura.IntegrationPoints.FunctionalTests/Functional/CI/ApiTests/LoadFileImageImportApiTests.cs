@@ -1,6 +1,7 @@
-﻿using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
@@ -20,7 +21,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             _testImplementation.OnSetUpFixture();
         }
 
-        [IdentifiedTest("b7d92b95-acbf-46fd-a424-749b13167f23")]
+        [Test]
+        [TestType.Critical]
         public async Task ImportImageFromLoadFile()
         {
             await _testImplementation.RunIntegrationPointAndCheckCorectness().ConfigureAwait(false);

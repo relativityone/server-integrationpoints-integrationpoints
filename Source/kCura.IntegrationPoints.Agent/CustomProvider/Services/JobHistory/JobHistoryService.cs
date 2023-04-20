@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 {
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             _logger = logger.ForContext<JobHistoryService>();
         }
 
-        public async Task UpdateStatusAsync(int workspaceId, int jobHistoryId, ChoiceRef status)
+        public async Task UpdateStatusAsync(int workspaceId, int jobHistoryId, Guid statusGuid)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
                         {
                             Guid = JobHistoryFieldGuids.JobStatusGuid
                         },
-                        Value = status
+                        Value = new ChoiceRef { Guid = statusGuid }
                     }
                 };
 
@@ -71,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
         }
 
-        public async Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int readItemsCount, int transferredItemsCount)
+        public async Task UpdateReadItemsCountAsync(int workspaceId, int jobHistoryId, int readItemsCount)
         {
             try
             {
@@ -84,14 +85,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
                             Guid = JobHistoryFieldGuids.ItemsReadGuid
                         },
                         Value = readItemsCount
-                    },
-                    new FieldRefValuePair()
-                    {
-                        Field = new FieldRef()
-                        {
-                            Guid = JobHistoryFieldGuids.ItemsTransferredGuid
-                        },
-                        Value = transferredItemsCount
                     }
                 };
 
@@ -99,9 +92,79 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to set read items count: {readItemsCount} and transferred items count: {transferredItemsCount} for Job History ID: {jobHistoryId}",
-                    readItemsCount, transferredItemsCount, jobHistoryId);
+                _logger.LogError(ex, "Failed to set read items count: {readItemsCount} for Job History ID: {jobHistoryId}",
+                    readItemsCount, jobHistoryId);
                 throw;
+            }
+        }
+
+        public async Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int importedItemsCount, int failedItemsCount)
+        {
+            try
+            {
+                FieldRefValuePair[] fieldsToUpdate = new[]
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.ItemsTransferredGuid
+                        },
+                        Value = importedItemsCount
+                    },
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.ItemsWithErrorsGuid
+                        },
+                        Value = failedItemsCount
+                    }
+                };
+
+                await UpdateJobHistoryAsync(workspaceId, jobHistoryId, fieldsToUpdate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to set imported items count: {importedItemsCount} and failed items count: {failedItemsCount} for Job History ID: {jobHistoryId}",
+                    importedItemsCount, failedItemsCount, jobHistoryId);
+                throw;
+            }
+        }
+
+        public async Task<Data.JobHistory> ReadJobHistoryByGuidAsync(int workspaceId, Guid batchInstanceId)
+        {
+            using (IObjectManager objectManager =
+                   await _keplerServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                QueryRequest request = new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuids.JobHistoryGuid },
+                    Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstanceId}'",
+                    Fields = RDOConverter.GetFieldList<Data.JobHistory>()
+                };
+
+                QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).ConfigureAwait(false);
+
+                RelativityObject obj = result.Objects.SingleOrDefault();
+
+                return obj?.ToRDO<Data.JobHistory>();
+            }
+        }
+
+        public async Task<int> CreateJobHistoryAsync(int workspaceId, Data.JobHistory jobHistory)
+        {
+            using (IObjectManager objectManager = await _keplerServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                CreateRequest request = new CreateRequest
+                {
+                    ObjectType = jobHistory.ToObjectType(),
+                    FieldValues = jobHistory.ToFieldValues()
+                };
+
+                CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
+
+                return result.Object.ArtifactID;
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.ScheduleQueue.Core;
@@ -67,6 +68,17 @@ namespace kCura.IntegrationPoints.RelativitySync
                     await MarkJobAsCompletedAsync().ConfigureAwait(false);
                     taskResult = new TaskResult { Status = TaskStatusEnum.Success };
                 }
+            }
+            catch(ReflectionTypeLoadException ex)
+            {
+                _logger.LogError(ex, "Sync Job execution failed - Could not load requested types. Ensure all Resource Files are in place.");
+                foreach (Exception loaderException in ex.LoaderExceptions)
+                {
+                    _logger.LogError(loaderException, "Loader Exception occurred.");
+                }
+
+                await MarkJobAsFailedAsync(ex).ConfigureAwait(false);
+                taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
             }
             catch (OperationCanceledException)
             {

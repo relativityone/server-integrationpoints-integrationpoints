@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Queries;
 using Moq;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
@@ -61,6 +60,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 RipInstanceSettings.CUSTOM_PROVIDER_BATCH_SIZE,
                 RipInstanceSettings.INTEGRATION_POINTS_SECTION,
                 settings => settings.CustomProviderBatchSize.ToString());
+
+            SetupInstanceSettingInternal(_context.InstanceSettings,
+                RipInstanceSettings.CUSTOM_PROVIDER_PROGRESS_UPDATE_INTERVAL_SECONDS,
+                RipInstanceSettings.INTEGRATION_POINTS_SECTION,
+                settings => ((int)settings.CustomProviderProgressUpdateInterval.TotalSeconds).ToString());
         }
 
         private void SetupInstanceSettingInternal(InstanceSettings settings,
@@ -84,6 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                             }
                         },
                         Success = true,
+                        TotalCount = 1
                     };
 
                     return Task.FromResult(result);

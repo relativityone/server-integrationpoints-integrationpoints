@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
@@ -41,7 +42,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
         public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
         {
-            JobTest job = CreateBasicJob(workspace, integrationPoint).Build();
+            JobTest job = CreateBasicJob(workspace, integrationPoint)
+                .Build();
+            return ScheduleJob(job);
+        }
+
+        public JobTest ScheduleSyncIntegrationPointRunWithScheduleRule(WorkspaceTest workspace, IntegrationPointTest integrationPoint, ScheduleRuleTest rule = null)
+        {
+            JobTest job = CreateBasicJob(workspace, integrationPoint)
+                .WithTaskType(TaskType.ExportService)
+                .WithScheduleRule(rule)
+                .Build();
             return ScheduleJob(job);
         }
 
@@ -67,6 +78,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
+        public JobTest ScheduleSyncManagerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint, object parameters, long? rootJobId = null)
+        {
+            JobTest job = CreateBasicJob(workspace, integrationPoint)
+                .WithJobDetails(parameters)
+                .WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncManager)
+                .Build();
+
+            job.RootJobId = rootJobId ?? JobId.Next;
+            return ScheduleJob(job);
+        }
+
         private JobBuilder CreateBasicJob(WorkspaceTest workspace)
         {
             IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
@@ -80,7 +102,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 .WithIntegrationPoint(integrationPoint)
                 .WithSubmittedBy(Relativity.TestContext.User.ArtifactId);
         }
-
 
         #region Verification
 

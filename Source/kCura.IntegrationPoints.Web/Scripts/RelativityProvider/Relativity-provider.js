@@ -26,7 +26,7 @@
         return iconSpan;
     };
 
-    // custom validation rules 
+    // custom validation rules
     ko.validation.rules['checkWorkspace'] = {
         validator: function (value, params) {
             var isArtifactIdInList = doesArtifactIdExistInObjectList(params.workspaces(), value);
@@ -117,7 +117,7 @@
         if (viewModel.errors().length === 0) {
             //Communicate to the host page that it to continue.
             this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
-        } else {           
+        } else {
             viewModel.errors.showAllMessages();
         }
 
@@ -208,16 +208,23 @@
                 self.locationSelector.toggle(false);
             }
         });
-        
-        self.CreateSavedSearchForTagging = ko.observable(state.CreateSavedSearchForTagging || "false");       
+
+        self.CreateSavedSearchForTagging = ko.observable(state.CreateSavedSearchForTagging || "false");
         self.EnableTagging = ko.observable(state.EnableTagging || "true");
+        self.EnableTagging.subscribe(function (value) {
+            // beware! bad programmers go to hell and develop type-converters for javascript
+            if (value === "true") {
+                let model = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
+                model.UseSmartOverwrite = false;
+            }
+        });
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
-            if (value == "true") {
+            if (value === "true") {
                 self.EnableTagging("true");
                 document.getElementById("enable-tagging").checked = true;
-            }          
-        });       
+            }
+        });
 
         self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
 
@@ -519,7 +526,7 @@
 
         self.openCreateProductionSetModal = function () {
             createProductionSetModalViewModel.open();
-        }        
+        }
 
         this.TargetFolder.extend({
             required: {
@@ -629,7 +636,7 @@
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
                 "FolderArtifactId": self.FolderArtifactId(),
-                "EnableTagging": self.EnableTagging() 
+                "EnableTagging": self.EnableTagging()
             }
         }
 

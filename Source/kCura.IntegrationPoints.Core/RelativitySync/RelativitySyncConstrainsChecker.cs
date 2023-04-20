@@ -36,10 +36,8 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             _logger = logger;
         }
 
-        public bool ShouldUseRelativitySyncApp(int integrationPointId)
+        public bool IsRelativitySyncAppEnabled()
         {
-            _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
-
             bool isToggleEnabled = _toggleProvider.IsEnabled<EnableRelativitySyncApplicationToggle>();
 
             if (!isToggleEnabled)
@@ -48,9 +46,18 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                 return false;
             }
 
+            return true;
+        }
+
+        public bool ShouldUseRelativitySyncApp(int integrationPointId)
+        {
+            _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
+
+            bool isRelatvitySyncAppEnabled = IsRelativitySyncAppEnabled();
+
             bool configurationAllowsUsingSync = ShouldUseRelativitySync(integrationPointId);
 
-            return configurationAllowsUsingSync;
+            return configurationAllowsUsingSync && isRelatvitySyncAppEnabled;
         }
 
         public bool ShouldUseRelativitySync(int integrationPointId)

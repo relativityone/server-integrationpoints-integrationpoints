@@ -10,11 +10,15 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -163,14 +167,12 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
                 .LifestyleSingleton());
-            container.Register(Component
-                .For<IInstanceSettingsBundle>()
-                .UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
-                .LifestyleTransient());
 
             container.AddEmailSender();
 
             ConfigureOtherProviderFlow(container);
+
+            ConfigureScheduledSyncAppFlow(container);
         }
 
         private static void ConfigureContainer(IWindsorContainer container)
@@ -203,6 +205,9 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
         private static void ConfigureOtherProviderFlow(IWindsorContainer container)
         {
+            container.Register(Component.For<IJobProgressHandler>().ImplementedBy<JobProgressHandler>().LifestyleTransient());
+            container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
+            container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
             container.Register(Component.For<IImportApiRunnerFactory>().ImplementedBy<ImportApiRunnerFactory>().LifestyleTransient());
             container.Register(Component.For<IImportApiService>().ImplementedBy<ImportApiService>().LifestyleTransient());
@@ -211,6 +216,11 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IRdoImportSettingsBuilder>().ImplementedBy<RdoImportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
+        }
+
+        private static void ConfigureScheduledSyncAppFlow(IWindsorContainer container)
+        {
+            container.Register(Component.For<IScheduledSyncTask>().ImplementedBy<ScheduledSyncTask>().LifestyleTransient());
         }
     }
 }

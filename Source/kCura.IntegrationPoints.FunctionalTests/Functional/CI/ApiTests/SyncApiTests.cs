@@ -34,6 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         }
 
         [Test]
+        [TestType.Critical]
         public async Task JobRunTest()
         {
             await _implementation.RunIntegrationPoint().ConfigureAwait(false);

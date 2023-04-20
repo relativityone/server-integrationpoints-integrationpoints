@@ -37,5 +37,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="1.0.0-dev-00113" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Telemetry\Constants" />
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
