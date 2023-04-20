@@ -169,10 +169,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
                 .LifestyleSingleton());
-            container.Register(Component
-                .For<IInstanceSettingsBundle>()
-                .UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
-                .LifestyleTransient());
 
             container.AddEmailSender();
 

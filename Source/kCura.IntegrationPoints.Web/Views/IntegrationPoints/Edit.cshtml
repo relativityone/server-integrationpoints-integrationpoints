@@ -59,34 +59,29 @@
 		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
 		IP.data.params['apiControllerName'] = '@Model.APIControllerName';
 
-		var getEnableSyncNonDocumentFlowToggleValue = function() {
-            var enableSyncNonDocumentFlowToggleValue = IP.data.ajax({
-                url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle'),
+		var getToggleValue = function(toggleName) {
+            var toggleValue = IP.data.ajax({
+                url: IP.utils.generateWebAPIURL('ToggleAPI', toggleName),
                 type: 'get'
             }).fail(function (error) {
                 console.log(error);
             });
-            return enableSyncNonDocumentFlowToggleValue;
+            return toggleValue;
         }
 
-        var promise = getEnableSyncNonDocumentFlowToggleValue();
+        var promise = getToggleValue('kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle');
         promise.then(function (result) {
             IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
         });
-		
-		var getEnableTaggingToggleValue = function () {
-			var enableTaggingToggleValue = IP.data.ajax({
-				url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle'),
-				type: 'get'
-			}).fail(function (error) {
-				console.log(error);
-			});
-			return enableTaggingToggleValue;
-		}
 
-		var promise = getEnableTaggingToggleValue();
+		var promise = getToggleValue('kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle');
 		promise.then(function (result) {
 			IP.data.params['EnableTaggingToggleValue'] = result;
+		});
+
+		var promise = getToggleValue('kCura.IntegrationPoints.Common.Toggles.EnableSmartOverwriteFeatureToggle');
+		promise.then(function (result) {
+			IP.data.params['EnableSmartOverwriteFeatureToggleValue'] = result;
 		});
 
 		IP.unsavedChangesHandler = new UnsavedChangesHandler();

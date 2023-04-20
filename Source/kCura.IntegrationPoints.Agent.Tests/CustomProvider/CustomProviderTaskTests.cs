@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
@@ -15,7 +15,9 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
@@ -53,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IJobProgressHandler> _jobProgressHandler;
         private Mock<IJobHistoryService> _jobHistoryService;
         private Mock<IDisposable> _jobProgressUpdater;
+        private Mock<IAgentValidator> _agentValidator;
 
         [SetUp]
         public void SetUp()
@@ -62,6 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _sourceProviderService = new Mock<ISourceProviderService>();
             _idFilesBuilder = new Mock<IIdFilesBuilder>();
             _loadFileBuilder = new Mock<ILoadFileBuilder>();
+            _agentValidator = new Mock<IAgentValidator>();
 
             _relativityStorageService = new Mock<IRelativityStorageService>();
             _relativityStorageService
@@ -170,6 +174,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             sut.Execute(job);
 
             // Assert
+            _agentValidator.Verify(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()), Times.Once);
+
             _jobService.Verify(x => x.UpdateJobDetails(It.Is<Job>(storedJob => VerifyJob(storedJob, numberOfBatches))),
                 Times.Exactly(numberOfBatches + 1)); // one after creating batches + after adding each data source
 
@@ -212,7 +218,45 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Verify(x => x.DeleteDirectoryAsync(It.IsAny<string>(), It.IsAny<DeleteDirectoryOptions>(), It.IsAny<CancellationToken>()),
                     Times.Once);
         }
-        
+
+        [Test]
+        public void Execute_ShouldNotExecuteJob_WhenValidationFails()
+        {
+            // Arrange
+            IntegrationPointValidationException exception = new IntegrationPointValidationException(new ValidationResult());
+            _agentValidator.Setup(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>())).Throws(exception);
+
+            Job job = new Job();
+            CustomProviderTask sut = PrepareSut();
+
+            // Act & Assert
+            Assert.Throws<IntegrationPointValidationException>(() => sut.Execute(job));
+            _agentValidator.Verify(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()), Times.Once);
+            _jobService.Verify(x => x.UpdateJobDetails(It.IsAny<Job>()), Times.Never);
+
+            _storageAccess.Verify(
+                x => x.DeleteDirectoryAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<DeleteDirectoryOptions>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            _importApiRunner.Verify(
+                x => x.RunImportJobAsync(
+                    It.IsAny<ImportJobContext>(),
+                    It.IsAny<ImportSettings>(),
+                    It.IsAny<List<IndexedFieldMap>>()),
+                Times.Never);
+
+            _importSourceController.Verify(
+                x => x.AddSourceAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DataSourceSettings>()),
+                Times.Never);
+        }
+
         private bool VerifyJob(Job job, int numberOfBatches)
         {
             CustomProviderJobDetails jobDetails = new JSONSerializer().Deserialize<CustomProviderJobDetails>(job.JobDetails);
@@ -249,6 +293,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _importApiRunnerFactory.Object,
                 _jobProgressHandler.Object,
                 _jobHistoryService.Object,
+                _agentValidator.Object,
                 Mock.Of<IAPILog>());
         }
     }

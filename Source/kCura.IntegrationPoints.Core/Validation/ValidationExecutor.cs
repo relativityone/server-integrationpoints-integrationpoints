@@ -58,8 +58,13 @@ namespace kCura.IntegrationPoints.Core.Validation
 
         private ValidationResult ValidateExecutionConstraints(ValidationContext validationContext, OperationType operationType)
         {
-            ValidationResult validationResult = _integrationModelValidator.Validate(validationContext.Model, validationContext.SourceProvider, validationContext.DestinationProvider,
-                validationContext.IntegrationPointType, validationContext.ObjectTypeGuid, validationContext.UserId);
+            ValidationResult validationResult = _integrationModelValidator.Validate(
+                validationContext.Model,
+                validationContext.SourceProvider,
+                validationContext.DestinationProvider,
+                validationContext.IntegrationPointType,
+                validationContext.ObjectTypeGuid,
+                validationContext.UserId);
 
             LogValidationErrors(operationType, validationResult);
             return validationResult;

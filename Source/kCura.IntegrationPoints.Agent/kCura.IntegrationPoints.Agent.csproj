@@ -63,6 +63,7 @@
     <Folder Include="CustomProvider\DTO\" />
     <Folder Include="CustomProvider\Services\JobDetails\" />
     <Folder Include="CustomProvider\Utils\" />
+    <Folder Include="CustomProvider\Services\InstanceSettings" />
     <Folder Include="CustomProvider\Services\LoadFileBuilding\" />
     <Folder Include="CustomProvider\Services\JobHistory\" />
     <Folder Include="CustomProvider\Services\JobProgress\" />

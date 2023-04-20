@@ -10,13 +10,13 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics.Sink
     [TestFixture]
     public class SplunkMetricsSinkTests
     {
-        private Mock<IAPILog> _loggerMock;
+        private Mock<ILogger<SplunkRipMetricSink>> _loggerMock;
         private SplunkRipMetricSink _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _loggerMock = new Mock<IAPILog>();
+            _loggerMock = new Mock<ILogger<SplunkRipMetricSink>>();
             _sut = new SplunkRipMetricSink(_loggerMock.Object);
         }
 
