@@ -67,7 +67,7 @@
     <RelativityTestingFrameworkApi>3.21.0</RelativityTestingFrameworkApi>
     <RelativityTestingFrameworkRingSetup>0.11.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>1.1.0</RelativityTestingFrameworkWeb>
-    <RelativityTransferClient>7.3.8</RelativityTransferClient>
+    <RelativityTransferClient>7.4.9</RelativityTransferClient>
     <RelativityToggles>1.0.1</RelativityToggles>
     <SeleniumSupport>3.141.0</SeleniumSupport>
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
