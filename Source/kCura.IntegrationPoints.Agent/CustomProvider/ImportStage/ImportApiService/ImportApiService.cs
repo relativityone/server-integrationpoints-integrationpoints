@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.Extensions;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using Relativity.API;
 using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Settings;
+using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
@@ -73,6 +78,75 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             await CreateRdoConfigurationAsync(importJobContext, configuration.RdoSettings).ConfigureAwait(false);
 
             await CreateAdvancedConfigurationAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
+        }
+
+        public async Task AddDataSourceAsync(ImportJobContext importJobContext,
+            Guid sourceId,
+            DataSourceSettings dataSourceSettings)
+        {
+            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+            {
+                (await importSource.AddSourceAsync(
+                            importJobContext.DestinationWorkspaceId,
+                            importJobContext.ImportJobId,
+                            sourceId,
+                            dataSourceSettings)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.AddDataSourceAsync)} failed.");
+            }
+        }
+        
+        public async Task CancelJobAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Canceling job {jobId}...", importJobContext.ImportJobId);
+
+                (await importJobController.CancelAsync(
+                            importJobContext.DestinationWorkspaceId,
+                            importJobContext.ImportJobId)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.CancelJobAsync)} failed.");
+            }
+        }
+
+        public async Task EndJobAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Ending job {jobId}...", importJobContext.ImportJobId);
+
+                (await importJobController.EndAsync(
+                            importJobContext.DestinationWorkspaceId,
+                            importJobContext.ImportJobId)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.EndJobAsync)} failed.");
+            }
+        }
+
+        public Task<ImportProgress> GetJobImportProgressValueAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportDetails> GetJobImportStatusAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportErrors> GetDataSourceErrorsAsync(Guid dataSourceId, int start, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataSourceDetails> GetDataSourceStatusAsync(Guid dataSourceGuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImportProgress> GetDataSourceProgressAsync(Guid dataSourceGuid)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task CreateDocumentConfigurationAsync(ImportJobContext importJobContext, ImportDocumentSettings settings)

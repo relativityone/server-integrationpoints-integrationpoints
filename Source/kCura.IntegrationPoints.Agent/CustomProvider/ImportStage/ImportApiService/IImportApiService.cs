@@ -1,4 +1,8 @@
+using System;
 using System.Threading.Tasks;
+using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Errors;
+using Relativity.Import.V1.Models.Sources;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
@@ -36,5 +40,21 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <param name="configuration">The configuration specific for rdo flow.</param>
         /// <exception cref="ImportApiResponseException">Thrown when ImportAPI call fails.</exception>
         Task ConfigureRdoImportApiJobAsync(ImportJobContext importJobContext, RdoImportConfiguration configuration);
+
+        Task AddDataSourceAsync(ImportJobContext importJobContext, Guid sourceId, DataSourceSettings dataSourceSettings);
+        
+        Task CancelJobAsync(ImportJobContext importJobContext);
+
+        Task EndJobAsync(ImportJobContext importJobContext);
+
+        Task<ImportProgress> GetJobImportProgressValueAsync();
+
+        Task<ImportDetails> GetJobImportStatusAsync();
+
+        Task<ImportErrors> GetDataSourceErrorsAsync(Guid dataSourceId, int start, int length);
+
+        Task<DataSourceDetails> GetDataSourceStatusAsync(Guid dataSourceGuid);
+
+        Task<ImportProgress> GetDataSourceProgressAsync(Guid dataSourceGuid);
     }
 }

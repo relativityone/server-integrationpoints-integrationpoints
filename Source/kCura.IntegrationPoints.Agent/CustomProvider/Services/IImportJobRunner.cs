@@ -1,10 +1,14 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
-    public interface IImportJobRunner
+    internal interface IImportJobRunner
     {
-        Task RunJobAsync(Job job);
+        Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, ImportSettings destinationConfiguration);
     }
 }

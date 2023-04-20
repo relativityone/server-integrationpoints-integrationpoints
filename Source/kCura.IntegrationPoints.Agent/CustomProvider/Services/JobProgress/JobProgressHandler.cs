@@ -43,6 +43,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
             return timer;
         }
 
+        public async Task WaitForJobToFinish(int workspaceId, CustomProviderJobDetails jobDetails)
+        {
+            
+        }
+
         public async Task UpdateReadItemsCountAsync(Job job, CustomProviderJobDetails jobDetails)
         {
             int readItemsCount = jobDetails
