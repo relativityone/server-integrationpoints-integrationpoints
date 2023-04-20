@@ -52,16 +52,16 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
                 throw;
             }
 
-            if (customProviderJobDetails == null || customProviderJobDetails.ImportJobID == Guid.Empty)
+            if (customProviderJobDetails == null || customProviderJobDetails.JobHistoryGuid == Guid.Empty)
             {
                 customProviderJobDetails = new CustomProviderJobDetails()
                 {
-                    ImportJobID = Guid.NewGuid(),
-                    JobHistoryID = jobHistoryId
+                    JobHistoryID = jobHistoryId,
+                    JobHistoryGuid = jobHistoryGuid
                 };
             }
 
-            _logger.LogInformation("Running custom provider job ID: {importJobId}", customProviderJobDetails.ImportJobID);
+            _logger.LogInformation("Running custom provider job ID: {importJobId}", customProviderJobDetails.JobHistoryGuid);
 
             return customProviderJobDetails;
         }

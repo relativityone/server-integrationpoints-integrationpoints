@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <inheritdoc/>
         public async Task RunImportJobAsync(ImportJobContext importJobContext, ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
-            _logger.LogInformation("ImportApiRunner for document flow started. ImportJobId: {jobId}", importJobContext.ImportJobId);
+            _logger.LogInformation("ImportApiRunner for document flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
             DocumentImportConfiguration configuration = await _importSettingsBuilder
                 .BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);

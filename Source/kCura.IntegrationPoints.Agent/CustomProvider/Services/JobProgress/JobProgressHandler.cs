@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.API;
 using Relativity.Import.V1.Models;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 {
@@ -57,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
             }
         }
 
-        public async Task WaitForJobToFinish(ImportJobContext importJobContext)
+        public async Task WaitForJobToFinish(ImportJobContext importJobContext, CompositeCancellationToken token)
         {
             TimeSpan interval = TimeSpan.FromSeconds(5);
 
@@ -65,15 +68,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
             ImportState state = ImportState.Unknown;
             do
             {
-                //if (token.IsStopRequested)
-                //{
-                //    await CancelImportJob(configuration.ExportRunId).ConfigureAwait(false);
-                //}
+                if (token.IsStopRequested)
+                {
+                    await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
+                }
 
-                //if (token.IsDrainStopRequested)
-                //{
-                //    return ExecutionResult.Paused();
-                //}
+                if (token.IsDrainStopRequested)
+                {
+                    return;
+                }
 
                 await Task.Delay(interval).ConfigureAwait(false);
 

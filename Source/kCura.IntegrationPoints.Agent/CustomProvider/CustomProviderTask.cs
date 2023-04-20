@@ -4,6 +4,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobStopManager;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -12,11 +13,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
     internal class CustomProviderTask : ICustomProviderTask
     {
+        private readonly ICancellationTokenFactory _cancellationTokenFactory;
         private readonly IAgentValidator _agentValidator;
         private readonly IJobDetailsService _jobDetailsService;
         private readonly IIntegrationPointService _integrationPointService;
@@ -25,8 +28,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        public CustomProviderTask(IAgentValidator agentValidator, IJobDetailsService jobDetailsService, IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IImportJobRunner importJobRunner, ISerializer serializer, IAPILog logger)
+        public CustomProviderTask(ICancellationTokenFactory cancellationTokenFactory, IAgentValidator agentValidator, IJobDetailsService jobDetailsService, IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IImportJobRunner importJobRunner, ISerializer serializer, IAPILog logger)
         {
+            _cancellationTokenFactory = cancellationTokenFactory;
             _agentValidator = agentValidator;
             _jobDetailsService = jobDetailsService;
             _integrationPointService = integrationPointService;
@@ -53,8 +57,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
                 ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
 
+                CompositeCancellationToken token = _cancellationTokenFactory.CreateJobStopManager(jobDetails.JobHistoryGuid, job.JobId);
+
                 await _importJobRunner
-                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, destinationConfiguration)
+                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, destinationConfiguration, token)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

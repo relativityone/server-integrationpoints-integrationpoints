@@ -12,11 +12,13 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
@@ -46,22 +48,22 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
-        public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, ImportSettings destinationConfiguration)
+        public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, ImportSettings destinationConfiguration, CompositeCancellationToken token)
         {
-            var importJobContext = new ImportJobContext(jobDetails.ImportJobID, job.JobId, job.WorkspaceID, jobDetails.JobHistoryID);
+            var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
 
-            DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.ImportJobID);
+            DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
 
             try
             {
                 if (!jobDetails.Batches.Any())
                 {
-                    jobDetails = await CreateBatchesAsync(jobDetails.ImportJobID, job, sourceProvider,
-                        integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
+                    jobDetails.Batches = await CreateBatchesAsync(sourceProvider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
+                    await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
                 }
 
-                await _jobProgressHandler.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID,
-                    jobDetails.Batches.Sum(x => x.NumberOfRecords)).ConfigureAwait(false);
+                int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
+                await _jobProgressHandler.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
 
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
 
@@ -98,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
 
-                    await _jobProgressHandler.WaitForJobToFinish(importJobContext).ConfigureAwait(false);
+                    await _jobProgressHandler.WaitForJobToFinish(importJobContext, token).ConfigureAwait(false);
                     await _jobProgressHandler.UpdateProgressAsync(importJobContext).ConfigureAwait(false);
                 }
 
@@ -136,19 +138,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
         
-        private async Task<CustomProviderJobDetails> CreateBatchesAsync(Guid jobId, Job job, IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory)
+        private async Task<List<CustomProviderBatch>> CreateBatchesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory)
         {
             List<CustomProviderBatch> batches = await _idFilesBuilder.BuildIdFilesAsync(provider, integrationPointDto, importDirectory).ConfigureAwait(false);
-
-            CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
-            {
-                ImportJobID = jobId,
-                Batches = batches
-            };
-
-            await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-
-            return jobDetails;
+            return batches;
         }
 
         private static List<IndexedFieldMap> IndexFieldMappings(List<FieldMap> fieldMappings)

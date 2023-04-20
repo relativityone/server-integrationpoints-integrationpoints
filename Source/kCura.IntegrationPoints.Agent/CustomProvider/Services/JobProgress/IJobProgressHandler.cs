@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Data;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 {
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
     {
         Task<IDisposable> BeginUpdateAsync(ImportJobContext importJobContext);
         Task UpdateProgressAsync(ImportJobContext importJobContext);
-        Task WaitForJobToFinish(ImportJobContext importJobContext);
+        Task WaitForJobToFinish(ImportJobContext importJobContext, CompositeCancellationToken token);
         Task UpdateReadItemsCountAsync(Job job, CustomProviderJobDetails jobDetails);
         Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount);
     }
