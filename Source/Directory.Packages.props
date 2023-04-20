@@ -48,11 +48,12 @@
     <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>14.0.0</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsContracts>1.0.8-pre.3</RelativityIntegrationPointsContracts>
+    <RelativityIntegrationPointsContracts>1.0.9-pre.5</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKepler>2.14.3</RelativityKepler>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
+    <RelativityTelemetryServicesInterface>3000.0.2</RelativityTelemetryServicesInterface>
     <RelativityOAuth2Client>1.5.2</RelativityOAuth2Client>
     <RelativityOutsideIn>2021.3.1</RelativityOutsideIn>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
