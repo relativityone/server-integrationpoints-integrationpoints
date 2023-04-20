@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly ISourceProviderService _sourceProviderService;
         private readonly IImportJobRunner _importJobRunner;
         private readonly ISerializer _serializer;
-        private readonly IAgentValidator _agentValidator;
         private readonly IAPILog _logger;
 
         public CustomProviderTask(IAgentValidator agentValidator, IJobDetailsService jobDetailsService, IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IImportJobRunner importJobRunner, ISerializer serializer, IAPILog logger)
@@ -34,20 +33,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _sourceProviderService = sourceProviderService;
             _importJobRunner = importJobRunner;
             _serializer = serializer;
-            _agentValidator = agentValidator;
             _logger = logger;
         }
 
         public void Execute(Job job)
         {
-            IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
-
-            _agentValidator.Validate(integrationPointDto, job.SubmittedBy);
-            ExecuteAsync(job, integrationPointDto).GetAwaiter().GetResult();
-
+            ExecuteAsync(job).GetAwaiter().GetResult();
         }
 
-        private async Task ExecuteAsync(Job job, IntegrationPointDto integrationPointDto)
+        private async Task ExecuteAsync(Job job)
         {
             try
             {
