@@ -10,7 +10,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using ServiceChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -86,23 +85,42 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
-        public async Task UpdateProgressAsync_ShouldSendValidRequest()
+        public async Task UpdateReadItemsCountAsync_ShouldSendValidRequest()
         {
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
-            int readItemsCount = 300;
-            int transferredItemsCount = 250;
+            int readItemsCount = 50000;
 
             // Act
-            await _sut.UpdateProgressAsync(workspaceId, jobHistoryId, readItemsCount, transferredItemsCount);
+            await _sut.UpdateReadItemsCountAsync(workspaceId, jobHistoryId, readItemsCount);
 
             // Assert
             _objectManager
                 .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
                     request.Object.ArtifactID == jobHistoryId &&
-                    request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsReadGuid && (int)field.Value == readItemsCount) &&
-                    request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsTransferredGuid && (int)field.Value == transferredItemsCount))));
+                    request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.ItemsReadGuid &&
+                    (int)request.FieldValues.Single().Value == readItemsCount)));
+        }
+
+        [Test]
+        public async Task UpdateProgressAsync_ShouldSendValidRequest()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            int transferredItemsCount = 250;
+            int failedItemsCount = 300;
+
+            // Act
+            await _sut.UpdateProgressAsync(workspaceId, jobHistoryId, transferredItemsCount, failedItemsCount);
+
+            // Assert
+            _objectManager
+                .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
+                    request.Object.ArtifactID == jobHistoryId &&
+                    request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsTransferredGuid && (int)field.Value == transferredItemsCount) &&
+                    request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsWithErrorsGuid && (int)field.Value == failedItemsCount))));
         }
     }
 }

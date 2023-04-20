@@ -62,9 +62,11 @@
   <ItemGroup>
     <Folder Include="CustomProvider\DTO\" />
     <Folder Include="CustomProvider\ImportStage\Extensions\" />
+    <Folder Include="CustomProvider\Utils\" />
     <Folder Include="CustomProvider\Services\InstanceSettings" />
     <Folder Include="CustomProvider\Services\LoadFileBuilding\" />
     <Folder Include="CustomProvider\Services\JobHistory\" />
+    <Folder Include="CustomProvider\Services\JobProgress\" />
   </ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

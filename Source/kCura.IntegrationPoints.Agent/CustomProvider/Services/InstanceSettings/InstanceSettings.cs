@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Data.Queries;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
@@ -25,6 +24,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
         public async Task<int> GetCustomProviderBatchSizeAsync()
         {
             return await GetAsync<int>(Constants.InstanceSettings.CUSTOM_PROVIDER_BATCH_SIZE, Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, 10000);
+        }
+
+        public async Task<TimeSpan> GetCustomProviderProgressUpdateIntervalAsync()
+        {
+            int intervalInSeconds =
+                await GetAsync<int>(Constants.InstanceSettings.CUSTOM_PROVIDER_PROGRESS_UPDATE_INTERVAL_SECONDS,
+                    Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, 5);
+            return TimeSpan.FromSeconds(intervalInSeconds);
         }
 
         public async Task<T> GetAsync<T>(string name, string section, T defaultValue)

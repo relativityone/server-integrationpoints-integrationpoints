@@ -8,6 +8,8 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,6 +18,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -48,6 +51,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IImportSourceController> _importSourceController;
         private Mock<IImportApiRunner> _importApiRunner;
         private Mock<IImportJobController> _importJobController;
+        private Mock<IJobProgressHandler> _jobProgressHandler;
+        private Mock<IJobHistoryService> _jobHistoryService;
+        private Mock<IDisposable> _jobProgressUpdater;
         private Mock<IAgentValidator> _agentValidator;
 
         [SetUp]
@@ -94,6 +100,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.CreateProxyAsync<IImportJobController>())
                 .ReturnsAsync(_importJobController.Object);
 
+            _jobProgressUpdater = new Mock<IDisposable>();
+            _jobProgressHandler = new Mock<IJobProgressHandler>();
+            _jobProgressHandler
+                .Setup(x => x.BeginUpdateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>()))
+                .ReturnsAsync(_jobProgressUpdater.Object);
+
+            _jobHistoryService = new Mock<IJobHistoryService>();
+
             ImportSettings destinationConfiguration = new ImportSettings()
             {
                 CaseArtifactId = _destinationWorkspaceId
@@ -112,12 +126,24 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void Execute_GoldFlow()
         {
             // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            Guid batchInstance = Guid.NewGuid();
             const int numberOfBatches = 3;
 
             List<CustomProviderBatch> batches = Enumerable.Range(0, numberOfBatches).Select(x => new CustomProviderBatch()
             {
                 BatchID = x
             }).ToList();
+
+            JobHistory jobHistory = new JobHistory()
+            {
+                ArtifactId = jobHistoryId
+            };
+
+            _jobHistoryService
+                .Setup(x => x.ReadJobHistoryByGuidAsync(workspaceId, batchInstance))
+                .ReturnsAsync(jobHistory);
 
             _idFilesBuilder
                 .Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(), It.IsAny<string>()))
@@ -140,8 +166,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.EndAsync(_destinationWorkspaceId, It.IsAny<Guid>()))
                 .ReturnsAsync(new Response(Guid.Empty, true, string.Empty, string.Empty));
 
-            Job job = new Job();
-
+            Job job = PrepareJob(workspaceId, batchInstance);
             CustomProviderTask sut = PrepareSut();
 
             // Act
@@ -162,17 +187,26 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _importSourceController.Verify(x => x.AddSourceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()),
                 Times.Exactly(numberOfBatches));
+
+            _jobProgressUpdater.Verify(x => x.Dispose(), Times.Once);
         }
 
         [Test]
         public void Execute_ShouldCleanupImportDirectory_WhenExceptionIsThrown()
         {
             // Arrange
+
+            JobHistory jobHistory = new JobHistory();
+
+            _jobHistoryService
+                .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(jobHistory);
+
             _sourceProviderService
                 .Setup(x => x.GetSourceProviderAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Throws<InvalidOperationException>();
 
-            Job job = new Job();
+            Job job = PrepareJob(111, Guid.NewGuid());
 
             CustomProviderTask sut = PrepareSut();
 
@@ -230,6 +264,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             return true;
         }
 
+        private Job PrepareJob(int workspaceId, Guid batchInstance)
+        {
+            Job job = new Job()
+            {
+                JobDetails = new JSONSerializer().Serialize(new TaskParameters()
+                {
+                    BatchInstance = batchInstance
+                }),
+                WorkspaceID = workspaceId
+            };
+
+            return job;
+        }
+
         private CustomProviderTask PrepareSut()
         {
             return new CustomProviderTask(
@@ -242,6 +290,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 new JSONSerializer(),
                 _jobService.Object,
                 _importApiRunnerFactory.Object,
+                _jobProgressHandler.Object,
+                _jobHistoryService.Object,
                 _agentValidator.Object,
                 Mock.Of<IAPILog>());
         }

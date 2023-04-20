@@ -13,5 +13,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
         public string DataFilePath { get; set; }
 
         public bool IsAddedToImportQueue { get; set; }
+
+        public int NumberOfRecords { get; set; }
     }
 }
