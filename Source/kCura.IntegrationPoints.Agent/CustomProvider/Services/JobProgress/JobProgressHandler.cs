@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.API;
 using Relativity.Import.V1.Models;
 using Relativity.Sync;

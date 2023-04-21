@@ -1,8 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Sync;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobStopManager
+namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation
 {
     public interface ICancellationTokenFactory
     {

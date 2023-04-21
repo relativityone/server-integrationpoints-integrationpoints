@@ -10,7 +10,7 @@ using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.Sync;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobStopManager
+namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation
 {
     public class CancellationTokenFactory : ICancellationTokenFactory
     {
