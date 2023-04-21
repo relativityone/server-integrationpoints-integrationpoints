@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Models.Sources;
@@ -70,9 +69,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 List<IndexedFieldMap> fieldMapping = IndexFieldMappings(integrationPointDto.FieldMappings);
 
                 await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
-                using (await _jobProgressHandler
-                           .BeginUpdateAsync(importJobContext)
-                           .ConfigureAwait(false))
+
+                using (await _jobProgressHandler.BeginUpdateAsync(importJobContext).ConfigureAwait(false))
                 {
                     foreach (CustomProviderBatch batch in jobDetails.Batches)
                     {
@@ -96,7 +94,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         await _importApiService.AddDataSourceAsync(importJobContext, batch.BatchGuid, dataSourceSettings).ConfigureAwait(false);
                         batch.IsAddedToImportQueue = true;
                         await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-
                         await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
 

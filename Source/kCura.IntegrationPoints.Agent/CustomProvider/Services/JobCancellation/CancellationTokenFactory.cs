@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation
             _logger = logger;
         }
 
-        public CompositeCancellationToken CreateJobStopManager(Guid batchInstance, long jobId)
+        public CompositeCancellationToken GetCancellationToken(Guid batchInstance, long jobId)
         {
             CancellationTokenSource stopTokenSource = new CancellationTokenSource();
             CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();

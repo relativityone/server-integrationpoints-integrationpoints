@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
                 ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
 
-                CompositeCancellationToken token = _cancellationTokenFactory.CreateJobStopManager(jobDetails.JobHistoryGuid, job.JobId);
+                CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);
 
                 await _importJobRunner
                     .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, destinationConfiguration, token)
