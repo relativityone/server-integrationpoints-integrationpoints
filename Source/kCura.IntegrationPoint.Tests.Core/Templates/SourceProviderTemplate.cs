@@ -126,9 +126,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
             Container.Register(Component.For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(k => Helper.GetInstanceSettingBundle()));
-            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
             Container.Register(Component.For<IRipAppVersionProvider>().ImplementedBy<RipAppVersionProvider>().LifestyleSingleton());
             Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
 
             Container.Register(Component.For<IServiceContextHelper>()
                 .UsingFactoryMethod(k =>
