@@ -99,8 +99,7 @@ nuget Relativity.Testing.Identification 3.5.0
 nuget Selenium.Support 3.141.0
 nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
-nuget Serilog 1.5.14	
-nuget Serilog.Sinks.Seq 1.5.36
+nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
 group Tests
