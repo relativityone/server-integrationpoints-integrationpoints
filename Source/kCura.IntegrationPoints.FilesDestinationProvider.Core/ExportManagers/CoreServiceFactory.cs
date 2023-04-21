@@ -24,12 +24,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 
 		public IAuditManager CreateAuditManager() => _auditManagerFactory();
 
-		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager();
+		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager(()=>string.Empty);
 
-		public IFieldManager CreateFieldManager() => _webApiServiceFactory.CreateFieldManager();
+		public IFieldManager CreateFieldManager() => _webApiServiceFactory.CreateFieldManager(()=>string.Empty);
 
-		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager();
+		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager(() => string.Empty);
 
-		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager();
+		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager(() => string.Empty);
 	}
 }
