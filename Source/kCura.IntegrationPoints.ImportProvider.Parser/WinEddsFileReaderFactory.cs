@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	{
 		public IArtifactReader GetLoadFileReader(LoadFile config)
 		{
-			return new LoadFileReader(config, false);
+			return new LoadFileReader(config, false, () => string.Empty);
 		}
 
 		public IImageReader GetOpticonFileReader(ImageLoadFile config)

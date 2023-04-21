@@ -31,5 +31,30 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager(() => string.Empty);
 
 		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager(() => string.Empty);
+
+		public IAuditManager CreateAuditManager(Func<string> correlationIdFunc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IExportManager CreateExportManager(Func<string> correlationIdFunc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IFieldManager CreateFieldManager(Func<string> correlationIdFunc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IProductionManager CreateProductionManager(Func<string> correlationIdFunc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ISearchManager CreateSearchManager(Func<string> correlationIdFunc)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
