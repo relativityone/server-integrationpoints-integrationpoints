@@ -22,39 +22,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_webApiServiceFactory = webApiServiceFactory;
 		}
 
-		public IAuditManager CreateAuditManager() => _auditManagerFactory();
+		public IAuditManager CreateAuditManager(Func<string> correlationIdFunc) => _auditManagerFactory();
 
-		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager(()=>string.Empty);
+		public IExportManager CreateExportManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateExportManager(correlationIdFunc);
 
-		public IFieldManager CreateFieldManager() => _webApiServiceFactory.CreateFieldManager(()=>string.Empty);
+		public IFieldManager CreateFieldManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateFieldManager(correlationIdFunc);
 
-		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager(() => string.Empty);
+		public ISearchManager CreateSearchManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateSearchManager(correlationIdFunc);
 
-		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager(() => string.Empty);
-
-		public IAuditManager CreateAuditManager(Func<string> correlationIdFunc)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IExportManager CreateExportManager(Func<string> correlationIdFunc)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IFieldManager CreateFieldManager(Func<string> correlationIdFunc)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IProductionManager CreateProductionManager(Func<string> correlationIdFunc)
-		{
-			throw new NotImplementedException();
-		}
-
-		public ISearchManager CreateSearchManager(Func<string> correlationIdFunc)
-		{
-			throw new NotImplementedException();
-		}
+		public IProductionManager CreateProductionManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateProductionManager(correlationIdFunc);
 	}
 }

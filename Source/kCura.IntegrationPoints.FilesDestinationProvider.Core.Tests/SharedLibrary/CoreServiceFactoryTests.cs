@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_auditManagerFactoryMock.Setup(x => x()).Returns(auditManagerMock.Object);
 
 			// act
-			IAuditManager actualAuditManager = _sut.CreateAuditManager();
+			IAuditManager actualAuditManager = _sut.CreateAuditManager(() => string.Empty);
 
 			// assert
 			actualAuditManager.Should().Be(auditManagerMock.Object);
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				_sut.CreateAuditManager();
+				_sut.CreateAuditManager(() => string.Empty);
 			}
 
 			// assert
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager(() => string.Empty)).Returns(fieldManagerMock.Object);
 
 			// act
-			IFieldManager actualFieldManager = _sut.CreateFieldManager();
+			IFieldManager actualFieldManager = _sut.CreateFieldManager(() => string.Empty);
 
 			// assert
 			actualFieldManager.Should().Be(fieldManagerMock.Object);
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				_sut.CreateFieldManager();
+				_sut.CreateFieldManager(() => string.Empty);
 			}
 
 			// assert
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager(() => string.Empty)).Returns(searchManagerMock.Object);
 
 			// act
-			ISearchManager actualSearchManager = _sut.CreateSearchManager();
+			ISearchManager actualSearchManager = _sut.CreateSearchManager(() => string.Empty);
 
 			// assert
 			actualSearchManager.Should().Be(searchManagerMock.Object);
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				_sut.CreateSearchManager();
+				_sut.CreateSearchManager(() => string.Empty);
 			}
 
 			// assert
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				.Returns(exportManagerMock.Object);
 
 			//act & assert
-			IExportManager actualExportManager = _sut.CreateExportManager();
+			IExportManager actualExportManager = _sut.CreateExportManager(() => string.Empty);
 
 			// assert
 			actualExportManager.Should().Be(exportManagerMock.Object);
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				_sut.CreateExportManager();
+				_sut.CreateExportManager(() => string.Empty);
 			}
 
 			// assert
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager(() => string.Empty)).Returns(productionManagerMock.Object);
 
 			//act & assert
-			IProductionManager actualProductionManager = _sut.CreateProductionManager();
+			IProductionManager actualProductionManager = _sut.CreateProductionManager(() => string.Empty);
 
 			// assert
 			actualProductionManager.Should().Be(productionManagerMock.Object);
@@ -177,7 +177,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				_sut.CreateProductionManager();
+				// REL[]: Add REL # to resolve correlationIdFunc
+				_sut.CreateProductionManager(() => string.Empty);
 			}
 
 			// assert
