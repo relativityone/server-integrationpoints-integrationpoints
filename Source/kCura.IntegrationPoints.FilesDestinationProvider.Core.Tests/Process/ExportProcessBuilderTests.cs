@@ -185,13 +185,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(
 				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
-			_serviceFactory.CreateSearchManager(() => string.Empty).Returns(searchManager);
+			_serviceFactory.CreateSearchManager(Arg.Any<Func<string>>()).Returns(searchManager);
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
-			_serviceFactory.Received(1).CreateSearchManager(() => string.Empty);
+			_serviceFactory.Received(1).CreateSearchManager(Arg.Any<Func<string>>());
 			searchManager.Received().Dispose();
 		}
 
@@ -438,7 +438,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			var searchManager = Substitute.For<ISearchManager>();
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
-			_serviceFactory.CreateSearchManager(() => string.Empty).Returns(searchManager);
+			_serviceFactory.CreateSearchManager(Arg.Any<Func<string>>()).Returns(searchManager);
 		}
 
 		#endregion
