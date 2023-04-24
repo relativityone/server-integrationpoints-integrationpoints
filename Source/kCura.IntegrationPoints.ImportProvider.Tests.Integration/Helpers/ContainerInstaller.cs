@@ -6,6 +6,7 @@ using Castle.Windsor;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -69,6 +70,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private static void RegisterLoggingClasses(WindsorContainer windsorContainer)
         {
             windsorContainer.Register(Component.For<IAPILog>().Instance(Substitute.For<IAPILog>()).LifestyleSingleton());
+            windsorContainer.Register(Component.For<ISerilogLoggerInstrumentationService>().Instance(Substitute.For<ISerilogLoggerInstrumentationService>()).LifestyleSingleton());
             windsorContainer.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
         }
 
