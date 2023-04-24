@@ -194,10 +194,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         {
             Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
             Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
-            Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
-            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
             Container.Register(Component.For<IInstanceSettingsBundle>().Instance(Helper.GetInstanceSettingBundle()));
             Container.Register(Component.For<IRipAppVersionProvider>().ImplementedBy<RipAppVersionProvider>().LifestyleSingleton());
+            Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
         }
 
         private void RegisterScheduleAgentBase()
