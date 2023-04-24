@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -9,6 +10,7 @@ using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Serilog;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -56,8 +58,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private static ILogger<ImportApiFactory> PrepareLoggerStub()
         {
             Mock<IAPILog> loggerStub = new Mock<IAPILog>();
+            Mock<ISerilogLoggerInstrumentationService> serilogLoggerInstrumentationStub =
+                new Mock<ISerilogLoggerInstrumentationService>();
+            Mock<ILogger> serilogLoggerMock = new Mock<ILogger>();
+            serilogLoggerInstrumentationStub.Setup(s => s.GetLogger()).Returns(serilogLoggerMock.Object);
             loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
-            return new Logger<ImportApiFactory>(loggerStub.Object);
+            return new Logger<ImportApiFactory>(loggerStub.Object, serilogLoggerInstrumentationStub.Object);
         }
     }
 }

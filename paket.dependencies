@@ -99,8 +99,7 @@ nuget Relativity.Testing.Identification 3.5.0
 nuget Selenium.Support 3.141.0
 nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
-nuget Serilog 1.5.14	
-nuget Serilog.Sinks.Seq 1.5.36
+nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
 group Tests
@@ -146,7 +145,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.29
+nuget Relativity.Sync 1.0.33
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -159,7 +158,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.29
+nuget Relativity.Sync 1.0.33
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4

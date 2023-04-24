@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -143,7 +144,8 @@ namespace kCura.IntegrationPoints.Data
                 .Handle<TemporarilyUnavailableException>()
                 .Or<kCura.Data.RowDataGateway.TemporarilyUnavailableException>()
                 .Or<Exception>(e => e.HasInnerException<TemporarilyUnavailableException>())
-                .Or<Exception>(e => e.HasInnerException<kCura.Data.RowDataGateway.TemporarilyUnavailableException>());
+                .Or<Exception>(e => e.HasInnerException<kCura.Data.RowDataGateway.TemporarilyUnavailableException>())
+                .Or<SqlException>();
         }
 
         private TimeSpan CalculateSleepTimeForHttpException(int retryAttempt)

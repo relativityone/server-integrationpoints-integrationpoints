@@ -34,7 +34,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        [TestType.Critical]
         public void SavedSearch_NativesAndMetadata_GoldFlow()
         {
             _testsImplementation.SavedSearchNativesAndMetadataGoldFlow();

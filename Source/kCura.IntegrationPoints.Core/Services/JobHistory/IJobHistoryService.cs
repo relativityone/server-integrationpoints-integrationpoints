@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// <param name="startTimeUtc">The job start time in UTC zone.</param>
         /// <returns>The job history object of the integration point.</returns>
         Data.JobHistory CreateRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, DateTime? startTimeUtc);
-        
+
         /// <summary>
         /// Retrieves job history Rdo without Documents field
         /// </summary>

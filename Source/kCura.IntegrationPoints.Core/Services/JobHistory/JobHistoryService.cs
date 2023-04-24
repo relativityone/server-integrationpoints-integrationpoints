@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             return GetRdo(GetArtifactIdQueryCondition(artifactId), queryOptions);
         }
-        
+
         public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto integrationPointDto, Guid batchInstance, DateTime? startTimeUtc)
         {
             Data.JobHistory jobHistory = GetRdoWithoutDocuments(batchInstance);

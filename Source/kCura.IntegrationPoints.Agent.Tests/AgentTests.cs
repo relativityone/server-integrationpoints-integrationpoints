@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -256,6 +257,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Mock<ITaskParameterHelper> taskParameterHelper = new Mock<ITaskParameterHelper>();
             taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_batchInstanceGuid);
 
+            Mock<IRipToggleProvider> toggleProvider = new Mock<IRipToggleProvider>();
+
             _integrationPointServiceMock = new Mock<IIntegrationPointService>();
             _integrationPointServiceMock.Setup(x => x.Read(It.IsAny<int>()))
                 .Returns(new IntegrationPointDto
@@ -289,6 +292,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             RegisterMock(providerTypeService);
             RegisterMock(_messageServiceMock);
             RegisterMock(_kubernetesModeMock);
+            RegisterMock(toggleProvider);
 
             SetupJobHistoryStatus(JobStatusChoices.JobHistoryPending);
 

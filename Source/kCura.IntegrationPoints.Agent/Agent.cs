@@ -14,11 +14,13 @@ using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
+using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -177,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent
                     using (StartMemoryUsageMetricReporting(Container, job))
                     using (StartHeartbeatReporting(Container, job))
                     {
-                        if (ShouldUseRelativitySync(Container, job))
+                        if (ShouldUseRelativitySyncDLL(Container, job))
                         {
                             try
                             {
@@ -316,10 +318,23 @@ namespace kCura.IntegrationPoints.Agent
             return jobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
         }
 
-        private bool ShouldUseRelativitySync(IWindsorContainer container, Job job)
+        private bool ShouldUseRelativitySyncDLL(IWindsorContainer container, Job job)
         {
-            IRelativitySyncConstrainsChecker constrainsChecker = container.Resolve<IRelativitySyncConstrainsChecker>();
-            return constrainsChecker.ShouldUseRelativitySync(job.RelatedObjectArtifactID);
+            IRelativitySyncConstrainsChecker syncCheck = container.Resolve<IRelativitySyncConstrainsChecker>();
+
+            bool shouldUseRelativitySync = syncCheck.ShouldUseRelativitySync(job.RelatedObjectArtifactID);
+
+            bool isRelativitySyncAppEnabled = syncCheck.IsRelativitySyncAppEnabled();
+
+            bool syncAppIsEnabledForScheduledSync = container.Resolve<IRipToggleProvider>().IsEnabled<EnableSyncAppScheduleToggle>();
+
+            Logger.LogInformation(
+                "Checking if Sync App should be used for Scheduled Sync Job - ShouldUseRelativitySync: {useRelativitySync}, IsSyncAppEnabled: {isSyncAppEnabled}, SyncAppIsEnabledForScheduledJobs: {syncAppForScheduledJobs}",
+                shouldUseRelativitySync,
+                isRelativitySyncAppEnabled,
+                syncAppIsEnabledForScheduledSync);
+
+            return shouldUseRelativitySync && (!isRelativitySyncAppEnabled || !syncAppIsEnabledForScheduledSync);
         }
 
         private async Task MarkJobAsFailedAsync(IWindsorContainer container, Job job, Exception ex)
