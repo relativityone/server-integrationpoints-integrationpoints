@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
-        public async Task SafeUpdateProgressAsync_ShouldNotThrow()
+        public void SafeUpdateProgressAsync_ShouldNotThrow()
         {
             // Arrange
             _importApiService

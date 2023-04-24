@@ -166,7 +166,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
-        public async Task Execute_ShouldCleanupImportDirectory_WhenExceptionIsThrown()
+        public void Execute_ShouldCleanupImportDirectory_WhenExceptionIsThrown()
         {
             // Arrange
             Guid batchInstance = Guid.NewGuid();
