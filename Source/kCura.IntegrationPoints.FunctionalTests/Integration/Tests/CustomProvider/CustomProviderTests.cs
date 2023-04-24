@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             };
 
             Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
-            
+
             Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
 
             Context.InstanceSettings.CustomProviderBatchSize = 5;

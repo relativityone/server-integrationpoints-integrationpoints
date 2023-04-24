@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
-using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -19,25 +21,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [Category("Unit")]
     public class JobProgressHandlerTests
     {
-        private Mock<IImportJobController> _importJobController;
-        private Mock<IKeplerServiceFactory> _serviceFactory;
+        private Mock<IImportApiService> _importApiService;
         private Mock<IJobHistoryService> _jobHistoryService;
-        private FakeTimer _timer;
         private Mock<ITimerFactory> _timerFactory;
         private Mock<IInstanceSettings> _instanceSettings;
+
+        private FakeTimer _timer;
 
         private JobProgressHandler _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _importJobController = new Mock<IImportJobController>();
-
-            _serviceFactory = new Mock<IKeplerServiceFactory>();
-            _serviceFactory
-                .Setup(x => x.CreateProxyAsync<IImportJobController>())
-                .ReturnsAsync(_importJobController.Object);
-
+            _importApiService = new Mock<IImportApiService>();
+            _jobHistoryService = new Mock<IJobHistoryService>();
             _jobHistoryService = new Mock<IJobHistoryService>();
 
             _timer = new FakeTimer();
@@ -57,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             Mock<IAPILog> logger = new Mock<IAPILog>();
             logger.Setup(x => x.ForContext<JobProgressHandler>()).Returns(logger.Object);
 
-            _sut = new JobProgressHandler(_serviceFactory.Object, _jobHistoryService.Object, _timerFactory.Object,
+            _sut = new JobProgressHandler(_importApiService.Object, _jobHistoryService.Object, _timerFactory.Object,
                 _instanceSettings.Object, logger.Object);
         }
 
@@ -67,6 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
+            long ripJobId = 333;
             Guid importJobId = Guid.NewGuid();
             TimeSpan fakeUpdateInterval = TimeSpan.MaxValue;
 
@@ -75,18 +73,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             int firstErroredRecords = 3;
             int secondImportedRecords = 15;
             int secondErroredRecords = 9;
+
+            ImportJobContext importJobContext = new ImportJobContext(workspaceId, ripJobId, importJobId, jobHistoryId);
             
             _instanceSettings
                 .Setup(x => x.GetCustomProviderProgressUpdateIntervalAsync())
                 .ReturnsAsync(fakeUpdateInterval);
 
-            _importJobController
-                .SetupSequence(x => x.GetProgressAsync(workspaceId, importJobId))
-                .ReturnsAsync(new ValueResponse<ImportProgress>(importJobId, true, null, null, new ImportProgress(totalRecords, firstImportedRecords, firstErroredRecords)))
-                .ReturnsAsync(new ValueResponse<ImportProgress>(importJobId, true, null, null, new ImportProgress(totalRecords, secondImportedRecords, secondErroredRecords)));
+            _importApiService
+                .SetupSequence(x => x.GetJobImportProgressValueAsync(It.Is<ImportJobContext>(context => context == importJobContext)))
+                .ReturnsAsync(new ImportProgress(totalRecords, firstImportedRecords, firstErroredRecords))
+                .ReturnsAsync(new ImportProgress(totalRecords, secondImportedRecords, secondErroredRecords));
             
             // Act
-            await _sut.BeginUpdateAsync(workspaceId, importJobId, jobHistoryId).ConfigureAwait(false);
+            await _sut.BeginUpdateAsync(importJobContext).ConfigureAwait(false);
             _timer.Callback(null);
             _timer.Callback(null);
 
@@ -94,7 +94,94 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryService.Verify(x => x.UpdateProgressAsync(workspaceId, jobHistoryId, firstImportedRecords, firstErroredRecords));
             _jobHistoryService.Verify(x => x.UpdateProgressAsync(workspaceId, jobHistoryId, secondImportedRecords, secondErroredRecords));
         }
-        
+
+        [Test]
+        public async Task SafeUpdateProgressAsync_ShouldSendUpdateProgressRequest()
+        {
+            // Arrange
+            ImportProgress progress = new ImportProgress(30, 10, 20);
+            ImportJobContext importJobContext = new ImportJobContext(1, 2, Guid.NewGuid(), 3);
+
+            _importApiService
+                .Setup(x => x.GetJobImportProgressValueAsync(importJobContext))
+                .ReturnsAsync(progress);
+
+            // Act
+            await _sut.SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false);
+
+            // Assert
+            _jobHistoryService.Verify(x => x.UpdateProgressAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryId, progress.ImportedRecords, progress.ErroredRecords));
+        }
+
+        [Test]
+        public async Task SafeUpdateProgressAsync_ShouldNotThrow()
+        {
+            // Arrange
+            _importApiService
+                .Setup(x => x.GetJobImportProgressValueAsync(It.IsAny<ImportJobContext>()))
+                .Throws<InvalidOperationException>();
+
+            // Act
+            Func<Task> action = () => _sut.SafeUpdateProgressAsync(new ImportJobContext(1, 2, Guid.NewGuid(), 3));
+
+            // Assert
+            action.ShouldNotThrow();
+        }
+
+        [Test]
+        public async Task UpdateReadItemsCountAsync_ShouldSendUpdateRequest()
+        {
+            // Arrange
+            Job job = new Job()
+            {
+                WorkspaceID = 111
+            };
+            CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
+            {
+                JobHistoryID = 222,
+                Batches = new List<CustomProviderBatch>()
+                {
+                    new CustomProviderBatch()
+                    {
+                        NumberOfRecords = 10,
+                        IsAddedToImportQueue = true
+                    },
+                    new CustomProviderBatch()
+                    {
+                        NumberOfRecords = 20,
+                        IsAddedToImportQueue = true
+                    },
+                    new CustomProviderBatch()
+                    {
+                        NumberOfRecords = 50,
+                        IsAddedToImportQueue = false
+                    }
+                }
+            };
+
+            // Act
+            await _sut.UpdateReadItemsCountAsync(job, jobDetails);
+
+            // Assert
+            _jobHistoryService
+                .Verify(x => x.UpdateReadItemsCountAsync(job.WorkspaceID, jobDetails.JobHistoryID, 30));
+        }
+
+        [Test]
+        public async Task SetTotalItemsAsync_ShouldPassthroughToJobHistoryService()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            int totalItemsCount = 333;
+
+            // Act
+            await _sut.SetTotalItemsAsync(workspaceId, jobHistoryId, totalItemsCount);
+
+            // Assert
+            _jobHistoryService.Verify(x => x.SetTotalItemsAsync(workspaceId, jobHistoryId, totalItemsCount));
+        }
+
         private class FakeTimer : ITimer
         {
             public TimerCallback Callback { get; set; }

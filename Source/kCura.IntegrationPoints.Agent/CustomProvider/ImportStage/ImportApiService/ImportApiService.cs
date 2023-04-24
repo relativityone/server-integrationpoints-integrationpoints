@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
-using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
@@ -94,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     .Validate($"{nameof(ImportApiService.AddDataSourceAsync)} failed.");
             }
         }
-        
+
         public async Task CancelJobAsync(ImportJobContext importJobContext)
         {
             using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
@@ -143,21 +142,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 ImportProgress progress = response.UnwrapOrThrow();
                 return progress;
             }
-        }
-
-        public Task<ImportErrors> GetDataSourceErrorsAsync(Guid dataSourceId, int start, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<DataSourceDetails> GetDataSourceStatusAsync(Guid dataSourceGuid)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ImportProgress> GetDataSourceProgressAsync(Guid dataSourceGuid)
-        {
-            throw new NotImplementedException();
         }
 
         private async Task CreateDocumentConfigurationAsync(ImportJobContext importJobContext, ImportDocumentSettings settings)

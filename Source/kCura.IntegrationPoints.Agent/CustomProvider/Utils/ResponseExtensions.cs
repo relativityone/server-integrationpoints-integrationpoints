@@ -1,5 +1,5 @@
-﻿using Relativity.Import.V1;
-using Relativity.Sync;
+﻿using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using Relativity.Import.V1;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Utils
 {
@@ -9,8 +9,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Utils
         {
             if (!response.IsSuccess)
             {
-                string message = $"{customMessage} ImportJobId: {response.ImportJobID}, Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
-                throw new SyncException(message);
+                throw new ImportApiResponseException(response);
             }
         }
 

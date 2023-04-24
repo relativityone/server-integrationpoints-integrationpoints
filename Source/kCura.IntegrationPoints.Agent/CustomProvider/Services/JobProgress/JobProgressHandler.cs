@@ -36,11 +36,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
             _logger.LogInformation("Progress update interval: {interval}", interval);
 
-            ITimer timer = _timerFactory.Create(async (state) => await UpdateProgressAsync(importJobContext).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
+            ITimer timer = _timerFactory.Create(async (state) => await SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
             return timer;
         }
 
-        public async Task UpdateProgressAsync(ImportJobContext importJobContext)
+        public async Task SafeUpdateProgressAsync(ImportJobContext importJobContext)
         {
             try
             {
