@@ -13,6 +13,7 @@ using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -130,6 +131,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
                 .ImplementedBy<LazyOfTComponentLoader>());
             Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
             Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
+            Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
             Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
             Container.Register(Component.For<IServiceContextHelper>()
                 .UsingFactoryMethod(k =>
