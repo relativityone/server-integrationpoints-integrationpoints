@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		public LoadFile GetLoadFile(int workspaceId)
 		{
 			NetworkCredential cred = _credentialProvider.Authenticate(new CookieContainer());
+			//[REL-838809]: Resolve correlationIdFunc
 			NativeSettingsFactory factory = new NativeSettingsFactory(cred, workspaceId, () => string.Empty);
 			LoadFile loadFile = factory.ToLoadFile();
 			return loadFile;

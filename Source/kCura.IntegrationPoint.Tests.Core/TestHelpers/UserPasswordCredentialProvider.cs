@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 	{
 		public NetworkCredential Authenticate(CookieContainer cookieContainer)
 		{
+			//[REL-838809]: Resolve correlationIdFunc
 			return LoginHelper.LoginUsernamePassword(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, cookieContainer, new RunningContext
 			{
 				ExecutionSource = ExecutionSource.RIP
