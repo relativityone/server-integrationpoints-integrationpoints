@@ -7743,5 +7743,6 @@
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="ARMTestServices" />
+    <PackageReference Include="Polly" />
   </ItemGroup>
 </Project>

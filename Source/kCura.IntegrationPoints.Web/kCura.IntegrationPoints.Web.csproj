@@ -776,5 +776,6 @@
     <PackageReference Include="SystemWrapper.Interfaces" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Polly" />
   </ItemGroup>
 </Project>

@@ -160,5 +160,6 @@
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Polly" />
   </ItemGroup>
 </Project>
