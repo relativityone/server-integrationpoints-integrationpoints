@@ -96,10 +96,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
 
+                    await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);
+
                     await _jobProgressHandler.WaitForJobToFinish(importJobContext, token).ConfigureAwait(false);
                     await _jobProgressHandler.SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false);
-
-                    await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);
                 }
             }
             catch (ImportApiResponseException ex)

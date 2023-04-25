@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
