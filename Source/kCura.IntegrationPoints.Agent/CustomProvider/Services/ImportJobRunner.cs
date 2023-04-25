@@ -33,8 +33,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IAPILog _logger;
 
-        public ImportJobRunner(IImportApiService importApiService, IJobDetailsService jobDetailsService, IIdFilesBuilder idFilesBuilder, ILoadFileBuilder loadFileBuilder,
-            IRelativityStorageService relativityStorageService, IImportApiRunnerFactory importApiRunnerFactory, IJobProgressHandler jobProgressHandler, IJobHistoryService jobHistoryService, IAPILog logger)
+        public ImportJobRunner(IImportApiService importApiService, IJobDetailsService jobDetailsService, IIdFilesBuilder idFilesBuilder, ILoadFileBuilder loadFileBuilder, IRelativityStorageService relativityStorageService, IImportApiRunnerFactory importApiRunnerFactory, IJobProgressHandler jobProgressHandler, IJobHistoryService jobHistoryService, IAPILog logger)
         {
             _importApiService = importApiService;
             _jobDetailsService = jobDetailsService;
@@ -99,9 +98,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
                     await _jobProgressHandler.WaitForJobToFinish(importJobContext, token).ConfigureAwait(false);
                     await _jobProgressHandler.SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false);
-                }
 
-                await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);
+                    await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);
+                }
             }
             catch (ImportApiResponseException ex)
             {
@@ -113,8 +112,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     ex.Response.ErrorMessage);
 
                 await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
-                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID,
-                    JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
+                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
 
                 throw;
             }
@@ -123,8 +121,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 _logger.LogError(ex, "Failed to execute Custom Provider job");
 
                 await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
-                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID,
-                    JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
+                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
 
                 throw;
             }
@@ -134,7 +131,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     .ConfigureAwait(false);
             }
         }
-        
+
         private async Task<List<CustomProviderBatch>> CreateBatchesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory)
         {
             List<CustomProviderBatch> batches = await _idFilesBuilder.BuildIdFilesAsync(provider, integrationPointDto, importDirectory).ConfigureAwait(false);
