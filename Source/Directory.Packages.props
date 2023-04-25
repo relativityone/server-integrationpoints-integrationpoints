@@ -62,7 +62,7 @@
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesInterfacesPrivate>13.1.4</RelativityServicesInterfacesPrivate>
-    <RelativitySync>0.8.59-pre.14</RelativitySync>
+    <RelativitySync>0.8.59-pre.21</RelativitySync>
     <RelativityTelemetryAPM>2019.1.1</RelativityTelemetryAPM>
     <RelativityTelemetryMetricsCollection>2018.12.2</RelativityTelemetryMetricsCollection>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
