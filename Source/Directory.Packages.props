@@ -77,7 +77,7 @@
     <SeleniumWebDriverGeckoDriver>0.24.0</SeleniumWebDriverGeckoDriver>
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
-    <SystemReactive>4.0.0</SystemReactive>
+    <SystemReactive>4.4.1</SystemReactive>
     <SystemValueTuple>4.5.0</SystemValueTuple>
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
     <SSHNET>2016.0.0</SSHNET>
@@ -171,6 +171,6 @@
     <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
-    <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />  
+    <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
   </ItemGroup>
 </Project>
