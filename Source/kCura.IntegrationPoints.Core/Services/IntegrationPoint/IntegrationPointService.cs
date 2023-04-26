@@ -446,6 +446,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
         {
+            _logger.LogInformation("Submitting Job for Integration Point {integrationPointId} with JobHistoryId {jobHistoryId}", integrationPointArtifactId, jobHistory.ArtifactId);
+
             bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
             if (shouldUseRelativitySyncAppIntegration)
             {
@@ -453,7 +455,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 try
                 {
                     _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                    _logger.LogInformation("Sync retry job has been submitted");
                 }
                 catch (SyncJobSendingException ex)
                 {
@@ -463,7 +464,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
             else
             {
-                _logger.LogInformation("Using Sync DLL to run the job");
+                _logger.LogInformation("Adding Job to IntegrationPoints Queue...");
                 Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
                 if (job != null)
                 {
