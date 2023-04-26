@@ -70,7 +70,6 @@
     <RelativityTestingFrameworkApi>3.21.0</RelativityTestingFrameworkApi>
     <RelativityTestingFrameworkRingSetup>0.11.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>1.1.0</RelativityTestingFrameworkWeb>
-    <RelativityTransferClient>7.4.9</RelativityTransferClient>
     <RelativityToggles>1.0.1</RelativityToggles>
     <SeleniumSupport>3.141.0</SeleniumSupport>
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
@@ -151,7 +150,6 @@
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(RelativityTelemetryMetricsCollection)" />
     <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="$(RelativityTelemetryServicesInterface)" />
     <PackageVersion Include="Relativity.Toggles" Version="$(RelativityToggles)" />
-    <PackageVersion Include="Relativity.Transfer.Client" Version="$(RelativityTransferClient)" />
     <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
     <PackageVersion Include="Relativity.OutsideIn" Version="$(RelativityOutsideIn)" />
     <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />

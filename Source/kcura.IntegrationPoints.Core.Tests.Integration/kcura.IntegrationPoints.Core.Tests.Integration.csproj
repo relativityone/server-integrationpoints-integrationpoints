@@ -128,7 +128,7 @@
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.OAuth2Client" />
     <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
-    <PackageReference Include="relativity.transfer.client" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Toggles" />
