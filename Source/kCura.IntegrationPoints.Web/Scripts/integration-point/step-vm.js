@@ -292,7 +292,8 @@
 
 					if (IsSyncJob())
 					{
-						heapData["CreateSavedSearch"] = model.CreateSavedSearchForTagging;
+                        heapData["CreateSavedSearch"] = model.CreateSavedSearchForTagging;
+                        heapData["UseSmartOverwrite"] = $('#smart-overview-checkbox:checked').val() !== undefined;
 						heapData["SourceFieldsCount"] = $('#source-fields option').length;
 						heapData["MappedSourceFieldsCount"] = $('#selected-source-fields option').length;
 						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
