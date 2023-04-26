@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
                     return GetJobHistoryGuid(jobDetails);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return GetJobHistoryGuid(jobDetails);
             }
