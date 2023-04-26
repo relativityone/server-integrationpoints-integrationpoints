@@ -154,7 +154,6 @@
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
-    <PackageReference Include="relativity.transfer.client" />
     <PackageReference Include="Relativity.OAuth2Client" />
     <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
     <PackageReference Include="Relativity.Toggles" />

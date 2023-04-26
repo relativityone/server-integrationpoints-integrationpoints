@@ -48,6 +48,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Relativity.Services.Interfaces" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -177,6 +178,5 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Toggles" />
-    <PackageReference Include="Relativity.Services.Interfaces" />
   </ItemGroup>
 </Project>

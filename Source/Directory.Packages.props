@@ -151,7 +151,6 @@
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(RelativityTelemetryMetricsCollection)" />
     <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="$(RelativityTelemetryServicesInterface)" />
     <PackageVersion Include="Relativity.Toggles" Version="$(RelativityToggles)" />
-    <PackageVersion Include="Relativity.Transfer.Client" Version="$(RelativityTransferClient)" />
     <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
     <PackageVersion Include="Relativity.OutsideIn" Version="$(RelativityOutsideIn)" />
     <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />
