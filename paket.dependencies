@@ -145,7 +145,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.33
+nuget Relativity.Sync 1.0.36
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -158,7 +158,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.33
+nuget Relativity.Sync 1.0.36
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
