@@ -116,7 +116,6 @@
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />

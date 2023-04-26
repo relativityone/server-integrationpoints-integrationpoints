@@ -142,7 +142,7 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Telemetry.APM" />
-    <PackageReference Include="Relativity.OutsideIn" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="Relativity.Sync" />

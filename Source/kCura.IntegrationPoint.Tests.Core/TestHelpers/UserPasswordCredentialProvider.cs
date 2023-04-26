@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return LoginHelper.LoginUsernamePassword(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, cookieContainer, new RunningContext
 			{
 				ExecutionSource = ExecutionSource.RIP
-			}, () => string.Empty);
+			});
 		}
 	}
 }

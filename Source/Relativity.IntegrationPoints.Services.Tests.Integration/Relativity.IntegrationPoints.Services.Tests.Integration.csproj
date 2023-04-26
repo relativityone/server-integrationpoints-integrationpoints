@@ -148,7 +148,6 @@
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
-    <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />

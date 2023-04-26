@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 		public IArtifactReader GetLoadFileReader(LoadFile config)
 		{
 			//[REL-838809]: Resolve correlationIdFunc
-			return new LoadFileReader(config, false, () => string.Empty);
+			return new LoadFileReader(config, false);
 		}
 
 		public IImageReader GetOpticonFileReader(ImageLoadFile config)

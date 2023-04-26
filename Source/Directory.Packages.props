@@ -45,24 +45,24 @@
     <RelativityAutomatedWorkflowsServicesInterfaces>0.1.1-pre.6</RelativityAutomatedWorkflowsServicesInterfaces>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
     <RelativityData>13.3.7</RelativityData>
-    <RelativityDataExchangeClientSDK>1.15.103</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>14.0.0</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsContracts>1.0.9-pre.5</RelativityIntegrationPointsContracts>
+    <RelativityIntegrationPointsContracts>1.0.8-pre.3</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
     <RelativityKepler>2.14.4</RelativityKepler>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
-    <RelativityTelemetryServicesInterface>3003.0.2</RelativityTelemetryServicesInterface>
-    <RelativityTelemetryDataContractsShared>3003.1.0</RelativityTelemetryDataContractsShared>
-    <RelativityOAuth2Client>1.5.2</RelativityOAuth2Client>
+    <RelativityTelemetryServicesInterface>3000.0.1</RelativityTelemetryServicesInterface>
+    <RelativityTelemetryDataContractsShared>3000.0.1</RelativityTelemetryDataContractsShared>
+    <RelativityOAuth2Client>1.0.27</RelativityOAuth2Client>
     <RelativityOutsideIn>2021.8.0</RelativityOutsideIn>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesInterfacesPrivate>13.1.4</RelativityServicesInterfacesPrivate>
-    <RelativitySync>0.8.59-pre.21</RelativitySync>
+    <RelativitySync>0.8.58</RelativitySync>
     <RelativityTelemetryAPM>2019.1.1</RelativityTelemetryAPM>
     <RelativityTelemetryMetricsCollection>2018.12.2</RelativityTelemetryMetricsCollection>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -151,7 +151,6 @@
     <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="$(RelativityTelemetryServicesInterface)" />
     <PackageVersion Include="Relativity.Toggles" Version="$(RelativityToggles)" />
     <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
-    <PackageVersion Include="Relativity.OutsideIn" Version="$(RelativityOutsideIn)" />
     <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />
     <PackageVersion Include="Relativity.Testing.Framework" Version="$(RelativityTestingFramework)" />
     <PackageVersion Include="Relativity.Testing.Framework.Api" Version="$(RelativityTestingFrameworkApi)" />
