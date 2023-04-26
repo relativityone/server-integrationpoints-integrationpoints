@@ -23,8 +23,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 	            timeZoneOffset: timeZoneOffset, 
 	            errorsOnly: errorsOnly, 
 	            doRetryLogic: doRetryLogic, 
-	            tokenSource: new CancellationTokenSource(),
-				correlationIdFunc : () => string.Empty);
+	            tokenSource: new CancellationTokenSource());
 		}
 
 		public List<object> ReadFile(bool previewChoicesAndFolders)

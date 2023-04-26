@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
 			// act
 			//[REL-838809]: Resolve correlationIdFunc
-			IAuditManager actualAuditManager = _sut.CreateAuditManager(() => string.Empty);
+			IAuditManager actualAuditManager = _sut.CreateAuditManager();
 
 			// assert
 			actualAuditManager.Should().Be(auditManagerMock.Object);
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			for (int i = 0; i < numberOfCalls; i++)
 			{
 				//[REL-838809]: Resolve correlationIdFunc
-				_sut.CreateAuditManager(() => string.Empty);
+				_sut.CreateAuditManager();
 			}
 
 			// assert
@@ -66,11 +66,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var fieldManagerMock = new Mock<IFieldManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager(It.IsAny<Func<string>>())).Returns(fieldManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager()).Returns(fieldManagerMock.Object);
 
 			// act
 			//[REL-838809]: Resolve correlationIdFunc
-			IFieldManager actualFieldManager = _sut.CreateFieldManager(() => string.Empty);
+			IFieldManager actualFieldManager = _sut.CreateFieldManager();
 
 			// assert
 			actualFieldManager.Should().Be(fieldManagerMock.Object);
@@ -86,11 +86,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			for (int i = 0; i < numberOfCalls; i++)
 			{
 				//[REL-838809]: Resolve correlationIdFunc
-				_sut.CreateFieldManager(() => string.Empty);
+				_sut.CreateFieldManager();
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateFieldManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateFieldManager(), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -98,11 +98,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var searchManagerMock = new Mock<ISearchManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager(It.IsAny<Func<string>>())).Returns(searchManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager()).Returns(searchManagerMock.Object);
 
 			// act
 			//[REL-838809]: Resolve correlationIdFunc
-			ISearchManager actualSearchManager = _sut.CreateSearchManager(() => string.Empty);
+			ISearchManager actualSearchManager = _sut.CreateSearchManager();
 
 			// assert
 			actualSearchManager.Should().Be(searchManagerMock.Object);
@@ -118,11 +118,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			for (int i = 0; i < numberOfCalls; i++)
 			{
 				//[REL-838809]: Resolve correlationIdFunc
-				_sut.CreateSearchManager(() => string.Empty);
+				_sut.CreateSearchManager();
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateSearchManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateSearchManager(), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -131,12 +131,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			//arrange
 			var exportManagerMock = new Mock<IExportManager>();
 			_webApiServiceFactoryMock
-				.Setup(x => x.CreateExportManager(It.IsAny<Func<string>>()))
+				.Setup(x => x.CreateExportManager())
 				.Returns(exportManagerMock.Object);
 
 			//act & assert
 			//[REL-838809]: Resolve correlationIdFunc
-			IExportManager actualExportManager = _sut.CreateExportManager(() => string.Empty);
+			IExportManager actualExportManager = _sut.CreateExportManager();
 
 			// assert
 			actualExportManager.Should().Be(exportManagerMock.Object);
@@ -152,12 +152,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			for (int i = 0; i < numberOfCalls; i++)
 			{
 				//[REL-838809]: Resolve correlationIdFunc
-				_sut.CreateExportManager(() => string.Empty);
+				_sut.CreateExportManager();
 			}
 
 			// assert
 			_webApiServiceFactoryMock.Verify(
-				x => x.CreateExportManager(It.IsAny<Func<string>>()), 
+				x => x.CreateExportManager(), 
 				Times.Exactly(numberOfCalls)
 			);
 		}
@@ -167,11 +167,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			//arrange
 			var productionManagerMock = new Mock<IProductionManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager(It.IsAny<Func<string>>())).Returns(productionManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager()).Returns(productionManagerMock.Object);
 
 			//act & assert
 			//[REL-838809]: Resolve correlationIdFunc
-			IProductionManager actualProductionManager = _sut.CreateProductionManager(() => string.Empty);
+			IProductionManager actualProductionManager = _sut.CreateProductionManager();
 
 			// assert
 			actualProductionManager.Should().Be(productionManagerMock.Object);
@@ -187,11 +187,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			for (int i = 0; i < numberOfCalls; i++)
 			{
 				//[REL-838809]: Resolve correlationIdFunc
-				_sut.CreateProductionManager(() => string.Empty);
+				_sut.CreateProductionManager();
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateProductionManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateProductionManager(), Times.Exactly(numberOfCalls));
 		}
 
 		private CoreServiceFactory CreateCoreServiceFactory()

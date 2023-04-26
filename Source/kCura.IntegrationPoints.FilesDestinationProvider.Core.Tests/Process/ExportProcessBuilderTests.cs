@@ -186,14 +186,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList()));
 
 			//[REL-838809]: Resolve correlationIdFunc
-			_serviceFactory.CreateSearchManager(Arg.Any<Func<string>>()).Returns(searchManager);
+			_serviceFactory.CreateSearchManager().Returns(searchManager);
 			_exportProcessBuilder.Create(new ExportSettings()
 			{
 				SelViewFieldIds = SelectedAvfIds
 			}, _job);
 
 			//[REL-838809]: Resolve correlationIdFunc
-			_serviceFactory.Received(1).CreateSearchManager(Arg.Any<Func<string>>());
+			_serviceFactory.Received(1).CreateSearchManager();
 			searchManager.Received().Dispose();
 		}
 
@@ -441,7 +441,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var searchManager = Substitute.For<ISearchManager>();
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
 			//[REL-838809]: Resolve correlationIdFunc
-			_serviceFactory.CreateSearchManager(Arg.Any<Func<string>>()).Returns(searchManager);
+			_serviceFactory.CreateSearchManager().Returns(searchManager);
 		}
 
 		#endregion
