@@ -48,7 +48,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Relativity.Services.Interfaces" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -169,7 +168,7 @@
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Config" />

@@ -41,8 +41,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Threading.Tasks.Extensions" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -189,7 +187,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />

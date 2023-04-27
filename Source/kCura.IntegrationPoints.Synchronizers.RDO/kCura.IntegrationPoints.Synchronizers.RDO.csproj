@@ -47,8 +47,6 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Threading.Tasks.Extensions" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -141,7 +139,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />

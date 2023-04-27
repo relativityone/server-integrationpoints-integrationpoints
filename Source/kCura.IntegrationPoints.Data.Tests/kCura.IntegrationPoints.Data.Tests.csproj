@@ -43,10 +43,6 @@
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura, Version=10.1.33.3, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\kCura\lib\net462\kCura.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />

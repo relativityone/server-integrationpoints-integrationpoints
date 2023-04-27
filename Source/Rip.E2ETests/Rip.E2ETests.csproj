@@ -31,9 +31,6 @@
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Agent">
-      <HintPath>..\..\packages\kCura.Agent\lib\net462\kCura.Agent.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -52,9 +49,7 @@
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
       <Project>{AD3E5540-FA39-4983-8A23-FCC756D51A32}</Project>

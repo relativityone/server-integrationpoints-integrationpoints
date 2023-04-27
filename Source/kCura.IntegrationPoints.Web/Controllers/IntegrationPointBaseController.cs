@@ -8,7 +8,6 @@ using System;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.UserContext;
-using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -41,34 +40,27 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? artifactId)
 		{
-			try
-			{
-				int workspaceID = _workspaceIdProvider.GetWorkspaceID();
+			int workspaceID = _workspaceIdProvider.GetWorkspaceID();
 
-				int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
-				int tabID = _tabService.GetTabId(workspaceID, objectTypeID);
-				int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
-				string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
-				if (HasPermissions(artifactId))
-				{
-					return View("~/Views/IntegrationPoints/Edit.cshtml", new EditPoint
-					{
-						AppID = workspaceID,
-						ArtifactID = artifactId.GetValueOrDefault(0),
-						UserID = _userContext.GetUserID(),
-						CaseUserID = _userContext.GetWorkspaceUserID(),
-						URL = previousURL,
-						APIControllerName = APIControllerName,
-						ArtifactTypeName = ObjectType
-					});
-				}
-				return View("~/Views/IntegrationPoints/NotEnoughPermission.cshtml", new EditPoint { URL = previousURL });
-			}
-			catch (Exception ex)
+			int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
+			int tabID = _tabService.GetTabId(workspaceID, objectTypeID);
+			int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
+			string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
+			if (HasPermissions(artifactId))
 			{
-				throw new IntegrationPointsException("IntegrationPointBase/Edit exception: "+ ex.StackTrace, ex);
+				return View("~/Views/IntegrationPoints/Edit.cshtml", new EditPoint
+				{
+					AppID = workspaceID,
+					ArtifactID = artifactId.GetValueOrDefault(0),
+					UserID = _userContext.GetUserID(),
+					CaseUserID = _userContext.GetWorkspaceUserID(),
+					URL = previousURL,
+					APIControllerName = APIControllerName,
+					ArtifactTypeName = ObjectType
+				});
 			}
-			
+			return View("~/Views/IntegrationPoints/NotEnoughPermission.cshtml", new EditPoint { URL = previousURL });
+
 		}
 
 		protected bool HasPermissions(int? artifactId)

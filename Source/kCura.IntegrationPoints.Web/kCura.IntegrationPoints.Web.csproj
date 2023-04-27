@@ -77,8 +77,6 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Threading.Tasks.Extensions" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -754,7 +752,7 @@
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <ProjectExtensions />
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
