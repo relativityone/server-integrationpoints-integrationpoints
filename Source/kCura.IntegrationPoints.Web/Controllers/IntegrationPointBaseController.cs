@@ -27,13 +27,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			IRepositoryFactory repositoryFactory,
 			ITabService tabService,
 			IWorkspaceContext workspaceIdProvider,
-			IUserContext userContext)
+			IUserContext userContext,
+			IAPILog logger)
 		{
 			_objectTypeRepository = objectTypeRepository;
 			_repositoryFactory = repositoryFactory;
 			_tabService = tabService;
 			_workspaceIdProvider = workspaceIdProvider;
 			_userContext = userContext;
+			_logger = logger;
 		}
 
 		protected abstract string ObjectTypeGuid { get; }
