@@ -551,5 +551,6 @@
     <PackageReference Include="SystemWrapper.Wrappers" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
 </Project>

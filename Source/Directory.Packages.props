@@ -82,6 +82,7 @@
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
     <SSHNET>2016.0.0</SSHNET>
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
+    <SytemThreadingTasksExtension>4.5.4</SytemThreadingTasksExtension>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Autofac" Version="$(Autofac)" />
@@ -172,5 +173,6 @@
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
     <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
+    <PackageVersion Include="System.Threading.Tasks.Extensions" Version="$(SytemThreadingTasksExtension)" />
   </ItemGroup>
 </Project>
