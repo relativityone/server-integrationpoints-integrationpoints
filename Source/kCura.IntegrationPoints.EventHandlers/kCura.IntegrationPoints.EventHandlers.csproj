@@ -274,5 +274,6 @@
     <PackageReference Include="Polly" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
     <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" />
   </ItemGroup>
 </Project>
