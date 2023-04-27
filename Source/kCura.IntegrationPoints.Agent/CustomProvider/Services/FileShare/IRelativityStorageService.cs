@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Storage;
@@ -16,5 +18,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
         Task<IList<string>> ReadAllLinesAsync(string filePath);
 
         Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId);
+
+        Task<DirectoryInfo> PrepareImportDirectoryAsync(int workspaceId, Guid importJobId);
+
+        Task DeleteDirectoryRecursiveAsync(string directoryPath);
     }
 }

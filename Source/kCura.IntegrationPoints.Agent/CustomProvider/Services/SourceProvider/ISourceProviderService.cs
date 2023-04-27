@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider
 {
     public interface ISourceProviderService
     {

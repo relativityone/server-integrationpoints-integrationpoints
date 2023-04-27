@@ -14,7 +14,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.Storage;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
 {
     public class IdFilesBuilder : IIdFilesBuilder
     {

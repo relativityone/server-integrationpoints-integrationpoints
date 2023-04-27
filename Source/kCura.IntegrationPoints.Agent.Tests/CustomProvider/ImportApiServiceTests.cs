@@ -45,25 +45,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _importJobControllerMock = new Mock<IImportJobController>();
             _importJobControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, RIP_APPLICATION_NAME, _importJobContext.RipJobId.ToString()))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, RIP_APPLICATION_NAME, _importJobContext.RipJobId.ToString()))
                 .ReturnsAsync(_successResponse);
             _importJobControllerMock
-                .Setup(x => x.BeginAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId))
+                .Setup(x => x.BeginAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid))
                 .ReturnsAsync(_successResponse);
 
             _documentConfigurationControllerMock = new Mock<IDocumentConfigurationController>();
             _documentConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _documentConfiguration.DocumentSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _documentConfiguration.DocumentSettings))
                 .ReturnsAsync(_successResponse);
 
             _rdoConfigurationControllerMock = new Mock<IRDOConfigurationController>();
             _rdoConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _rdoConfiguration.RdoSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _rdoConfiguration.RdoSettings))
                 .ReturnsAsync(_successResponse);
 
             _advancedConfigurationControllerMock = new Mock<IAdvancedConfigurationController>();
             _advancedConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, It.IsAny<AdvancedImportSettings>()))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, It.IsAny<AdvancedImportSettings>()))
                 .ReturnsAsync(_successResponse);
 
             _keplerServiceFactoryMock = new Mock<IKeplerServiceFactory>();
@@ -94,8 +94,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Assert
             _importJobControllerMock.Verify(
                 x => x.CreateAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId,
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid,
                     RIP_APPLICATION_NAME,
                     _importJobContext.RipJobId.ToString()),
                 Times.Once);
@@ -110,8 +110,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Assert
             _importJobControllerMock.Verify(
                 x => x.BeginAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId),
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid),
                 Times.Once);
         }
 
@@ -124,15 +124,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Assert
             _documentConfigurationControllerMock.Verify(
                 x => x.CreateAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId,
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid,
                     _documentConfiguration.DocumentSettings),
                 Times.Once);
 
             _advancedConfigurationControllerMock.Verify(
                 x => x.CreateAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId,
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid,
                     _documentConfiguration.AdvancedSettings),
                 Times.Once);
         }
@@ -146,15 +146,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Assert
             _rdoConfigurationControllerMock.Verify(
                 x => x.CreateAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId,
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid,
                     _rdoConfiguration.RdoSettings),
                 Times.Once);
 
             _advancedConfigurationControllerMock.Verify(
                 x => x.CreateAsync(
-                    _importJobContext.DestinationWorkspaceId,
-                    _importJobContext.ImportJobId,
+                    _importJobContext.WorkspaceId,
+                    _importJobContext.JobHistoryGuid,
                     _rdoConfiguration.AdvancedSettings),
                 Times.Once);
         }
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void CreateImportJobAsync_OnFailedCall_ShouldThrowException()
         {
             _importJobControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, RIP_APPLICATION_NAME, _importJobContext.RipJobId.ToString()))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, RIP_APPLICATION_NAME, _importJobContext.RipJobId.ToString()))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void StartImportJobAsync_OnFailedCall_ShouldThrowException()
         {
             _importJobControllerMock
-                .Setup(x => x.BeginAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId))
+                .Setup(x => x.BeginAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ConfigureDocumentImportApiJobAsync_OnFailedDocumentConfigureCall_ShouldThrowException()
         {
             _documentConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _documentConfiguration.DocumentSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _documentConfiguration.DocumentSettings))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert
@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ConfigureDocumentImportApiJobAsync_OnFailedAdvancedConfigureCall_ShouldThrowException()
         {
             _advancedConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _documentConfiguration.AdvancedSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _documentConfiguration.AdvancedSettings))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert
@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ConfigureRdoImportApiJobAsync_OnFailedRdoConfigureCall_ShouldThrowException()
         {
             _rdoConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _rdoConfiguration.RdoSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _rdoConfiguration.RdoSettings))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert
@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ConfigureRdoImportApiJobAsync_OnFailedAdvancedConfigureCall_ShouldThrowException()
         {
             _advancedConfigurationControllerMock
-                .Setup(x => x.CreateAsync(_importJobContext.DestinationWorkspaceId, _importJobContext.ImportJobId, _rdoConfiguration.AdvancedSettings))
+                .Setup(x => x.CreateAsync(_importJobContext.WorkspaceId, _importJobContext.JobHistoryGuid, _rdoConfiguration.AdvancedSettings))
                 .ReturnsAsync(_failedResponse);
 
             // Act & Assert

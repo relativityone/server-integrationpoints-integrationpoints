@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
     {
         public int JobHistoryID { get; set; }
 
-        public Guid ImportJobID { get; set; }
+        public Guid JobHistoryGuid { get; set; }
 
         public List<CustomProviderBatch> Batches { get; set; } = new List<CustomProviderBatch>();
     }

@@ -113,5 +113,25 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare
                 return Path.Combine(server.UNCPath, $"EDDS{workspaceId}");
             }
         }
+
+        public async Task<DirectoryInfo> PrepareImportDirectoryAsync(int workspaceId, Guid importJobId)
+        {
+            string workspaceDirectoryPath = await GetWorkspaceDirectoryPathAsync(workspaceId).ConfigureAwait(false);
+            DirectoryInfo importDirectory = new DirectoryInfo(Path.Combine(workspaceDirectoryPath, "RIP", "Import", importJobId.ToString()));
+
+            IStorageAccess<string> storageAccess = await GetStorageAccessAsync();
+            await storageAccess.CreateDirectoryAsync(importDirectory.FullName).ConfigureAwait(false);
+
+            return importDirectory;
+        }
+
+        public async Task DeleteDirectoryRecursiveAsync(string directoryPath)
+        {
+            IStorageAccess<string> storage = await GetStorageAccessAsync();
+            await storage.DeleteDirectoryAsync(directoryPath, new DeleteDirectoryOptions()
+            {
+                Recursive = true
+            }).ConfigureAwait(false);
+        }
     }
 }

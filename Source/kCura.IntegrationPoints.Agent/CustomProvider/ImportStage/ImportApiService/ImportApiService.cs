@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.Extensions;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
 using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Settings;
+using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
@@ -30,11 +33,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         {
             using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
-                _logger.LogInformation("Creating ImportJob with ID: {importJobId}", importJobContext.ImportJobId);
+                _logger.LogInformation("Creating ImportJob with ID: {importJobId}", importJobContext.JobHistoryGuid);
 
                 Response response = await importJobController.CreateAsync(
-                        workspaceID: importJobContext.DestinationWorkspaceId,
-                        importJobID: importJobContext.ImportJobId,
+                        workspaceID: importJobContext.WorkspaceId,
+                        importJobID: importJobContext.JobHistoryGuid,
                         applicationName: Core.Constants.IntegrationPoints.APPLICATION_NAME,
                         correlationID: importJobContext.RipJobId.ToString())
                     .ConfigureAwait(false);
@@ -48,11 +51,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         {
             using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
-                _logger.LogInformation("Starting ImportJob {jobId} and wait for DataSources...", importJobContext.ImportJobId);
+                _logger.LogInformation("Starting ImportJob {jobId} and wait for DataSources...", importJobContext.JobHistoryGuid);
 
                 Response response = await importJobController.BeginAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId)
+                        importJobContext.WorkspaceId,
+                        importJobContext.JobHistoryGuid)
                     .ConfigureAwait(false);
 
                 response.Validate();
@@ -75,18 +78,84 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             await CreateAdvancedConfigurationAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
         }
 
+        public async Task AddDataSourceAsync(ImportJobContext importJobContext,
+            Guid sourceId,
+            DataSourceSettings dataSourceSettings)
+        {
+            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+            {
+                (await importSource.AddSourceAsync(
+                            importJobContext.WorkspaceId,
+                            importJobContext.JobHistoryGuid,
+                            sourceId,
+                            dataSourceSettings)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.AddDataSourceAsync)} failed.");
+            }
+        }
+
+        public async Task CancelJobAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Canceling job {jobId}...", importJobContext.JobHistoryGuid);
+
+                (await importJobController.CancelAsync(
+                            importJobContext.WorkspaceId,
+                            importJobContext.JobHistoryGuid)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.CancelJobAsync)} failed.");
+            }
+        }
+
+        public async Task EndJobAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Ending job {jobId}...", importJobContext.JobHistoryGuid);
+
+                (await importJobController.EndAsync(
+                            importJobContext.WorkspaceId,
+                            importJobContext.JobHistoryGuid)
+                        .ConfigureAwait(false))
+                    .Validate($"{nameof(ImportApiService.EndJobAsync)} failed.");
+            }
+        }
+
+        public async Task<ImportDetails> GetJobImportStatusAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                return (await job.GetDetailsAsync(
+                            importJobContext.WorkspaceId,
+                            importJobContext.JobHistoryGuid)
+                        .ConfigureAwait(false))
+                    .UnwrapOrThrow($"{nameof(ImportApiService.GetJobImportStatusAsync)} failed.");
+            }
+        }
+
+        public async Task<ImportProgress> GetJobImportProgressValueAsync(ImportJobContext importJobContext)
+        {
+            using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                ValueResponse<ImportProgress> response = await jobController.GetProgressAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryGuid).ConfigureAwait(false);
+                ImportProgress progress = response.UnwrapOrThrow();
+                return progress;
+            }
+        }
+
         private async Task CreateDocumentConfigurationAsync(ImportJobContext importJobContext, ImportDocumentSettings settings)
         {
             using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory.CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
             {
                 _logger.LogInformation(
                     "Attaching ImportDocumentsSettings to ImportJob {jobId}... - ImportDocumentSettings: {@settings}",
-                    importJobContext.ImportJobId,
+                    importJobContext.JobHistoryGuid,
                     settings);
 
                 Response response = await documentConfigurationController.CreateAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId,
+                        importJobContext.WorkspaceId,
+                        importJobContext.JobHistoryGuid,
                         settings)
                     .ConfigureAwait(false);
 
@@ -101,12 +170,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 _logger.LogInformation(
                     "Attaching ImportRdoSettings to ImportJob {jobId}... - ImportRdoSettings: {@settings}",
-                    importJobContext.ImportJobId,
+                    importJobContext.JobHistoryGuid,
                     settings);
 
                 Response response = await rdoConfigurationController.CreateAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId,
+                        importJobContext.WorkspaceId,
+                        importJobContext.JobHistoryGuid,
                         settings)
                     .ConfigureAwait(false);
 
@@ -120,12 +189,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 _logger.LogInformation(
                     "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@settings}",
-                    importJobContext.ImportJobId,
+                    importJobContext.JobHistoryGuid,
                     settings);
 
                 Response response = await configurationController.CreateAsync(
-                        importJobContext.DestinationWorkspaceId,
-                        importJobContext.ImportJobId,
+                        importJobContext.WorkspaceId,
+                        importJobContext.JobHistoryGuid,
                         settings)
                     .ConfigureAwait(false);
 
