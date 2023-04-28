@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Common.Metrics.Sink
 
         public void Log(RipMetric ripMetric)
         {
-            _apm.CountOperation(ripMetric.Name, correlationID: ripMetric.WorkflowId, customData: ripMetric.CustomData).Write();
+            _apm.CountOperation(ripMetric.Name, correlationID: ripMetric.CorrelationId, customData: ripMetric.CustomData).Write();
         }
     }
 }

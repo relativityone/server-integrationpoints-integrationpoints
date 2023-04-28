@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics
             _sinkMock.Verify(
                 x => x.Log(It.Is<RipMetric>(metric =>
                 metric.Name == metricValues.Name &&
-                metric.WorkflowId == metricValues.CorrelationId &&
+                metric.CorrelationId == metricValues.CorrelationId &&
                 metric.Type == RipMetricType.TimedOperation &&
                 DictionariesAreEqual(metric.CustomData, metricValues.CustomData))), Times.Once);
         }
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics
             _sinkMock.Verify(
                 x => x.Log(It.Is<RipMetric>(metric =>
                 metric.Name == metricValues.Name &&
-                metric.WorkflowId == metricValues.CorrelationId &&
+                metric.CorrelationId == metricValues.CorrelationId &&
                 metric.Type == RipMetricType.PointInTimeLong &&
                 DictionariesAreEqual(metric.CustomData, metricValues.CustomData))), Times.Once);
         }
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Common.Tests.Metrics
             _sinkMock.Verify(
                 x => x.Log(It.Is<RipMetric>(metric =>
                 metric.Name == metricValues.Name &&
-                metric.WorkflowId == metricValues.CorrelationId &&
+                metric.CorrelationId == metricValues.CorrelationId &&
                 metric.Type == RipMetricType.PointInTimeDouble &&
                 DictionariesAreEqual(metric.CustomData, metricValues.CustomData))), Times.Once);
         }

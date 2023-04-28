@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Web;
 using System.Web.Mvc;
 using Castle.Windsor;
@@ -18,6 +19,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
         private Mock<IDateTimeHelper> _dateTimeHelperFake;
         private Mock<IControllerActionExecutionTimeMetrics> _controllerActionExecutionTimeMetricsMock;
         private const string _ITEM_KEY_NAME = "MvcActionExecutionStartTimestamp";
+        private const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
+
 
         [SetUp]
         public void SetUp()
@@ -55,8 +58,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
             DateTime startTime = DateTime.Now;
             const string rawUrl = "/Relativity/App/RIP-GUID/MyAction?param=value";
             const string expectedMethod = "GET";
+            string correlationIdStub = Guid.NewGuid().ToString();
+            NameValueCollection headersFake = new NameValueCollection { { WEB_CORRELATION_ID_HEADER_NAME, correlationIdStub } };
 
-            ResultExecutedContext context = PrepareResultExecutedContext(startTime, rawUrl, expectedMethod);
+            ResultExecutedContext context = PrepareResultExecutedContext(startTime, rawUrl, expectedMethod, headersFake);
             MvcActionExecutionTimeMetricsFilterAttribute sut = PrepareSut();
 
             // Act
@@ -92,7 +97,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
             return context;
         }
 
-        private ResultExecutedContext PrepareResultExecutedContext(DateTime startTime, string rawUrl, string httpMethod)
+        private ResultExecutedContext PrepareResultExecutedContext(DateTime startTime, string rawUrl, string httpMethod, NameValueCollection headers)
         {
             Dictionary<string, object> items = new Dictionary<string, object>()
             {
@@ -104,6 +109,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
             Mock<HttpRequestBase> request = new Mock<HttpRequestBase>();
             request.SetupGet(x => x.RawUrl).Returns(rawUrl);
             request.SetupGet(x => x.HttpMethod).Returns(httpMethod);
+            request.SetupGet(x => x.Headers).Returns(headers);
             httpContext.SetupGet(x => x.Request).Returns(request.Object);
 
             ResultExecutedContext context = new ResultExecutedContext()
