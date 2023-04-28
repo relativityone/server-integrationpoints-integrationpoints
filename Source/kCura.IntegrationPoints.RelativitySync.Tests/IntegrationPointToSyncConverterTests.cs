@@ -70,6 +70,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .ReturnsAsync(new RelativityObject { ArtifactID = _JOB_HISTORY_TO_RETRY });
 
             Mock<IAPILog> log = new Mock<IAPILog>();
+            log.Setup(x => x.ForContext(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<bool>()))
+                .Returns(log.Object);
 
             ISyncOperationsWrapper syncOperations = SetupSyncOperations();
 
