@@ -776,6 +776,7 @@
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="SystemWrapper.Interfaces" />
+    <PackageReference Include="System.Reactive" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="Polly" />
