@@ -215,9 +215,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            SystemAndApplicationUsageReporter sutWithErrors = new SystemAndApplicationUsageReporter(apmMockWithErrors.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
-                _toggleProviderFake.Object, _timerFactory.Object, _systemHealthReporterMock.Object, _loggerMock.Object);
+            SystemAndApplicationUsageReporter sutWithErrors = new SystemAndApplicationUsageReporter(
+                apmMockWithErrors.Object,
+                _processMemoryHelper.Object,
+                _appDomainMonitoringEnablerMock.Object,
+                _configFake.Object,
+                _agentMock.Object,
+                _toggleProviderFake.Object,
+                _timerFactory.Object,
+                _systemHealthReporterMock.Object,
+                _loggerMock.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;

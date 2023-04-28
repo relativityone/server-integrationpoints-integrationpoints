@@ -257,7 +257,6 @@ namespace kCura.ScheduleQueue.AgentBase
             return AgentID;
         }
 
-
         private void CleanupInvalidJobs()
         {
             try

@@ -30,9 +30,16 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private static readonly string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static readonly string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
-        public SystemAndApplicationUsageReporter(IAPM apmClient, IProcessMemoryHelper processMemoryHelper,
-            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent,
-            IRipToggleProvider toggleProvider, ITimerFactory timerFactory, ISystemHealthReporter systemHealthReporter, ILogger<SystemAndApplicationUsageReporter> logger)
+        public SystemAndApplicationUsageReporter(
+            IAPM apmClient,
+            IProcessMemoryHelper processMemoryHelper,
+            IAppDomainMonitoringEnabler appDomainMonitoringEnabler,
+            IMonitoringConfig config,
+            IRemovableAgent agent,
+            IRipToggleProvider toggleProvider,
+            ITimerFactory timerFactory,
+            ISystemHealthReporter systemHealthReporter,
+            ILogger<SystemAndApplicationUsageReporter> logger)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
