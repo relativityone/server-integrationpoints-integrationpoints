@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             {
                 string bucket = JobStartedCountMetric(message);
                 _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-                _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData,"XXXXX");
+                _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData, message.CorrelationID);
 
                 DateTime now = _dateTimeHelper.Now();
                 UpdateJobStatistics(

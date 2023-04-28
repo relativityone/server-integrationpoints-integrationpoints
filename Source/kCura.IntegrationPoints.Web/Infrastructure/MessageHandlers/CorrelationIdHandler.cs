@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
             WebActionContext actionContext = webCorrelationContextProvider.GetDetails(request.RequestUri.ToString(), userID);
             var correlationContext = new WebCorrelationContext
             {
-                WebRequestCorrelationId = GetValueOrThrowException(
+                CorrelationId = GetValueOrThrowException(
                     valueGetter: request.GetCorrelationId,
                     errorMessage: "Error while retrieving web request correlation id",
                     logger: logger),
@@ -81,8 +81,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
                     valueGetter: workspaceContext.GetWorkspaceID,
                     errorMessage: "Error while retrieving Workspace Id",
                     logger: logger),
-                ActionName = actionContext.ActionName,
-                CorrelationId = actionContext.ActionGuid
+                ActionName = actionContext.ActionName
             };
             return correlationContext;
         }
