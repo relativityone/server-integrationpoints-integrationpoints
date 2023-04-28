@@ -5,6 +5,7 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <PropertyGroup>
+    <Antler>3.5.0.2</Antler>
     <Autofac>4.9.4</Autofac>
     <AutoMapper>4.2.1</AutoMapper>
     <ARMTestServices>1.1.1</ARMTestServices>
@@ -84,6 +85,7 @@
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Antlr" Version="$(Antler)" />
     <PackageVersion Include="Autofac" Version="$(Autofac)" />
     <PackageVersion Include="AutoMapper" Version="$(AutoMapper)" />
     <PackageVersion Include="ARMTestServices" Version="$(ARMTestServices)" />

@@ -753,6 +753,7 @@
   </Target>
   <ProjectExtensions />
   <ItemGroup>
+    <PackageReference Include="Antlr" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
