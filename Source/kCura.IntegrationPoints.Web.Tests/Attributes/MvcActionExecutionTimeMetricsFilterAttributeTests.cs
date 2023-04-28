@@ -66,7 +66,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Attributes
             _controllerActionExecutionTimeMetricsMock.Verify(x => x.LogExecutionTime(
                 It.Is<string>(url => url == "/Relativity/App/RIP-GUID/MyAction"),
                 It.Is<DateTime>(dateTime => dateTime == startTime),
-                It.Is<string>(method => method == expectedMethod)));
+                It.Is<string>(method => method == expectedMethod),
+                It.IsAny<string>()));
         }
 
         private MvcActionExecutionTimeMetricsFilterAttribute PrepareSut()

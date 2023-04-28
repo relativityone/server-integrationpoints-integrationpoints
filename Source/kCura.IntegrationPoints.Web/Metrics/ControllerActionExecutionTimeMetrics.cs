@@ -15,17 +15,21 @@ namespace kCura.IntegrationPoints.Web.Metrics
             _ripMetrics = ripMetrics;
         }
 
-        public void LogExecutionTime(string url, DateTime startTime, string method)
+        public void LogExecutionTime(string url, DateTime startTime, string method, string correlationId)
         {
             TimeSpan duration = _dateTimeHelper.Now() - startTime;
             long responseTimeInMs = (long)duration.TotalMilliseconds;
 
-            _ripMetrics.TimedOperation(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME, duration, new Dictionary<string, object>()
+            _ripMetrics.TimedOperation(
+                Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME,
+                duration,
+                new Dictionary<string, object>()
             {
                 { "ActionURL", url },
                 { "ResponseTimeMs", responseTimeInMs },
                 { "Method", method }
-            });
+            },
+                correlationId);
         }
     }
 }

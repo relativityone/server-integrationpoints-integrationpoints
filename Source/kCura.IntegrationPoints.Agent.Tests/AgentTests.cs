@@ -318,7 +318,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             private readonly Mock<IAPILog> _logMock;
 
             public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode)
-                : base(Guid.Empty, kubernetesMode: kubernetesMode, dateTime: new DateTimeWrapper(), jobService: Substitute.For<IJobService>(), taskParameterHelper: container.Resolve<ITaskParameterHelper>())
+                : base(Guid.Empty, kubernetesMode: kubernetesMode, dateTime: new DateTimeWrapper(), jobService: Substitute.For<IJobService>())
             {
                 Container = container;
 

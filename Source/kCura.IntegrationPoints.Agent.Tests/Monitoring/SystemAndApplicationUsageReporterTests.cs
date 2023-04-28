@@ -65,8 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     It.IsAny<IEnumerable<ISink>>()))
                 .Returns(_counterMeasure.Object);
 
-            _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
-
             _processMemoryHelper.Setup(x => x.GetApplicationSystemStatistics()).Returns(
                 new Dictionary<string, object>()
                 {

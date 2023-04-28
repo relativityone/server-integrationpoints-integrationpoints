@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             {
                 string bucket = JobStartedCountMetric(message);
                 _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-                _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+                _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData,"XXXXX");
 
                 DateTime now = _dateTimeHelper.Now();
                 UpdateJobStatistics(
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = JobCompletedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData, message.CorrelationID);
 
             OnJobEnd(message, JobStatus.Completed);
         }
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = JobFailedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData, message.CorrelationID);
 
             OnJobEnd(message, JobStatus.Failed);
         }
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = JobValidationFailedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData, message.CorrelationID);
 
             OnJobEnd(message, JobStatus.ValidationFailed);
         }
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = JobSuspendedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
-            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData, message.CorrelationID);
 
             OnJobEnd(message, JobStatus.Suspended);
         }
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = TotalRecordsCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogLong(bucket, message.TotalRecordsCount, message);
-            _ripMetrics.PointInTimeLong(bucket, message.TotalRecordsCount, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, message.TotalRecordsCount, message.CustomData, message.CorrelationID);
 
             UpdateJobStatistics(message, jobStatistics => jobStatistics.TotalRecordsCount = message.TotalRecordsCount);
         }
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = CompletedRecordsCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogLong(bucket, message.CompletedRecordsCount, message);
-            _ripMetrics.PointInTimeLong(bucket, message.CompletedRecordsCount, message.CustomData);
+            _ripMetrics.PointInTimeLong(bucket, message.CompletedRecordsCount, message.CustomData, message.CorrelationID);
 
             UpdateJobStatistics(message, jobStatistics => jobStatistics.CompletedRecordsCount = message.CompletedRecordsCount);
         }
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         {
             string bucket = ThroughputMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogDouble(bucket, message.RecordsPerSecond, message);
-            _ripMetrics.PointInTimeDouble(bucket, message.RecordsPerSecond, message.CustomData);
+            _ripMetrics.PointInTimeDouble(bucket, message.RecordsPerSecond, message.CustomData, message.CorrelationID);
 
             UpdateJobStatistics(message, jobStatistics => jobStatistics.RecordsPerSecond = message.RecordsPerSecond);
         }
@@ -216,11 +216,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 
                 string jobSizeBucket = JobSizeMetric(jobStatistics);
                 sum.LogLong(jobSizeBucket, jobSize, jobStatistics);
-                _ripMetrics.PointInTimeLong(jobSizeBucket, jobSize, jobStatistics.CustomData);
+                _ripMetrics.PointInTimeLong(jobSizeBucket, jobSize, jobStatistics.CustomData, message.CorrelationID);
 
                 string throughputBytesBucket = ThroughputBytesMetric(jobStatistics);
                 sum.LogDouble(throughputBytesBucket, jobStatistics.BytesPerSecond, jobStatistics);
-                _ripMetrics.PointInTimeDouble(throughputBytesBucket, jobStatistics.BytesPerSecond, jobStatistics.CustomData);
+                _ripMetrics.PointInTimeDouble(throughputBytesBucket, jobStatistics.BytesPerSecond, jobStatistics.CustomData, message.CorrelationID);
 
                 // Set the floor for job duration at TimeSpan.Zero. This might happen if we don't receive a JobStartedMessage before a job end message.
                 TimeSpan calculatedJobDuration = jobStatistics.EndTime - jobStatistics.StartTime;

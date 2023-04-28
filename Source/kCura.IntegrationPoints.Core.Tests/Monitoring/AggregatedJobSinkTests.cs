@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogCount(expectedMetricBucket, 1, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, 1, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogLong(expectedMetricBucket, totalRecords, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, totalRecords, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, totalRecords, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogLong(expectedMetricBucket, completedRecords, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, completedRecords, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeLong(expectedMetricBucket, completedRecords, message.CustomData, message.CorrelationID);
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
 
             // Assert
             _sum.Received(1).LogDouble(expectedMetricBucket, throughput, CreateValidator());
-            _ripMetrics.Received(1).PointInTimeDouble(expectedMetricBucket, throughput, message.CustomData);
+            _ripMetrics.Received(1).PointInTimeDouble(expectedMetricBucket, throughput, message.CustomData, message.CorrelationID);
         }
 
         [Test]

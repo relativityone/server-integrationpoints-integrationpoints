@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Web.Metrics
 {
     public interface IControllerActionExecutionTimeMetrics
     {
-        void LogExecutionTime(string url, DateTime startTime, string method);
+        void LogExecutionTime(string url, DateTime startTime, string method, string correlationId);
     }
 }

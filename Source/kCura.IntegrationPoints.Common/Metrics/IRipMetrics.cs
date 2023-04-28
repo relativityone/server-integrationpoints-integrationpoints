@@ -5,14 +5,10 @@ namespace kCura.IntegrationPoints.Common.Metrics
 {
     public interface IRipMetrics
     {
-        void SetWorkflowId(Guid workflowId);
+        void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData, string correlationId);
 
-        string GetWorkflowId();
+        void PointInTimeLong(string name, long value, Dictionary<string, object> customData, string correlationId);
 
-        void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData);
-
-        void PointInTimeLong(string name, long value, Dictionary<string, object> customData);
-
-        void PointInTimeDouble(string name, double value, Dictionary<string, object> customData);
+        void PointInTimeDouble(string name, double value, Dictionary<string, object> customData, string correlationId);
     }
 }

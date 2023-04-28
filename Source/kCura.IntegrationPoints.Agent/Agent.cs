@@ -6,7 +6,6 @@ using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
@@ -17,7 +16,6 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
@@ -38,7 +36,6 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
@@ -92,8 +89,7 @@ namespace kCura.IntegrationPoints.Agent
             IConfig config = null,
             IAPM apm = null,
             IDbContextFactory dbContextFactory = null,
-            IRelativityObjectManagerFactory relativityObjectManagerFactory = null,
-            ITaskParameterHelper taskParameterHelper = null)
+            IRelativityObjectManagerFactory relativityObjectManagerFactory = null)
             : base(
                 agentGuid,
                 kubernetesMode,
@@ -107,8 +103,7 @@ namespace kCura.IntegrationPoints.Agent
                 config,
                 apm,
                 dbContextFactory,
-                relativityObjectManagerFactory,
-                taskParameterHelper)
+                relativityObjectManagerFactory)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -155,7 +150,6 @@ namespace kCura.IntegrationPoints.Agent
             try
             {
                 Container = CreateAgentLevelContainer();
-                SetWorkflowIdInMetrics(Container, ParseWorkflowId(job));
 
                 using (Container.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
@@ -232,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
-                .ActivateTimer(job.JobId, GetWorkflowId(container), job.TaskType);
+                .ActivateTimer(job.JobId, GetBatchInstanceId(container, job).ToString(), job.TaskType);
         }
 
         private IDisposable StartHeartbeatReporting(IWindsorContainer container, Job job)
@@ -241,26 +235,6 @@ namespace kCura.IntegrationPoints.Agent
                 .ActivateHeartbeat(job.JobId);
         }
 
-        private void SetWorkflowIdInMetrics(IWindsorContainer container, Guid workflowId)
-        {
-            IRipMetrics ripMetrics = container.Resolve<IRipMetrics>();
-            ripMetrics.SetWorkflowId(workflowId);
-        }
-
-        private string GetWorkflowId(IWindsorContainer container)
-        {
-            string result = string.Empty;
-            try
-            {
-                IRipMetrics ripMetrics = container.Resolve<IRipMetrics>();
-                result = ripMetrics.GetWorkflowId();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Error occurred while retrieving workflowId");
-            }
-            return result;
-        }
 
         private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
         {
@@ -272,21 +246,26 @@ namespace kCura.IntegrationPoints.Agent
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
                 ActionName = _RELATIVITY_SYNC_JOB_TYPE,
-                WorkflowId = GetWorkflowId(container)
+                WorkflowId = GetBatchInstanceId(container, job).ToString()
             };
             return correlationContext;
+        }
+
+        private Guid GetBatchInstanceId(IWindsorContainer container, Job job)
+        {
+            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
+            return taskParameterHelper.GetBatchInstance(job);
         }
 
         private void SendJobStartedMessage(IWindsorContainer container, Job job)
         {
             try
             {
-                ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
                 IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
                 IProviderTypeService providerTypeService = container.Resolve<IProviderTypeService>();
                 IMessageService messageService = container.Resolve<IMessageService>();
 
-                Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+                Guid batchInstanceId = GetBatchInstanceId(container, job);
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
                 if (!IsJobResumed(container, batchInstanceId))
                 {
