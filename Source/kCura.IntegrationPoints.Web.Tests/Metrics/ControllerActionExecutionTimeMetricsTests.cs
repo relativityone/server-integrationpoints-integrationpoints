@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Metrics
         public void LogExecutionTime_ShouldReportTimedOperation()
         {
             // Arrange
-            const string metricName = "IntegrationPoint.CustomPage.ResponseTime";
+            const string metricName = "IntegrationPoints.CustomPage.ResponseTime";
             DateTime startTime = new DateTime(2020, 10, 1, 10, 0, 0);
             DateTime endTime = startTime.AddSeconds(1);
             TimeSpan expectedDuration = endTime - startTime;
