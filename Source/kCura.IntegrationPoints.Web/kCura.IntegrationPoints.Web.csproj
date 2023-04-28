@@ -752,7 +752,7 @@
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>
   <ProjectExtensions />
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="kCura" />
@@ -762,6 +762,7 @@
     <PackageReference Include="Microsoft.AspNet.Web.Optimization" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" />
+    <PackageReference Include="Microsoft.Owin" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" />
     <PackageReference Include="Microsoft.Owin.Security" />
     <PackageReference Include="Newtonsoft.Json" />
@@ -777,5 +778,6 @@
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service" />
     <PackageReference Include="Polly" />
+    <PackageReference Include="WebGrease"/>
   </ItemGroup>
 </Project>
