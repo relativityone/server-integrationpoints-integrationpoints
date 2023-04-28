@@ -82,6 +82,11 @@ namespace kCura.IntegrationPoints.RelativitySync
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointDto.SourceConfiguration);
             ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointDto.DestinationConfiguration);
 
+            _logger
+                .ForContext("DestinationConfiguration", importSettings, true)
+                .ForContext("SourceConfiguration", sourceConfiguration, true)
+                .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
+
             ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
                 Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
 
