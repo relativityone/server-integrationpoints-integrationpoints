@@ -1383,15 +1383,7 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
-
-                    // we need to add some default value before saving 'EnableTagging' setting to DB
-                    if (this.model.EnableTagging == null) {
-                        _destination.EnableTagging = "true";
-                    }
-                    else {
-                        _destination.EnableTagging = this.model.EnableTagging;
-                    }
-
+					_destination.EnableTagging = this.model.EnableTagging();
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {
@@ -1425,7 +1417,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
-				this.returnModel.EnableTagging = this.model.EnableTagging;
+				this.returnModel.EnableTagging = this.model.EnableTagging();
 
 				if (this.model.IsRelativityProvider()) {
 
