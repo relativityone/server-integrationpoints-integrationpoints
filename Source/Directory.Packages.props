@@ -30,7 +30,7 @@
     <MicrosoftAspNetWebApiWebHost>4.0.20505</MicrosoftAspNetWebApiWebHost>
     <MicrosoftAspNetWebOptimization>1.1.3</MicrosoftAspNetWebOptimization>
     <MicrosoftNetHttp>2.2.29</MicrosoftNetHttp>
-	<MicrosoftOwinHostSystemWeb>4.2.0</MicrosoftOwinHostSystemWeb>
+    <MicrosoftOwinHostSystemWeb>4.2.0</MicrosoftOwinHostSystemWeb>
     <MicrosoftOwinSecurity>3.1</MicrosoftOwinSecurity>
     <MicrosoftWebInfrastructure>1.0.0.0</MicrosoftWebInfrastructure>
     <MonoTextTransform>1.0.0</MonoTextTransform>
@@ -44,6 +44,7 @@
     <Relativity>15.4.13</Relativity>
     <RelativityAPI>17.1.0</RelativityAPI>
     <RelativityAutomatedWorkflowsServicesInterfaces>0.1.1-pre.6</RelativityAutomatedWorkflowsServicesInterfaces>
+    <RelativityTransferClient>7.3.8</RelativityTransferClient>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
     <RelativityData>13.3.7</RelativityData>
     <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
@@ -52,14 +53,15 @@
     <RelativityIntegrationPointsContracts>1.0.8-pre.3</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
-    <RelativityKepler>2.14.4</RelativityKepler>
+    <RelativityKepler>2.14.3</RelativityKepler>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
+    <RelativityObjectManager>12.1.171.20</RelativityObjectManager>
     <RelativityTelemetryServicesInterface>3000.0.1</RelativityTelemetryServicesInterface>
     <RelativityTelemetryDataContractsShared>3000.0.1</RelativityTelemetryDataContractsShared>
     <RelativityOAuth2Client>1.0.27</RelativityOAuth2Client>
-    <RelativityOutsideIn>2021.8.0</RelativityOutsideIn>
-    <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
+    <RelativityOutsideIn>2021.3.1</RelativityOutsideIn>
+    <RelativityPlatformAgentWorkloadDiscoverySDK>0.2.1</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesInterfacesPrivate>13.1.4</RelativityServicesInterfacesPrivate>
@@ -77,11 +79,12 @@
     <SeleniumWebDriverGeckoDriver>0.24.0</SeleniumWebDriverGeckoDriver>
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
-    <SystemReactive>4.4.1</SystemReactive>
+    <SystemReactive>4.0.0</SystemReactive>
     <SystemValueTuple>4.5.0</SystemValueTuple>
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
+    <SystemThreadingTasksExtensions>4.5.4</SystemThreadingTasksExtensions>
     <SSHNET>2016.0.0</SSHNET>
-	<WebGrease>1.6</WebGrease>
+    <WebGrease>1.5.2</WebGrease>
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
   </PropertyGroup>
   <ItemGroup>
@@ -114,7 +117,7 @@
     <PackageVersion Include="Microsoft.AspNet.Web.Optimization" Version="$(MicrosoftAspNetWebOptimization)" />
     <PackageVersion Include="Microsoft.AspNet.WebApi" Version="$(MicrosoftAspNetMvc)" />
     <PackageVersion Include="Microsoft.Net.Http" Version="$(MicrosoftNetHttp)" />
-	<PackageVersion Include="Microsoft.Owin" Version="$(MicrosoftOwinHostSystemWeb)" />
+    <PackageVersion Include="Microsoft.Owin" Version="$(MicrosoftOwinHostSystemWeb)" />
     <PackageVersion Include="Microsoft.Owin.Host.SystemWeb" Version="$(MicrosoftOwinHostSystemWeb)" />
     <PackageVersion Include="Microsoft.Owin.Security" Version="$(MicrosoftOwinSecurity)" />
     <PackageVersion Include="Mono.TextTransform" Version="$(MonoTextTransform)" />
@@ -134,6 +137,8 @@
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativityCustomPages)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityData)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
+    <PackageVersion Include="Relativity.ObjectManager" Version="$(RelativityObjectManager)" />
+    <PackageVersion Include="Relativity.OutsideIn" Version="$(RelativityOutsideIn)" />
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(RelativityTelemetryDataContractsShared)" />
     <PackageVersion Include="Relativity.API" Version="$(RelativityAPI)" />
     <PackageVersion Include="Relativity" Version="$(Relativity)" />
@@ -162,7 +167,10 @@
     <PackageVersion Include="Relativity.Testing.Framework.RingSetup" Version="$(RelativityTestingFrameworkRingSetup)" />
     <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Kepler.Service" Version="$(RelativityKeplerService)" />
+    <PackageVersion Include="Relativity.Transfer.Client" Version="$(RelativityTransferClient)" />
     <PackageVersion Include="System.Reactive" Version="$(SystemReactive)" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemThreadingTasksExtensions)" />
+    <PackageVersion Include="System.Threading.Tasks.Extensions" Version="$(SystemThreadingTasksExtensions)" />
     <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
     <PackageVersion Include="Selenium.Support" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
@@ -173,7 +181,7 @@
     <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
-	<PackageVersion Include="WebGrease" Version="$(WebGrease)" />
-    <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />  
+    <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
+    <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
   </ItemGroup>
 </Project>
