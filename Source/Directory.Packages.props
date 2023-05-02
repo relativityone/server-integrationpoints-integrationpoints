@@ -27,7 +27,7 @@
     <LanguageExtCore>3.1.15</LanguageExtCore>
     <MicrosoftAspNetMvc>5.2.3</MicrosoftAspNetMvc>
     <MicrosoftAspNetSignalRCore>2.2.0</MicrosoftAspNetSignalRCore>
-    <MicrosoftAspNetWebApiWebHost>4.0.20505</MicrosoftAspNetWebApiWebHost>
+    <MicrosoftAspNetWebApiWebHost>5.2.3</MicrosoftAspNetWebApiWebHost>
     <MicrosoftAspNetWebOptimization>1.1.3</MicrosoftAspNetWebOptimization>
     <MicrosoftNetHttp>2.2.29</MicrosoftNetHttp>
     <MicrosoftOwinHostSystemWeb>4.2.0</MicrosoftOwinHostSystemWeb>
@@ -44,24 +44,22 @@
     <Relativity>15.4.13</Relativity>
     <RelativityAPI>17.1.0</RelativityAPI>
     <RelativityAutomatedWorkflowsServicesInterfaces>0.1.1-pre.6</RelativityAutomatedWorkflowsServicesInterfaces>
-    <RelativityTransferClient>7.3.8</RelativityTransferClient>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
-    <RelativityData>13.3.7</RelativityData>
+    <RelativityCore>13.3.7</RelativityCore>
     <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>14.0.0</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsContracts>1.0.8-pre.3</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
-    <RelativityKepler>2.14.3</RelativityKepler>
+    <RelativityKepler>2.14.4</RelativityKepler>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
-    <RelativityObjectManager>12.1.171.20</RelativityObjectManager>
     <RelativityTelemetryServicesInterface>3000.0.1</RelativityTelemetryServicesInterface>
     <RelativityTelemetryDataContractsShared>3000.0.1</RelativityTelemetryDataContractsShared>
-    <RelativityOAuth2Client>1.0.27</RelativityOAuth2Client>
-    <RelativityOutsideIn>2021.3.1</RelativityOutsideIn>
-    <RelativityPlatformAgentWorkloadDiscoverySDK>0.2.1</RelativityPlatformAgentWorkloadDiscoverySDK>
+    <RelativityOAuth2Client>1.5.2</RelativityOAuth2Client>
+    <RelativityOutsideIn>2021.8.0</RelativityOutsideIn>
+    <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesInterfacesPrivate>13.1.4</RelativityServicesInterfacesPrivate>
@@ -82,16 +80,15 @@
     <SystemReactive>4.0.0</SystemReactive>
     <SystemValueTuple>4.5.0</SystemValueTuple>
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
-    <SystemThreadingTasksExtensions>4.5.4</SystemThreadingTasksExtensions>
     <SSHNET>2016.0.0</SSHNET>
-    <WebGrease>1.5.2</WebGrease>
+    <WebGrease>1.6.0</WebGrease>
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Antlr" Version="$(Antler)" />
+    <PackageVersion Include="ARMTestServices" Version="$(ARMTestServices)" />
     <PackageVersion Include="Autofac" Version="$(Autofac)" />
     <PackageVersion Include="AutoMapper" Version="$(AutoMapper)" />
-    <PackageVersion Include="ARMTestServices" Version="$(ARMTestServices)" />
     <PackageVersion Include="BenchmarkDotNet" Version="$(BenchmarkDotNet)" />
     <PackageVersion Include="Banzai" Version="$(Banzai)" />
     <PackageVersion Include="Castle.Core" Version="$(CastleCore)" />
@@ -104,83 +101,78 @@
     <PackageVersion Include="iTextSharp" Version="$(iTextSharp)" />
     <PackageVersion Include="kCura" Version="$(kCura)" />
     <PackageVersion Include="kCura.Agent" Version="$(kCuraAgent)" />
-    <PackageVersion Include="kCura.EventHandler" Version="$(kCuraEventHandler)" />
     <PackageVersion Include="kCura.Apps.Common.Config" Version="$(kCuraAppsCommonConfig)" />
     <PackageVersion Include="kCura.Apps.Common.Data" Version="$(kCuraAppsCommonConfig)" />
+    <PackageVersion Include="kCura.Apps.Common.Utils" Version="$(kCuraAppsCommonConfig)" />
+    <PackageVersion Include="kCura.EventHandler" Version="$(kCuraEventHandler)" />
     <PackageVersion Include="kCura.FreeImage" Version="$(kCuraFreeImage)" />
     <PackageVersion Include="kCura.LongPath" Version="$(kCuraLongPath)" />
     <PackageVersion Include="kCura.OutsideIn.FI.Win32" Version="$(kCuraOutsideInFIWin32)" />
-    <PackageVersion Include="kCura.Apps.Common.Utils" Version="$(kCuraAppsCommonConfig)" />
     <PackageVersion Include="LanguageExt.Core" Version="$(LanguageExtCore)" />
     <PackageVersion Include="Microsoft.AspNet.Mvc" Version="$(MicrosoftAspNetMvc)" />
     <PackageVersion Include="Microsoft.AspNet.SignalR.Core" Version="$(MicrosoftAspNetSignalRCore)" />
     <PackageVersion Include="Microsoft.AspNet.Web.Optimization" Version="$(MicrosoftAspNetWebOptimization)" />
     <PackageVersion Include="Microsoft.AspNet.WebApi" Version="$(MicrosoftAspNetMvc)" />
+    <PackageVersion Include="Microsoft.AspNet.WebApi.WebHost" Version="$(MicrosoftAspNetWebApiWebHost)" />
+    <PackageVersion Include="Microsoft.AspNet.WebApi.Core" Version="$(MicrosoftAspNetMvc)" />
     <PackageVersion Include="Microsoft.Net.Http" Version="$(MicrosoftNetHttp)" />
     <PackageVersion Include="Microsoft.Owin" Version="$(MicrosoftOwinHostSystemWeb)" />
     <PackageVersion Include="Microsoft.Owin.Host.SystemWeb" Version="$(MicrosoftOwinHostSystemWeb)" />
     <PackageVersion Include="Microsoft.Owin.Security" Version="$(MicrosoftOwinSecurity)" />
+    <PackageVersion Include="Microsoft.Web.Infrastructure" Version="$(MicrosoftWebInfrastructure)" />
     <PackageVersion Include="Mono.TextTransform" Version="$(MonoTextTransform)" />
     <PackageVersion Include="Moq" Version="$(Moq)" />
-    <PackageVersion Include="Microsoft.AspNet.WebApi.WebHost" Version="$(MicrosoftAspNetWebApiWebHost)" />
-    <PackageVersion Include="Microsoft.AspNet.WebApi.Core" Version="$(MicrosoftAspNetMvc)" />
-    <PackageVersion Include="Microsoft.Web.Infrastructure" Version="$(MicrosoftWebInfrastructure)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
     <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
     <PackageVersion Include="NSubstitute" Version="$(NSubstitute)" />
     <PackageVersion Include="NUnit" Version="$(NUnit)" />
     <PackageVersion Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapter)" />
     <PackageVersion Include="Polly" Version="$(Polly)" />
+    <PackageVersion Include="Relativity" Version="$(Relativity)" />
+    <PackageVersion Include="Relativity.API" Version="$(RelativityAPI)" />
+    <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
+    <PackageVersion Include="Relativity.CustomPages" Version="$(RelativityCustomPages)" />
+    <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
+    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsContracts)" />
     <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsContracts)" />
-    <PackageVersion Include="Relativity.CustomPages" Version="$(RelativityCustomPages)" />
-    <PackageVersion Include="Relativity.Data" Version="$(RelativityData)" />
-    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
-    <PackageVersion Include="Relativity.ObjectManager" Version="$(RelativityObjectManager)" />
-    <PackageVersion Include="Relativity.OutsideIn" Version="$(RelativityOutsideIn)" />
-    <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(RelativityTelemetryDataContractsShared)" />
-    <PackageVersion Include="Relativity.API" Version="$(RelativityAPI)" />
-    <PackageVersion Include="Relativity" Version="$(Relativity)" />
-    <PackageVersion Include="Relativity.Services.DataContracts" Version="$(RelativityServicesDataContracts)" />
-    <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesDataContracts)" />
-    <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesInterfacesPrivate)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
     <PackageVersion Include="Relativity.Kepler" Version="$(RelativityKepler)" />
     <PackageVersion Include="Relativity.Kepler.Client" Version="$(RelativityKeplerClient)" />
+    <PackageVersion Include="Relativity.Kepler.Service" Version="$(RelativityKeplerService)" />
     <PackageVersion Include="Relativity.Logging" Version="$(RelativityLogging)" />
     <PackageVersion Include="Relativity.Logging.Interfaces" Version="$(RelativityLogging)" />
     <PackageVersion Include="Relativity.OAuth2Client" Version="$(RelativityOAuth2Client)" />
     <PackageVersion Include="Relativity.OAuth2Client.Interfaces" Version="$(RelativityOAuth2Client)" />
     <PackageVersion Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" Version="$(RelativityPlatformAgentWorkloadDiscoverySDK)" />
     <PackageVersion Include="Relativity.Productions.Services.Interfaces" Version="$(RelativityProductionsServicesInterfaces)" />
+    <PackageVersion Include="Relativity.Services.DataContracts" Version="$(RelativityServicesDataContracts)" />
+    <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesDataContracts)" />
+    <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesInterfacesPrivate)" />
+    <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Telemetry.APM" Version="$(RelativityTelemetryAPM)" />
+    <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(RelativityTelemetryDataContractsShared)" />
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(RelativityTelemetryMetricsCollection)" />
     <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="$(RelativityTelemetryServicesInterface)" />
-    <PackageVersion Include="Relativity.Toggles" Version="$(RelativityToggles)" />
-    <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
-    <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />
     <PackageVersion Include="Relativity.Testing.Framework" Version="$(RelativityTestingFramework)" />
     <PackageVersion Include="Relativity.Testing.Framework.Api" Version="$(RelativityTestingFrameworkApi)" />
     <PackageVersion Include="Relativity.Testing.Framework.Web" Version="$(RelativityTestingFrameworkWeb)" />
     <PackageVersion Include="Relativity.Testing.Framework.RingSetup" Version="$(RelativityTestingFrameworkRingSetup)" />
-    <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
-    <PackageVersion Include="Relativity.Kepler.Service" Version="$(RelativityKeplerService)" />
-    <PackageVersion Include="Relativity.Transfer.Client" Version="$(RelativityTransferClient)" />
-    <PackageVersion Include="System.Reactive" Version="$(SystemReactive)" />
-    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemThreadingTasksExtensions)" />
-    <PackageVersion Include="System.Threading.Tasks.Extensions" Version="$(SystemThreadingTasksExtensions)" />
-    <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
+    <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />
+    <PackageVersion Include="Relativity.Toggles" Version="$(RelativityToggles)" />
     <PackageVersion Include="Selenium.Support" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="$(SeleniumWebDriverChromeDriver)" />
     <PackageVersion Include="Selenium.WebDriver.GeckoDriver" Version="$(SeleniumWebDriverGeckoDriver)" />
     <PackageVersion Include="Serilog" Version="$(Serilog)" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="$(SerilogSinksSeq)" />
+    <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
+    <PackageVersion Include="System.Reactive" Version="$(SystemReactive)" />
+    <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
     <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
-    <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
     <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
     <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
   </ItemGroup>
