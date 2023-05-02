@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.UserContext;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -20,13 +21,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			ITabService tabService,
 			IIntegrationPointService integrationPointService,
 			IWorkspaceContext workspaceIdProvider,
-			IUserContext userContext
+			IUserContext userContext,
+			IAPILog logger
 		) : base(
 			objectTypeRepository, 
 			repositoryFactory, 
 			tabService,
 			workspaceIdProvider,
-			userContext
+			userContext,
+			logger
 		)
 		{
 			_integrationPointService = integrationPointService;

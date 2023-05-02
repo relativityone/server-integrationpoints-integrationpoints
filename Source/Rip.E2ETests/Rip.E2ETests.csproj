@@ -91,6 +91,8 @@
     <PackageReference Include="Relativity.Testing.Identification" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

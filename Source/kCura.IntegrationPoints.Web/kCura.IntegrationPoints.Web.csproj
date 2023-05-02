@@ -368,7 +368,6 @@
     </Content>
     <None Include="app.config" />
     <None Include="oi\unmanaged\cmmap000.bin" />
-    <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\default.pubxml" />
     <None Include="oi\unmanaged\oilink.exe" />
     <None Include="oi\unmanaged\oilink.jar" />
@@ -753,8 +752,10 @@
   </Target>
   <ProjectExtensions />
   <ItemGroup>
+    <PackageReference Include="Antlr" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="iTextSharp" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="Microsoft.AspNet.Mvc" />
@@ -762,20 +763,29 @@
     <PackageReference Include="Microsoft.AspNet.Web.Optimization" />
     <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" />
+    <PackageReference Include="Microsoft.Owin" />
     <PackageReference Include="Microsoft.Owin.Host.SystemWeb" />
     <PackageReference Include="Microsoft.Owin.Security" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Polly" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.CustomPages" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.OAuth2Client" />
+    <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="SystemWrapper.Interfaces" />
-    <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
-    <PackageReference Include="Polly" />
+    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="WebGrease"/>
+    <PackageReference Include="WebGrease"/>
   </ItemGroup>
 </Project>

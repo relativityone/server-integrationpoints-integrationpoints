@@ -115,7 +115,9 @@
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Selenium.WebDriver" />

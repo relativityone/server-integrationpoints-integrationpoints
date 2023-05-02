@@ -226,6 +226,8 @@
 				return function (error) {
 					callback(error);
 					IP.message.error.raise(error, LOCATION_ERROR_CONTAINER_SELECTOR);
+					console.log("error is:");
+					console.log(error);
 				};
 			};
 

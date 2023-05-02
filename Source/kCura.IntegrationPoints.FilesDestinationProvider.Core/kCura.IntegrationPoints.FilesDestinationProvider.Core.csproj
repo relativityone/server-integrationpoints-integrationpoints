@@ -203,6 +203,8 @@
     <PackageReference Include="Relativity.Logging" />
     <PackageReference Include="ZetaLongPaths" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_auditManagerFactoryMock.Setup(x => x()).Returns(auditManagerMock.Object);
 
 			// act
-			//[REL-838809]: Resolve correlationIdFunc
+			
 			IAuditManager actualAuditManager = _sut.CreateAuditManager();
 
 			// assert
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				//[REL-838809]: Resolve correlationIdFunc
+				
 				_sut.CreateAuditManager();
 			}
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager()).Returns(fieldManagerMock.Object);
 
 			// act
-			//[REL-838809]: Resolve correlationIdFunc
+			
 			IFieldManager actualFieldManager = _sut.CreateFieldManager();
 
 			// assert
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				//[REL-838809]: Resolve correlationIdFunc
+				
 				_sut.CreateFieldManager();
 			}
 
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager()).Returns(searchManagerMock.Object);
 
 			// act
-			//[REL-838809]: Resolve correlationIdFunc
+			
 			ISearchManager actualSearchManager = _sut.CreateSearchManager();
 
 			// assert
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				//[REL-838809]: Resolve correlationIdFunc
+				
 				_sut.CreateSearchManager();
 			}
 
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 				.Returns(exportManagerMock.Object);
 
 			//act & assert
-			//[REL-838809]: Resolve correlationIdFunc
+			
 			IExportManager actualExportManager = _sut.CreateExportManager();
 
 			// assert
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				//[REL-838809]: Resolve correlationIdFunc
+				
 				_sut.CreateExportManager();
 			}
 
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager()).Returns(productionManagerMock.Object);
 
 			//act & assert
-			//[REL-838809]: Resolve correlationIdFunc
+			
 			IProductionManager actualProductionManager = _sut.CreateProductionManager();
 
 			// assert
@@ -186,7 +186,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			// act
 			for (int i = 0; i < numberOfCalls; i++)
 			{
-				//[REL-838809]: Resolve correlationIdFunc
+				
 				_sut.CreateProductionManager();
 			}
 

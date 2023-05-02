@@ -164,6 +164,8 @@
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

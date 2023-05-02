@@ -440,7 +440,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			var searchManager = Substitute.For<ISearchManager>();
 			searchManager.RetrieveAllExportableViewFields(_exportFile.CaseInfo.ArtifactID, _exportFile.ArtifactTypeID).Returns(expectedExportableFields);
-			//[REL-838809]: Resolve correlationIdFunc
 			_serviceFactory.CreateSearchManager().Returns(searchManager);
 		}
 
