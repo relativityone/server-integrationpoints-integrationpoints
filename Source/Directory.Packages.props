@@ -43,7 +43,7 @@
     <Relativity>15.4.13</Relativity>
     <RelativityAutomatedWorkflowsServicesInterfaces>0.1.1-pre.6</RelativityAutomatedWorkflowsServicesInterfaces>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
-    <RelativityData>13.3.7</RelativityData>
+    <RelativityCore>13.3.7</RelativityCore>
     <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>14.0.0</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
@@ -130,7 +130,7 @@
     <PackageVersion Include="Relativity.API" Version="$(RelativitySDK)" />
     <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativityCustomPages)" />
-    <PackageVersion Include="Relativity.Data" Version="$(RelativityData)" />
+    <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsContracts)" />
