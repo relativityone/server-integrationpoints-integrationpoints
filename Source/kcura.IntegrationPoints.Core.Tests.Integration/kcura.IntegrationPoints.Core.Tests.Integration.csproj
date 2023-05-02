@@ -138,6 +138,8 @@
     <PackageReference Include="relativity.testing.identification" />
     <PackageReference Include="Selenium.WebDriver" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

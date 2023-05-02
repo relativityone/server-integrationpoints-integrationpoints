@@ -169,6 +169,8 @@
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

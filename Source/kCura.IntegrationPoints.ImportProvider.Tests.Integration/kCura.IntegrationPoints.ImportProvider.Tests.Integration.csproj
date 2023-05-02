@@ -256,7 +256,9 @@
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="relativity.testing.identification" />
     <PackageReference Include="Serilog" />

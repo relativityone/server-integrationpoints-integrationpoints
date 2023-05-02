@@ -529,8 +529,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Castle.Core" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="iTextSharp" />
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Config" />
@@ -542,14 +544,16 @@
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.SDK" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.OAuth2Client" />
     <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
+    <PackageReference Include="System.Reactive" />
     <PackageReference Include="SystemWrapper.Wrappers" />
-    <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
   </ItemGroup>
 </Project>

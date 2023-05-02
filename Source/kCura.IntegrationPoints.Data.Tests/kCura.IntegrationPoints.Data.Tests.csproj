@@ -219,7 +219,9 @@
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />

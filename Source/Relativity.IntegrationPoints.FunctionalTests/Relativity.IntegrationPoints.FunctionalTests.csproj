@@ -141,7 +141,9 @@
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="Relativity.Testing.Identification" />

@@ -130,7 +130,9 @@
     <PackageReference Include="SystemWrapper.Interfaces" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Kepler.Service" />
+    <PackageReference Include="Relativity.Kepler.Service">
+        <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />
