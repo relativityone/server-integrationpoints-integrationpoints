@@ -47,7 +47,7 @@
     <RelativityDataExchangeClientSDK>1.14.3</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>14.0.0</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsContracts>1.0.8-pre.3</RelativityIntegrationPointsContracts>
+    <RelativityIntegrationPointsContracts>1.0.9-pre.5</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
     <KeplerVersion>2.14.4</KeplerVersion>
