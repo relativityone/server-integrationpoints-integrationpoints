@@ -1742,6 +1742,12 @@
       <Name>WorkloadDiscovery.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>5511033</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />

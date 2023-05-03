@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 			//Create obj
 			//[REL-838809]: Resolve correlationIdFunc
-			LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(_loadFile, false);
+			LoadFileReader temp = new kCura.WinEDDS.LoadFileReader(_loadFile, false, () => string.Empty);
 
 			//set up field mapping to extract all fields with reader
 			string[] cols = temp.GetColumnNames(_loadFile);
