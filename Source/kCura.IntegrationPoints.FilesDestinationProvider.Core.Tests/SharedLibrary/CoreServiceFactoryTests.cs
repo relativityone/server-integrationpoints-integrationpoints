@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			_auditManagerFactoryMock.Setup(x => x()).Returns(auditManagerMock.Object);
 
 			// act
-			
+			//[REL-838809]: Resolve correlationIdFunc
 			IAuditManager actualAuditManager = _sut.CreateAuditManager(() => string.Empty);
 
 			// assert
