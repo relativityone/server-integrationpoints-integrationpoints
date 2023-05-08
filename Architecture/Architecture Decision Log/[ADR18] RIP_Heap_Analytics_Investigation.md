@@ -8,15 +8,18 @@ Accepted
 
 Customer feedback is one of the most important input for every application improvement. At this stage RIP gets feedback mostly through surveys incidents or splunk analysis. In order to get data about most useful/useless features proactively, user actions on the UI analysis can be used. Very useful and handy tool to reach this requirement is Heap Analytics.
 
-## Getting Started
+## Official Documentation
 
-Heap Analytics:
+Heap Analytics documentation:
 * <https://heapanalytics.com>
 
-Heap Analytics is already implemented solution in R1 and is quite well documented in Einstein:
+## Relativity One instance configuration
+
+In order to configure heap in the Relativity One instance (Hopper, TestVM) please follow documentation below:
 * <https://einstein.kcura.com/display/LPH/Heap+Dev+Setup+Guide+for+TestVM>
 
-Slack channel:
+## Slack channel
+
 help-click-tracking-heap-support
 
 ## Design
