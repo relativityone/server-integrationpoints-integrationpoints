@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Utility.Extensions;
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)
         {
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointDto.SourceConfiguration);
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointDto.DestinationConfiguration);
+            DestinationConfiguration destinationConfiguration = job.IntegrationPointDto.DestinationConfiguration;
 
             _logger
                 .ForContext("DestinationConfiguration", importSettings, true)
@@ -94,12 +95,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             if (!_toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle"))
             {
-                importSettings.EnableTagging = true;
+                destinationConfiguration.EnableTagging = true;
             }
 
-            if (importSettings.ArtifactTypeId != (int)ArtifactType.Document)
+            if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
             {
-                return await CreateNonDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false);
+                return await CreateNonDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, destinationConfiguration).ConfigureAwait(false);
             }
             else
             {
@@ -107,47 +108,51 @@ namespace kCura.IntegrationPoints.RelativitySync
 
                 if (jobHistory != null)
                 {
-                    importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(jobHistory.Overwrite);
+                    destinationConfiguration.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(jobHistory.Overwrite);
                 }
 
-                return importSettings.ImageImport ?
-                    await CreateImageSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings).ConfigureAwait(false)
-                    : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, importSettings).ConfigureAwait(false);
+                return destinationConfiguration.ImageImport ?
+                    await CreateImageSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, destinationConfiguration).ConfigureAwait(false)
+                    : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, destinationConfiguration).ConfigureAwait(false);
             }
         }
 
-        private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateImageSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            JobHistory jobHistory,
+            SourceConfiguration sourceConfiguration,
+            DestinationConfiguration destinationConfiguration)
         {
-            IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
-                importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)) :
-                Enumerable.Empty<int>();
+            IEnumerable<int> productionImagePrecedenceIds = destinationConfiguration.ProductionPrecedence == (int)ExportSettings.ProductionPrecedenceType.Produced
+                ? destinationConfiguration.ImagePrecedence.Select(x => int.Parse(x.ArtifactID))
+                : Enumerable.Empty<int>();
 
             IImageSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureImageSync(
                     new ImageSyncOptions(
                         DataSourceType.SavedSearch, sourceConfiguration.SavedSearchArtifactId,
-                        DestinationLocationType.Folder, importSettings.DestinationFolderArtifactId)
+                        DestinationLocationType.Folder, destinationConfiguration.DestinationFolderArtifactId)
                     {
-                        CopyImagesMode = importSettings.ImportNativeFileCopyMode.ToSyncImageMode(),
-                        EnableTagging = importSettings.EnableTagging
+                        CopyImagesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncImageMode(),
+                        EnableTagging = destinationConfiguration.EnableTagging
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
                         productionImagePrecedenceIds,
-                        importSettings.IncludeOriginalImages))
+                        destinationConfiguration.IncludeOriginalImages))
                 .EmailNotifications(
                     GetEmailOptions(job))
                 .OverwriteMode(
                     new OverwriteOptions(
-                        importSettings.ImportOverwriteMode.ToSyncImportOverwriteMode())
+                        destinationConfiguration.ImportOverwriteMode.ToSyncImportOverwriteMode())
                     {
-                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
+                        FieldsOverlayBehavior = destinationConfiguration.FieldOverlayBehavior.ToSyncFieldOverlayBehavior()
                     })
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
-                        importSettings.CreateSavedSearchForTagging));
+                        destinationConfiguration.CreateSavedSearchForTagging));
 
             if (IsRetryingErrors(jobHistory))
             {
@@ -165,37 +170,41 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job, JobHistory jobHistory,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateDocumentSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            JobHistory jobHistory,
+            SourceConfiguration sourceConfiguration,
+            DestinationConfiguration destinationConfiguration)
         {
-            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(importSettings, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
+            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(destinationConfiguration, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
 
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureDocumentSync(
                     new DocumentSyncOptions(
                         sourceConfiguration.SavedSearchArtifactId,
-                        importSettings.DestinationFolderArtifactId)
+                        destinationConfiguration.DestinationFolderArtifactId)
                     {
-                        CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        EnableTagging = importSettings.EnableTagging
+                        CopyNativesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncNativeMode(),
+                        EnableTagging = destinationConfiguration.EnableTagging
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
                 .DestinationFolderStructure(
-                    GetFolderStructureOptions(importSettings))
+                    GetFolderStructureOptions(destinationConfiguration))
                 .EmailNotifications(
                     GetEmailOptions(job))
                 .OverwriteMode(
                     new OverwriteOptions(
-                        importSettings.ImportOverwriteMode.ToSyncImportOverwriteMode())
+                        destinationConfiguration.ImportOverwriteMode.ToSyncImportOverwriteMode())
                     {
-                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior(),
+                        FieldsOverlayBehavior = destinationConfiguration.FieldOverlayBehavior.ToSyncFieldOverlayBehavior(),
                         SmartOverwriteDate = smartOverwriteDate
                     })
                 .CreateSavedSearch(
                     new CreateSavedSearchOptions(
-                        importSettings.CreateSavedSearchForTagging));
+                        destinationConfiguration.CreateSavedSearchForTagging));
             if (IsRetryingErrors(jobHistory))
             {
                 RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
@@ -212,14 +221,14 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<DateTime?> GetSmartOverwriteDateAsync(ImportSettings importSettings, int workspaceId, int integrationPointId)
+        private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, int integrationPointId)
         {
             if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>().ConfigureAwait(false))
             {
                 return null;
             }
 
-            if (importSettings.EnableTagging || !importSettings.UseSmartOverwrite)
+            if (destinationConfiguration.EnableTagging || !destinationConfiguration.UseSmartOverwrite)
             {
                 return null;
             }
@@ -228,25 +237,28 @@ namespace kCura.IntegrationPoints.RelativitySync
             return date;
         }
 
-        private async Task<int> CreateNonDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateNonDocumentSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            SourceConfiguration sourceConfiguration,
+            DestinationConfiguration destinationConfiguration)
         {
             INonDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureNonDocumentSync(
                     new NonDocumentSyncOptions(
                         sourceConfiguration.SourceViewId,
-                        importSettings.ArtifactTypeId,
-                        importSettings.DestinationArtifactTypeId))
+                        destinationConfiguration.ArtifactTypeId,
+                        destinationConfiguration.GetDestinationArtifactTypeId()))
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
                 .EmailNotifications(
                     GetEmailOptions(job))
                 .OverwriteMode(
                     new OverwriteOptions(
-                        importSettings.ImportOverwriteMode.ToSyncImportOverwriteMode())
+                        destinationConfiguration.ImportOverwriteMode.ToSyncImportOverwriteMode())
                     {
-                        FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
+                        FieldsOverlayBehavior = destinationConfiguration.FieldOverlayBehavior.ToSyncFieldOverlayBehavior()
                     });
 
             if (job.IntegrationPointDto.LogErrors == false)
@@ -267,20 +279,20 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
         }
 
-        private DestinationFolderStructureOptions GetFolderStructureOptions(ImportSettings settings)
+        private DestinationFolderStructureOptions GetFolderStructureOptions(DestinationConfiguration destinationConfiguration)
         {
-            if (settings.UseFolderPathInformation)
+            if (destinationConfiguration.UseFolderPathInformation)
             {
-                DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(settings.FolderPathSourceField);
-                folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
+                DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.ReadFromField(destinationConfiguration.FolderPathSourceField);
+                folderOptions.MoveExistingDocuments = destinationConfiguration.MoveExistingDocuments;
 
                 return folderOptions;
             }
 
-            if (settings.UseDynamicFolderPath)
+            if (destinationConfiguration.UseDynamicFolderPath)
             {
                 DestinationFolderStructureOptions folderOptions = DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
-                folderOptions.MoveExistingDocuments = settings.MoveExistingDocuments;
+                folderOptions.MoveExistingDocuments = destinationConfiguration.MoveExistingDocuments;
 
                 return folderOptions;
             }

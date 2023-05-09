@@ -13,9 +13,9 @@ namespace kCura.IntegrationPoints.Core.Tagging
             _tagSavedSearchFolder = tagSavedSearchFolder;
         }
 
-        public void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, ImportSettings importSettings, TagsContainer tagsContainer)
+        public void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, DestinationConfiguration destinationConfiguration, TagsContainer tagsContainer)
         {
-            CreateSavedSearchForTagging(destinationWorkspaceArtifactId, importSettings.CreateSavedSearchForTagging, tagsContainer);
+            CreateSavedSearchForTagging(destinationWorkspaceArtifactId, destinationConfiguration.CreateSavedSearchForTagging, tagsContainer);
         }
 
         public int CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, bool createSavedSearch, TagsContainer tagsContainer)

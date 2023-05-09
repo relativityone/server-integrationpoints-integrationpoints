@@ -1,6 +1,6 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers

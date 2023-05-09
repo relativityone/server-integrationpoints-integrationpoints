@@ -6,6 +6,7 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class JobHistoryTest : RdoTestBase
     {
         public override List<Guid> Guids => Const.RdoGuids.JobHistory.Guids;

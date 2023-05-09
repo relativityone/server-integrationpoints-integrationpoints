@@ -1,13 +1,10 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
@@ -28,13 +25,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
         public SourceProvider SourceProvider { get; set; }
 
-        public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
+        public IDataSynchronizer CreateSynchronizer(Guid identifier, DestinationConfiguration options)
         {
-            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(options);
-
-            return importSettings.IsRelativityProvider()
-                ? _relativityRdoSynchronizerFactory.CreateSynchronizer(importSettings, SourceProvider, _diagnosticLog)
-                : _importProviderRdoSynchronizerFactory.CreateSynchronizer(importSettings, TaskJobSubmitter, _diagnosticLog);
+            return string.Equals(options.Provider, nameof(ProviderType.Relativity), StringComparison.InvariantCultureIgnoreCase)
+                ? _relativityRdoSynchronizerFactory.CreateSynchronizer(options, SourceProvider, _diagnosticLog)
+                : _importProviderRdoSynchronizerFactory.CreateSynchronizer(options, TaskJobSubmitter, _diagnosticLog);
         }
     }
 }

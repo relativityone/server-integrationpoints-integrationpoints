@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
                 if (!_errorOccurDuringJobStart)
                 {
                     _tagger.TagDocuments(_tagsContainer, ScratchTableRepository);
-                    _tagSavedSearchManager.CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _importSettings, _tagsContainer);
+                    _tagSavedSearchManager.CreateSavedSearchForTagging(_destinationWorkspaceArtifactId, _importSettings.DestinationConfiguration, _tagsContainer);
                 }
             }
             catch (Exception e)

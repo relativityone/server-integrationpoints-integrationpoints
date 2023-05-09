@@ -2,23 +2,19 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -73,25 +69,32 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
         }
 
-        protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo,
-            string configuration, Job job)
+        protected override IDataSynchronizer GetDestinationProvider(
+            DestinationProvider destinationProviderRdo,
+            DestinationConfiguration configuration,
+            Job job)
         {
             var providerGuid = new Guid(destinationProviderRdo.Identifier);
             IDataSynchronizer sourceProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
             return sourceProvider;
         }
 
-        protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration,
-            string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+        protected override void ExecuteImport(
+            IEnumerable<FieldMap> fieldMap,
+            DataSourceProviderConfiguration configuration,
+            DestinationConfiguration destinationConfiguration,
+            List<string> entryIDs,
+            SourceProvider sourceProviderRdo,
+            DestinationProvider destinationProvider,
+            Job job)
         {
             LogExecuteImportStart(job);
 
             ExportUsingSavedSearchSettings sourceSettings = DeserializeSourceSettings(configuration.Configuration, job);
-            ImportSettings destinationSettings = DeserializeDestinationSettings(destinationConfiguration, job);
 
             PrepareDestinationLocation(sourceSettings);
 
-            _exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId, job);
+            _exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationConfiguration.ArtifactTypeId, job);
             LogExecuteImportSuccessfulEnd(job);
         }
 
@@ -104,19 +107,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             catch (Exception e)
             {
                 LogDeserializationOfSourceSettingsError(job, e);
-                throw;
-            }
-        }
-
-        private ImportSettings DeserializeDestinationSettings(string destinationConfiguration, Job job)
-        {
-            try
-            {
-                return JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
-            }
-            catch (Exception e)
-            {
-                LogDeserializationOfDestinationSettingsError(job, e);
                 throw;
             }
         }

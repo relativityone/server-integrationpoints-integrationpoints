@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Core.Contracts.Agent
+﻿namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     /// <summary>
     /// TaskType is responsible for determine job type which, runs in Agent

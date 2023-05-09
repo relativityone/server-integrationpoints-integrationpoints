@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Data;

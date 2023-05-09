@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
             int folderId = 919874;
             int workspaceId = 753626;
             var tagsContainer = new TagsContainer(new SourceJobDTO(), new SourceWorkspaceDTO());
-            var importSettings = new ImportSettings
+            var importSettings = new DestinationConfiguration
             {
                 CreateSavedSearchForTagging = true
             };
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
             int folderId = 919874;
             int workspaceId = 753626;
             var tagsContainer = new TagsContainer(new SourceJobDTO(), new SourceWorkspaceDTO());
-            var importSettings = new ImportSettings
+            var destinationConfiguration = new DestinationConfiguration
             {
                 CreateSavedSearchForTagging = false
             };
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
             _tagSavedSearchFolder.GetFolderId(workspaceId).Returns(folderId);
 
             // ACT
-            _instance.CreateSavedSearchForTagging(workspaceId, importSettings, tagsContainer);
+            _instance.CreateSavedSearchForTagging(workspaceId, destinationConfiguration, tagsContainer);
 
             // ASSERT
             _tagSavedSearchFolder.Received(0).GetFolderId(workspaceId);

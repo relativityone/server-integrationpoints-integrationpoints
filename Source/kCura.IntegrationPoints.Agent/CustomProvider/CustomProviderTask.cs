@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
@@ -25,10 +24,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISourceProviderService _sourceProviderService;
         private readonly IImportJobRunner _importJobRunner;
-        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        public CustomProviderTask(ICancellationTokenFactory cancellationTokenFactory, IAgentValidator agentValidator, IJobDetailsService jobDetailsService, IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IImportJobRunner importJobRunner, ISerializer serializer, IAPILog logger)
+        public CustomProviderTask(ICancellationTokenFactory cancellationTokenFactory, IAgentValidator agentValidator, IJobDetailsService jobDetailsService, IIntegrationPointService integrationPointService, ISourceProviderService sourceProviderService, IImportJobRunner importJobRunner, IAPILog logger)
         {
             _cancellationTokenFactory = cancellationTokenFactory;
             _agentValidator = agentValidator;
@@ -36,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _integrationPointService = integrationPointService;
             _sourceProviderService = sourceProviderService;
             _importJobRunner = importJobRunner;
-            _serializer = serializer;
             _logger = logger;
         }
 
@@ -55,12 +52,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
-                ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
 
                 CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);
 
                 await _importJobRunner
-                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, destinationConfiguration, token)
+                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, token)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

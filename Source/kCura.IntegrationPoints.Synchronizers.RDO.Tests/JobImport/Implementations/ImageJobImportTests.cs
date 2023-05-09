@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
         [SetUp]
         public override void SetUp()
         {
-            _importSettings = Substitute.For<ImportSettings>();
+            _importSettings = new ImportSettings(new DestinationConfiguration());
             _importApi = Substitute.For<IImportAPI>();
             _builder = Substitute.For<IImportSettingsBaseBuilder<ImageSettings>>();
             _context = Substitute.For<IDataTransferContext>();

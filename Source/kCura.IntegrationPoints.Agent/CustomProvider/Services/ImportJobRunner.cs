@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
-        public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, ImportSettings destinationConfiguration, CompositeCancellationToken token)
+        public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, CompositeCancellationToken token)
         {
             var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
 
@@ -63,11 +63,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
                 await _jobProgressHandler.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
 
-                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(destinationConfiguration);
+                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(integrationPointDto.DestinationConfiguration);
 
                 List<IndexedFieldMap> fieldMapping = IndexFieldMappings(integrationPointDto.FieldMappings);
 
-                await importApiRunner.RunImportJobAsync(importJobContext, destinationConfiguration, fieldMapping);
+                await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, fieldMapping);
 
                 using (await _jobProgressHandler.BeginUpdateAsync(importJobContext).ConfigureAwait(false))
                 {

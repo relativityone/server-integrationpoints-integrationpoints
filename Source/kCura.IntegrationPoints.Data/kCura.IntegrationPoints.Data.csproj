@@ -112,7 +112,6 @@
     <Compile Include="Installers\HelpersRegistration.cs" />
     <Compile Include="Installers\RepositoryRegistration.cs" />
     <Compile Include="Installers\RetryingMechanismRegistration.cs" />
-    <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="IResourceDbProvider.cs" />
     <Compile Include="DbContext\IRipDBContext.cs" />
     <Compile Include="Queries\CreateJobTrackingEntry.cs" />
@@ -189,6 +188,8 @@
     </Compile>
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
+    <Compile Include="Serializer\RipJsonSerializer.cs" />
+    <Compile Include="Serializer\JsonQuotesConverter.cs" />
     <Compile Include="Statistics\CalculationState.cs" />
     <Compile Include="RipSerializationException.cs" />
     <Compile Include="Statistics\DocumentsStatistics.cs" />

@@ -5,8 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Domain;
-using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
@@ -33,13 +32,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve workspace fields.")]
         public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
         {
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
-            importSettings.FederatedInstanceCredentials = settings.Credentials;
+            _apiLog.LogInformation("Import Settings has been extracted successfully for workspace field retrieval process");
 
-            LogImportSettings(importSettings);
-
-            IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
-            List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
+            IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, _serializer.Deserialize<DestinationConfiguration>(settings.Settings));
+            List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(settings.Settings, settings.Credentials)).ToList();
 
             List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
             {
@@ -52,12 +48,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }).ToList();
 
             return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
-        }
-
-        private void LogImportSettings(ImportSettings importSettings)
-        {
-            var settingsForLogging = new ImportSettingsForLogging(importSettings);
-            _apiLog.LogInformation($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
         }
     }
 }

@@ -4,7 +4,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -34,14 +33,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
     public class PermissionValidatorTestsBase : TestBase
     {
-        protected const int _SOURCE_WORKSPACE_ID = 100532;
-        protected const int _DESTINATION_WORKSPACE_ID = 349234;
         protected const int INTEGRATION_POINT_ID = 101323;
-        protected const int _ARTIFACT_TYPE_ID = 1232;
-        protected const int _DESTINATION_ARTIFACT_TYPE_ID = 1233;
+        protected const int _SOURCE_WORKSPACE_ID = 100532;
         protected const int _SOURCE_PROVIDER_ID = 39309;
-        protected const int _DESTINATION_PROVIDER_ID = 42042;
         protected const int _SAVED_SEARCH_ID = 9492;
+        protected const int _ARTIFACT_TYPE_ID = 1232;
+        protected const int _DESTINATION_WORKSPACE_ID = 349234;
+        protected const int _DESTINATION_ARTIFACT_TYPE_ID = 1233;
+        protected const int _DESTINATION_FOLDER_ID = 986454;
+        protected const int _DESTINATION_PROVIDER_ID = 42042;
+
         protected Guid _SOURCE_PROVIDER_GUID = ObjectTypeGuids.SourceProviderGuid;
         protected Guid _DESTINATION_PROVIDER_GUID = ObjectTypeGuids.DestinationProviderGuid;
 
@@ -70,11 +71,21 @@ namespace kCura.IntegrationPoint.Tests.Core
             _validationModel = new IntegrationPointProviderValidationModel()
             {
                 ArtifactId = INTEGRATION_POINT_ID,
-                SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
-                DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
+                SourceConfiguration =
+                    $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
+                DestinationConfiguration = new DestinationConfiguration { ArtifactTypeId = _ARTIFACT_TYPE_ID },
                 SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
                 DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
                 ObjectTypeGuid = Guid.Empty
+            };
+
+            _validationModel.DestinationConfiguration = new DestinationConfiguration()
+            {
+                ArtifactTypeId = _ARTIFACT_TYPE_ID,
+                DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,
+                DestinationFolderArtifactId = _DESTINATION_FOLDER_ID,
+                MoveExistingDocuments = false,
+                UseFolderPathInformation = true
             };
 
             _serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
@@ -82,20 +93,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 {
                     SavedSearchArtifactId = _SAVED_SEARCH_ID,
                     SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
-                    TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID
-                });
-
-            _serializer.Deserialize<ImportSettings>(_validationModel.DestinationConfiguration)
-                .Returns(new ImportSettings
-                {
-                    ArtifactTypeId = _ARTIFACT_TYPE_ID,
-                });
-
-            _serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
-                .Returns(new DestinationConfigurationPermissionValidationModel
-                {
-                    ArtifactTypeId = _ARTIFACT_TYPE_ID,
-                    DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID
+                    TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID,
                 });
         }
     }

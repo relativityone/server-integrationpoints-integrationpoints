@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     internal class CustomProviderFlowCheckTests
     {
         private Mock<IRipToggleProvider> _toggleProviderFake;
-        private Mock<ISerializer> _serializerFake;
         private IFixture _fxt;
         private CustomProviderFlowCheck _sut;
 
@@ -31,13 +30,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             _toggleProviderFake = new Mock<IRipToggleProvider>();
 
-            _serializerFake = new Mock<ISerializer>();
-
             Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new CustomProviderFlowCheck(
                 _toggleProviderFake.Object,
-                _serializerFake.Object,
                 log.Object);
         }
 
@@ -46,9 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-
+            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = false;
             SetupNewCustomProviderToggle(true);
-            SetupManagersLinkingConfiguration(false);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
@@ -62,10 +57,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-
+            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = false;
             SetupNewCustomProviderToggle(false);
-
-            SetupManagersLinkingConfiguration(false);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
@@ -79,10 +72,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-
+            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = true;
             SetupNewCustomProviderToggle(true);
-
-            SetupManagersLinkingConfiguration(true);
 
             // Act
             bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
@@ -112,15 +103,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _toggleProviderFake
                 .Setup(x => x.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>())
                 .ReturnsAsync(value);
-        }
-
-        private void SetupManagersLinkingConfiguration(bool value)
-        {
-            ImportSettings settings = _fxt.Create<ImportSettings>();
-            settings.EntityManagerFieldContainsLink = value;
-
-            _serializerFake.Setup(x => x.Deserialize<ImportSettings>(It.IsAny<string>()))
-                .Returns(settings);
         }
     }
 }

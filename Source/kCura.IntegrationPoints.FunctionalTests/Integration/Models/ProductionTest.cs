@@ -4,6 +4,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class ProductionTest : RdoTestBase
     {
         private const string PRODUCTION_NAME = "Production";

@@ -8,7 +8,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;

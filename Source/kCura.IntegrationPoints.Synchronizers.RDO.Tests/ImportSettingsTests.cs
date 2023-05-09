@@ -1,9 +1,9 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
-using System.Reflection;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
@@ -16,15 +16,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         }
 
         [Test]
-        public void ImportSettings_SerializeDesirialize()
+        public void ImportSettings_SerializeDeserialize()
         {
             // ARRANGE
-            var serializer = new JSONSerializer();
-            var settings = new ImportSettings { ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay };
+            ISerializer serializer = new RipJsonSerializer(null);
+            var settings = new DestinationConfiguration { ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay };
 
             // ACT
             string serializedString = serializer.Serialize(settings);
-            var deserializedSettings = serializer.Deserialize<ImportSettings>(serializedString);
+            var deserializedSettings = serializer.Deserialize<DestinationConfiguration>(serializedString);
 
             // ASSERT
             Assert.IsFalse(serializedString.Contains("\"AuditLevel\""));
@@ -35,29 +35,29 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             Assert.AreEqual(ImportOverwriteModeEnum.AppendOverlay, deserializedSettings.ImportOverwriteMode);
         }
 
-        [TestCase(null, ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-        [TestCase("", ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-        [TestCase("Use Field Settings", ImportOverlayBehaviorEnum.UseRelativityDefaults)]
-        [TestCase("Merge Values", ImportOverlayBehaviorEnum.MergeAll)]
-        [TestCase("Replace Values", ImportOverlayBehaviorEnum.ReplaceAll)]
-        public void ImportSettings_ImportOverlayBehavior(string input, ImportOverlayBehaviorEnum expectedResult)
+        [TestCase(null, OverlayBehavior.UseRelativityDefaults)]
+        [TestCase("", OverlayBehavior.UseRelativityDefaults)]
+        [TestCase("Use Field Settings", OverlayBehavior.UseRelativityDefaults)]
+        [TestCase("Merge Values", OverlayBehavior.MergeAll)]
+        [TestCase("Replace Values", OverlayBehavior.ReplaceAll)]
+        public void ImportSettings_ImportOverlayBehavior(string input, OverlayBehavior expectedResult)
         {
-            var setting = new ImportSettings {FieldOverlayBehavior = input};
-            ImportOverlayBehaviorEnum result = setting.ImportOverlayBehavior;
+            var setting = new ImportSettings(new DestinationConfiguration { FieldOverlayBehavior = input });
+            OverlayBehavior result = setting.ImportOverlayBehavior;
             Assert.AreEqual(expectedResult, result);
         }
 
         [Test]
         public void ImportSettings_ImportOverlayBehavior_Exception()
         {
-            var setting = new ImportSettings {FieldOverlayBehavior = "exception please"};
+            var setting = new ImportSettings(new DestinationConfiguration {FieldOverlayBehavior = "exception please" });
             Assert.That(() => setting.ImportOverlayBehavior, Throws.TypeOf<IntegrationPointsException>());
         }
 
         [TestCase("reLativitY")]
         public void IsRelativityProvider_ShouldReturnTrue_WhenProviderNameIsRelativity(string providerName)
         {
-            var importSettings = new ImportSettings {Provider = providerName};
+            var importSettings = new ImportSettings(new DestinationConfiguration { Provider = providerName });
 
             bool isRelativityProvider = importSettings.IsRelativityProvider();
 
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [TestCase("relativity!")]
         public void IsRelativityProvider_ShouldReturnFalse_WhenProviderNameIsNotRelativity(string providerName)
         {
-            var importSettings = new ImportSettings {Provider = providerName};
+            var importSettings = new ImportSettings(new DestinationConfiguration { Provider = providerName });
 
             bool isRelativityProvider = importSettings.IsRelativityProvider();
 

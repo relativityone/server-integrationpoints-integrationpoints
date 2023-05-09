@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Newtonsoft.Json;
 using Relativity.API;
 using System;
 using System.Collections.Generic;
@@ -181,10 +180,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
             if (existingModel.DestinationConfiguration != model.DestinationConfiguration)
             {
-                dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.DestinationConfiguration);
-                dynamic newDestination = JsonConvert.DeserializeObject(model.DestinationConfiguration);
-
-                if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+                if (existingModel.DestinationConfiguration.ArtifactTypeId != model.DestinationConfiguration.ArtifactTypeId)
                 {
                     invalidProperties.Add("Destination RDO");
                 }

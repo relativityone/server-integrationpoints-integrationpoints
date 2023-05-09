@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class IntegrationPointProfileTest : RdoTestBase
     {
-        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
-
         public static Guid FieldsMappingGuid { get; } = new Guid("8ae37734-29d1-4441-b5d8-483134f98818");
 
         public DateTime? NextScheduledRuntimeUTC { get; set; }
 
-        public string FieldMappings { get; set; } = "[]";
+        public string FieldMappings { get; set; }
 
         public bool? EnableScheduler { get; set; }
 
-        public string SourceConfiguration { get; set; } = "{}";
+        public string SourceConfiguration { get; set; }
 
-        public string DestinationConfiguration { get; set; } = "{}";
+        public string DestinationConfiguration { get; set; }
 
         public int? SourceProvider { get; set; }
 
         public string ScheduleRule { get; set; }
 
-        public ChoiceRef OverwriteFields { get; set; } = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+        public ChoiceRef OverwriteFields { get; set; }
 
         public int? DestinationProvider { get; set; }
 
@@ -46,6 +46,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public IntegrationPointProfileTest() : base("IntegrationPointProfile")
         {
             Name = $"Integration Point Profile (Artifact ID {ArtifactId})";
+            OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+            SourceConfiguration = "{}";
+            DestinationConfiguration = "{}";
+            FieldMappings = "[]";
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -266,14 +270,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Name = Name,
                 SelectedOverwrite = OverwriteFields == null ? string.Empty : OverwriteFields.Name,
                 SourceProvider = SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = DestinationConfiguration,
+                DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(DestinationConfiguration),
                 SourceConfiguration = SourceConfiguration,
                 DestinationProvider = DestinationProvider.GetValueOrDefault(0),
                 Type = Type,
                 Scheduler = new Scheduler(EnableScheduler.GetValueOrDefault(false), ScheduleRule),
                 EmailNotificationRecipients = EmailNotificationRecipients ?? string.Empty,
                 LogErrors = LogErrors.GetValueOrDefault(false),
-                FieldMappings = _serializer.Deserialize<List<FieldMap>>(FieldMappings),
+                FieldMappings = JsonConvert.DeserializeObject<List<FieldMap>>(FieldMappings),
                 NextRun = null,
                 PromoteEligible = false,
                 SecuredConfiguration = null

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -14,6 +15,7 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
+using Exception = System.Exception;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly IImportJobFactory _jobFactory;
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
         private readonly NativeFileImportService _nativeFileImportService;
+        private readonly IConfig _config;
         private Dictionary<int, string> _idToFieldNameDictionary;
         private IImportAPI _importApi;
         private int _lastJobStatusUpdate;
@@ -46,6 +49,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             IImportJobFactory jobFactory,
             IHelper helper,
             IJobStopManager jobStopManager,
+            IConfig config,
             IDiagnosticLog diagnosticLog)
         {
             _helper = helper;
@@ -57,6 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _nativeFileImportService = nativeFileImportService;
             _factory = factory;
             _jobFactory = jobFactory;
+            _config = config;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
 
             if (_batchManager != null)
@@ -88,7 +93,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             if (_importApi == null)
             {
                 LogInitializingImportApi();
-                Connect(Settings);
+                Connect();
                 SetupFieldDictionary();
                 Dictionary<string, int> fieldMapping = _inputMappings;
                 FieldMappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldNameDictionary);
@@ -193,17 +198,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         public int TotalRowsProcessed => _totalRowsImported;
 
-        internal void Connect(ImportSettings settings)
+        private void Connect()
         {
-            _importApi = _factory.GetImportAPI(settings.WebServiceURL);
+            _importApi = _factory.GetImportAPI(_config.WebApiPath);
         }
 
         internal void SetupFieldDictionary()
         {
             try
             {
-                IImportApiFacade facade = _factory.GetImportApiFacade(Settings.WebServiceURL);
-                _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.CaseArtifactId, Settings.ArtifactTypeId);
+                IImportApiFacade facade = _factory.GetImportApiFacade(_config.WebApiPath);
+                _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.DestinationConfiguration.CaseArtifactId, Settings.DestinationConfiguration.ArtifactTypeId);
             }
             catch (Exception e)
             {

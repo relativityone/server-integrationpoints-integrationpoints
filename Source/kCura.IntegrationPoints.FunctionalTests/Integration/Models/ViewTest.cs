@@ -6,6 +6,7 @@ using Relativity.Services.View;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class ViewTest : RdoTestBase
     {
         public string Name { get; set; }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class EntityTest : RdoTestBase
     {
         public override List<Guid> Guids => Const.RdoGuids.Entity.Guids;

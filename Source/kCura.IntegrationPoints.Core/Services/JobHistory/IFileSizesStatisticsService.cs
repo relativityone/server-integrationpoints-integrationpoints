@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
     public interface IFileSizesStatisticsService
     {
-        long CalculatePushedFilesSizeForJobHistory(int jobId, ImportSettings importSettings, SourceConfiguration sourceConfiguration);
+        long CalculatePushedFilesSizeForJobHistory(int jobId, DestinationConfiguration destinationConfiguration, SourceConfiguration sourceConfiguration);
     }
 }

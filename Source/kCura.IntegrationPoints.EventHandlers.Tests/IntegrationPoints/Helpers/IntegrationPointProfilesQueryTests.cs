@@ -349,19 +349,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
         private string CreateDestinationConfigurationJson(bool exportToProduction = false, bool copyImages = false, bool useImagePrecedence = false)
         {
-            var importSettings = new ImportSettings()
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 ProductionImport = exportToProduction,
                 ImageImport = copyImages
             };
             if (useImagePrecedence)
             {
-                importSettings.ImagePrecedence = new List<ProductionDTO>()
+                destinationConfiguration.ImagePrecedence = new List<ProductionDTO>()
                 {
                     new ProductionDTO()
                 };
             }
-            return _serializer.Serialize(importSettings);
+            return _serializer.Serialize(destinationConfiguration);
         }
 
         private void SetUpSyncProviders(int relativitySourceProviderCount = 1, int relativityDestinationProviderCount = 1, int integrationPointTypesCount = 1)

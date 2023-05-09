@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport.Implementati
             const int caseArtifactId = 10020430;
 
             // Act
-            Action action = () => sut.PopulateFrom(new ImportSettings { CaseArtifactId = caseArtifactId }, Mock.Of<Settings>());
+            Action action = () => sut.PopulateFrom(new ImportSettings(new DestinationConfiguration { CaseArtifactId = caseArtifactId }), Mock.Of<Settings>());
 
             // Assert
             action

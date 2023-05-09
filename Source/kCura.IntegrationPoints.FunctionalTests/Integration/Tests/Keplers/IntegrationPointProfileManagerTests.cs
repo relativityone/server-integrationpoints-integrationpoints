@@ -7,10 +7,10 @@ using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 {
@@ -239,10 +239,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             expectedProfile.LogErrors.Should().Be(integrationPoint.LogErrors);
             expectedProfile.OverwriteFields.ArtifactID = integrationPoint.OverwriteFieldsChoiceId;
 
-            if (!string.IsNullOrEmpty(expectedProfile.DestinationConfiguration))
+            if (expectedProfile.DestinationConfiguration != null)
             {
-                RelativityProviderDestinationConfiguration expectedProfileDestinationConfig = Serializer.Deserialize<RelativityProviderDestinationConfiguration>(expectedProfile.DestinationConfiguration);
-                expectedProfileDestinationConfig.ArtifactTypeID.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ArtifactTypeID);
+                DestinationConfiguration expectedProfileDestinationConfig = JsonConvert.DeserializeObject<DestinationConfiguration>(expectedProfile.DestinationConfiguration);
+                expectedProfileDestinationConfig.ArtifactTypeId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ArtifactTypeID);
                 expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).CaseArtifactId);
                 expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ImportNativeFile);
                 expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).UseFolderPathInformation);

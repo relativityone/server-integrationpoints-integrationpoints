@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -33,8 +34,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IImportJobFactory jobFactory,
             IHelper helper,
             IEntityManagerLinksSanitizer entityManagerLinksSanitizer,
-            IDiagnosticLog diagnosticLog)
-            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
+            IDiagnosticLog diagnosticLog,
+            IConfig config,
+            ISerializer serializer)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, config, serializer)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;
@@ -58,7 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public override IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
             LogRetrievingFields();
-            List<RelativityObject> relativityFields = GetAllRdoFields(GetSettings(providerConfiguration.Configuration));
+            List<RelativityObject> relativityFields = GetAllRdoFields(Serializer.Deserialize<DestinationConfiguration>(providerConfiguration.Configuration));
             IEnumerable<FieldEntry> fields = base.GetFields(providerConfiguration);
             Dictionary<string, RelativityObject> fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 
@@ -80,22 +83,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        protected override Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+        protected override Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, DestinationConfiguration destinationConfiguration)
         {
             try
             {
                 _logger.LogInformation("Entity field mapping process started...");
-                List<RelativityObject> allRdoFields = GetAllRdoFields(settings);
+                List<RelativityObject> allRdoFields = GetAllRdoFields(destinationConfiguration);
 
                 LoadFirstNameFieldId(fieldMap, allRdoFields);
                 LoadLastNameFieldId(fieldMap, allRdoFields);
                 LoadUniqueIdSourceField(fieldMap);
 
-                Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, settings);
+                Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, destinationConfiguration);
                 LoadFullNameField(allRdoFields, importFieldMap);
                 _entityManagerMap = new OrderedDictionary();
 
-                LoadManagerFieldId(fieldMap, settings, allRdoFields);
+                LoadManagerFieldId(fieldMap, destinationConfiguration, allRdoFields);
 
                 _logger.LogInformation("Entity field mapping process finished");
 
@@ -114,12 +117,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        private List<RelativityObject> GetAllRdoFields(ImportSettings settings)
+        private List<RelativityObject> GetAllRdoFields(DestinationConfiguration destinationConfiguration)
         {
-            if ((_artifactTypeIdForAllRdoFields != settings.ArtifactTypeId) || (_allRdoFields == null))
+            if ((_artifactTypeIdForAllRdoFields != destinationConfiguration.ArtifactTypeId) || (_allRdoFields == null))
             {
-                _allRdoFields = GetRelativityFields(settings);
-                _artifactTypeIdForAllRdoFields = settings.ArtifactTypeId;
+                _allRdoFields = GetRelativityFields(destinationConfiguration);
+                _artifactTypeIdForAllRdoFields = destinationConfiguration.ArtifactTypeId;
             }
             return _allRdoFields;
         }
@@ -149,7 +152,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _logger.LogInformation("Entity UniqueID source field identifier: {UniqueIDSourceFieldId}", UniqueIDSourceFieldId);
         }
 
-        private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, ImportSettings settings, List<RelativityObject> allRDOFields)
+        private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, DestinationConfiguration destinationConfiguration, List<RelativityObject> allRDOFields)
         {
             HandleManagerLink = false;
 
@@ -162,7 +165,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
                 _logger.LogInformation("Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'", managerFieldId, ManagerSourceFieldId);
 
-                if (settings.EntityManagerFieldContainsLink)
+                if (destinationConfiguration.EntityManagerFieldContainsLink)
                 {
                     _logger.LogInformation("Identified entity manager link setting...");
                     HandleManagerLink = true;

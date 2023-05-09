@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -183,36 +184,48 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ObjectManager.Update(profile);
         }
 
-        private string GetDestinationConfiguration(int integrationPointProfileArtifactId)
-        {
-            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid });
-        }
-
         private string GetSourceConfiguration(int integrationPointProfileArtifactId)
         {
             return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
         }
 
+        private DestinationConfiguration GetDestinationConfiguration(int artifactId)
+        {
+            return ReadLongTextWithRetries<DestinationConfiguration>(GetDestinationConfigurationString, artifactId);
+        }
+
         private List<FieldMap> GetFieldMappings(int artifactId)
         {
-            return _retryHandler.Execute<List<FieldMap>, RipSerializationException>(
-                ReadFieldMapping,
+            return ReadLongTextWithRetries<List<FieldMap>>(GetFieldsMappingString, artifactId);
+        }
+
+        private T ReadLongTextWithRetries<T>(Func<int, string> longTextAccessor, int integrationPointId)
+        {
+            return _retryHandler.Execute<T, RipSerializationException>(
+                () =>
+                {
+                    string longTextString = longTextAccessor(integrationPointId);
+                    return Serializer.Deserialize<T>(longTextString);
+                },
                 exception =>
                 {
                     _logger.LogWarning(
                         exception,
-                        "Unable to deserialize field mapping for integration point profile: {integrationPointProfileId}. Mapping value: {fieldMapping}. Operation will be retried.",
-                        artifactId,
-                        exception.Value);
+                        "Unable to deserialize {fieldType} for integration point profile: {integrationPointId}. LongText value: {longText}. Operation will be retried.",
+                        typeof(T),
+                        integrationPointId,
+                        exception.Value ?? string.Empty);
                 });
+        }
 
-            List<FieldMap> ReadFieldMapping()
-            {
-                string fieldMapString = GetUnicodeLongText(artifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
-                List<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
-                SanitizeFieldsMapping(fieldMap);
-                return fieldMap;
-            }
+        private string GetDestinationConfigurationString(int artifactId)
+        {
+            return GetUnicodeLongText(artifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid });
+        }
+
+        private string GetFieldsMappingString(int artifactId)
+        {
+            return GetUnicodeLongText(artifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
         }
 
         private string GetUnicodeLongText(int artifactId, FieldRef field)
@@ -273,7 +286,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                DestinationConfiguration = dto.DestinationConfiguration,
+                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new DestinationConfiguration()),
                 FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,

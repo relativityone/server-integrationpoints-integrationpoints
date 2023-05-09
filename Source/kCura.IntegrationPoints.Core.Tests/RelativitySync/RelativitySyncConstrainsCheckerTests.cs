@@ -4,7 +4,6 @@ using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.RelativitySync;
@@ -12,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity;
@@ -35,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         private Job _job;
         private Mock<ISerializer> _configurationDeserializer;
         private SourceConfiguration _sourceConfiguration;
-        private ImportSettings _importSettings;
+        private DestinationConfiguration _importSettings;
         private TaskParameters _taskParameters;
         private RelativitySyncConstrainsChecker _sut;
 
@@ -62,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 
             _sourceConfiguration = new SourceConfiguration { TypeOfExport = SourceConfiguration.ExportType.SavedSearch };
 
-            _importSettings = new ImportSettings
+            _importSettings = new DestinationConfiguration
             {
                 ImageImport = false,
                 ProductionImport = false,
@@ -84,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _configurationDeserializer = new Mock<ISerializer>();
             _configurationDeserializer.Setup(d => d.Deserialize<SourceConfiguration>(_SOURCE_CONFIGURATION))
                 .Returns(_sourceConfiguration);
-            _configurationDeserializer.Setup(d => d.Deserialize<ImportSettings>(_DESTINATION_CONFIGURATION))
+            _configurationDeserializer.Setup(d => d.Deserialize<DestinationConfiguration>(_DESTINATION_CONFIGURATION))
                 .Returns(_importSettings);
             _configurationDeserializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
                 .Returns(_taskParameters);
@@ -219,7 +217,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WhenConfigurationDeserializerForImportSettingsThrows()
         {
             // Arrange
-            _configurationDeserializer.Setup(s => s.Deserialize<ImportSettings>(_DESTINATION_CONFIGURATION)).Throws<Exception>();
+            _configurationDeserializer.Setup(s => s.Deserialize<DestinationConfiguration>(_DESTINATION_CONFIGURATION)).Throws<Exception>();
 
             // Act
             bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);

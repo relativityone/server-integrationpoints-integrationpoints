@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -13,19 +12,16 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Api;
 using Newtonsoft.Json.Linq;
@@ -141,7 +137,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         DiagnosticLog.LogDiagnostic("Context: {@context}", context);
 
                         DiagnosticLog.LogDiagnostic("Synchronizing...");
-                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, Serializer.Serialize(settings), JobStopManager, DiagnosticLog);
+                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager, DiagnosticLog);
                         DiagnosticLog.LogDiagnostic("Finished synchronizing.");
                     }
                 }
@@ -327,11 +323,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogGetImportApiSettingsObjectForUserStart(job);
             ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-            ImportSettings importSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
+            ImportSettings importSettings = new ImportSettings(IntegrationPointDto.DestinationConfiguration);
             importSettings.CorrelationId = ImportSettings.CorrelationId;
             importSettings.JobID = ImportSettings.JobID;
-            importSettings.Provider = nameof(ProviderType.ImportLoadFile);
-            importSettings.OnBehalfOfUserId = job.SubmittedBy;
+            importSettings.DestinationConfiguration.Provider = nameof(ProviderType.ImportLoadFile);
             importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(
                 IntegrationPointDto.ArtifactId,
                 IntegrationPointDto.Name,
@@ -341,7 +336,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
             // ImportAPI process. This is introduced by the fact that the first record is the column header row.
             // Opticon files have no column header row
-            if (importSettings.ImageImport)
+            if (importSettings.DestinationConfiguration.ImageImport)
             {
                 importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber);
             }
@@ -353,7 +348,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             int processedItemsCount = GetProcessedItemsCountFromJobDetails(job);
             importSettings.StartRecordNumber += processedItemsCount;
 
-            importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
+            importSettings.DestinationConfiguration.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
 
             // Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
             importSettings.MultiValueDelimiter = (char)providerSettings.AsciiMultiLine;
@@ -369,7 +364,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
                 int recordCount =
-                    settings.ImageImport ?
+                    settings.DestinationConfiguration.ImageImport ?
                     (int)((IOpticonDataReader)sourceReader).CountRecords() :
                     (int)((IArtifactReader)sourceReader).CountRecords();
 

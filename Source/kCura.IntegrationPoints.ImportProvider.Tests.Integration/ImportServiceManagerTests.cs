@@ -31,15 +31,15 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         private IImportFileLocationService _importFileLocationService;
         private ImportServiceManager _instanceUnderTest;
         private ISerializer _serializer;
+        private IConfig _config;
         private string _testDataDirectory;
         private static WindsorContainer _windsorContainer;
         private const string _INPUT_FOLDER_KEY = "InputFolder";
@@ -82,7 +83,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
             IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
             IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
-            IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
+            _config = Substitute.For<IConfig>();
+            _config.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
             // Data Transfer Location
             IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
@@ -98,11 +100,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 _windsorContainer.Resolve<IRelativityFieldQuery>(),
                 _windsorContainer.Resolve<IImportApiFactory>(),
                 _windsorContainer.Resolve<IImportJobFactory>(),
-                helper,diagnosticLog, SharedVariables.RelativityWebApiUrl,
+                helper,
+                diagnosticLog,
+                _config,
+                _serializer,
                 true,
-                true,
-                instanceSettingsManager);
-            synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
+                true);
+            synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<DestinationConfiguration>()).Returns(synchronizer);
 
             // RSAPI
             IRelativityObjectManagerService relativityObjectManagerServiceMock = Substitute.For<IRelativityObjectManagerService>();
@@ -198,17 +202,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         private void RunTestCase(IImportTestCase testCase)
         {
             SettingsObjects settingsObjects = testCase.Prepare(WorkspaceArtifactId);
-
-            settingsObjects.ImportSettings.RelativityUsername = SharedVariables.RelativityUserName;
-            settingsObjects.ImportSettings.RelativityPassword = SharedVariables.RelativityPassword;
             _ip.SourceConfiguration = _serializer.Serialize(settingsObjects.ImportProviderSettings);
-            _ip.DestinationConfiguration = _serializer.Serialize(settingsObjects.ImportSettings);
+            _ip.DestinationConfiguration = settingsObjects.DestinationConfiguration;
             _ip.FieldMappings = settingsObjects.FieldMaps;
 
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(
                 Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile));
 
-            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<string>())
+            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<DestinationConfiguration>())
                 .Returns(new LoadFileInfo { FullPath = fileInfo.FullName, Size = fileInfo.Length, LastModifiedDate = fileInfo.LastWriteTimeUtc });
 
             Job job = PrepareImportJob(fileInfo);
@@ -254,7 +255,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         private static Job PrepareImportJob(System.IO.FileInfo fileInfo)
         {
             return new JobBuilder()
-                .WithJobDetails(new ScheduleQueue.Core.Core.TaskParameters
+                .WithJobDetails(new TaskParameters
                 {
                     BatchInstance = Guid.NewGuid(),
                     BatchParameters = new LoadFileTaskParameters

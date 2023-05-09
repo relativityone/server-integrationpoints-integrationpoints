@@ -1,6 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services
 {

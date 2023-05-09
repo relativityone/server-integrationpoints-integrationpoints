@@ -6,7 +6,7 @@ using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
-namespace kCura.IntegrationPoints.Domain.Synchronizer
+namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     /// <summary>
     /// Imports data from the source provider into Relativity.
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
         void SyncData(
             IEnumerable<IDictionary<FieldEntry, object>> data,
             IEnumerable<FieldMap> fieldMap,
-            string options,
+            ImportSettings options,
             IJobStopManager jobStopManager,
             IDiagnosticLog diagnosticLog);
 
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Domain.Synchronizer
         void SyncData(
             IDataTransferContext data,
             IEnumerable<FieldMap> fieldMap,
-            string options,
+            ImportSettings options,
             IJobStopManager jobStopManager,
             IDiagnosticLog diagnosticLog);
 

@@ -6,6 +6,7 @@ using GlobalConst = Relativity.IntegrationPoints.Tests.Common.GlobalConst;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class DestinationProviderTest : RdoTestBase
     {
         public string Identifier { get; set; }

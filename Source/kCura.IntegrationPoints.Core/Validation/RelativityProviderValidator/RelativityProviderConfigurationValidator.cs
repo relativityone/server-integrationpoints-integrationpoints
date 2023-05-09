@@ -56,16 +56,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
         private ValidationResult Validate(IntegrationPointProviderValidationModel integrationModel)
         {
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
 
             var result = new ValidationResult();
-            result.Add(ValidateSyncNonDocumentFlowToggle(destinationConfiguration));
+            result.Add(ValidateSyncNonDocumentFlowToggle(integrationModel.DestinationConfiguration));
             result.Add(ValidateSourceWorkspace(sourceConfiguration));
             result.Add(ValidateDestinationWorkspace(integrationModel, sourceConfiguration));
             return result;
         }
 
-        private ValidationResult ValidateSyncNonDocumentFlowToggle(ImportSettings destinationConfiguration)
+        private ValidationResult ValidateSyncNonDocumentFlowToggle(DestinationConfiguration destinationConfiguration)
         {
             var result = new ValidationResult();
 
@@ -116,7 +115,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
                 sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
             result.Add(destinationWorkspaceNameValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
+            DestinationConfiguration destinationConfiguration = integrationModel.DestinationConfiguration;
 
             if (!result.IsValid)
             {
@@ -141,7 +140,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
                 {
                     ImportProductionValidator importProductionValidator =
                         _validatorsFactory.CreateImportProductionValidator(sourceConfiguration.TargetWorkspaceArtifactId,
-                        destinationConfiguration.FederatedInstanceArtifactId,
+                        null,
                         integrationModel.SecuredConfiguration);
                     result.Add(importProductionValidator.Validate(destinationConfiguration.ProductionArtifactId));
                 }
