@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             DestinationConfiguration destinationConfiguration = job.IntegrationPointDto.DestinationConfiguration;
 
             _logger
-                .ForContext("DestinationConfiguration", importSettings, true)
+                .ForContext("DestinationConfiguration", destinationConfiguration, true)
                 .ForContext("SourceConfiguration", sourceConfiguration, true)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
