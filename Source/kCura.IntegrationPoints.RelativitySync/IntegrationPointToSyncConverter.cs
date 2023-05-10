@@ -136,7 +136,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         DestinationLocationType.Folder, destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyImagesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncImageMode(),
-                        EnableTagging = destinationConfiguration.EnableTagging
+                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
+                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
@@ -187,7 +188,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyNativesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        EnableTagging = destinationConfiguration.EnableTagging
+                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
+                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
