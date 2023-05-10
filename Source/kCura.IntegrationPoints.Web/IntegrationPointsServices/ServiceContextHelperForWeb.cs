@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
         private readonly IDbContextFactory _dbContextFactory;
         private readonly IHelper _helper;
         private readonly IWorkspaceContext _workspaceContext;
-        private int? _workspaceId;
 
         public ServiceContextHelperForWeb(
             IAPILog logger,
@@ -29,20 +28,11 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
             _workspaceContext = workspaceContext;
             _userContext = userContext;
             _dbContextFactory = new DbContextFactory(helper, logger);
+
+            _logger.LogInformation("Creating ServiceContextHelperForWeb with IWorkspaceContext Type - {workspaceContext}.", workspaceContext?.GetType());
         }
 
-        public int WorkspaceID
-        {
-            get
-            {
-                if (!_workspaceId.HasValue)
-                {
-                    _workspaceId = _workspaceContext.GetWorkspaceID();
-                }
-
-                return _workspaceId.Value;
-            }
-        }
+        public int WorkspaceID => _workspaceContext.GetWorkspaceID();
 
         public int GetEddsUserID()
         {

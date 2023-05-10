@@ -105,6 +105,10 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .UsingFactoryMethod(x =>
             {
                 int workspaceId = x.Resolve<IServiceContextHelper>().WorkspaceID;
+
+                IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+                logger.LogInformation("Creating RelativityObjectManager for Workspace {workspaceId}", workspaceId);
+
                 IRelativityObjectManagerFactory factory = x.Resolve<IRelativityObjectManagerFactory>();
                 return factory.CreateRelativityObjectManager(workspaceId);
             }).LifestyleTransient());
