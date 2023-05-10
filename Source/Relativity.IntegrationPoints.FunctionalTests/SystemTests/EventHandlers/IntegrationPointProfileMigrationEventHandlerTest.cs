@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+            _serializer = RipJsonSerializer.CreateWithoutLogger();
             _createdProfilesArtifactIDs = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
         }
 
@@ -123,9 +123,9 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
                 .Select(sourceConfigurationJson => _serializer.Deserialize<SourceConfiguration>(sourceConfigurationJson))
                 .ToList();
 
-            List<ImportSettings> destinationConfigurations = targetWorkspaceProfiles
+            List<DestinationConfiguration> destinationConfigurations = targetWorkspaceProfiles
                 .Select(profile => profile.DestinationConfiguration)
-                .Select(destinationConfigurationJson => _serializer.Deserialize<ImportSettings>(destinationConfigurationJson))
+                .Select(destinationConfigurationJson => _serializer.Deserialize<DestinationConfiguration>(destinationConfigurationJson))
                 .ToList();
 
             // verify that source is saved search
@@ -402,7 +402,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
 
         private string CreateDestinationConfigurationJson(bool exportToProduction = false, bool copyImages = false, bool useImagePrecedence = false)
         {
-            var destinationConfiguration = new ImportSettings()
+            var destinationConfiguration = new DestinationConfiguration()
             {
                 ProductionImport = exportToProduction,
                 ImageImport = copyImages

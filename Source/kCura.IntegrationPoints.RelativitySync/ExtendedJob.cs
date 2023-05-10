@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync

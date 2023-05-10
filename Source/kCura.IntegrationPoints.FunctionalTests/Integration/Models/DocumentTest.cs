@@ -5,6 +5,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class DocumentTest : RdoTestBase
     {
         private const string DOCUMENT_NAME = "Document";

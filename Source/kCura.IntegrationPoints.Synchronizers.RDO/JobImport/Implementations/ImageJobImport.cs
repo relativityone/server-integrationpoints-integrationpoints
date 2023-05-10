@@ -64,20 +64,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         private void PrepareJob()
         {
             _builder.PopulateFrom(ImportSettings, ImportJob.Settings);
-            LogJobSettings();
             _logger.LogInformation("Building data table");
             ImportJob.SourceData.Reader = _sourceData;
             _logger.LogInformation("Building data table finished");
             Context.UpdateTransferStatus();
-        }
-
-        private void LogJobSettings()
-        {
-            if (ImportSettings != null)
-            {
-                var importSettingsForLogging = new ImportSettingsForLogging(ImportSettings);
-                _logger.LogInformation("Import API image import settings: {importApiSettings}", importSettingsForLogging);
-            }
         }
     }
 }

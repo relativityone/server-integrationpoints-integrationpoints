@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Factories;
@@ -17,7 +18,6 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.API;
 using SystemInterface.IO;
-using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API

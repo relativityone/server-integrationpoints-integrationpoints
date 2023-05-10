@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Contracts.Helpers;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {

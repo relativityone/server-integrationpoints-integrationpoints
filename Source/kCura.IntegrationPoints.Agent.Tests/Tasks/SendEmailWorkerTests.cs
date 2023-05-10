@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.Email.Dto;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -15,6 +13,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Email.Exceptions;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -47,12 +46,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             // ARRANGE
             EmailJobParameters emailJobParameters = GenerateEmailJobParameters();
-            Guid guid = Guid.NewGuid();
-            TaskParameters taskParameters = new TaskParameters
-            {
-                BatchInstance = guid,
-                BatchParameters = emailJobParameters
-            };
             Job job = CreateSendEmailJob(emailJobParameters);
 
             // ACT

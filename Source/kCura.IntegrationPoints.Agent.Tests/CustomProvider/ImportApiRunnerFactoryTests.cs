@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void BuildRunner_ShouldReturnProperRunnerType(bool isDocumentTransfer, Type expectedRunnerType)
         {
             // Arrange
-            var importSettings = new ImportSettings
+            var importSettings = new DestinationConfiguration
             {
                 ArtifactTypeId = isDocumentTransfer
                     ? (int)ArtifactType.Document

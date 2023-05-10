@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private void SetLocationName(IDictionary<string, object> settings)
         {
             int folderArtifactId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.FolderArtifactId));
-            int productionArtifactId = ParseValue<int>(settings, nameof(ImportSettings.ProductionArtifactId));
+            int productionArtifactId = ParseValue<int>(settings, nameof(DestinationConfiguration.ProductionArtifactId));
 
             if (folderArtifactId == 0 && productionArtifactId > 0)
             {
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                     .GetLogger()
                     .ForContext<IntegrationPointViewPreLoad>()
                     .LogError(ex, "Destination Production Set not found");
-                settings[nameof(ImportSettings.ProductionArtifactId)] = 0;
+                settings[nameof(DestinationConfiguration.ProductionArtifactId)] = 0;
             }
         }
 

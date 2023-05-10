@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace kCura.ScheduleQueue.Core
+﻿namespace kCura.ScheduleQueue.Core
 {
     public interface IAgentService
     {

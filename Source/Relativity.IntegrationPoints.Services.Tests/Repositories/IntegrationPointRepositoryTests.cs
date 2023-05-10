@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -20,7 +19,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
     [TestFixture, Category("Unit")]
     public class IntegrationPointRepositoryTests : TestBase
     {
-        private ISerializer _serializer;
         private IObjectTypeRepository _objectTypeRepository;
         private IUserInfo _userInfo;
         private IChoiceQuery _choiceQuery;
@@ -28,15 +26,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointProfileService _integrationPointProfileService;
         private Services.Repositories.IIntegrationPointAccessor _integrationPointAccessor;
-        private ImportSettings _destinationConfiguration;
-        private string _serializedDestinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private ICaseServiceContext _caseContext;
         private int _workspaceArtifactId = 100;
 
         public override void SetUp()
         {
             _integrationPointService = Substitute.For<IIntegrationPointService>();
-            _serializer = Substitute.For<ISerializer>();
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
             _objectTypeRepository = Substitute.For<IObjectTypeRepository>();
             _userInfo = Substitute.For<IUserInfo>();
@@ -56,16 +52,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase(123)]
-        public void ItShouldCreateIntegrationPoint(int? federatedInstanceArtifactId)
+        public void ItShouldCreateIntegrationPoint()
         {
             var overwriteFieldsChoiceId = 934;
             var overwriteFieldsChoiceName = "Append/Overlay";
             var integrationPointArtifactId = 134;
 
-            var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName,
-                integrationPointArtifactId, federatedInstanceArtifactId);
+            var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
 
             _integrationPointService.SaveIntegrationPoint(Arg.Is<IntegrationPointDto>(x => x.ArtifactId == 0))
                 .Returns(integrationPointArtifactId);
@@ -77,16 +70,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase(123)]
-        public void ItShouldUpdateIntegrationPoint(int? federatedInstanceArtifactId)
+        public void ItShouldUpdateIntegrationPoint()
         {
             var overwriteFieldsChoiceId = 215;
             var overwriteFieldsChoiceName = "Append/Overlay";
             var integrationPointArtifactId = 902;
 
-            var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName,
-                integrationPointArtifactId, federatedInstanceArtifactId);
+            var createRequest = SetUpCreateOrUpdateTest(overwriteFieldsChoiceId, overwriteFieldsChoiceName, integrationPointArtifactId);
 
             _integrationPointService.SaveIntegrationPoint(
                 Arg.Is<IntegrationPointDto>(x => x.ArtifactId == createRequest.IntegrationPoint.ArtifactId))
@@ -98,23 +88,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointService.Received(1).ReadSlim(integrationPointArtifactId);
         }
 
-        private void SetUpDestinationConfiguration(int? federatedInstanceArtifactId = null)
+        private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointArtifactId)
         {
-            _destinationConfiguration = new ImportSettings()
-            {
-                FederatedInstanceArtifactId = federatedInstanceArtifactId
-            };
-            IAPILog logger = Substitute.For<IAPILog>();
-            _serializedDestinationConfiguration = new IntegrationPointSerializer(logger).Serialize(_destinationConfiguration);
-
-            _serializer.Serialize(_destinationConfiguration).Returns(_serializedDestinationConfiguration);
-            _serializer.Deserialize<ImportSettings>(_serializedDestinationConfiguration)
-                .Returns(_destinationConfiguration);
-        }
-
-        private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointArtifactId, int? federatedInstanceArtifactId = null)
-        {
-            SetUpGetDto(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName, federatedInstanceArtifactId);
+            SetUpGetDto(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
 
             var createRequest = new UpdateIntegrationPointRequest
             {
@@ -135,9 +111,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             return createRequest;
         }
 
-        private IntegrationPointSlimDto SetUpGetDto(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123", int? federatedInstanceArtifactId = null)
+        private IntegrationPointSlimDto SetUpGetDto(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123")
         {
-            SetUpDestinationConfiguration(federatedInstanceArtifactId);
+            _destinationConfiguration = new DestinationConfiguration();
 
             var integrationPointSlim = CreateIntegrationPointSlim(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
 
@@ -192,9 +168,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase(123)]
-        public void ItShouldRunIntegrationPointWithUser(int? federatedInstanceArtifactId)
+        public void ItShouldRunIntegrationPointWithUser()
         {
             int workspaceId = 873;
             int artifactId = 797;
@@ -202,7 +176,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             _userInfo.ArtifactID.Returns(userId);
 
-            SetUpGetDto(artifactId, 456, "choice456", federatedInstanceArtifactId);
+            SetUpGetDto(artifactId, 456, "choice456");
 
             _integrationPointAccessor.RunIntegrationPoint(workspaceId, artifactId);
 
@@ -266,21 +240,19 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         }
 
         [Test]
-        [TestCase(null)]
-        [TestCase(123)]
-        public void ItShouldCreateIntegrationPointBasedOnProfile(int? federatedInstanceArtifactId)
+        public void ItShouldCreateIntegrationPointBasedOnProfile()
         {
             int profileArtifactId = 565952;
             string integrationPointName = "ip_name_425";
             int artifactId = 131510;
 
-            var integrationPoint = SetUpGetDto(0, 789, "choice789", federatedInstanceArtifactId);
+            var integrationPoint = SetUpGetDto(0, 789, "choice789");
 
             var profile = new IntegrationPointProfileDto
             {
                 SelectedOverwrite = "No",
                 SourceProvider = 237,
-                DestinationConfiguration = _serializedDestinationConfiguration,
+                DestinationConfiguration = _destinationConfiguration,
                 SourceConfiguration = "391908",
                 DestinationProvider = 363,
                 Type = 840,

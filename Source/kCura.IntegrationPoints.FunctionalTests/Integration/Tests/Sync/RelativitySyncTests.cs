@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -17,7 +16,6 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Sync;
-using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {

@@ -16,7 +16,6 @@ using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using Choice = Relativity.Services.ChoiceQuery.Choice;
 
@@ -211,7 +210,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     ArtifactId = integrationPoint.ArtifactId,
                     Name = integrationPoint.Name,
                     SourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(integrationPoint.SourceConfiguration),
-                    DestinationConfiguration = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration),
+                    DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPoint.DestinationConfiguration),
                     SourceProvider = (int)integrationPoint.SourceProvider,
                     DestinationProvider = (int)integrationPoint.DestinationProvider,
                     FieldMappings = JsonConvert.DeserializeObject<List<FieldMap>>(integrationPoint.FieldMappings),

@@ -20,13 +20,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
         {
             ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
             IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-            Domain.Managers.IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
             Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
             IRelativityProviderConfiguration relativityProviderSourceConfiguration =
                 RelativityProviderSourceConfigurationFactory.Create(helper, instanceSettingsManager);
 
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration =
-                new RelativityProviderDestinationConfiguration(helper, federatedInstanceManager, repositoryFactory);
+                new RelativityProviderDestinationConfiguration(helper, repositoryFactory);
 
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
             int workspaceId = helper.GetActiveCaseID();

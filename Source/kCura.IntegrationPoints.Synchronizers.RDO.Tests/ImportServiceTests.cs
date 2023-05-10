@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 { "sourceField7", "F7" },
             };
 
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             // ACT
             Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 { 7, "F7" },
             };
 
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             // ACT
             Dictionary<string, string> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 {7, "F7" },
             };
 
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             // ACT
             Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 {7, "F7" },
             };
 
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             // ACT
             Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
             NativeFileImportService nativeFileImportService = null;
 
-            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null, null);
 
             // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 ImportNativeFiles = false
             };
 
-            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null, null);
 
             // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 SourceFieldName = "MyPath"
             };
 
-            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null, null, null);
 
             // ACT
             Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
@@ -283,7 +283,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [TestCase("{0}{1}{2}", "{3}{4}{5}{6}")]
         public void PrependString_NonEmptyOrWhitespaceMessage_ReturnsConcatenatedStrings(string prefix, string message)
         {
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             string result = importService.PrependString(prefix, message);
 
@@ -297,7 +297,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             string prefix = "Test Prefix";
 
-            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null, null, null);
 
             string result = importService.PrependString(prefix, message);
 

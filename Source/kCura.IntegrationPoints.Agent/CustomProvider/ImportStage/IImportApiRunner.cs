@@ -16,6 +16,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
         /// <exception cref="ImportApiResponseException"></exception>
-        Task RunImportJobAsync(ImportJobContext importJobContext, ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings);
+        Task RunImportJobAsync(ImportJobContext importJobContext, DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
     }
 }

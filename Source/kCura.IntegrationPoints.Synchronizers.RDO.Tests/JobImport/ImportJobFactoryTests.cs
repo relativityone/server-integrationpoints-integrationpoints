@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [Test]
         public void Create_RelativityProviderProductionImportAndImageImportFlagsSetTrue_ProducesProductionImageJobImport()
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ProductionImport = true,
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
             };
             var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
-            IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
+            IJobImport result = factory.Create(_importApi, new ImportSettings(settings), _transferContext, _helperMock);
 
             Assert.IsInstanceOf<ProductionImageJobImport>(result);
         }
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [Test]
         public void Create_RelativityProviderImageImportFlagSetTrue_ProducesImageJobImport()
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = true,
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
             };
             var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
-            IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
+            IJobImport result = factory.Create(_importApi, new ImportSettings(settings), _transferContext, _helperMock);
 
             Assert.IsInstanceOf<ImageJobImport>(result);
         }
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [TestCase("relativity_no_more", false)]
         public void Create_NonRelativityProviderImageImportFlagSetTrue_ProducesImageJobImport(string provider, bool productionImportFlag)
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = true,
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
             };
             var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
-            IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
+            IJobImport result = factory.Create(_importApi, new ImportSettings(settings), _transferContext, _helperMock);
 
             Assert.IsInstanceOf<ImageJobImport>(result);
         }
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [TestCase("relativity_no_more", false)]
         public void Create_NonRelativityProviderImageImportFlagSetFalse_ProducesNativeJobImport(string provider, bool productionImportFlag)
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = false,
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
             };
             var factory = new ImportJobFactory(Substitute.For<IMessageService>());
 
-            IJobImport result = factory.Create(_importApi, settings, _transferContext, _helperMock);
+            IJobImport result = factory.Create(_importApi, new ImportSettings(settings), _transferContext, _helperMock);
             Assert.IsInstanceOf<NativeJobImport>(result);
         }
 
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         public void GetJobContextType_ReturnsNative(string provider, bool imageImportFlag,
             bool productionImportFlag)
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = imageImportFlag,
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
                 Provider = provider,
             };
 
-            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(settings);
+            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(new ImportSettings(settings));
 
             Assert.AreEqual(ImportJobFactory.JobContextType.Native, result);
         }
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [TestCase(false)]
         public void GetJobContextType_ReturnsImportImagesFromLoadFile(bool productionImportFlag)
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = true,
@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
                 Provider = "not_relativity",
             };
 
-            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(settings);
+            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(new ImportSettings(settings));
 
             Assert.AreEqual(ImportJobFactory.JobContextType.ImportImagesFromLoadFile, result);
         }
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [Test]
         public void GetJobContextType_ReturnsRelativityToRelativityImages()
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = true,
@@ -164,7 +164,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
                 Provider = "relativity",
             };
 
-            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(settings);
+            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(new ImportSettings(settings));
 
             Assert.AreEqual(ImportJobFactory.JobContextType.RelativityToRelativityImages, result);
         }
@@ -172,7 +172,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
         [Test]
         public void GetJobContextType_ReturnsRelativityToRelativityImagesProduction()
         {
-            var settings = new ImportSettings
+            var settings = new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 ImageImport = true,
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.JobImport
                 Provider = "relativity",
             };
 
-            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(settings);
+            ImportJobFactory.JobContextType result = ImportJobFactory.GetJobContextType(new ImportSettings(settings));
 
             Assert.AreEqual(ImportJobFactory.JobContextType.RelativityToRelativityImagesProduction, result);
         }

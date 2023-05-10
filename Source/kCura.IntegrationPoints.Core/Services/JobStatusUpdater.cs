@@ -3,9 +3,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Services

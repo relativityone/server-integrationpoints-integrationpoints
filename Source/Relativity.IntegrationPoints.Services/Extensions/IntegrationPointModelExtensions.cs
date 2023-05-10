@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
@@ -38,9 +36,9 @@ namespace Relativity.IntegrationPoints.Services.Extensions
         {
             Mapper.Map(model, dtoBase);
 
-            // FieldMappings should be now properly mapped by AutoMapper
+            // FieldMappings and should be now properly mapped by AutoMapper
             dtoBase.SourceConfiguration = JsonConvert.SerializeObject(model.SourceConfiguration);
-            dtoBase.DestinationConfiguration = JsonConvert.SerializeObject(model.DestinationConfiguration);
+            dtoBase.DestinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(JsonConvert.SerializeObject(model.DestinationConfiguration));
             dtoBase.EmailNotificationRecipients = model.EmailNotificationRecipients;
             dtoBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
             dtoBase.SelectedOverwrite = overwriteFieldsName;
@@ -73,12 +71,8 @@ namespace Relativity.IntegrationPoints.Services.Extensions
             ImportNativeFileCopyModeEnum fileCopyMode,
             bool importFile)
         {
-            dto.DestinationConfiguration = JsonUtils.AddOrUpdatePropertyValues(dto.DestinationConfiguration,
-                new Dictionary<string, object>
-                {
-                    { nameof(ImportSettings.ImportNativeFileCopyMode), fileCopyMode.ToString() },
-                    { nameof(ImportSettings.ImportNativeFile), importFile }
-                });
+            dto.DestinationConfiguration.ImportNativeFileCopyMode = fileCopyMode;
+            dto.DestinationConfiguration.ImportNativeFile = importFile;
         }
     }
 }

@@ -2,7 +2,7 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;

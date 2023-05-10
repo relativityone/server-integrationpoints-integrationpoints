@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -79,8 +78,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 
         protected Guid GetTransferredObjectObjectTypeGuid(IntegrationPointProviderValidationModel validationModel)
         {
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
-            int destinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
+            int destinationWorkspaceArtifactId = validationModel.DestinationConfiguration.CaseArtifactId;
             IRelativityObjectManager relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(destinationWorkspaceArtifactId);
 
             var request = new QueryRequest()

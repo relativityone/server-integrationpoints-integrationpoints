@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {

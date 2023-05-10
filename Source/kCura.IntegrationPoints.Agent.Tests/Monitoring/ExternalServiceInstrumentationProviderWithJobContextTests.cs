@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Config;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -15,6 +13,7 @@ using System;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {

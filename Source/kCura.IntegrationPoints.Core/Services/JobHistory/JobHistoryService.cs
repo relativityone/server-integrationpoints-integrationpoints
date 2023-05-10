@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
@@ -94,14 +93,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 JobID = null
             };
 
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
-
+            int workspaceId = integrationPointDto.DestinationConfiguration.CaseArtifactId;
             try
             {
-                WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(importSettings.CaseArtifactId);
+                WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(workspaceId);
                 if (workspaceDto != null)
                 {
-                    jobHistory.DestinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, importSettings.CaseArtifactId);
+                    jobHistory.DestinationWorkspace = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceId);
                 }
             }
             catch (Exception ex)

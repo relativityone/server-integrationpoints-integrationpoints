@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -59,16 +57,16 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
         public string Convert()
         {
             SetIntegrationPoint(_job);
-            string destinationConfiguration = this.IntegrationPointDto.DestinationConfiguration;
             List<FieldMap> fieldMap = IntegrationPointDto.FieldMappings;
             fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
             List<FieldEntry> destinationFields = GetDestinationFields(fieldMap.ToArray());
-            IDataSynchronizer destinationProvider = GetDestinationProvider(base.DestinationProvider, destinationConfiguration, _job);
+            IDataSynchronizer destinationProvider = GetDestinationProvider(base.DestinationProvider, IntegrationPointDto.DestinationConfiguration, _job);
 
             string returnValue = string.Empty;
             if (destinationProvider is IEmailBodyData)
             {
-                returnValue = ((IEmailBodyData)destinationProvider).GetEmailBodyData(destinationFields, destinationConfiguration);
+                string importSettingsString = Serializer.Serialize(IntegrationPointDto.DestinationConfiguration);
+                returnValue = ((IEmailBodyData)destinationProvider).GetEmailBodyData(destinationFields, importSettingsString);
             }
 
             return returnValue;

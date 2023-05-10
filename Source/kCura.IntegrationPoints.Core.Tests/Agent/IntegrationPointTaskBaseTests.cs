@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
@@ -11,14 +10,11 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -220,7 +216,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             // ARRANGE
             const string jobDetailsText = "SERIALIZED";
             const long jobIdValue = 12321;
-            const string configuration = "config";
+            DestinationConfiguration configuration = new DestinationConfiguration();
             IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
             var destinationProvider = new DestinationProvider()
             {
@@ -300,7 +296,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             return base.GetSourceProvider(sourceProviderRdo, job);
         }
 
-        public new IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration,
+        public new IDataSynchronizer GetDestinationProvider(
+            DestinationProvider destinationProviderRdo,
+            DestinationConfiguration configuration,
             Job job)
         {
             return base.GetDestinationProvider(destinationProviderRdo, configuration, job);

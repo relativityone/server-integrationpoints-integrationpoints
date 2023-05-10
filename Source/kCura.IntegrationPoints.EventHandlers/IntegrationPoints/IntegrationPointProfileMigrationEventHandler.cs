@@ -265,7 +265,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         private string UpdateDestinationConfiguration(string destinationConfigurationJson)
         {
             JObject destinationConfiguration = JObject.Parse(destinationConfigurationJson);
-            destinationConfiguration[nameof(ImportSettings.ImagePrecedence)] = null;
+            destinationConfiguration[nameof(DestinationConfiguration.ImagePrecedence)] = null;
             string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
             return updatedDestinationConfiguration;
         }

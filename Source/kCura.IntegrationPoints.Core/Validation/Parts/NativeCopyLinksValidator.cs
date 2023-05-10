@@ -47,9 +47,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
             try
             {
                 IntegrationPointProviderValidationModel validationModel = CastToValidationModel(value);
-                ImportSettings settings = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
-
-                if (settings.ImportNativeFileCopyMode != ImportNativeFileCopyModeEnum.SetFileLinks)
+                if (validationModel.DestinationConfiguration.ImportNativeFileCopyMode != ImportNativeFileCopyModeEnum.SetFileLinks)
                 {
                     return validationResult;
                 }

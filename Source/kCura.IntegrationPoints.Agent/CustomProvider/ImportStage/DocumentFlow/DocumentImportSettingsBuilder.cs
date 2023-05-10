@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task<DocumentImportConfiguration> BuildAsync(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
@@ -45,32 +45,32 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 fieldsMappingSettings,
                 fieldMappings);
 
-            ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
+            ImportDocumentSettings importDocumentSettings = ConfigureDestinationFolderStructure(
                 withFolders,
                 fieldMappings,
                 destinationConfiguration.DestinationFolderArtifactId,
                 destinationConfiguration.UseFolderPathInformation,
-                destinationConfiguration.FolderPathSourceFieldName);
+                destinationConfiguration.FolderPathSourceField);
 
             ConfigureMoveExistingDocuments(
                 advancedSettings,
                 destinationConfiguration.MoveExistingDocuments,
                 destinationConfiguration.ImportOverwriteMode,
-                destinationConfiguration.FolderPathSourceFieldName);
+                destinationConfiguration.FolderPathSourceField);
 
-            return new DocumentImportConfiguration(importSettings, advancedSettings);
+            return new DocumentImportConfiguration(importDocumentSettings, advancedSettings);
         }
 
         private void ConfigureMoveExistingDocuments(
             AdvancedImportSettings advancedSettings,
             bool moveExistingDocuments,
             ImportOverwriteModeEnum importOverwriteMode,
-            string folderPathField)
+            int folderPathFieldIndex)
         {
             advancedSettings.Folder.MoveExistingDocuments =
                 importOverwriteMode != ImportOverwriteModeEnum.AppendOnly &&
                 moveExistingDocuments &&
-                !string.IsNullOrEmpty(folderPathField);
+                folderPathFieldIndex >= 0;
         }
 
         private async Task<AdvancedImportSettings> CreateAdvancedImportSettingsAsync()
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             List<IndexedFieldMap> fieldMappings,
             int destinationFolderArtifactId,
             bool useFolderPathInformation,
-            string folderPathField)
+            int folderPathFieldIndex)
         {
             if (useFolderPathInformation)
             {
@@ -168,8 +168,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 return withFolders.WithFolders(f =>
                     f.WithRootFolderID(destinationFolderArtifactId, r =>
-                        r.WithFolderPathDefinedInColumn(
-                            GetFieldIndex(fieldMappings, folderPathField))));
+                        r.WithFolderPathDefinedInColumn(folderPathFieldIndex)));
             }
         }
 

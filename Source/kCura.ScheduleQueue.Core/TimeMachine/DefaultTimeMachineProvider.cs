@@ -39,7 +39,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
             string value = ConfigHelper.GetValue<string>(InstanceSettings[agentKey]);
             if (!string.IsNullOrEmpty(value))
             {
-                TimeMachineStruct tm = IntegrationPointSerializer.CreateWithoutLogger().Deserialize<TimeMachineStruct>(value);
+                TimeMachineStruct tm = RipJsonSerializer.CreateWithoutLogger().Deserialize<TimeMachineStruct>(value);
                 if (tm != null && tm.Date.HasValue)
                 {
                     _utcNow = tm.Date.Value;

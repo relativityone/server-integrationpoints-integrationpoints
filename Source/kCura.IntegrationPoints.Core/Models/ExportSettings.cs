@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
         public enum ProductionPrecedenceType
         {
             Original = 0,
-            Produced
+            Produced = 1
         }
 
         public enum ExportType

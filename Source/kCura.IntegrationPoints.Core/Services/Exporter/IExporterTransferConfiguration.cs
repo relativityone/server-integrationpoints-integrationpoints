@@ -11,17 +11,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         IScratchTableRepository[] ScratchRepositories { get; }
         IJobHistoryService JobHistoryService { get; }
         Guid Identifier { get;  }
-        ImportSettings ImportSettings { get; }
+        DestinationConfiguration DestinationConfiguration { get; }
     }
 
-    class ExporterTransferConfiguration:IExporterTransferConfiguration
+    class ExporterTransferConfiguration : IExporterTransferConfiguration
     {
-        public ExporterTransferConfiguration(IScratchTableRepository[] scratchRepositories, IJobHistoryService jobHistoryService, Guid identifier, ImportSettings importSettings)
+        public ExporterTransferConfiguration(IScratchTableRepository[] scratchRepositories, IJobHistoryService jobHistoryService, Guid identifier, DestinationConfiguration destinationConfiguration)
         {
             ScratchRepositories = scratchRepositories;
             JobHistoryService = jobHistoryService;
             Identifier = identifier;
-            ImportSettings = importSettings;
+            DestinationConfiguration = destinationConfiguration;
         }
 
         public IScratchTableRepository[] ScratchRepositories { get; }
@@ -30,6 +30,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
         public Guid Identifier { get; set; }
 
-        public ImportSettings ImportSettings { get; }
+        public DestinationConfiguration DestinationConfiguration { get; }
     }
 }

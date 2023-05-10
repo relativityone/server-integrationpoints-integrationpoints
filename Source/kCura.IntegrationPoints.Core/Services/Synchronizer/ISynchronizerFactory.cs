@@ -1,7 +1,7 @@
 ﻿using System;
-using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Domain
+namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
     /// <summary>
     /// Provides a method used to create a synchronizer in an external application domain.
@@ -14,6 +14,6 @@ namespace kCura.IntegrationPoints.Domain
         /// <param name="identifier">A GUID identifying the synchronizer.</param>
         /// <param name="options">The options specific to the current integration point identifier.</param>
         /// <returns>A new instance of the data synchronizer.</returns>
-        IDataSynchronizer CreateSynchronizer(Guid identifier, string options);
+        IDataSynchronizer CreateSynchronizer(Guid identifier, DestinationConfiguration options);
     }
 }

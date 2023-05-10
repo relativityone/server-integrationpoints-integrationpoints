@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity;
@@ -41,7 +40,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         private Mock<IRipToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;
@@ -277,7 +276,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             _destinationConfiguration = CreateImageDestinationConfiguration(
                 includeOriginalImages: includeOriginalImages,
-                productionPrecedence: "1",
+                productionPrecedence: 1,
                 imagePrecedence: imagePrecedence.Select(x => new ProductionDTO { ArtifactID = x.ToString() }));
             _sourceConfiguration = CreateSourceConfiguration();
 
@@ -298,7 +297,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             _destinationConfiguration = CreateImageDestinationConfiguration(
                 includeOriginalImages: true,
-                productionPrecedence: "0",
+                productionPrecedence: 0,
                 imagePrecedence: new[] { new ProductionDTO { ArtifactID = "1" }, new ProductionDTO { ArtifactID = "2" } });
             _sourceConfiguration = CreateSourceConfiguration();
 
@@ -415,9 +414,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
 
-        private static ImportSettings CreateNativeDestinationConfiguration()
+        private static DestinationConfiguration CreateNativeDestinationConfiguration()
         {
-            return new ImportSettings
+            return new DestinationConfiguration()
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -428,13 +427,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             };
         }
 
-        private static ImportSettings CreateImageDestinationConfiguration(
+        private static DestinationConfiguration CreateImageDestinationConfiguration(
             ImportNativeFileCopyModeEnum importFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks,
             bool includeOriginalImages = true,
-            string productionPrecedence = "0",
+            int productionPrecedence = 0,
             IEnumerable<ProductionDTO> imagePrecedence = null)
         {
-            return new ImportSettings
+            return new DestinationConfiguration
             {
                 ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationArtifactTypeId = (int)ArtifactType.Document,
@@ -444,14 +443,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 FieldOverlayBehavior = "Use Field Settings",
                 ImageImport = true,
                 IncludeOriginalImages = includeOriginalImages,
-                ImagePrecedence = imagePrecedence ?? Array.Empty<ProductionDTO>(),
+                ImagePrecedence = imagePrecedence?.ToList() ?? new List<ProductionDTO>(),
                 ProductionPrecedence = productionPrecedence
             };
         }
 
-        private static ImportSettings CreateNonDocumentDestinationConfiguration()
+        private static DestinationConfiguration CreateNonDocumentDestinationConfiguration()
         {
-            return new ImportSettings
+            return new DestinationConfiguration
             {
                 ArtifactTypeId = _SOURCE_ARTIFACT_TYPE_ID,
                 DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,
@@ -490,14 +489,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             {
                 EmailNotificationRecipients = emailNotifications,
                 SourceConfiguration = null,
-                DestinationConfiguration = null,
+                DestinationConfiguration = _destinationConfiguration,
                 LogErrors = false
             };
 
             _serializerFake.Setup(x => x.Deserialize<SourceConfiguration>(It.IsAny<string>()))
                 .Returns(_sourceConfiguration);
-            _serializerFake.Setup(x => x.Deserialize<ImportSettings>(It.IsAny<string>()))
-                .Returns(_destinationConfiguration);
             _serializerFake.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
                 .Returns(new TaskParameters { BatchInstance = It.IsAny<Guid>() });
 

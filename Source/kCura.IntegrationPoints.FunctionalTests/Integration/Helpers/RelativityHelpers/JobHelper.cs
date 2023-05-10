@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
@@ -70,7 +69,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithJobDetails(parameters)
-                .WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncWorker)
+                .WithTaskType(TaskType.SyncWorker)
                 .Build();
 
             job.RootJobId = rootJobId ?? JobId.Next;
@@ -82,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithJobDetails(parameters)
-                .WithTaskType(kCura.IntegrationPoints.Core.Contracts.Agent.TaskType.SyncManager)
+                .WithTaskType(TaskType.SyncManager)
                 .Build();
 
             job.RootJobId = rootJobId ?? JobId.Next;

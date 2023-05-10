@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 
         protected ExportUsingSavedSearchSettings ExportSettingsEx { get; private set; }
 
-        protected ImportSettings DestinationSettings { get; private set; }
+        protected DestinationConfiguration DestinationSettings { get; private set; }
 
         protected ExportFileValidatorBase(ISerializer serializer, IExportSettingsBuilder exportSettingsBuilder, IExportFileBuilder exportFileBuilder)
         {
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
         protected ExportFile PrepareExportFileForValidation(IntegrationPointProviderValidationModel value)
         {
             ExportSettingsEx = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
-            DestinationSettings = _serializer.Deserialize<ImportSettings>(value.DestinationConfiguration);
+            DestinationSettings = value.DestinationConfiguration;
 
             var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, value.FieldsMap, DestinationSettings.ArtifactTypeId);
             var exportFile = _exportFileBuilder.Create(exportSettings);

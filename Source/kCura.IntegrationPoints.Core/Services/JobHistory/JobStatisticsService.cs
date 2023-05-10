@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -61,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
 
-        private ImportSettings IntegrationPointImportSettings { get; set; }
+        private DestinationConfiguration IntegrationPointDestinationConfiguration { get; set; }
 
         public void Subscribe(IBatchReporter reporter, Job job)
         {
@@ -78,10 +77,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
         }
 
-        public void SetIntegrationPointConfiguration(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+        public void SetIntegrationPointConfiguration(DestinationConfiguration destinationConfiguration, SourceConfiguration sourceConfiguration)
         {
             IntegrationPointSourceConfiguration = sourceConfiguration;
-            IntegrationPointImportSettings = importSettings;
+            IntegrationPointDestinationConfiguration = destinationConfiguration;
         }
 
         public void Update(Guid identifier, int transferredItem, int erroredCount)
@@ -107,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 UnitOfMeasure = UnitsOfMeasureConstants.BYTES,
                 JobID = _job.JobId.ToString(),
                 WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
-                    ? IntegrationPointImportSettings?.CaseArtifactId
+                    ? IntegrationPointDestinationConfiguration?.CaseArtifactId
                     : IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId).GetValueOrDefault(),
                 MetadataThroughput = metadataThroughput,
                 FileThroughput = fileThroughput,
@@ -136,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
             else
             {
-                totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointImportSettings, IntegrationPointSourceConfiguration);
+                totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointDestinationConfiguration, IntegrationPointSourceConfiguration);
             }
 
             lock (_lockToken)

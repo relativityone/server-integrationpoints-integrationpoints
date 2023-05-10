@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// Retrieves the destination configuration field value for given integration point.
         /// </summary>
         /// <param name="artifactId">Artifact id of the integration point.</param>
-        string GetDestinationConfiguration(int artifactId);
+        DestinationConfiguration GetDestinationConfiguration(int artifactId);
 
         /// <summary>
         /// Retrieves the calculation state field value for given integration point.

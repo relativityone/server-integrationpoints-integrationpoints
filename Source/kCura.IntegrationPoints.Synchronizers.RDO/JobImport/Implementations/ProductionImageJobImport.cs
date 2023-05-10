@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
         protected internal override ImageImportBulkArtifactJob CreateJob()
         {
-            int productionArtifactId = ImportSettings.ProductionArtifactId;
+            int productionArtifactId = ImportSettings.DestinationConfiguration.ProductionArtifactId;
             _logger.LogInformation("Creating Production Import Job. Production ArtifactTypeId: {productionArtifactId}", productionArtifactId);
             return ImportApi.NewProductionImportJob(productionArtifactId);
         }

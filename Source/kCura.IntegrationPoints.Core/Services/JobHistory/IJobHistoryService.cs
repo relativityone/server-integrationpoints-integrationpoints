@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// Creates a job history object for an integration point of a schedule run type if the given batch instance guid does not already exist;
         /// otherwise, we retrieve the existing job history object.
         /// </summary>
-        /// <param name="integrationPoint">The integration point object.</param>
+        /// <param name="integrationPointDto">The integration point object.</param>
         /// <param name="batchInstance">The batch instance guid.</param>
         /// <param name="startTimeUtc">The job start time in UTC format.</param>
         /// <returns>The job history object of the integration point.</returns>
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// Creates a job history object for an integration point if the given batch instance guid does not already exist;
         /// otherwise, we retrieve the existing job history object.
         /// </summary>
-        /// <param name="integrationPoinDtot">The integration point object.</param>
+        /// <param name="integrationPointDto">The integration point object.</param>
         /// <param name="batchInstance">The batch instance guid.</param>
         /// <param name="jobType">The job type.</param>
         /// <param name="startTimeUtc">The job start time in UTC zone.</param>

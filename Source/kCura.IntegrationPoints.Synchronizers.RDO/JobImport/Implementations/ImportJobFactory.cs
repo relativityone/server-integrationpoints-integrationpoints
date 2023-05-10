@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
                     throw new ArgumentOutOfRangeException();
             }
             rv.RegisterEventHandlers();
-            rv.OnComplete += report => OnBatchComplete(report, settings.CaseArtifactId, settings.CorrelationId, settings.Provider, settings.JobID);
+            rv.OnComplete += report => OnBatchComplete(report, settings.DestinationConfiguration.CaseArtifactId, settings.CorrelationId, settings.DestinationConfiguration.Provider, settings.JobID);
             return rv;
         }
 
@@ -93,15 +93,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
         internal static JobContextType GetJobContextType(ImportSettings settings)
         {
-            if (settings.IsRelativityProvider() && settings.ProductionImport && settings.ImageImport)
+            if (settings.IsRelativityProvider() && settings.DestinationConfiguration.ProductionImport && settings.DestinationConfiguration.ImageImport)
             {
                 return JobContextType.RelativityToRelativityImagesProduction;
             }
-            else if (settings.IsRelativityProvider() && settings.ImageImport)
+            else if (settings.IsRelativityProvider() && settings.DestinationConfiguration.ImageImport)
             {
                 return JobContextType.RelativityToRelativityImages;
             }
-            else if (settings.ImageImport)
+            else if (settings.DestinationConfiguration.ImageImport)
             {
                 return JobContextType.ImportImagesFromLoadFile;
             }

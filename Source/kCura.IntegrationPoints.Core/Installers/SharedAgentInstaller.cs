@@ -9,10 +9,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Interfaces;
-using kCura.ScheduleQueue.Core.Services;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -24,8 +21,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IDeleteHistoryErrorService>().ImplementedBy<DeleteHistoryErrorService>().LifestyleTransient());
             container.Register(Component.For<IUnlinkedJobHistoryService>().ImplementedBy<UnlinkedJobHistoryService>().LifestyleTransient());
             container.Register(Component.For<IRelativityObjectManagerServiceFactory>().ImplementedBy<RelativityObjectManagerServiceFactory>().LifestyleTransient());
-            container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
-            container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
             container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManager>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
             container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
             container.Register(Component.For<IJobRepository>().ImplementedBy<JobRepository>().LifestyleTransient());

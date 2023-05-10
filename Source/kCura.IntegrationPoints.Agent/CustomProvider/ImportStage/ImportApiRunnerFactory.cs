@@ -1,4 +1,3 @@
-using System;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
@@ -19,7 +18,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public IImportApiRunner BuildRunner(ImportSettings destinationConfiguration)
+        public IImportApiRunner BuildRunner(DestinationConfiguration destinationConfiguration)
         {
             _logger.LogInformation("Creating ImportApiRunner based on destination configuration: {@destinationConfiguration}", destinationConfiguration);
 
