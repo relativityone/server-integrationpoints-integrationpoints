@@ -29,16 +29,19 @@ param(
     [string]$Configuration = "Debug"
 )
 
+. $profile
 Set-StrictMode -Version 2.0
 
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 $ReportGenerator = Join-Path $ToolsDir "reportgenerator.exe"
 Import-Module -Force "$ToolsDir\BuildHelpers.psm1" -ErrorAction Stop
-Assert-Module -Name PSBuildTools -Version 0.7.0 -Path $ToolsDir
-Assert-Module -Name psake -Version 4.7.4 -Path $ToolsDir
+Install-NugetPackage -Name kCura.PSBuildTools -Version 0.9.8 -ToolsDir $ToolsDir -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools.*\PSBuildTools.psd1") -ErrorAction Stop
+Install-NugetPackage -Name psake-rel -Version 5.0.0 -ToolsDir $ToolsDir -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "psake-rel.*\tools\psake\psake.psd1") -ErrorAction Stop
 if (-not (Test-Path $ReportGenerator))
 {
-    & dotnet tool install dotnet-reportgenerator-globaltool --version 4.1.5 --tool-path $ToolsDir
+    & dotnet tool install dotnet-reportgenerator-globaltool --version 4.1.9 --tool-path $ToolsDir
     if ($LASTEXITCODE -ne 0) { throw "An error occured while restoring build tools." }
 }
 

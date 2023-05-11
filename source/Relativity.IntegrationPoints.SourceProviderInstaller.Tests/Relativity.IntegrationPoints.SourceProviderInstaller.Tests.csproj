@@ -24,7 +24,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
 	<PackageReference Include="kCura.EventHandler" Version="15.1.0" />
-	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="1.0.5" />
+	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="1.2.2" />
 	<PackageReference Include="Relativity.Kepler" Version="2.2.2" />
 	<PackageReference Include="FluentAssertions" Version="4.19.4" />
 	<PackageReference Include="Moq" Version="4.5.3" />
