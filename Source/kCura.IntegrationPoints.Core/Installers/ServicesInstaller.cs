@@ -105,6 +105,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .UsingFactoryMethod(x =>
             {
                 int workspaceId = x.Resolve<IServiceContextHelper>().WorkspaceID;
+
                 IRelativityObjectManagerFactory factory = x.Resolve<IRelativityObjectManagerFactory>();
                 return factory.CreateRelativityObjectManager(workspaceId);
             }).LifestyleTransient());

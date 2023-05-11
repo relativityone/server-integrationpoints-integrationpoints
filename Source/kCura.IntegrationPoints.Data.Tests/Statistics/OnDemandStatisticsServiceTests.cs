@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Data.Statistics.Implementations;
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
     public class OnDemandStatisticsServiceTests
     {
         private readonly int _INTEGRATION_POINT_ID = -10;
+        private readonly int _WORKSPACE_ID = 100;
         private Mock<IAPILog> _loggerMock;
         private Mock<IDateTime> _dateTimeMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
@@ -32,7 +34,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             _dateTimeMock = new Mock<IDateTime>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
 
-            _sut = new OnDemandStatisticsService(_objectManagerMock.Object, _dateTimeMock.Object, _loggerMock.Object);
+            Mock<IRelativityObjectManagerFactory> objectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
+            objectManagerFactory.Setup(x => x.CreateRelativityObjectManager(_WORKSPACE_ID)).Returns(_objectManagerMock.Object);
+
+            _sut = new OnDemandStatisticsService(objectManagerFactory.Object, _dateTimeMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -42,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             GetDataSetup(null);
 
             // Act
-            CalculationState result = _sut.GetCalculationState(_INTEGRATION_POINT_ID);
+            CalculationState result = _sut.GetCalculationState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().NotBeNull();
@@ -70,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
                  .Throws(new Exception());
 
             // Act
-            CalculationState result = _sut.GetCalculationState(_INTEGRATION_POINT_ID);
+            CalculationState result = _sut.GetCalculationState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().NotBeNull();
@@ -91,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             UpdateDataSetup();
 
             // Act
-            CalculationState result = await _sut.MarkAsCalculating(_INTEGRATION_POINT_ID).ConfigureAwait(false);
+            CalculationState result = await _sut.MarkAsCalculating(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -111,7 +116,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             UpdateDataSetup(false);
 
             // Act
-            CalculationState result = await _sut.MarkAsCalculating(_INTEGRATION_POINT_ID).ConfigureAwait(false);
+            CalculationState result = await _sut.MarkAsCalculating(_WORKSPACE_ID, _INTEGRATION_POINT_ID).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -134,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             UpdateDataSetup(true);
 
             // Act
-            CalculationState result = await _sut.MarkCalculationAsFinished(_INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
+            CalculationState result = await _sut.MarkCalculationAsFinished(_WORKSPACE_ID, _INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -161,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             GetDataSetup(new CalculationState { Status = CalculationStatus.Canceled });
 
             // Act
-            CalculationState result = await _sut.MarkCalculationAsFinished(_INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
+            CalculationState result = await _sut.MarkCalculationAsFinished(_WORKSPACE_ID, _INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -187,7 +192,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             GetDataSetup(new CalculationState { Status = CalculationStatus.Error });
 
             // Act
-            CalculationState result = await _sut.MarkCalculationAsFinished(_INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
+            CalculationState result = await _sut.MarkCalculationAsFinished(_WORKSPACE_ID, _INTEGRATION_POINT_ID, new DocumentsStatistics()).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
