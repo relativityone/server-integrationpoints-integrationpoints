@@ -1,6 +1,6 @@
  @Library('ProjectMayhem@vServer')_
 rapCD {
-    slackChannel = "cd_rip_jsonloader"
+    slackChannel = "ci-server-delta"
     sutTemplate = "aio-osier-2"
     relativityBranch = develop
 }
