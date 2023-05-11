@@ -28,8 +28,6 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
             _workspaceContext = workspaceContext;
             _userContext = userContext;
             _dbContextFactory = new DbContextFactory(helper, logger);
-
-            _logger.LogInformation("Creating ServiceContextHelperForWeb with IWorkspaceContext Type - {workspaceContext}.", workspaceContext?.GetType());
         }
 
         public int WorkspaceID => _workspaceContext.GetWorkspaceID();

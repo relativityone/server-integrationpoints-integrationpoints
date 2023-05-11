@@ -4,10 +4,10 @@ namespace kCura.IntegrationPoints.Data.Statistics
 {
     public interface IOnDemandStatisticsService
     {
-        Task<CalculationState> MarkAsCalculating(int integrationPointId);
+        Task<CalculationState> MarkAsCalculating(int workspaceId, int integrationPointId);
 
-        Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics);
+        Task<CalculationState> MarkCalculationAsFinished(int workspaceId, int integrationPointId, DocumentsStatistics statistics);
 
-        CalculationState GetCalculationState(int integrationPointId);
+        CalculationState GetCalculationState(int workspaceId, int integrationPointId);
     }
 }

@@ -91,7 +91,7 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
 
-        getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {          
+        getCalculationStateInfo(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], integrationPointArtifactId).then(data => {
 
             if (data["Status"] == 2) {  
                 //calculation completed
