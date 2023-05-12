@@ -130,7 +130,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private void PopulateExportFieldsSettings(ExportDataContext exportDataContext, IServiceFactory serviceFactory)
 		{
 			LogPopulatingFields();
-			using (ISearchManager searchManager = serviceFactory.CreateSearchManager())
+			//[REL-838809]: Resolve correlationIdFunc
+			using (ISearchManager searchManager = serviceFactory.CreateSearchManager(() => string.Empty))
 			{
 				PopulateCaseInfo(exportDataContext.ExportFile);
 				SetRdoModeSpecificSettings(exportDataContext.ExportFile);

@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		private ExtendedExporter Create(ExtendedExportFile exportFile, ExporterFactoryConfig config)
 		{
-			return new ExtendedExporter(exportFile, config.Controller, config.ServiceFactory, config.LoadFileFormatterFactory, config.ExportConfig, Log.Logger, CancellationToken.None)
+			//[REL-838809]: Resolve correlationIdFunc
+			return new ExtendedExporter(exportFile, config.Controller, config.ServiceFactory, config.LoadFileFormatterFactory, config.ExportConfig, Log.Logger, CancellationToken.None, () => string.Empty)
 			{
 				NameTextAndNativesAfterBegBates = config.NameTextAndNativesAfterBegBates,
 				FileHelper = new LongPathFileHelper(),

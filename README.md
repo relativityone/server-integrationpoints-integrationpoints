@@ -74,6 +74,7 @@ Running Custom Tests against Hopper Relativity environment:
 ## Maintainers
 
 * Adler Sieben (adlersieben@relativity.com)
+* team-server-delta -working on code isolation
 
 ## Miscellaneous
 
@@ -87,3 +88,9 @@ Integration Points hosts the following private Kepler services:
 * Integration Point Manager
 
 Integration Points is required for the ECA and Investigation application.
+
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 12.2
+Branch: server-main
