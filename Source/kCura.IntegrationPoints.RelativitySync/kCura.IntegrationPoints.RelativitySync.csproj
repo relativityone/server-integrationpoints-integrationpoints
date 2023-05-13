@@ -140,13 +140,15 @@
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.Services.Interfaces" />
-    <PackageReference Include="Relativity.Telemetry.APM" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Kepler.Service">
         <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Relativity.Sync" />
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="Relativity.Sync" />    
+    <PackageReference Include="Relativity.Telemetry.APM" />
   </ItemGroup>
 </Project>

@@ -27,8 +27,8 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using Relativity.AutomatedWorkflows.Services.Interfaces;
-using Relativity.AutomatedWorkflows.Services.Interfaces.DataContracts.Triggers;
+using Relativity.AutomatedWorkflows.SDK;
+using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IRetryHandler _retryHandler;
 		private IRetryHandlerFactory _retryHandlerFactory;
 		private IObjectManager _objectManager;
-		private IAutomatedWorkflowsService _automatedWorkflowsService;
+		private IAutomatedWorkflowsManager _automatedWorkflowsManager;
 		private IJobStatusUpdater _jobStatusUpdater;
 		private const int _RECORD_COUNT = 42;
 		private const string _ERROR_FILE_PATH = "ErrorFilePath";
@@ -104,8 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_objectManager = Substitute.For<IObjectManager>();
 			_helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System).Returns(_objectManager);
 
-			_automatedWorkflowsService = Substitute.For<IAutomatedWorkflowsService>();
-			_helper.GetServicesManager().CreateProxy<IAutomatedWorkflowsService>(ExecutionIdentity.System).Returns(_automatedWorkflowsService);
+			_automatedWorkflowsManager = Substitute.For<IAutomatedWorkflowsManager>();
 
 			_jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
 
@@ -218,7 +217,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				_importFileLocationService,
 				agentValidator,
 				integrationPointRepository,
-				_jobStatusUpdater);
+				_jobStatusUpdater,
+				_automatedWorkflowsManager);
 		}
 
 		[Test]
@@ -267,7 +267,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
+			_automatedWorkflowsManager.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE));
 		}
 
 		[Test]
@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 
@@ -310,7 +310,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
+			_automatedWorkflowsManager.Received().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Is<SendTriggerBody>(stb => stb.State == ImportServiceManager.RAW_STATE_COMPLETE_WITH_ERRORS));
 		}
 
 		[Test]
@@ -331,7 +331,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -346,7 +346,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -361,7 +361,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -376,7 +376,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -391,7 +391,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -406,7 +406,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -418,7 +418,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]
@@ -433,7 +433,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			// ACT
 			_instance.Execute(_job);
 
-			_automatedWorkflowsService.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
+			_automatedWorkflowsManager.DidNotReceive().SendTriggerAsync(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<SendTriggerBody>());
 		}
 
 		[Test]

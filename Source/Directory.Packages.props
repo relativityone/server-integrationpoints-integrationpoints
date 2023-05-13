@@ -15,10 +15,10 @@
     <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
     <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
     <FluentAssertions>4.19.4</FluentAssertions>
-    <IntegrationPointsMyFirstProvider>11.1.0-pre.9</IntegrationPointsMyFirstProvider>
+    <IntegrationPointsMyFirstProvider>12.3.10</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
     <kCura>13.1.0</kCura>
-    <RelativitySDK>17.1.0</RelativitySDK>
+    <RelativitySDK>17.4.2</RelativitySDK>
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
@@ -41,7 +41,7 @@
     <NUnit3TestAdapter>3.13.0</NUnit3TestAdapter>
     <Polly>5.9</Polly>
     <Relativity>15.4.13</Relativity>
-    <RelativityAutomatedWorkflowsServicesInterfaces>0.1.1-pre.6</RelativityAutomatedWorkflowsServicesInterfaces>
+    <RelativityAutomatedWorkflowsSDK>1.1.1</RelativityAutomatedWorkflowsSDK>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
     <RelativityCore>13.3.7</RelativityCore>
     <RelativityDataExchangeClientSDK>1.15.103</RelativityDataExchangeClientSDK>
@@ -50,7 +50,7 @@
     <RelativityIntegrationPointsContracts>1.0.9</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
-    <KeplerVersion>2.14.4</KeplerVersion>
+    <KeplerVersion>2.17.0</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
@@ -61,7 +61,7 @@
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesSDKPrivate>13.1.4</RelativityServicesSDKPrivate>
-    <RelativitySync>0.8.59-pre.34</RelativitySync>
+    <RelativitySync>0.8.60</RelativitySync>
     <TelemetryAPM>2019.1.1</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -128,7 +128,7 @@
     <PackageVersion Include="Polly" Version="$(Polly)" />
     <PackageVersion Include="Relativity" Version="$(Relativity)" />
     <PackageVersion Include="Relativity.API" Version="$(RelativitySDK)" />
-    <PackageVersion Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="$(RelativityAutomatedWorkflowsServicesInterfaces)" />
+    <PackageVersion Include="Relativity.AutomatedWorkflows.SDK" Version="$(RelativityAutomatedWorkflowsSDK)" />
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativityCustomPages)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
