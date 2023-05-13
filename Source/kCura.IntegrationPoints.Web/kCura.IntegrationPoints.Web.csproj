@@ -785,6 +785,5 @@
     <PackageReference Include="SystemWrapper.Interfaces" />
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="WebGrease"/>
-    <PackageReference Include="WebGrease"/>
   </ItemGroup>
 </Project>
