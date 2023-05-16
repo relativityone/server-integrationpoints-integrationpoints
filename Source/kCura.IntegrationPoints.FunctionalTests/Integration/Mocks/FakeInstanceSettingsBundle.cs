@@ -20,7 +20,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public string GetString(string section, string name)
         {
-            return SmtpConfigurationSettings[name].ToString();
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? value.ToString() : string.Empty;
         }
 
         public Task<uint?> GetUIntAsync(string section, string name)
@@ -30,7 +32,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public uint? GetUInt(string section, string name)
         {
-            return (uint?)SmtpConfigurationSettings[name];
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? (uint?)value : null;
         }
 
         public Task<int?> GetIntAsync(string section, string name)
@@ -40,7 +44,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public int? GetInt(string section, string name)
         {
-            return (int?)SmtpConfigurationSettings[name];
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? (int?)value : null;
         }
 
         public Task<long?> GetLongAsync(string section, string name)
@@ -50,7 +56,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public long? GetLong(string section, string name)
         {
-            return (long?)SmtpConfigurationSettings[name];
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? (long?)value : null;
         }
 
         public Task<ulong?> GetULongAsync(string section, string name)
@@ -60,7 +68,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public ulong? GetULong(string section, string name)
         {
-            return (ulong?)SmtpConfigurationSettings[name];
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? (ulong?)value : null;
         }
 
         public Task<bool?> GetBoolAsync(string section, string name)
@@ -70,7 +80,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public bool? GetBool(string section, string name)
         {
-            return (bool?)SmtpConfigurationSettings[name];
+            var success = SmtpConfigurationSettings.TryGetValue(name, out object value);
+
+            return success ? (bool?)value : null;
         }
 
         public Task<IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>>> GetRawValuesAsync()
