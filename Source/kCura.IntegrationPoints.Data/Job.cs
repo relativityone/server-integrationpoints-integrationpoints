@@ -117,30 +117,5 @@ namespace kCura.IntegrationPoints.Data
 
             return false;
         }
-
-        public override string ToString()
-        {
-            try
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine($"JobId: {JobId}");
-                sb.AppendLine($"ParentJobId: {ParentJobId}");
-                sb.AppendLine($"RootJobId: {RootJobId}");
-                sb.AppendLine($"LockedByAgentId: {LockedByAgentID}");
-                sb.AppendLine($"WorkspaceId: {WorkspaceID}");
-                sb.AppendLine($"IntegrationPointId: {RelatedObjectArtifactID}");
-                sb.AppendLine($"StopState: {StopState}");
-                sb.AppendLine($"SubmitedBy: {SubmittedBy}");
-                sb.AppendLine($"SubmitedDate: {SubmittedDate}");
-                sb.AppendLine($"NextRunTime: {NextRunTime}");
-                sb.AppendLine($"Heartbeat: {Heartbeat}");
-
-                return sb.ToString();
-            }
-            catch (Exception)
-            {
-                return "<stringify_job_failed>";
-            }
-        }
     }
 }

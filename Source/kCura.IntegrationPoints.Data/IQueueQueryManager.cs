@@ -16,8 +16,6 @@ namespace kCura.IntegrationPoints.Data
 
         IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId);
 
-        ICommand UnlockScheduledJob(int agentId);
-
         ICommand UnlockJob(long jobId, StopState state);
 
         ICommand DeleteJob(long jobId);
@@ -29,10 +27,6 @@ namespace kCura.IntegrationPoints.Data
         ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
             DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
-
-        ICommand CleanupJobQueueTable();
-
-        ICommand CleanupScheduledJobsQueue();
 
         IQuery<DataTable> GetAllJobs();
 

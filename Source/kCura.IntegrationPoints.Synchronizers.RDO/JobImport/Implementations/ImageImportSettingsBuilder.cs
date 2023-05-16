@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             target.DestinationFolderArtifactID = importSettings.DestinationConfiguration.DestinationFolderArtifactId;
 
             target.FileNameField = Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME;
+            target.BeginBatesFieldArtifactID = 1003667;
         }
     }
 }

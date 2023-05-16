@@ -28,12 +28,6 @@ namespace kCura.ScheduleQueue.Core.Data
         DataTable GetAllJobs();
         int UpdateStopState(IList<long> jobIds, StopState state);
 
-        void CleanupJobQueueTable();
-
-        void CleanupScheduledJobsQueue();
-
-        void UnlockScheduledJob(int agentId);
-
         /// <summary>
         /// Clears the LockedByAgentID value.
         /// </summary>

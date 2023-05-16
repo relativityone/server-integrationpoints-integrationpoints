@@ -281,17 +281,6 @@ namespace kCura.ScheduleQueue.Core.Tests
         }
 
         [Test]
-        public void UnlockJobs_GoldFlow()
-        {
-            int agentId = 345;
-            JobService service = PrepareSut();
-
-            service.UnlockJobs(agentId);
-
-            _dataProviderMock.Received().UnlockScheduledJob(agentId);
-        }
-
-        [Test]
         public void CreateJob_ScheduleRuleReturnsDate_ReturnsValidJob()
         {
             string taskTypeString = _TASK_TYPE.ToString();
@@ -500,49 +489,6 @@ namespace kCura.ScheduleQueue.Core.Tests
             JobService service = PrepareSut();
 
             Assert.Throws<InvalidOperationException>(() => service.UpdateStopState(jobIds, stopState));
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void CleanupJobQueueTable_ShouldAlwaysCleanupScheduledJobsQueue(bool enableKubernetesMode)
-        {
-            // arrange
-            _kubernetesModeMock.IsEnabled().Returns(enableKubernetesMode);
-            JobService sut = PrepareSut();
-
-            // act
-            sut.CleanupJobQueueTable();
-
-            // assert
-            _dataProviderMock.Received().CleanupScheduledJobsQueue();
-        }
-
-        [Test]
-        public void CleanupJobQueueTable_ShouldNotCleanupJobQueueTable_WhenInKubernetesMode()
-        {
-            // arrange
-            _kubernetesModeMock.IsEnabled().Returns(true);
-            JobService sut = PrepareSut();
-
-            // act
-            sut.CleanupJobQueueTable();
-
-            // assert
-            _dataProviderMock.DidNotReceive().CleanupJobQueueTable();
-        }
-
-        [Test]
-        public void CleanupJobQueueTable_ShouldCleanupJobQueueTable_WhenNotInKubernetesMode()
-        {
-            // arrange
-            _kubernetesModeMock.IsEnabled().Returns(false);
-            JobService sut = PrepareSut();
-
-            // act
-            sut.CleanupJobQueueTable();
-
-            // assert
-            _dataProviderMock.Received().CleanupJobQueueTable();
         }
 
         private JobService PrepareSut()

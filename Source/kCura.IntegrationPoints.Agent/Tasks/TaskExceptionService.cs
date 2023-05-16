@@ -13,15 +13,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IAPILog _logger;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
-        private readonly IJobService _jobService;
         private readonly ISerializer _serializer;
 
-        public TaskExceptionService(IAPILog logger, IJobHistoryErrorService jobHistoryErrorService, IJobHistoryService jobHistoryService, IJobService jobService, ISerializer serializer)
+        public TaskExceptionService(IAPILog logger, IJobHistoryErrorService jobHistoryErrorService, IJobHistoryService jobHistoryService, ISerializer serializer)
         {
             _logger = logger?.ForContext<TaskExceptionService>();
             _jobHistoryErrorService = jobHistoryErrorService;
             _jobHistoryService = jobHistoryService;
-            _jobService = jobService;
             _serializer = serializer;
         }
 
@@ -39,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, ex.Message, ex.StackTrace);
                 taskWithJobHistory.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
                 _jobHistoryService.UpdateRdoWithoutDocuments(taskWithJobHistory.JobHistory);
-                _jobService.CleanupJobQueueTable();
             }
             catch (Exception errorHandlingException)
             {
