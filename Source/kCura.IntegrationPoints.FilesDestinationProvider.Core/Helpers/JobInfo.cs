@@ -2,8 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {

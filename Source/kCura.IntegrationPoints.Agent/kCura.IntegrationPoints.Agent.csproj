@@ -61,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CustomProvider\DTO\" />
-    <Folder Include="CustomProvider\ImportStage\Extensions\" />
+    <Folder Include="CustomProvider\Services\JobDetails\" />
     <Folder Include="CustomProvider\Utils\" />
     <Folder Include="CustomProvider\Services\InstanceSettings" />
     <Folder Include="CustomProvider\Services\LoadFileBuilding\" />

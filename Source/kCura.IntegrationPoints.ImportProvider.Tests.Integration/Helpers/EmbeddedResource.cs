@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
             {
                 if (_serializer == null)
                 {
-                    _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+                    _serializer = RipJsonSerializer.CreateWithoutLogger();
                 }
                 return _serializer;
             }
@@ -38,9 +38,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
             return Serializer.Deserialize<ImportProviderSettings>(EmbeddedResourceStreamReader(_IMPORTPROVIDER_SETTINGS_RESOURCE, resourceName).ReadToEnd());
         }
 
-        public static ImportSettings ImportSettings(string resourceName)
+        public static DestinationConfiguration DestinationConfiguration(string resourceName)
         {
-            return Serializer.Deserialize<ImportSettings>(EmbeddedResourceStreamReader(_IMPORT_SETTINGS_RESOURCE, resourceName).ReadToEnd());
+            return Serializer.Deserialize<DestinationConfiguration>(EmbeddedResourceStreamReader(_IMPORT_SETTINGS_RESOURCE, resourceName).ReadToEnd());
         }
 
         private static StreamReader EmbeddedResourceStreamReader(string category, string resourceName)

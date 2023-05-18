@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -20,14 +20,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
         private readonly IDiagnosticLog _diagnosticLog;
         private readonly IAPILog _logger;
         private readonly FieldMap[] _fields;
-        private readonly string _importConfig;
+        private readonly ImportSettings _importConfig;
 
         public Tagger(
             IDocumentRepository documentRepository,
             IDataSynchronizer synchronizer,
             IHelper helper,
             FieldMap[] fields,
-            string importConfig,
+            ImportSettings importConfig,
             IDiagnosticLog diagnosticLog)
         {
             _documentRepository = documentRepository;

@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
     public class SettingsObjects
     {
-        public ImportSettings ImportSettings { get; set; }
+        public DestinationConfiguration DestinationConfiguration { get; set; }
 
         public ImportProviderSettings ImportProviderSettings { get; set; }
 

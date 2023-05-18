@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class FolderTest : RdoTestBase
     {
         public string Name { get; set; }

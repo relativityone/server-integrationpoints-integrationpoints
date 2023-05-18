@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             if (sourceProviderGuid.Equals(Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE, StringComparison.InvariantCultureIgnoreCase))
             {
-                return  ProviderType.ImportLoadFile;
+                return ProviderType.ImportLoadFile;
             }
             if (sourceProviderGuid.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase))
             {

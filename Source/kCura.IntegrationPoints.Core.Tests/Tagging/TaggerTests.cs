@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         private IDocumentRepository _documentRepository;
         private IDataSynchronizer _dataSynchronizer;
         private IDiagnosticLog _diagnosticLog;
-        private string _importConfig;
+        private ImportSettings _importConfig;
 
         public override void SetUp()
         {
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                 }
             };
 
-            _importConfig = string.Empty;
+            _importConfig = new ImportSettings(new DestinationConfiguration());
 
             _instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig, _diagnosticLog);
         }

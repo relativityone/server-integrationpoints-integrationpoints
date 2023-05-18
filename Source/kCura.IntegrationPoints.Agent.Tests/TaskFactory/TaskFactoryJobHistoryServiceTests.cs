@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             IAPILog logger = Substitute.For<IAPILog>();
             ISerializer serializer = Substitute.For<ISerializer>();
-            serializer.Deserialize<ImportSettings>(Arg.Any<string>()).Returns(new ImportSettings());
+            serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
             serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 
             _jobHistoryService = Substitute.For<IJobHistoryService>();
@@ -243,7 +242,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         {
             return new IntegrationPointDto
             {
-                DestinationConfiguration = string.Empty,
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = string.Empty
             };
         }

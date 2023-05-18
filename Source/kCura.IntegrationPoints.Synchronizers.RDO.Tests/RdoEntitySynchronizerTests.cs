@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             base.FixtureSetUp();
 
-            _settings = JsonConvert.SerializeObject(new ImportSettings());
+            _settings = JsonConvert.SerializeObject(new ImportSettings(new DestinationConfiguration()));
             _importJobFactory = new ImportJobFactory(Mock.Of<IMessageService>());
         }
 
@@ -85,7 +86,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
             // ACT
-            RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
+            RdoSynchronizer sync = PrepareSut();
             IEnumerable<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
             // ASSERT
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
             // ACT
-            RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
+            RdoSynchronizer sync = PrepareSut();
             IEnumerable<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings));
 
             // ASSERT
@@ -117,7 +118,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _fieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(fields);
 
             // ACT
-            RdoSynchronizer sync = RdoSynchronizerTests.ChangeWebAPIPath(PrepareSut());
+            RdoSynchronizer sync = PrepareSut();
             List<FieldEntry> actualFields = sync.GetFields(new DataSourceProviderConfiguration(_settings)).ToList();
 
             // ASSERT
@@ -161,7 +162,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 _importJobFactory,
                 _helper.Object,
                 entityManagerLinksSanitizer.Object,
-                _diagnosticLogMock.Object);
+                _diagnosticLogMock.Object,
+                new Mock<IConfig>().Object,
+                Serializer);
         }
     }
 }

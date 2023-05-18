@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Interfaces;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;

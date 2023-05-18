@@ -16,16 +16,14 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.Session
         }
 
         public int? WorkspaceID => GetValueOrLogError(
-            () => _connectionHelper.GetActiveCaseID()
-        );
+            () => _connectionHelper.GetActiveCaseID());
 
         public int? UserID => GetValueOrLogError(
-            () => _connectionHelper.GetAuthenticationManager().UserInfo.ArtifactID
-        );
+            () => _connectionHelper.GetAuthenticationManager().UserInfo.ArtifactID);
 
         public int? WorkspaceUserID => GetValueOrLogError(
-            () => _connectionHelper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID
-        );
+            () => _connectionHelper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID);
+
         private int? GetValueOrLogError(Func<int> valueGetter, [CallerMemberName] string propertyName = "")
         {
             try

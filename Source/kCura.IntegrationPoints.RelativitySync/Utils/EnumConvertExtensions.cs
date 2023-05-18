@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Sync.Configuration;
@@ -62,21 +63,19 @@ namespace kCura.IntegrationPoints.RelativitySync.Utils
             }
         }
 
-        public static FieldOverlayBehavior ToSyncFieldOverlayBehavior(this ImportOverlayBehaviorEnum importOverlayBehavior)
+        public static FieldOverlayBehavior ToSyncFieldOverlayBehavior(this string fieldOverlayBehavior)
         {
-            switch (importOverlayBehavior)
+            switch (fieldOverlayBehavior)
             {
-                case ImportOverlayBehaviorEnum.UseRelativityDefaults:
+                case ImportSettings.FIELDOVERLAYBEHAVIOR_DEFAULT:
                     return FieldOverlayBehavior.UseFieldSettings;
-                case ImportOverlayBehaviorEnum.MergeAll:
+                case ImportSettings.FIELDOVERLAYBEHAVIOR_MERGE:
                     return FieldOverlayBehavior.MergeValues;
-                case ImportOverlayBehaviorEnum.ReplaceAll:
+                case ImportSettings.FIELDOVERLAYBEHAVIOR_REPLACE:
                     return FieldOverlayBehavior.ReplaceValues;
                 default:
-                    throw new InvalidEnumArgumentException(nameof(importOverlayBehavior));
-
+                    throw new ArgumentException(fieldOverlayBehavior);
             }
         }
-
     }
 }

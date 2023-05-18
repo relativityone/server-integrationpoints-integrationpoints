@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -12,25 +13,25 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
     public class OnDemandStatisticsService : IOnDemandStatisticsService
     {
-        private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IRelativityObjectManagerFactory _objectManagerFactory;
         private readonly IDateTime _dateTime;
         private readonly IAPILog _logger;
 
-        public OnDemandStatisticsService(IRelativityObjectManager relativityObjectManager, IDateTime dateTime, IAPILog logger)
+        public OnDemandStatisticsService(IRelativityObjectManagerFactory objectManagerFactory, IDateTime dateTime, IAPILog logger)
         {
-            _relativityObjectManager = relativityObjectManager;
+            _objectManagerFactory = objectManagerFactory;
             _dateTime = dateTime;
             _logger = logger;
         }
 
-        public async Task<CalculationState> MarkAsCalculating(int integrationPointId)
+        public async Task<CalculationState> MarkAsCalculating(int workspaceId, int integrationPointId)
         {
             CalculationState calculationState = new CalculationState
             {
                 Status = CalculationStatus.InProgress
             };
 
-            bool updated = await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
+            bool updated = await UpdateCalculationStateValue(workspaceId, integrationPointId, calculationState).ConfigureAwait(false);
 
             if (!updated)
             {
@@ -40,9 +41,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             return calculationState;
         }
 
-        public async Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics)
+        public async Task<CalculationState> MarkCalculationAsFinished(int workspaceId, int integrationPointId, DocumentsStatistics statistics)
         {
-            CalculationState calculationState = GetCalculationState(integrationPointId);
+            CalculationState calculationState = GetCalculationState(workspaceId, integrationPointId);
 
             if (calculationState.Status == CalculationStatus.Error)
             {
@@ -60,12 +61,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             statistics.CalculatedOn = _dateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
             calculationState.DocumentStatistics = statistics;
 
-            await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
+            await UpdateCalculationStateValue(workspaceId, integrationPointId, calculationState).ConfigureAwait(false);
 
             return calculationState;
         }
 
-        public CalculationState GetCalculationState(int integrationPointId)
+        public CalculationState GetCalculationState(int workspaceId, int integrationPointId)
         {
             CalculationState result;
             try
@@ -75,7 +76,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     IntegrationPointFieldGuids.CalculationStateGuid
                 };
 
-                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId, integrationPointFields);
+                IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(workspaceId);
+                IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(integrationPointId, integrationPointFields);
                 if (string.IsNullOrWhiteSpace(integrationPoint.CalculationState))
                 {
                     result = new CalculationState
@@ -98,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             return result;
         }
 
-        private async Task<bool> UpdateCalculationStateValue(int integrationPointId, CalculationState currentState)
+        private async Task<bool> UpdateCalculationStateValue(int workspaceId, int integrationPointId, CalculationState currentState)
         {
             try
             {
@@ -112,7 +114,8 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     },
                 };
 
-                return await _relativityObjectManager.UpdateAsync(integrationPointId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
+                IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(workspaceId);
+                return await objectManager.UpdateAsync(integrationPointId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

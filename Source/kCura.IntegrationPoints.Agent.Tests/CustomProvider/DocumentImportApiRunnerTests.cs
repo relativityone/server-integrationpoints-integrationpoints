@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IDocumentImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<ImportSettings>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Setup(x => x.BuildAsync(It.IsAny<DestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(_importConfiguration);
 
             _sut = new DocumentImportApiRunner(
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public async Task RunImportJobAsync_ShouldCallSettingsBuilder()
         {
             // Arrange
-            var configuration = _fxt.Create<ImportSettings>();
+            var configuration = _fxt.Create<DestinationConfiguration>();
             var fieldMappings = _fxt.Create<List<IndexedFieldMap>>();
 
             // Act
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public async Task RunImportJobAsync_ShouldCallImportApiService()
         {
             // Arrange
-            var configuration = _fxt.Create<ImportSettings>();
+            var configuration = _fxt.Create<DestinationConfiguration>();
             var fieldMappings = _fxt.Create<List<IndexedFieldMap>>();
 
             // Act

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -18,8 +19,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                Destination = dto.DestinationConfiguration,
-                Map = serializer.SerializeCamelCase(dto.FieldMappings),
+                Destination = serializer.Serialize(dto.DestinationConfiguration), // we want to respect JsonPropertyAttribute here
+                Map = serializer.SerializeCamelCase(dto.FieldMappings), // here all properties are desired to have a camel-case names
                 Scheduler = dto.Scheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceConfiguration = webModel.SourceConfiguration,
                 SourceProvider = webModel.SourceProvider,
                 Type = webModel.Type,
-                DestinationConfiguration = webModel.Destination,
+                DestinationConfiguration = serializer.Deserialize<DestinationConfiguration>(webModel.Destination),
                 FieldMappings = serializer.Deserialize<List<FieldMap>>(webModel.Map),
                 Scheduler = webModel.Scheduler,
                 DestinationProvider = webModel.DestinationProvider,
@@ -68,8 +69,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceConfiguration = dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                Destination = dto.DestinationConfiguration,
-                Map = serializer.SerializeCamelCase(dto.FieldMappings),
+                Destination = serializer.Serialize(dto.DestinationConfiguration), // we want to respect JsonPropertyAttribute here
+                Map = serializer.SerializeCamelCase(dto.FieldMappings), // here all properties are desired to have a camel-case names
                 Scheduler = dto.Scheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
@@ -109,7 +110,7 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceConfiguration = webModel.SourceConfiguration,
                 SourceProvider = webModel.SourceProvider,
                 Type = webModel.Type,
-                DestinationConfiguration = webModel.Destination,
+                DestinationConfiguration = serializer.Deserialize<DestinationConfiguration>(webModel.Destination),
                 FieldMappings = serializer.Deserialize<List<FieldMap>>(webModel.Map),
                 Scheduler = webModel.Scheduler,
                 DestinationProvider = webModel.DestinationProvider,

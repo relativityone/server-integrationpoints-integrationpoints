@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
         {
             objects.FieldMaps = EmbeddedResource.FieldMaps(resourceName);
             objects.ImportProviderSettings = EmbeddedResource.ImportProviderSettings(resourceName);
-            objects.ImportSettings = EmbeddedResource.ImportSettings(resourceName);
+            objects.DestinationConfiguration = EmbeddedResource.DestinationConfiguration(resourceName);
         }
 
         private void SetLoadFile(SettingsObjects objects, string loadFileName)
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 
         private void SetWorkspaceId(SettingsObjects objects, int workspaceId)
         {
-            objects.ImportSettings.CaseArtifactId = workspaceId;
+            objects.DestinationConfiguration.CaseArtifactId = workspaceId;
             objects.ImportProviderSettings.WorkspaceId = workspaceId;
         }
     }

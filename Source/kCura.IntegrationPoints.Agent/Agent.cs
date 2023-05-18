@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
@@ -34,6 +35,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
@@ -58,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent
         private ErrorService _errorService;
         private const string _AGENT_NAME = "Integration Points Agent";
         private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
+        private const int _MAX_COMPLETION_PORT_THREADS = 100;
 
         protected IWindsorContainer Container;
 
@@ -177,6 +180,8 @@ namespace kCura.IntegrationPoints.Agent
                         {
                             try
                             {
+                                ConfigureAgentThreadsForSync();
+
                                 Container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
 
                                 RelativitySyncAdapter syncAdapter = Container.Resolve<RelativitySyncAdapter>();
@@ -394,6 +399,31 @@ namespace kCura.IntegrationPoints.Agent
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.LogFatal(e.ExceptionObject as Exception, "Unhandled exception occurred!");
+        }
+
+        private void ConfigureAgentThreadsForSync()
+        {
+            ThreadPool.GetMaxThreads(out int workerThreads, out int completionPortThreads);
+
+            ThreadPool.GetAvailableThreads(out int availableWorkerThreads, out int availableCompletionPortThreads);
+
+            Logger.LogInformation(
+                "Agent current threads status - WorkerThreads: {availableWorkerThreads}/{maxWorkerThreads}, CompletionPortThreads: {availableCompletionPortThreads}/{maxCompletionPortThreads}.",
+                availableWorkerThreads,
+                workerThreads,
+                availableCompletionPortThreads,
+                completionPortThreads);
+
+            IInstanceSettingsBundle instanceSettings = Helper.GetInstanceSettingBundle();
+
+            int maxCompletionPortThreads = instanceSettings.GetInt("Relativity.Sync", "MaxCompletionPortThreads") ?? _MAX_COMPLETION_PORT_THREADS;
+
+            Logger.LogInformation(
+                "Setting agent threads - MaxWorkerThreads: {workerThreads}, MaxCompletionPortThreads: {maxCompletionPortThreads}.",
+                workerThreads,
+                maxCompletionPortThreads);
+
+            ThreadPool.SetMaxThreads(workerThreads, maxCompletionPortThreads);
         }
     }
 }

@@ -10,6 +10,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <summary>
         /// Builds the ImportAPI runner based on destination configuration.
         /// </summary>
-        IImportApiRunner BuildRunner(ImportSettings destinationConfiguration);
+        IImportApiRunner BuildRunner(DestinationConfiguration destinationConfiguration);
     }
 }

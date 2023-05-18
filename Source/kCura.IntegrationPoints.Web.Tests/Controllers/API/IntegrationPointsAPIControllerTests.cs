@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -69,16 +68,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _sut.Request.SetConfiguration(new HttpConfiguration());
         }
 
-        [TestCase(null)]
-        [TestCase(1000)]
-        public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
+        [Test]
+        public void Update_StandardSourceProvider_NoJobsRun_GoldFlow()
         {
             // Arrange
             var model = new IntegrationPointDto()
             {
                 ArtifactId = 123,
                 SourceProvider = 9830,
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
 
@@ -109,13 +107,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                     ObjectTypes.IntegrationPoint);
         }
 
-        [TestCase(null)]
-        [TestCase(1000)]
-        public void UpdateIntegrationPointThrowsError_ReturnFailedResponse(int? federatedInstanceArtifactId)
+        [Test]
+        public void UpdateIntegrationPointThrowsError_ReturnFailedResponse()
         {
             var model = new IntegrationPointDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
             var validationResult = new ValidationResult(false, "That's a damn shame.");
@@ -149,7 +146,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             {
                 ArtifactId = 123,
                 SourceProvider = 9830,
-                DestinationConfiguration = "",
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _CREDENTIALS
             };
 

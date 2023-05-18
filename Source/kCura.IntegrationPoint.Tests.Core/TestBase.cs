@@ -8,9 +8,9 @@ namespace kCura.IntegrationPoint.Tests.Core
     [TestFixture]
     public abstract class TestBase
     {
-        public ISerializer Serializer { get; } = new IntegrationPointSerializer(null);
+        public ISerializer Serializer { get; } = new RipJsonSerializer(null);
 
-        public ICamelCaseSerializer CamelCaseSerializer { get; } = new IntegrationPointSerializer(null);
+        public ICamelCaseSerializer CamelCaseSerializer { get; } = new RipJsonSerializer(null);
 
         /// <summary>
         /// All classes that are based on TestBase are executing class SetUp method during OneTimeSetUp.

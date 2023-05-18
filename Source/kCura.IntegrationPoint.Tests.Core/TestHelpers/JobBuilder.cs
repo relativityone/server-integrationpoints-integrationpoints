@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _SCHEDULE_RULE = "ScheduleRule";
         private const string _STOP_STATE = "StopState";
         private const string _HEARTBEAT = "Heartbeat";
-        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+        private readonly ISerializer _serializer = RipJsonSerializer.CreateWithoutLogger();
         private IsJobFailed _jobFailed;
         private DataRow _jobData;
 

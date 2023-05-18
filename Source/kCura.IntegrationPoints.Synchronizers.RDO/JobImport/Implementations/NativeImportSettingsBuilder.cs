@@ -18,10 +18,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         {
             base.PopulateFrom(importSettings, target);
 
-            target.ArtifactTypeId = importSettings.ArtifactTypeId;
-            target.BulkLoadFileFieldDelimiter = importSettings.BulkLoadFileFieldDelimiter;
-            target.DisableControlNumberCompatibilityMode = importSettings.DisableControlNumberCompatibilityMode;
-            target.DisableExtractedTextFileLocationValidation = importSettings.DisableExtractedTextFileLocationValidation;
+            target.ArtifactTypeId = importSettings.DestinationConfiguration.ArtifactTypeId;
+            target.BulkLoadFileFieldDelimiter = null;
+            target.DisableControlNumberCompatibilityMode = false;
+            target.DisableExtractedTextFileLocationValidation = false;
             target.DisableNativeLocationValidation = importSettings.DisableNativeLocationValidation;
             target.DisableNativeValidation = importSettings.DisableNativeValidation;
             target.FileNameColumn = importSettings.FileNameColumn;
@@ -31,17 +31,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             target.MultiValueDelimiter = importSettings.MultiValueDelimiter;
             target.NativeFilePathSourceFieldName = importSettings.NativeFilePathSourceFieldName;
             target.NestedValueDelimiter = importSettings.NestedValueDelimiter;
-            target.OIFileIdColumnName = importSettings.OIFileIdColumnName;
+            target.OIFileIdColumnName = null;
             target.OIFileIdMapped = importSettings.OIFileIdMapped;
             target.OIFileTypeColumnName = importSettings.OIFileTypeColumnName;
             target.SupportedByViewerColumn = importSettings.SupportedByViewerColumn;
             target.MoveDocumentsInAppendOverlayMode = importSettings.MoveDocumentsInAnyOverlayMode;
 
             // only set if the extracted file map links to extracted text location
-            if (importSettings.ExtractedTextFieldContainsFilePath)
+            if (importSettings.DestinationConfiguration.ExtractedTextFieldContainsFilePath)
             {
                 target.ExtractedTextEncoding = importSettings.ExtractedTextEncoding;
-                target.LongTextColumnThatContainsPathToFullText = importSettings.LongTextColumnThatContainsPathToFullText;
+                target.LongTextColumnThatContainsPathToFullText = importSettings.DestinationConfiguration.LongTextColumnThatContainsPathToFullText;
             }
 
             target.LoadImportedFullTextFromServer = importSettings.LoadImportedFullTextFromServer;
@@ -51,25 +51,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
         private int GetDestinationFolderArtifactId(ImportSettings importSettings)
         {
-            Workspace currentWorkspace = _importApi.Workspaces().FirstOrDefault(x => x.ArtifactID.Equals(importSettings.CaseArtifactId));
+            Workspace currentWorkspace = _importApi.Workspaces().FirstOrDefault(x => x.ArtifactID.Equals(importSettings.DestinationConfiguration.CaseArtifactId));
 
             if (currentWorkspace == null)
             {
-                throw new IntegrationPointsException($"No workspace (id: {importSettings.CaseArtifactId}) found among available workspaces.");
+                throw new IntegrationPointsException($"No workspace (id: {importSettings.DestinationConfiguration.CaseArtifactId}) found among available workspaces.");
             }
 
-            int rv = importSettings.DestinationFolderArtifactId;
+            int rv = importSettings.DestinationConfiguration.DestinationFolderArtifactId;
             if (rv == 0)
             {
-                rv = importSettings.ArtifactTypeId == (int) global::Relativity.ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
+                rv = importSettings.DestinationConfiguration.ArtifactTypeId == (int) global::Relativity.ArtifactType.Document ? currentWorkspace.RootFolderID : currentWorkspace.RootArtifactID;
             }
             return rv;
         }
 
         private string GetSelectedIdentifierFieldName(ImportSettings importSettings)
         {
-            IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(importSettings.CaseArtifactId, importSettings.ArtifactTypeId);
-            return workspaceFields.First(x => x.ArtifactID == importSettings.IdentityFieldId).Name;
+            IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(importSettings.DestinationConfiguration.CaseArtifactId, importSettings.DestinationConfiguration.ArtifactTypeId);
+            return workspaceFields.First(x => x.ArtifactID == importSettings.DestinationConfiguration.IdentityFieldId).Name;
         }
     }
 }

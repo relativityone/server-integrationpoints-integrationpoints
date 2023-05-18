@@ -36,7 +36,7 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
     }
 }
 
-export function getCalculationStateInfo(convenienceApi: IConvenienceApi, integrationPointId: number) {
+export function getCalculationStateInfo(convenienceApi: IConvenienceApi, workspaceId: number, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -44,6 +44,7 @@ export function getCalculationStateInfo(convenienceApi: IConvenienceApi, integra
             }
         }),
         payload: {
+            workspaceId: workspaceId,
             integrationPointId: integrationPointId
         },
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetCalculationStateInfo"

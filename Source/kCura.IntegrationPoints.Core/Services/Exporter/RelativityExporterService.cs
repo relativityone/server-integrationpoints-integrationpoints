@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 Logger,
                 QueryFieldLookupRepository,
                 FileRepository,
-                transferConfiguration.ImportSettings.UseDynamicFolderPath,
+                transferConfiguration.DestinationConfiguration.UseDynamicFolderPath,
                 SourceConfiguration.SourceWorkspaceArtifactId);
             var exporterTransferContext =
                 new ExporterTransferContext(documentTransferDataReader, transferConfiguration)

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
                 DestinationProvider = _DEST_PROVIDER_ID,
                 Name = "Name",
                 SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.Name,
-                DestinationConfiguration = string.Empty,
+                DestinationConfiguration = new DestinationConfiguration(),
                 SourceConfiguration = string.Empty,
                 Scheduler = null,
                 EmailNotificationRecipients = string.Empty,

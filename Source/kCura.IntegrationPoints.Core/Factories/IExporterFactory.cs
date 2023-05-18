@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories
@@ -13,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Factories
             FieldMap[] mappedFields,
             string config,
             int savedSearchArtifactID,
-            string userImportApiSettings,
+            DestinationConfiguration destinationConfiguration,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer);
     }

@@ -9,11 +9,15 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -144,11 +148,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
 
-            container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
-            container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
-            container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
-            container.Register(Component.For<ILoadFileBuilder>().ImplementedBy<LoadFileBuilder>().LifestyleTransient());
-            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
             container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>().LifestyleSingleton());
             container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 
@@ -205,7 +204,15 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
         private static void ConfigureOtherProviderFlow(IWindsorContainer container)
         {
+            container.Register(Component.For<ICancellationTokenFactory>().ImplementedBy<CancellationTokenFactory>());
+            container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
+            container.Register(Component.For<IJobDetailsService>().ImplementedBy<JobDetailsService>());
+            container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
+            container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
+            container.Register(Component.For<ILoadFileBuilder>().ImplementedBy<LoadFileBuilder>().LifestyleTransient());
+            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
             container.Register(Component.For<IJobProgressHandler>().ImplementedBy<JobProgressHandler>().LifestyleTransient());
+            container.Register(Component.For<IImportJobRunner>().ImplementedBy<ImportJobRunner>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());

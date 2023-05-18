@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Email;
 using kCura.IntegrationPoints.Email.Dto;
 using kCura.IntegrationPoints.Email.Exceptions;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
 

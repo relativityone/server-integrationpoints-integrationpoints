@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc />
-        public RdoImportConfiguration Build(ImportSettings destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public RdoImportConfiguration Build(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
@@ -102,12 +102,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private ImportRdoSettings ConfigureArtifactType(
             IWithRdo withRdo,
-            ImportSettings importSettings)
+            DestinationConfiguration destinationConfiguration)
         {
-            return withRdo
-                .WithRdo(f => f
-                    .WithArtifactTypeId(importSettings.ArtifactTypeId)
-                    .WithoutParentColumnIndex());
+            return withRdo.WithRdo(f => f
+                .WithArtifactTypeId(destinationConfiguration.ArtifactTypeId)
+                .WithoutParentColumnIndex());
         }
 
         private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using FluentAssertions;
@@ -21,7 +20,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -239,9 +237,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestCase(null)]
-        [TestCase(1000)]
-        public void RetryJob_UserIdExists_Succeeds_Test(int? federatedInstanceArtifactId)
+        [Test]
+        public void RetryJob_UserIdExists_Succeeds_Test()
         {
             // Arrange
             var claims = new List<Claim>(1)
@@ -251,7 +248,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             var integrationPoint = new IntegrationPointDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
@@ -269,14 +266,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [TestCase(null)]
-        [TestCase(1000)]
-        public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test(int? federatedInstanceArtifactId)
+        [Test]
+        public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test()
         {
             // Arrange
             var integrationPoint = new IntegrationPointDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = new DestinationConfiguration(),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 

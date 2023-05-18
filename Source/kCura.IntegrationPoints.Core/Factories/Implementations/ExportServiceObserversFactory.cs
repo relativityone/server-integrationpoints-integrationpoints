@@ -3,16 +3,16 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             JobHistoryErrorDTO.UpdateStatusType updateStatusType,
             JobHistory jobHistory,
             string uniqueJobID,
-            string userImportApiSettings)
+            ImportSettings userImportApiSettings)
         {
             IConsumeScratchTableBatchStatus destinationFieldsTagger = CreateDestinationFieldsTagger(
                 tagsCreator,
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             SourceConfiguration sourceConfiguration,
             JobHistory jobHistory,
             string uniqueJobID,
-            string userImportApiSettings)
+            ImportSettings userImportApiSettings)
         {
             IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(sourceConfiguration.SourceWorkspaceArtifactId);
 

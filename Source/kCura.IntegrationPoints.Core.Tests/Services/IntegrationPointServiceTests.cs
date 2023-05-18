@@ -5,8 +5,9 @@ using System.Net.Mail;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -23,7 +24,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Moq;
 using Newtonsoft.Json;
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
         private Data.IntegrationPoint _integrationPoint;
-        private ImportSettings _destinationConfiguration;
+        private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
         private int _WORKSPACE_ID;
         private int _USER_ID;
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-            _destinationConfiguration = _fxt.Build<ImportSettings>()
+            _destinationConfiguration = _fxt.Build<DestinationConfiguration>()
                 .With(x => x.ArtifactTypeId, _fxt.Create<int>())
                 .Create();
             _sourceProvider = _fxt.Build<SourceProvider>()
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.Type, _integrationPointType.ArtifactId)
                 .With(x => x.ScheduleRule, (string)null)
                 .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
-                .With(x => x.FieldMappings, string.Empty)
+                .With(x => x.FieldMappings, "[]")
                 .With(x => x.EnableScheduler, false)
                 .With(x => x.HasErrors, false)
                 .With(x => x.LogErrors, true)
@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
                 .With(x => x.SourceConfiguration, _integrationPoint.SourceConfiguration)
                 .With(x => x.DestinationProvider, _destinationProvider.ArtifactId)
-                .With(x => x.DestinationConfiguration, JsonConvert.SerializeObject(_destinationConfiguration))
+                .With(x => x.DestinationConfiguration, _destinationConfiguration)
                 .With(x => x.Type, _integrationPointType.ArtifactId)
                 .With(x => x.Scheduler, new Scheduler(_integrationPoint.EnableScheduler.Value, null))
                 .With(x => x.SelectedOverwrite, OverwriteFieldsChoices.IntegrationPointAppendOnly.Name)
@@ -192,6 +192,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             _agentLauncherMock = _fxt.Freeze<Mock<IAgentLauncher>>();
 
+            _fxt.Register<IRetryHandler>(() => new RetryHandler(_fxt.Create<IAPILog>()));
+            _fxt.Register<ISerializer>(() => new JSONSerializer());
             _sut = _fxt.Create<IntegrationPointService>();
         }
 
@@ -897,17 +899,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Arrange
             IntegrationPointDto dtoToUpdate = CloneIntegrationPoint(_integrationPointDto);
 
-            dtoToUpdate.DestinationConfiguration = JsonConvert.SerializeObject(new
+            dtoToUpdate.DestinationConfiguration = new DestinationConfiguration()
             {
-                artifactTypeID = _fxt.Create<int>()
-            });
+                ArtifactTypeId = _fxt.Create<int>()
+            };
 
             // Act
             Action action = () => _sut.SaveIntegrationPoint(dtoToUpdate);
 
             // Assert
-            action.ShouldThrow<Exception>().And
-                .InnerException.Message.Should().Contain("Destination RDO");
+            action.ShouldThrow<Exception>()
+                .And.InnerException.Message.Should().Contain("Destination RDO");
         }
 
         [Test]

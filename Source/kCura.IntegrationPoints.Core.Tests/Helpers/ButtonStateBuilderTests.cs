@@ -309,7 +309,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private ButtonStateBuilder GetSut()
         {
             return new ButtonStateBuilder(
-                new IntegrationPointSerializer(null),
+                new RipJsonSerializer(null),
                 _providerTypeService,
                 _repositoryFactory,
                 _integrationPointService,

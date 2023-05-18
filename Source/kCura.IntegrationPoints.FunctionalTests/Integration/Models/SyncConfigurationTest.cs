@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
+    /// <inheritdoc />
     public class SyncConfigurationTest : RdoTestBase
     {
         public int JobHistoryId { get; set; }

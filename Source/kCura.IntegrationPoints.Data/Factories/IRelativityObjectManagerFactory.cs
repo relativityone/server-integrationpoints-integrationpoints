@@ -6,6 +6,7 @@ namespace kCura.IntegrationPoints.Data.Factories
     public interface IRelativityObjectManagerFactory
     {
         IRelativityObjectManager CreateRelativityObjectManager(int workspaceId);
+
         IRelativityObjectManager CreateRelativityObjectManager(int workspaceId, IServicesMgr servicesMgr);
     }
 }

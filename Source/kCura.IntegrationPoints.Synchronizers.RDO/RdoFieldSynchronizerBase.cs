@@ -64,32 +64,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
             LogRetrievingFields();
-            ImportSettings settings = GetSettings(providerConfiguration.Configuration);
+            DestinationConfiguration settings = DeserializeDestinationConfiguration(providerConfiguration.Configuration);
             List<RelativityObject> fields = GetRelativityFields(settings);
             return ParseFields(fields);
         }
 
-        protected ImportSettings GetSettings(string options)
-        {
-            ImportSettings settings = DeserializeImportSettings(options);
-
-            if (string.IsNullOrEmpty(settings.WebServiceURL))
-            {
-                settings.WebServiceURL = WebAPIPath;
-                if (string.IsNullOrEmpty(settings.WebServiceURL))
-                {
-                    LogMissingWebApiPath();
-                    throw new Exception("No WebAPI path set for integration points.");
-                }
-            }
-            return settings;
-        }
-
-        private ImportSettings DeserializeImportSettings(string options)
+        private DestinationConfiguration DeserializeDestinationConfiguration(string options)
         {
             try
             {
-                return JsonConvert.DeserializeObject<ImportSettings>(options);
+                return JsonConvert.DeserializeObject<DestinationConfiguration>(options);
             }
             catch (Exception e)
             {
@@ -98,14 +82,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
+        private List<RelativityObject> GetRelativityFields(DestinationConfiguration settings)
         {
             LogRetrievingRelativityFields();
             try
             {
                 List<RelativityObject> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
                 HashSet<int> mappableArtifactIds =
-                    new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
+                    new HashSet<int>(GetImportApi().GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
                 return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
             }
             catch (Exception e)
@@ -136,9 +120,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        protected IImportAPI GetImportApi(ImportSettings settings)
+        protected IImportAPI GetImportApi()
         {
-            return _api ?? (_api = _factory.GetImportAPI(settings.WebServiceURL));
+            return _api ?? (_api = _factory.GetImportAPI(WebAPIPath));
         }
 
         #region Logging
@@ -146,11 +130,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private void LogRetrievingFields()
         {
             _logger.LogInformation("Attempting to retrieve fields.");
-        }
-
-        private void LogMissingWebApiPath()
-        {
-            _logger.LogError("No WebAPI path set for integration points.");
         }
 
         private void LogImportSettingsDeserializationError(Exception e)

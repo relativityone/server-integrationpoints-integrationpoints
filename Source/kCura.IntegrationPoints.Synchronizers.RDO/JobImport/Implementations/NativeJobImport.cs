@@ -44,16 +44,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
         protected internal override ImportBulkArtifactJob CreateJob()
         {
-            int artifactTypeId = ImportSettings.ArtifactTypeId;
-            int? federatedInstanceArtifactId = ImportSettings.FederatedInstanceArtifactId;
-            _logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}, FederatedInstanceArtifactId: {federatedInstanceArtifactId}", artifactTypeId, federatedInstanceArtifactId);
+            int artifactTypeId = ImportSettings.DestinationConfiguration.ArtifactTypeId;
+            _logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}", artifactTypeId);
 
             if (artifactTypeId == (int)ArtifactType.Document)
             {
-                if (federatedInstanceArtifactId == null)
-                {
-                    return ImportApi.NewNativeDocumentImportJob();
-                }
                 return ImportApi.NewNativeDocumentImportJob();
             }
             return ImportApi.NewObjectImportJob(artifactTypeId);
@@ -74,18 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         private void PrepareImportJob()
         {
             _builder.PopulateFrom(ImportSettings, ImportJob.Settings);
-            LogJobSettings();
-
             ImportJob.SourceData.SourceData = _sourceData;
-        }
-
-        private void LogJobSettings()
-        {
-            if (ImportJob.Settings != null)
-            {
-                var settingsForLogging = new ImportSettingsForLogging(ImportSettings);
-                _logger.LogInformation("Import API native import settings: {importApiSettings}", settingsForLogging);
-            }
         }
     }
 }

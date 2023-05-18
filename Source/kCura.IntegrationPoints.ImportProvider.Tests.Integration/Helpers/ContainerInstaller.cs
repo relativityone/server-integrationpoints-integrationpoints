@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
         private static void RegisterSerializer(WindsorContainer windsorContainer)
         {
-            windsorContainer.Register(Component.For<ISerializer>().Instance(IntegrationPointSerializer.CreateWithoutLogger()));
+            windsorContainer.Register(Component.For<ISerializer>().Instance(RipJsonSerializer.CreateWithoutLogger()));
         }
 
         public static void RegisterSyncClasses(WindsorContainer windsorContainer)

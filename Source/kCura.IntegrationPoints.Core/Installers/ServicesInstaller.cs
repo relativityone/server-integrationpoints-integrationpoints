@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -48,20 +47,20 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
+using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.DataExchange;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using SystemInterface.IO;
-using Relativity.DataExchange;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -69,10 +68,10 @@ namespace kCura.IntegrationPoints.Core.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For<ISerializer, ICamelCaseSerializer>().ImplementedBy<IntegrationPointSerializer>().UsingFactoryMethod(x =>
+            container.Register(Component.For<ISerializer, ICamelCaseSerializer>().ImplementedBy<RipJsonSerializer>().UsingFactoryMethod(x =>
             {
                 IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-                return new IntegrationPointSerializer(logger);
+                return new RipJsonSerializer(logger);
             }).LifestyleSingleton());
 
             container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<ObjectTypeRepository>().UsingFactoryMethod(x =>
@@ -95,6 +94,9 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<ProviderFactoryVendor>().ImplementedBy<ProviderFactoryVendor>().LifestyleTransient());
             container.Register(Component.For<IDataProviderFactory>().ImplementedBy<DataProviderBuilder>().LifestyleTransient());
             container.Register(Component.For<IAppDomainHelper>().ImplementedBy<AppDomainHelper>().LifestyleSingleton());
+            Guid guid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+            container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
+            container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
             container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
             container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
             container.Register(Component.For<IDateTimeHelper>().ImplementedBy<DateTimeUtcHelper>());
@@ -103,6 +105,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 .UsingFactoryMethod(x =>
             {
                 int workspaceId = x.Resolve<IServiceContextHelper>().WorkspaceID;
+
                 IRelativityObjectManagerFactory factory = x.Resolve<IRelativityObjectManagerFactory>();
                 return factory.CreateRelativityObjectManager(workspaceId);
             }).LifestyleTransient());

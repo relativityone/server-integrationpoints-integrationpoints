@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,6 +48,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
         public Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId)
         {
             return Task.FromResult("DirectoryPath");
+        }
+
+        public Task<DirectoryInfo> PrepareImportDirectoryAsync(int workspaceId, Guid importJobId)
+        {
+            DirectoryInfo dir = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "RIP", "Tests",
+                "CustomProviderImport", workspaceId.ToString(), importJobId.ToString()));
+            dir.Create();
+
+            return Task.FromResult(dir);
+        }
+
+        public Task DeleteDirectoryRecursiveAsync(string directoryPath)
+        {
+            // don't delete directory because we want to validate written files
+
+            return Task.CompletedTask;
         }
 
         private class FakeStream : StorageStream

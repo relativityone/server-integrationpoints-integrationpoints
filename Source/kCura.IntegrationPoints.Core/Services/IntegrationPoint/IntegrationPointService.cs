@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -20,7 +20,8 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -100,8 +101,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
             dto.FieldMappings = GetFieldMap(artifactID);
+            dto.DestinationConfiguration = GetDestinationConfiguration(artifactID);
             dto.SourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(artifactID).GetAwaiter().GetResult();
-            dto.DestinationConfiguration = _integrationPointRepository.GetDestinationConfigurationAsync(artifactID).GetAwaiter().GetResult();
             return dto;
         }
 
@@ -123,8 +124,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             foreach (var dto in dtoList)
             {
                 dto.FieldMappings = GetFieldMap(dto.ArtifactId);
-                dto.SourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(dto.ArtifactId).GetAwaiter().GetResult();
-                dto.DestinationConfiguration = _integrationPointRepository.GetDestinationConfigurationAsync(dto.ArtifactId).GetAwaiter().GetResult();
+                dto.SourceConfiguration = GetSourceConfiguration(dto.ArtifactId);
+                dto.DestinationConfiguration = GetDestinationConfiguration(dto.ArtifactId);
             }
 
             return dtoList;
@@ -132,44 +133,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         public List<FieldMap> GetFieldMap(int artifactId)
         {
-            return _retryHandler.Execute<List<FieldMap>, RipSerializationException>(
-                ReadFieldMapping,
-                exception =>
-                {
-                    _logger.LogWarning(
-                        exception,
-                        "Unable to deserialize field mapping for integration point: {integrationPointId}. Mapping value: {fieldMapping}. Operation will be retried.",
-                        artifactId,
-                        exception.Value ?? string.Empty);
-                });
+            var fieldMap = ReadLongTextWithRetries<List<FieldMap>>(_integrationPointRepository.GetFieldMappingAsync, artifactId);
 
-            List<FieldMap> ReadFieldMapping()
-            {
-                string fieldMapString = _integrationPointRepository.GetFieldMappingAsync(artifactId).GetAwaiter().GetResult();
-                List<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
-                SanitizeFieldsMapping(fieldMap);
-                return fieldMap;
-            }
-        }
-
-        public CalculationState GetCalculationState(int artifactId)
-        {
-            return _retryHandler.Execute<CalculationState, RipSerializationException>(
-                ReadCalculationState,
-                exception =>
-                {
-                    _logger.LogWarning(
-                        exception,
-                        "Unable to deserialize calculation state for integration point: {integrationPointId}. State value: {calculationState}. Operation will be retried.",
-                        artifactId,
-                        exception.Value ?? string.Empty);
-                });
-
-            CalculationState ReadCalculationState()
-            {
-                string calculationStateString = _integrationPointRepository.GetCalculationStateAsync(artifactId).GetAwaiter().GetResult();
-                return Serializer.Deserialize<CalculationState>(calculationStateString);
-            }
+            // CustomProviders are based on SourceFields data, this line is needed for these providers to work properly
+            fieldMap?.ForEach(map => map.SourceField.IsIdentifier = map.FieldMapType == FieldMapTypeEnum.Identifier);
+            return fieldMap;
         }
 
         public string GetSourceConfiguration(int artifactId)
@@ -177,9 +145,33 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return _integrationPointRepository.GetSourceConfigurationAsync(artifactId).GetAwaiter().GetResult();
         }
 
-        public string GetDestinationConfiguration(int artifactId)
+        public DestinationConfiguration GetDestinationConfiguration(int artifactId)
         {
-            return _integrationPointRepository.GetDestinationConfigurationAsync(artifactId).GetAwaiter().GetResult();
+            return ReadLongTextWithRetries<DestinationConfiguration>(_integrationPointRepository.GetDestinationConfigurationAsync, artifactId);
+        }
+
+        public CalculationState GetCalculationState(int artifactId)
+        {
+            return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
+        }
+
+        private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
+        {
+            return _retryHandler.Execute<T, RipSerializationException>(
+                () =>
+                {
+                    string longTextString = longTextAccessor(integrationPointId).GetAwaiter().GetResult();
+                    return Serializer.Deserialize<T>(longTextString);
+                },
+                exception =>
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Unable to deserialize {fieldType} for integration point: {integrationPointId}. LongText value: {longText}. Operation will be retried.",
+                        typeof(T),
+                        integrationPointId,
+                        exception.Value ?? string.Empty);
+                });
         }
 
         public List<IntegrationPointSlimDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
@@ -446,6 +438,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
         {
+            _logger.LogInformation("Submitting Job for Integration Point {integrationPointId} with JobHistoryId {jobHistoryId}", integrationPointArtifactId, jobHistory.ArtifactId);
+
             bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
             if (shouldUseRelativitySyncAppIntegration)
             {
@@ -453,7 +447,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 try
                 {
                     _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
-                    _logger.LogInformation("Sync retry job has been submitted");
                 }
                 catch (SyncJobSendingException ex)
                 {
@@ -463,7 +456,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
             else
             {
-                _logger.LogInformation("Using Sync DLL to run the job");
+                _logger.LogInformation("Adding Job to IntegrationPoints Queue...");
                 Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
                 if (job != null)
                 {
@@ -847,7 +840,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception("Cannot find choice by the name " + dto.SelectedOverwrite);
             }
 
-            var IntegrationPointRdo = new Data.IntegrationPoint
+            var integrationPointRdo = new Data.IntegrationPoint
             {
                 ArtifactId = dto.ArtifactId,
                 Name = dto.Name,
@@ -857,7 +850,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     : dto.SourceConfiguration,
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
-                DestinationConfiguration = dto.DestinationConfiguration,
+                DestinationConfiguration = Serializer.Serialize(dto.DestinationConfiguration ?? new DestinationConfiguration()),
                 FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,
@@ -870,18 +863,18 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 JobHistory = dto.JobHistory?.ToArray(),
             };
 
-            if (IntegrationPointRdo.EnableScheduler.GetValueOrDefault(false))
+            if (integrationPointRdo.EnableScheduler.GetValueOrDefault(false))
             {
-                IntegrationPointRdo.ScheduleRule = rule.ToSerializedString();
-                IntegrationPointRdo.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
+                integrationPointRdo.ScheduleRule = rule.ToSerializedString();
+                integrationPointRdo.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
             }
             else
             {
-                IntegrationPointRdo.ScheduleRule = string.Empty;
-                IntegrationPointRdo.NextScheduledRuntimeUTC = null;
+                integrationPointRdo.ScheduleRule = string.Empty;
+                integrationPointRdo.NextScheduledRuntimeUTC = null;
             }
 
-            return IntegrationPointRdo;
+            return integrationPointRdo;
         }
 
         private bool FilterSyncAppJobHistory(Data.JobHistory jobHistory)

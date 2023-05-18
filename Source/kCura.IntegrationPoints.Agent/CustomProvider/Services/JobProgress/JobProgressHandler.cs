@@ -1,78 +1,108 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
-using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
-using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
-using Relativity.Import.V1.Services;
+using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 {
-    public class JobProgressHandler : IJobProgressHandler
+    internal class JobProgressHandler : IJobProgressHandler
     {
-        private readonly IKeplerServiceFactory _serviceFactory;
+        private readonly IImportApiService _importApiService;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly ITimerFactory _timerFactory;
         private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
 
-        public JobProgressHandler(IKeplerServiceFactory serviceFactory, IJobHistoryService jobHistoryService, ITimerFactory timerFactory, IInstanceSettings instanceSettings, IAPILog logger)
+        public JobProgressHandler(IImportApiService importApiService, IJobHistoryService jobHistoryService, ITimerFactory timerFactory, IInstanceSettings instanceSettings, IAPILog logger)
         {
-            _serviceFactory = serviceFactory;
+            _importApiService = importApiService;
             _jobHistoryService = jobHistoryService;
             _timerFactory = timerFactory;
             _instanceSettings = instanceSettings;
             _logger = logger.ForContext<JobProgressHandler>();
         }
 
-        public async Task<IDisposable> BeginUpdateAsync(int workspaceId, Guid importJobId, int jobHistoryId)
+        public async Task<IDisposable> BeginUpdateAsync(ImportJobContext importJobContext)
         {
             TimeSpan interval = await _instanceSettings.GetCustomProviderProgressUpdateIntervalAsync()
                 .ConfigureAwait(false);
 
             _logger.LogInformation("Progress update interval: {interval}", interval);
 
-            ITimer timer = _timerFactory.Create(async (state) => await UpdateProgressAsync(workspaceId, importJobId, jobHistoryId).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
+            ITimer timer = _timerFactory.Create(async (state) => await SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
             return timer;
         }
 
-        private async Task UpdateProgressAsync(int workspaceId, Guid importJobId, int jobHistoryId)
+        public async Task SafeUpdateProgressAsync(ImportJobContext importJobContext)
         {
             try
             {
-                Progress importJobProgress = await GetImportJobProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
+                ImportProgress progress = await _importApiService.GetJobImportProgressValueAsync(importJobContext).ConfigureAwait(false);
 
-                await _jobHistoryService.UpdateProgressAsync(workspaceId, jobHistoryId, importJobProgress.TransferredDocumentsCount, importJobProgress.FailedDocumentsCount)
+                await _jobHistoryService
+                    .UpdateProgressAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryId, progress.ImportedRecords, progress.ErroredRecords)
                     .ConfigureAwait(false);
 
-                _logger.LogInformation("Progress has been updated. Imported items count: {importedItemsCount} Failed items count: {failedItemsCount}", importJobProgress.TransferredDocumentsCount, importJobProgress.FailedDocumentsCount);
+                _logger.LogInformation("Progress has been updated. Imported items count: {importedItemsCount} Failed items count: {failedItemsCount}", progress.ImportedRecords, progress.ErroredRecords);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update job progress for Job History ID: {jobHistoryId}", jobHistoryId);
+                _logger.LogError(ex, "Failed to update job progress for Job History ID: {jobHistoryId}", importJobContext.JobHistoryId);
             }
         }
 
-        private async Task<Progress> GetImportJobProgressAsync(int workspaceId, Guid importJobId)
+        public async Task WaitForJobToFinish(ImportJobContext importJobContext, CompositeCancellationToken token)
         {
-            try
+            TimeSpan interval = TimeSpan.FromSeconds(5);
+
+            ImportDetails result;
+            ImportState state = ImportState.Unknown;
+            do
             {
-                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                if (token.IsStopRequested)
                 {
-                    ValueResponse<ImportProgress> response = await jobController.GetProgressAsync(workspaceId, importJobId).ConfigureAwait(false);
-                    ImportProgress progress = response.UnwrapOrThrow();
-                    return new Progress(progress.ErroredRecords, progress.ImportedRecords);
+                    await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
+                }
+
+                if (token.IsDrainStopRequested)
+                {
+                    return;
+                }
+
+                await Task.Delay(interval).ConfigureAwait(false);
+
+                result = await _importApiService.GetJobImportStatusAsync(importJobContext).ConfigureAwait(false);
+                if (result.State != state)
+                {
+                    state = result.State;
+                    _logger.LogInformation("Import status: {@status}", result);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to get import job progress for job ID: {importJobId}", importJobId);
-                throw;
-            }
+            while (!result.IsFinished);
+        }
+
+        public async Task UpdateReadItemsCountAsync(Job job, CustomProviderJobDetails jobDetails)
+        {
+            int readItemsCount = jobDetails
+                .Batches
+                .Where(x => x.IsAddedToImportQueue)
+                .Sum(x => x.NumberOfRecords);
+
+            await _jobHistoryService
+                .UpdateReadItemsCountAsync(job.WorkspaceID, jobDetails.JobHistoryID, readItemsCount)
+                .ConfigureAwait(false);
+        }
+
+        public async Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount)
+        {
+            await _jobHistoryService.SetTotalItemsAsync(workspaceId, jobHistoryId, totalItemsCount).ConfigureAwait(false);
         }
     }
 }

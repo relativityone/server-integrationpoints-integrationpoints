@@ -137,6 +137,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         }
 
         private string GetObjectTypeCondition(int rdoTypeID) => $"'Object Type Artifact Type Id' == OBJECT {rdoTypeID}";
+
         private static ArtifactFieldDTO ConvertRelativityObjectToArtifactFieldDto(RelativityObject relativityObject, FieldTypeHelper.FieldType fieldType)
         {
             return new ArtifactFieldDTO

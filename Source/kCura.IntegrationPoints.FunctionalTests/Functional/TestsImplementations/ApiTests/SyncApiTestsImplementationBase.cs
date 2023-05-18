@@ -205,7 +205,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 CaseArtifactId = destinationWorkspaceId,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
                 ImportNativeFile = false,
-                ArtifactTypeID = (int)ArtifactType.Document,
+                ArtifactTypeId = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = destinationFolderId,
                 FolderPathSourceField = 0,
                 UseFolderPathInformation = false,

@@ -6,7 +6,6 @@ using System.Security.Authentication;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Agent;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Extensions;
@@ -18,16 +17,13 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -236,7 +232,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         protected virtual void ExecuteImport(
             IEnumerable<FieldMap> fieldMap,
             DataSourceProviderConfiguration configuration,
-            string destinationConfiguration,
+            DestinationConfiguration destinationConfiguration,
             List<string> entryIDs,
             SourceProvider sourceProviderRdo,
             DestinationProvider destinationProvider,
@@ -254,18 +250,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
-            // Obtain settings for destination configuration
-            ImportSettings destinationSettings = Serializer.Deserialize<ImportSettings>(destinationConfiguration);
 
+            ImportSettings importSettings = new ImportSettings(destinationConfiguration);
             // Make non-Relativity providers log the document RDOs' created by/modified by field as the user who submitted the job.
             // (Adjustment only needs to be made before IDataSynchronizer.SyncData)
             if (dataSynchronizer is RdoSynchronizer)
             {
-                destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
-                destinationSettings.CorrelationId = BatchInstance;
-                destinationSettings.JobID = job.RootJobId;
-                destinationSettings.Provider = IntegrationPointDto.GetProviderType(_providerTypeService).ToString();
-                destinationConfiguration = Serializer.Serialize(destinationSettings);
+                importSettings.CorrelationId = BatchInstance;
+                importSettings.JobID = job.RootJobId;
+                importSettings.DestinationConfiguration.Provider = IntegrationPointDto.GetProviderType(_providerTypeService).ToString();
             }
 
             // Extract source fields from field map
@@ -283,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     JobStopManager?.ThrowIfStopRequested();
 
                     _logger.LogInformation("Start SyncData...");
-                    dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager, DiagnosticLog);
+                    dataSynchronizer.SyncData(sourceData, fieldMaps, importSettings, JobStopManager, DiagnosticLog);
                     _logger.LogInformation("SyncData Completed. Processed rows: {processedRows}", dataSynchronizer.TotalRowsProcessed);
                 }
             }
@@ -497,34 +490,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPointDto ip)
         {
             SourceConfiguration sourceConfiguration = null;
-            ImportSettings importSettings = null;
+            DestinationConfiguration destinationConfiguration = null;
             try
             {
                 sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(ip?.SourceConfiguration);
-                importSettings = Serializer.Deserialize<ImportSettings>(ip?.DestinationConfiguration);
+                destinationConfiguration = ip?.DestinationConfiguration;
             }
             catch (Exception ex)
             {
                 LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(ex);
             }
 
-            SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, importSettings);
+            SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, destinationConfiguration);
         }
 
-        private void SetupIntegrationPointsConfigurationForStatisticsService(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private void SetupIntegrationPointsConfigurationForStatisticsService(SourceConfiguration sourceConfiguration, DestinationConfiguration destinationConfiguration)
         {
-            if (sourceConfiguration == null || importSettings == null)
+            if (sourceConfiguration == null || destinationConfiguration == null)
             {
                 LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning();
             }
 
             try
             {
-                _statisticsService.SetIntegrationPointConfiguration(importSettings, sourceConfiguration);
+                _statisticsService.SetIntegrationPointConfiguration(destinationConfiguration, sourceConfiguration);
             }
             catch (Exception ex)
             {
-                LogSetupIntegrationPointsConfigurationForStatisticsServiceError(sourceConfiguration, importSettings, ex);
+                _logger.LogError(ex, "Failed to set up integration point configuration for statistics service.");
                 throw;
             }
         }
@@ -533,16 +526,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void LogSkippingSetupIntegrationPointsConfigurationForStatisticsServiceWarning()
         {
             _logger.LogWarning("Skipping setup of Integration Point configuration for statistics service.");
-        }
-
-        private void LogSetupIntegrationPointsConfigurationForStatisticsServiceError(SourceConfiguration sourceConfiguration, ImportSettings importSettings, Exception ex)
-        {
-            var settingsForLogging = new ImportSettingsForLogging(importSettings);
-            var sourceConfigForLogging = new SourceConfigurationForLogging(sourceConfiguration);
-
-            string msg =
-                "Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. ImportSettings: {importSettings}";
-            _logger.LogError(ex, msg, sourceConfigForLogging, settingsForLogging);
         }
 
         private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(Exception ex)
