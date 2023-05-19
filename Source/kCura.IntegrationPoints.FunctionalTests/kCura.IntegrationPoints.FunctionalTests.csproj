@@ -137,7 +137,7 @@
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" /> 
+    <!-- <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />  -->
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
