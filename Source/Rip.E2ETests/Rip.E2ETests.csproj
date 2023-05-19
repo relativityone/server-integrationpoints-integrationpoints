@@ -87,6 +87,8 @@
   -->
   <ItemGroup>
     <PackageReference Include="Polly" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Kepler.Client" />

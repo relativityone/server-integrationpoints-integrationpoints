@@ -83,6 +83,7 @@
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />
     <PackageReference Include="Newtonsoft.Json" />

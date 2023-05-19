@@ -140,6 +140,7 @@
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Kepler.Service">
