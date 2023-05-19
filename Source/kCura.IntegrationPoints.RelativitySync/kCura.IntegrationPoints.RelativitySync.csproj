@@ -142,8 +142,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Kepler.Service">
         <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>

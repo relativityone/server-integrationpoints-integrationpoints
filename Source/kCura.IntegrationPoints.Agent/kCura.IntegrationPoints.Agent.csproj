@@ -68,11 +68,9 @@
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
-    <PackageReference Include="Relativity.API"/>
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.Kepler"/>
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />

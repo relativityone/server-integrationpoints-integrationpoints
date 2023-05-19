@@ -15,10 +15,9 @@
     <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
     <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
     <FluentAssertions>4.19.4</FluentAssertions>
-    <IntegrationPointsMyFirstProvider>12.3.10</IntegrationPointsMyFirstProvider>
+    <IntegrationPointsMyFirstProvider>11.1.0-pre.9</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
-    <kCura>13.1.0</kCura>
-    <RelativitySDK>17.4.2</RelativitySDK>
+    <kCura>13.1.0</kCura>    
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
@@ -39,9 +38,9 @@
     <NSubstitute>1.10.0.0</NSubstitute>
     <NUnit>3.13.2</NUnit>
     <NUnit3TestAdapter>3.13.0</NUnit3TestAdapter>
-    <Polly>5.9</Polly>
+    <Polly>5.9.0</Polly>
     <Relativity>15.4.13</Relativity>
-    <RelativityAutomatedWorkflowsSDK>1.1.1</RelativityAutomatedWorkflowsSDK>
+    <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCustomPages>13.3.0</RelativityCustomPages>
     <RelativityCore>13.3.7</RelativityCore>
     <RelativityDataExchangeClientSDK>1.15.103</RelativityDataExchangeClientSDK>
@@ -50,7 +49,7 @@
     <RelativityIntegrationPointsContracts>1.0.9</RelativityIntegrationPointsContracts>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.2.1</RelativityIntegrationPointsServicesInterfacesPrivate>
     <RelativityKeplerClient>2.14.3</RelativityKeplerClient>
-    <KeplerVersion>2.17.0</KeplerVersion>
+    <KeplerVersion>2.14.4</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
@@ -59,9 +58,10 @@
     <RelativityOutsideIn>2021.8.0</RelativityOutsideIn>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
+    <RelativitySDK>17.1.0</RelativitySDK>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesSDKPrivate>13.1.4</RelativityServicesSDKPrivate>
-    <RelativitySync>0.8.60</RelativitySync>
+    <RelativitySync>0.8.60-pre.76</RelativitySync>
     <TelemetryAPM>2019.1.1</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>

@@ -166,12 +166,10 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity" />
-    <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="iTextSharp" />
