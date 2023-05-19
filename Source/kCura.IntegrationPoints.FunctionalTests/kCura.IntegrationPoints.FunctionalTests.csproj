@@ -130,9 +130,15 @@
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.Toggles" />
-    <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.Kepler" />
-    <PackageReference Include="Relativity.Kepler.Client" />
+    <PackageReference Include="Relativity.API" VersionOverride="17.4.2" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Kepler" VersionOverride="2.17.0" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Kepler.Client" VersionOverride="2.17.0" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
@@ -154,7 +160,9 @@
     <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
-    <PackageReference Include="IntegrationPoints.MyFirstProvider" />
+    <PackageReference Include="IntegrationPoints.MyFirstProvider" >
+      <NoWarn>NU1603</NoWarn>
+    </PackageReference>
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
   </ItemGroup>

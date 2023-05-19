@@ -15,7 +15,7 @@
     <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
     <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
     <FluentAssertions>4.19.4</FluentAssertions>
-    <IntegrationPointsMyFirstProvider>11.1.0-pre.9</IntegrationPointsMyFirstProvider>
+    <IntegrationPointsMyFirstProvider>12.3.2</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
     <kCura>13.1.0</kCura>    
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
