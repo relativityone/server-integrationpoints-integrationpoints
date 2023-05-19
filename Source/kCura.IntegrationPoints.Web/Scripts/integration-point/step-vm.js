@@ -286,7 +286,9 @@
 						
 						let startDate = Date.parse(model.scheduler.startDate);
 						let endDate = Date.parse(model.scheduler.endDate);
-						let scheduleTimePeriod = (endDate - startDate)/1000/3600/24 // days calculation
+						let durationMs = endDate - startDate;
+						let durationDays = durationMs / 1000 / 3600 / 24;
+						let scheduleTimePeriod = Math.round(durationDays);
 						heapData["Scheduler-TimePeriod_days"] = scheduleTimePeriod;
 					}
 
