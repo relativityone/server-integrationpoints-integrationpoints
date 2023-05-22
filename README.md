@@ -17,10 +17,6 @@ This repository only contains interfaces and models, therefore no tests are requ
 Nuget packages:
 * Relativity.IntegrationPoints.Services.Interfaces.Private
 
-## Maintainers
-
-Buena Vista Coding Club
-
 ## Miscellaneous
   
 N/A
