@@ -1,5 +1,5 @@
 @Library('ProjectMayhem@vServer') _
 
 libraryCD {
-    slackChannel = "cd_rip_sdk"
+    slackChannel = "ci-server-delta"
 }
