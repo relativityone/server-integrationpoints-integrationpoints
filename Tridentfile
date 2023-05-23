@@ -1,5 +1,5 @@
 @Library('ProjectMayhem@vServer') _
 
 libraryCD {
-    slackChannel = "cd_rip_kepler_services_interfaces"
+    slackChannel = "ci-server-delta"
 }
