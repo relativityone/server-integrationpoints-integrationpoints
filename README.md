@@ -17,10 +17,6 @@ Nuget packages:
 * Relativity.IntegrationPoints.Contracts
 * Relativity.IntegrationPoints.SDK
 
-## Maintainers
-
-Codigo o Plomo
-
 ## Miscellaneous
   
 N/A
@@ -30,9 +26,3 @@ N/A
 The server-main branch was forked for Relativity Server by the Server Vertical.
 Tag: 1.0.8
 Branch: server-main
-
-## Maintainers
-team-server-delta working on code isolation of 'integrationpoints-sdk'.
-
-The server- branches are in the process of being transitioned to the Server Vertical.
-#help-server-architecture #team-server-delta
