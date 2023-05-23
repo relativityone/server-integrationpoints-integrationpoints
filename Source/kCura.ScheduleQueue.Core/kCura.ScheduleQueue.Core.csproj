@@ -33,18 +33,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\AddCustomColumnsToQueueTable.sql" />
-    <Content Include="Data\Resources\CleanupScheduledJobsQueue.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
     <Content Include="Data\Resources\UpdateHeartbeat.sql" />
     <None Include="Data\Resources\GetNextJobWithoutResourceGroup.sql" />
     <Content Include="Data\Resources\GetPendingJobsCount.sql" />
-    <Content Include="Data\Resources\InsertJobLogEntry.sql" />
-    <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\CheckAllSyncWorkerBatchesAreFinished.sql" />
-    <Content Include="Data\Resources\UnlockScheduledJob.sql" />
     <Content Include="Data\Resources\DeleteJob.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />

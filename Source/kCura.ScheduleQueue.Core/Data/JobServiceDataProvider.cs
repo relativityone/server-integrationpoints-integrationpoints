@@ -35,13 +35,6 @@ namespace kCura.ScheduleQueue.Core.Data
             return dataTable?.Rows?.Count > 0 ? dataTable.Rows[0] : null;
         }
 
-        public void UnlockScheduledJob(int agentId)
-        {
-            _queueManager
-                .UnlockScheduledJob(agentId)
-                .Execute();
-        }
-
         public void UnlockJob(long jobID, StopState state)
         {
             _queueManager
@@ -124,20 +117,6 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             return _queueManager
                 .UpdateStopState(jobIds, state)
-                .Execute();
-        }
-
-        public void CleanupJobQueueTable()
-        {
-            _queueManager
-                .CleanupJobQueueTable()
-                .Execute();
-        }
-
-        public void CleanupScheduledJobsQueue()
-        {
-            _queueManager
-                .CleanupScheduledJobsQueue()
                 .Execute();
         }
     }

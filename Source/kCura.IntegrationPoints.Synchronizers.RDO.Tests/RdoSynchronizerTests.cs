@@ -413,7 +413,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             // ASSERT
             Assert.AreEqual(Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
             Assert.AreEqual(0, result.DestinationConfiguration.DestinationFolderArtifactId);
-         }
+        }
 
         [Test]
         public void IncludeFieldInImport_FieldMapTypeIsNone_True()
@@ -703,13 +703,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                     ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay,
                     Provider = "FTP",
                 })
-                    {
-                        CorrelationId = Guid.NewGuid(),
-                        JobID = 850,
-                        MultiValueDelimiter = ';',
-                        NestedValueDelimiter = '/',
-                        StartRecordNumber = 0,
-                    };
+            {
+                CorrelationId = Guid.NewGuid(),
+                JobID = 850,
+                MultiValueDelimiter = ';',
+                NestedValueDelimiter = '/',
+                StartRecordNumber = 0,
+            };
 
             _loggerFake = new Mock<IAPILog>();
             _helper = MockHelper(_loggerFake);

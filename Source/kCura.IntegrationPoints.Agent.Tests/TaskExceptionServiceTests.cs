@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -16,21 +15,21 @@ namespace kCura.IntegrationPoints.Agent.Tests
         private TaskExceptionService _subjectUnderTest;
         private IJobHistoryErrorService _jobHistoryErrorServiceMock;
         private IJobHistoryService _jobHistoryServiceMock;
-        private IJobService _jobServiceMock;
         private JobHistory _jobHistoryDto;
 
         [SetUp]
-        public void SetUp(){
+        public void SetUp()
+        {
             _jobHistoryErrorServiceMock = Substitute.For<IJobHistoryErrorService>();
             _jobHistoryServiceMock = Substitute.For<IJobHistoryService>();
-            _jobServiceMock = Substitute.For<IJobService>();
             ISerializer serializer = Substitute.For<ISerializer>();
             IAPILog logger = Substitute.For<IAPILog>();
             _jobHistoryDto = new JobHistory();
-            _subjectUnderTest = new TaskExceptionService(logger,
+            _subjectUnderTest = new TaskExceptionService(
+                logger,
                 _jobHistoryErrorServiceMock,
                 _jobHistoryServiceMock,
-                _jobServiceMock, serializer);
+                serializer);
         }
 
         [Test]
@@ -48,7 +47,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Assert.AreEqual(JobStatusChoices.JobHistoryErrorJobFailed.Name, _jobHistoryDto.JobStatus.Name);
             _jobHistoryErrorServiceMock.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, exception.Message, exception.StackTrace );
             _jobHistoryServiceMock.Received(1).UpdateRdoWithoutDocuments(_jobHistoryDto);
-            _jobServiceMock.Received(1).CleanupJobQueueTable();
         }
     }
 }

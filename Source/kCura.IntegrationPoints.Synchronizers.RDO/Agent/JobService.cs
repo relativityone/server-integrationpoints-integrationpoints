@@ -156,12 +156,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void UnlockJobs(int agentID)
-        {
-            LogOnUnlockJobs(agentID);
-            DataProvider.UnlockScheduledJob(agentID);
-        }
-
         public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int submittedBy, long? rootJobID, long? parentJobID)
         {
@@ -295,7 +289,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public IEnumerable<Job> GetAllScheduledJobs()
         {
-            LogOnGetAllScheduledJob();
             AgentService.CreateQueueTableOnce();
 
             using (DataTable dataTable = DataProvider.GetAllJobs())
@@ -341,28 +334,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
         }
 
-        public void CleanupJobQueueTable()
-        {
-            _log.LogInformation("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));
-
-            DataProvider.CleanupScheduledJobsQueue();
-
-            if (!_kubernetesMode.IsEnabled())
-            {
-                DataProvider.CleanupJobQueueTable();
-            }
-        }
-
         public void FinalizeDrainStoppedJob(Job job)
         {
             DataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
-            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
+            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
         public void UnlockJob(Job job)
         {
             DataProvider.UnlockJob(job.JobId, StopState.None);
-            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
+            _log.LogInformation("Unlocking Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
         #region Logging
@@ -408,11 +389,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _log.LogInformation(
                 "Attempting to get scheduledJobs in {TypeName}. WorkspaceId: ({WorkspaceId}), RelatedObjectArtifactID: ({RelatedObjectArtifactID}). Task types: {TaskTypes}",
                 nameof(JobService), workspaceId, relatedObjectArtifactID, string.Join(",", taskTypes));
-        }
-
-        public void LogOnGetAllScheduledJob()
-        {
-            _log.LogInformation("Attempting to get all scheduledJobs in {TypeName}.", nameof(JobService));
         }
 
         public void LogOnUpdateJobStopStateError(StopState state, IList<long> jobIds)

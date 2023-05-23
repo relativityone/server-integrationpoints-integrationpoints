@@ -7,6 +7,7 @@ using System.Reflection;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
@@ -247,7 +248,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             sut.Execute();
 
             // Assert
-            sut.DidWork.Should().BeTrue();
+            sut.DidWork.Should().BeFalse();
         }
 
         [Test]
@@ -510,7 +511,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         {
             var agentService = new Mock<IAgentService>();
             var scheduleRuleFactory = new Mock<IScheduleRuleFactory>();
-            var emptyLog = new Mock<IAPILog>();
+            IAPILog log = new EmptyLogger();
 
             _jobServiceMock = new Mock<IJobService>();
             _jobServiceMock.Setup(
@@ -545,7 +546,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 _queryManager.Object,
                 _kubernetesModeFake.Object,
                 _dateTime.Object,
-                emptyLog.Object,
+                log,
                 _config.Object,
                 objectManagerFactory.Object)
             {

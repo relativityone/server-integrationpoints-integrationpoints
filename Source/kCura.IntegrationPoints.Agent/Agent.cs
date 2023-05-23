@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent
     [Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
     [System.ComponentModel.Description("An agent that manages Integration Point jobs.")]
     [WorkloadDiscovery.CustomAttributes.Path("Relativity.Rest/api/Relativity.IntegrationPoints.Services.IIntegrationPointsModule/Integration%20Points%20Agent/GetWorkloadAsync")]
-    public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
+    public class Agent : ScheduleQueueAgentBase, ITaskProvider, IRemovableAgent, IDisposable
     {
         private ErrorService _errorService;
         private const string _AGENT_NAME = "Integration Points Agent";
@@ -131,11 +131,6 @@ namespace kCura.IntegrationPoints.Agent
             return task;
         }
 
-        public void NotifyAgent(LogCategory category, string message)
-        {
-            NotifyAgentTab(category, message);
-        }
-
         public void Dispose()
         {
             AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
@@ -144,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent
         protected override void Initialize()
         {
             base.Initialize();
-            JobExecutor = new JobExecutor(this, this, JobService, Logger);
+            JobExecutor = new JobExecutor(this, JobService, Logger);
             JobExecutor.JobExecutionError += OnJobExecutionError;
         }
 

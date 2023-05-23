@@ -16,8 +16,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 
-        void UnlockJobs(int agentID);
-
         Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID);
 
@@ -35,11 +33,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         IEnumerable<Job> GetAllScheduledJobs();
 
         void UpdateStopState(IList<long> jobIds, StopState state);
-
-        /// <summary>
-        /// Cleans up the scheduled job queue table.
-        /// </summary>
-        void CleanupJobQueueTable();
 
         /// <summary>
         /// Get a list of job RDOs that associate with the integration point object.

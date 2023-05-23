@@ -43,11 +43,6 @@ namespace kCura.ScheduleQueue.Core.Data
             return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId, rootJobId);
         }
 
-        public ICommand UnlockScheduledJob(int agentId)
-        {
-            return new UnlockScheduledJob(_queueDbContext, agentId);
-        }
-
         public ICommand UnlockJob(long jobId, StopState state)
         {
             return new UnlockJob(_queueDbContext, jobId, state);
@@ -118,16 +113,6 @@ namespace kCura.ScheduleQueue.Core.Data
                 SubmittedBy,
                 rootJobID,
                 parentJobID);
-        }
-
-        public ICommand CleanupJobQueueTable()
-        {
-            return new CleanupJobQueueTable(_queueDbContext);
-        }
-
-        public ICommand CleanupScheduledJobsQueue()
-        {
-            return new CleanupScheduledJobsQueue(_queueDbContext);
         }
 
         public IQuery<DataTable> GetAllJobs()
