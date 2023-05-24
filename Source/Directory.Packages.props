@@ -61,7 +61,7 @@
     <RelativitySDK>17.1.0</RelativitySDK>
     <RelativityServicesDataContracts>13.2.5</RelativityServicesDataContracts>
     <RelativityServicesSDKPrivate>13.1.4</RelativityServicesSDKPrivate>
-    <RelativitySync>0.8.60-pre.76</RelativitySync>
+    <RelativitySync>0.8.61</RelativitySync>
     <TelemetryAPM>2019.1.1</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
