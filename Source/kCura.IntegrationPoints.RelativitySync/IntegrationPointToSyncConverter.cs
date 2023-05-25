@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -136,8 +135,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         DestinationLocationType.Folder, destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyImagesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncImageMode(),
-                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
-                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
+                        TaggingOption = destinationConfiguration.TaggingOption.ToSyncTaggingOption()
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
@@ -188,8 +186,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyNativesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
-                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
+                        TaggingOption = destinationConfiguration.TaggingOption.ToSyncTaggingOption()
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
@@ -230,7 +227,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return null;
             }
 
-            if (destinationConfiguration.EnableTagging || !destinationConfiguration.UseSmartOverwrite)
+            if (destinationConfiguration.TaggingOption == TaggingOptionEnum.Enabled || !destinationConfiguration.UseSmartOverwrite)
             {
                 return null;
             }

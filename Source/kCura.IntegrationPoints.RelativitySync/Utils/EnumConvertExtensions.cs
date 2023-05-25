@@ -77,5 +77,20 @@ namespace kCura.IntegrationPoints.RelativitySync.Utils
                     throw new ArgumentException(fieldOverlayBehavior);
             }
         }
+
+        public static TaggingOption ToSyncTaggingOption(this TaggingOptionEnum taggingOption)
+        {
+            switch (taggingOption)
+            {
+                case TaggingOptionEnum.Enabled:
+                    return TaggingOption.Enabled;
+                case TaggingOptionEnum.Disabled:
+                    return TaggingOption.Disabled;
+                case TaggingOptionEnum.DestinationOnly:
+                    return TaggingOption.DestinationOnly;
+                default:
+                    throw new ArgumentException(nameof(taggingOption));
+            }
+        }
     }
 }

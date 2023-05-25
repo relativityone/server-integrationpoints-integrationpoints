@@ -91,8 +91,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         [JsonConverter(typeof(JsonQuotesConverter))]
         public bool CreateSavedSearchForTagging { get; set; }
 
+        // EnableTagging - to be removed after REL-833772 implementation
         [JsonConverter(typeof(JsonQuotesConverter))]
         public bool EnableTagging { get; set; }
+
+        // TaggingOption getter is a temporary solution - value should be read directly from UI state saved in DB. We will adjust it in REL-833772
+        public TaggingOptionEnum TaggingOption => EnableTagging ? TaggingOptionEnum.Enabled : TaggingOptionEnum.Disabled;
 
         [JsonConverter(typeof(JsonQuotesConverter))]
         public bool UseFolderPathInformation { get; set; }
