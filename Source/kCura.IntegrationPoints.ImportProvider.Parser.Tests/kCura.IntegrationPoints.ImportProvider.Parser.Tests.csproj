@@ -131,11 +131,13 @@
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Kepler.Service">
-        <ExcludeAssets>all</ExcludeAssets>
+      <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
   </ItemGroup>
 </Project>

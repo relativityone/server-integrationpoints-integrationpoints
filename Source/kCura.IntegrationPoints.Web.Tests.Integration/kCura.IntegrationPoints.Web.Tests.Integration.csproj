@@ -102,6 +102,7 @@
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
     <PackageReference Include="Relativity.Data" />

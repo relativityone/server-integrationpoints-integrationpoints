@@ -132,6 +132,8 @@
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />

@@ -104,6 +104,8 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.OAuth2Client" />

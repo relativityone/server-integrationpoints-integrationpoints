@@ -105,6 +105,7 @@
   <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />

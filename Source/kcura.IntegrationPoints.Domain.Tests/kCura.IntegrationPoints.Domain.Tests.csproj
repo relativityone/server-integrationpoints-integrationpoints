@@ -86,6 +86,7 @@
  <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="Relativity.API" />
+   <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Logging.Interfaces" />

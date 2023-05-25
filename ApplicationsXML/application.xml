@@ -1727,7 +1727,7 @@
     <Assembly>
       <ArtifactId>5376789</ArtifactId>
       <Keywords />
-      <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
+      <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

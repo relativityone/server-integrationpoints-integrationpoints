@@ -117,6 +117,8 @@
     <PackageReference Include="CSharpGuidelineAnalyzer" />
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" />
