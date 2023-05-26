@@ -124,8 +124,8 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
             }
         })   
 
-        convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));
-        convenienceApi.fieldHelper.setValue("Tag Documents", formatToYesOrNo(destinationConfiguration["EnableTagging"]));
+        convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));        
+        convenienceApi.fieldHelper.setValue("Tag Documents", destinationConfiguration["TaggingOption"]);
     }
 }
 

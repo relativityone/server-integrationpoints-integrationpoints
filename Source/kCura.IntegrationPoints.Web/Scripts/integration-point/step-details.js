@@ -161,8 +161,8 @@ var IP = IP || {};
 				self.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
 				self.importNativeFile = destinationSettings.importNativeFile;
 			    self.importNativeFileCopyMode = destinationSettings.importNativeFileCopyMode;
-				self.CreateSavedSearchForTagging = destinationSettings.CreateSavedSearchForTagging;
-				self.EnableTagging = destinationSettings.EnableTagging;
+				self.CreateSavedSearchForTagging = destinationSettings.CreateSavedSearchForTagging;                
+                self.TaggingOption = destinationSettings.TaggingOption;
 				self.IPDestinationSettings = destinationSettings;
 				self.destinationProvider = settings.destinationProvider;
 				self.SecuredConfiguration = settings.securedConfiguration;
@@ -360,8 +360,8 @@ var IP = IP || {};
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					destinationProviderType: ko.toJS(guid),
 					EntityManagerFieldContainsLink: ko.toJS(this.model.EntityManagerFieldContainsLink),
-					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging,
-					EnableTagging: ko.toJS(this.model.destination).settings.EnableTagging
+					CreateSavedSearchForTagging: ko.toJS(this.model.destination).settings.CreateSavedSearchForTagging,                    
+                    TaggingOption: ko.toJS(this.model.destination).settings.TaggingOption
 				};
 				if (this.model.destination.profile) {
 					destination = $.extend(this.model.destination.profile, destination);

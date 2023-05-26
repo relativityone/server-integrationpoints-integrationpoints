@@ -125,8 +125,8 @@
         var stepModel = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
         var destinationJson = stepModel.destination;
         var destination = JSON.parse(destinationJson);
-        destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
-        destination.EnableTagging = viewModel.EnableTagging();
+        destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();        
+        destination.TaggingOption = viewModel.TaggingOption();
         destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
         destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
         destination.ProductionImport = viewModel.ProductionImport();
@@ -209,19 +209,19 @@
             }
         });
 
-        self.CreateSavedSearchForTagging = ko.observable(state.CreateSavedSearchForTagging || "false");
-        self.EnableTagging = ko.observable(state.EnableTagging || "true");
-        self.EnableTagging.subscribe(function (value) {
-            // beware! bad programmers go to hell and develop type-converters for javascript
-            if (value === "true") {
+        self.CreateSavedSearchForTagging = ko.observable(state.CreateSavedSearchForTagging || "false");        
+        self.TaggingOption = ko.observable(state.TaggingOption || "Enabled");      
+
+        self.TaggingOption.subscribe(function (value) {           
+            if (value === "Enabled") {
                 let model = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model;
                 model.UseSmartOverwrite = false;
             }
         });
 
         self.CreateSavedSearchForTagging.subscribe(function (value) {
-            if (value === "true") {
-                self.EnableTagging("true");
+            if (value === "true") {                
+                self.TaggingOption("Enabled");
                 document.getElementById("enable-tagging").checked = true;
             }
         });
@@ -276,8 +276,8 @@
 
         self.TypeOfExport.subscribe(function (value) {
             if (value === ExportEnums.SourceOptionsEnum.Production) {
-
-                self.EnableTagging("true");
+                
+                self.TaggingOption("enabled");
 
                 var productionSetsPromise = IP.data.ajax({
                     type: "get",
@@ -635,8 +635,8 @@
                 "SourceProductionId": self.SourceProductionId(),
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
-                "FolderArtifactId": self.FolderArtifactId(),
-                "EnableTagging": self.EnableTagging()
+                "FolderArtifactId": self.FolderArtifactId(),                
+                "TaggingOption": self.TaggingOption()
             }
         }
 

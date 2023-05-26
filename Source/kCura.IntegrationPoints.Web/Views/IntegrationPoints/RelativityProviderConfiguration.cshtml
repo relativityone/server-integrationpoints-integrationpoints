@@ -120,10 +120,13 @@
                             <div class="field-value">
                                 <ul>
                                     <li>
-                                        <label><input id="enable-tagging" type="radio" value="true" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">Yes</label>
+                                        <label><input id="enable-tagging" type="radio" name="taggingGroup" value="Enabled" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">Enabled</label>
                                     </li>
                                     <li>
-                                        <label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
+                                        <label><input id="destinationOnly-tagging" type="radio" name="taggingGroup" value="DestinationOnly" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">Destination Workspace Only</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="disable-tagging" type="radio" name="taggingGroup" value="Disabled" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">Disabled</label>
                                     </li>
                                 </ul>
                                 <div id="infoMsg">
