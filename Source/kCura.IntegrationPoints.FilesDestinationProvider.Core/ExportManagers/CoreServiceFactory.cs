@@ -22,14 +22,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 			_webApiServiceFactory = webApiServiceFactory;
 		}
 
-		public IAuditManager CreateAuditManager() => _auditManagerFactory();
-
-		public IExportManager CreateExportManager() => _webApiServiceFactory.CreateExportManager();
-
-		public IFieldManager CreateFieldManager() => _webApiServiceFactory.CreateFieldManager();
-
-		public ISearchManager CreateSearchManager() => _webApiServiceFactory.CreateSearchManager();
-
-		public IProductionManager CreateProductionManager() => _webApiServiceFactory.CreateProductionManager();
+		public IAuditManager CreateAuditManager(Func<string> correlationIdFunc) => _auditManagerFactory();
+		//[REL-838809]: Resolve correlationIdFunc
+		public IExportManager CreateExportManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateExportManager(correlationIdFunc);
+		//[REL-838809]: Resolve correlationIdFunc
+		public IFieldManager CreateFieldManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateFieldManager(correlationIdFunc);
+		//[REL-838809]: Resolve correlationIdFunc
+		public ISearchManager CreateSearchManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateSearchManager(correlationIdFunc);
+		//[REL-838809]: Resolve correlationIdFunc
+		public IProductionManager CreateProductionManager(Func<string> correlationIdFunc) => _webApiServiceFactory.CreateProductionManager(correlationIdFunc);
 	}
 }

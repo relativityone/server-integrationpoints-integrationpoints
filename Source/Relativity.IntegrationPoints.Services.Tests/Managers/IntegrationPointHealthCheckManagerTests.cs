@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		public void ShouldWriteHealthMeasure()
 		{
 			IHealthMeasure healthMeasure = Substitute.For<IHealthMeasure>();
-			_apmClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, Arg.Any<Func<HealthCheckOperationResult>>()).Returns(healthMeasure);
+			_apmClient.HealthCheckOperation(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, Arg.Any<Func<HealthCheckOperationResult>>()).Returns(healthMeasure);
 
 			// Act
 			_integrationPointHealthCheckManager.RunHealthChecksAsync().Wait();

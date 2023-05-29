@@ -1727,7 +1727,7 @@
     <Assembly>
       <ArtifactId>5376789</ArtifactId>
       <Keywords />
-      <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
+      <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1740,6 +1740,12 @@
       <ArtifactId>5510911</ArtifactId>
       <Keywords />
       <Name>WorkloadDiscovery.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5511033</ArtifactId>
+      <Keywords />
+      <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>

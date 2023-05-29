@@ -1,8 +1,0 @@
-﻿Relativity.API
-Relativity.DataTransfer.MessageService
-Relativity.Telemetry.APM
-
-FluentAssertions
-Moq
-NUnit
-NSubstitute

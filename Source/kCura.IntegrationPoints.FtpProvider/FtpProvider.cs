@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 			if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
 			{
 				LogValidatingColumnsError();
-				throw new Exceptions.ColumnsMissmatchException();
+				throw new kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.ColumnsMissmatchException();
 			}
 		}
 

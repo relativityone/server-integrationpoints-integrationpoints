@@ -1,11 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{8DF7D898-A0C2-4353-85E0-DF5B936E2564}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\paket.dependencies = ..\..\..\paket.dependencies
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.LDAPSync.prototype.datasources", "kCura.LDAPSync.prototype.datasources\kCura.LDAPSync.prototype.datasources.csproj", "{DEF877F4-7929-476F-B7BD-179FE8DD534B}"
 EndProject
 Global

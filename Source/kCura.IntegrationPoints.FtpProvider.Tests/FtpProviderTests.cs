@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 
 			var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
-			Assert.Throws<Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
+			Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
 		}
 
 		[Test, System.ComponentModel.Description("Validates columns when all missing in settings 3 vs 0")]
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
 
 			var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
-			Assert.Throws<Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
+			Assert.Throws<kCura.IntegrationPoints.FtpProvider.Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
 		}
 	}
 }

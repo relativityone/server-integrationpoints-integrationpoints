@@ -43,6 +43,7 @@
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.Legacy.SDK.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.MessageService.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Telemetry.Services.Interface.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.Transfer.Client.Aspera.dll</Assembly>
@@ -63,7 +64,7 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\System.ValueTuple.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\itextsharp.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Reactive.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.SDK.dll</Assembly>
           <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles />

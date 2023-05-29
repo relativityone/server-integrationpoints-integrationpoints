@@ -40,25 +40,24 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? artifactId)
 		{
-			int workspaceID = _workspaceIdProvider.GetWorkspaceID();
-
-			int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
-			int tabID = _tabService.GetTabId(workspaceID, objectTypeID);
-			int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
-			string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
-			if (HasPermissions(artifactId))
-			{
-				return View("~/Views/IntegrationPoints/Edit.cshtml", new EditPoint
+			    int workspaceID = _workspaceIdProvider.GetWorkspaceID();
+				int objectTypeID = _objectTypeRepository.GetObjectTypeID(ObjectType);
+				int tabID = _tabService.GetTabId(workspaceID, objectTypeID);
+				int objectID = _objectTypeRepository.GetObjectType(objectTypeID).ParentArtifactId;
+				string previousURL = $"List.aspx?AppID={workspaceID}&ArtifactID={objectID}&ArtifactTypeID={objectTypeID}&SelectedTab={tabID}";
+				if (HasPermissions(artifactId))
 				{
-					AppID = workspaceID,
-					ArtifactID = artifactId.GetValueOrDefault(0),
-					UserID = _userContext.GetUserID(),
-					CaseUserID = _userContext.GetWorkspaceUserID(),
-					URL = previousURL,
-					APIControllerName = APIControllerName,
-					ArtifactTypeName = ObjectType
-				});
-			}
+					return View("~/Views/IntegrationPoints/Edit.cshtml", new EditPoint
+					{
+						AppID = workspaceID,
+						ArtifactID = artifactId.GetValueOrDefault(0),
+						UserID = _userContext.GetUserID(),
+						CaseUserID = _userContext.GetWorkspaceUserID(),
+						URL = previousURL,
+						APIControllerName = APIControllerName,
+						ArtifactTypeName = ObjectType
+					});
+				}
 			return View("~/Views/IntegrationPoints/NotEnoughPermission.cshtml", new EditPoint { URL = previousURL });
 		}
 

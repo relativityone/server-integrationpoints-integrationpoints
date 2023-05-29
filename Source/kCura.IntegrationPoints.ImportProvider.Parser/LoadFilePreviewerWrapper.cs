@@ -15,14 +15,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
 		public LoadFilePreviewerWrapper(LoadFile loadFile, ILog logger, int timeZoneOffset, bool errorsOnly, bool doRetryLogic)
 		{
-            _loadFilePreviewer = new LoadFilePreviewer(
+			//[REL-838809]: Resolve correlationIdFunc
+			_loadFilePreviewer = new LoadFilePreviewer(
 	            args: loadFile, 
 	            reporter: null, 
 	            logger: logger,
 	            timeZoneOffset: timeZoneOffset, 
 	            errorsOnly: errorsOnly, 
 	            doRetryLogic: doRetryLogic, 
-	            tokenSource: new CancellationTokenSource());
+	            tokenSource: new CancellationTokenSource(),
+				correlationIdFunc: () => string.Empty);
 		}
 
 		public List<object> ReadFile(bool previewChoicesAndFolders)

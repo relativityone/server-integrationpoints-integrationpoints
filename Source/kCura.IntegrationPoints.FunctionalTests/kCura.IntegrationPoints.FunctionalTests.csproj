@@ -13,9 +13,15 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
@@ -27,7 +33,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
     <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
@@ -115,9 +120,50 @@
     <Folder Include="Functional\Helpers\LoadFiles\Natives\" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="netDumbster">
-      <HintPath>..\..\packages\netDumbster\lib\net461\netDumbster.dll</HintPath>
-    </Reference>
+    <PackageReference Include="ARMTestServices" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Agent" />
+    <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="netDumbster" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.API" VersionOverride="17.4.2" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Kepler" VersionOverride="2.17.0" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Kepler.Client" VersionOverride="2.17.0" >
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <!-- <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />  -->
+    <PackageReference Include="Relativity.Telemetry.APM" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Relativity.Testing.Identification" />
+    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
+    <PackageReference Include="Microsoft.Web.Infrastructure" />
+    <PackageReference Include="Newtonsoft.Json" VersionOverride="12.0.3">
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="Relativity.Testing.Framework" />
+    <PackageReference Include="Relativity.Testing.Framework.Api" />
+    <PackageReference Include="Relativity.Testing.Framework.Web" />
+    <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
+    <PackageReference Include="IntegrationPoints.MyFirstProvider" >
+      <NoWarn>NU1603</NoWarn>
+    </PackageReference>
+    <PackageReference Include="Relativity.Sync" />
+    <PackageReference Include="Polly" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
