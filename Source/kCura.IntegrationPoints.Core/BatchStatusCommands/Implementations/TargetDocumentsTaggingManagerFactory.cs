@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _uniqueJobId = uniqueJobId;
             _diagnosticLog = diagnosticLog;
 
-            _destinationConfig = destinationConfig;
+            _destinationConfig = DeepCloneImportSettings(destinationConfig);
             AdjustDestinationConfig(_destinationConfig);
         }
 
@@ -107,6 +107,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             importSettings.FolderPathSourceFieldName = null;
             importSettings.DestinationConfiguration.Provider = string.Empty;
             importSettings.DestinationConfiguration.ImportNativeFile = false;
+        }
+
+        private ImportSettings DeepCloneImportSettings(ImportSettings input)
+        {
+            string serializedString = _serializer.Serialize(input);
+            ImportSettings output = _serializer.Deserialize<ImportSettings>(serializedString);
+            return output;
         }
     }
 }
