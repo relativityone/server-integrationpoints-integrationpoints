@@ -46,11 +46,6 @@
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="oi\**" />
-    <EmbeddedResource Remove="oi\**" />
-    <None Remove="oi\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="kCura.Method.Web.Controls, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Method\kCura.Method.Web.Controls.dll</HintPath>
