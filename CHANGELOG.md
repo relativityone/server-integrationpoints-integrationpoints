@@ -1,14 +1,17 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
-## [12.3.1] - 2023-05-12
-### Changes
-- Upgrading server 2023 isolated gold packages [RelativitySync, Integrationpoints-sdk, and IAPI]
+## [12.4.0] - 05-25-2023
 
-## [12.3.0] - 2023-04-11
-### Changes
-- Code isolation changes for integrationpoints
+### Added
 
-### 0.1.0
+- Added a new changelog.md
 
-- Initial work
+### Chaged
+
+- Archived the existing changelog.md file
+- Removed ##Maintainers section from README.md
+- SlackChannel has been updated to ci-server-delta in trident file
+- The code owners details has been updated to show all server delta team members
+- Bumped the minor version and zeroed out the patch number
