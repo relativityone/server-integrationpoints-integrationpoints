@@ -54,7 +54,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _jobHistoryArtifactId = jobHistoryArtifactId;
             _uniqueJobId = uniqueJobId;
             _diagnosticLog = diagnosticLog;
-
             _destinationConfig = destinationConfig;
             AdjustDestinationConfig(_destinationConfig);
         }

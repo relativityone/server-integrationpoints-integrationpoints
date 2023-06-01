@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             ImportSettings userImportApiSettings)
         {
             IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(sourceConfiguration.SourceWorkspaceArtifactId);
+            ImportSettings importSettingsClone = DeepCloneImportSettings(userImportApiSettings, serializer);
 
             var taggerFactory = new TargetDocumentsTaggingManagerFactory(
                 _repositoryFactory,
@@ -113,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 serializer,
                 mappedFields,
                 sourceConfiguration,
-                userImportApiSettings,
+                importSettingsClone,
                 jobHistory.ArtifactId,
                 uniqueJobID,
                 _diagnosticLog);
@@ -152,6 +153,13 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 configuration.SourceWorkspaceArtifactId,
                 updateStatusType,
                 _massUpdateHelper);
+        }
+
+        private static ImportSettings DeepCloneImportSettings(ImportSettings input, ISerializer serializer)
+        {
+            string serializedString = serializer.Serialize(input);
+            ImportSettings output = serializer.Deserialize<ImportSettings>(serializedString);
+            return output;
         }
     }
 }
