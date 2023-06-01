@@ -117,6 +117,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
             container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
             container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
+            container.Register(Component.For<UpdateDestinationConfigurationTaggingSettingsCommand>().ImplementedBy<UpdateDestinationConfigurationTaggingSettingsCommand>().LifestyleTransient());
 
             container.AddSecretStoreMigrator();
         }
