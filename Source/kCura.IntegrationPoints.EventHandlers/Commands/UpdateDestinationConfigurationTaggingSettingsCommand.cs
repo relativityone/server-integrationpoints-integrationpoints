@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             }
         }
 
-        public RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
+        private RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
         {
             const string enableTaggingPropertyName = "EnableTagging";
             const string taggingOptionPropertyName = "TaggingOption";
@@ -68,17 +68,25 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             string destinationConfigurationFieldContent = value.FieldValues[_destinationConfigurationFieldName] as string;
             IDictionary<string, object> valuePairs = JsonConvert.DeserializeObject<Dictionary<string, object>>(destinationConfigurationFieldContent);
 
-            if (!valuePairs.TryGetValue(enableTaggingPropertyName, out object currentTaggingSetting))
+            if (!valuePairs.TryGetValue(enableTaggingPropertyName, out object currentEnableTaggingValue))
             {
                 return null;
             }
             else
             {
-                string taggingSettingStr = currentTaggingSetting.ToString().ToLower();
-                string newTaggingOptionValue = taggingSettingStr == "false" ? "Disabled" : "Enabled";
+                string enableTaggingValueStr = currentEnableTaggingValue.ToString().ToLower();
+                string newTaggingOptionValue = enableTaggingValueStr == "false" ? "Disabled" : "Enabled";
 
                 valuePairs.Remove(enableTaggingPropertyName);
-                valuePairs.Add(taggingOptionPropertyName, newTaggingOptionValue);
+
+                if (valuePairs.TryGetValue(taggingOptionPropertyName, out _))
+                {
+                    valuePairs[taggingOptionPropertyName] = newTaggingOptionValue;
+                }
+                else
+                {
+                    valuePairs.Add(taggingOptionPropertyName, newTaggingOptionValue);
+                }
 
                 string updatedDestinationConfiguration = JsonConvert.SerializeObject(valuePairs, Formatting.None);
                 value.FieldValues[_destinationConfigurationFieldName] = updatedDestinationConfiguration;

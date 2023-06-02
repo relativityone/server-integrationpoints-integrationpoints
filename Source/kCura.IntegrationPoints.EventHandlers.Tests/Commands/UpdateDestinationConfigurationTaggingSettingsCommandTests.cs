@@ -56,6 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
         [TestCase(@"{""artifactTypeID"":10,""EnableTagging"":true}", @"{""artifactTypeID"":10,""TaggingOption"":""Enabled""}")]
         [TestCase(@"{""artifactTypeID"":10,""EnableTagging"":false}", @"{""artifactTypeID"":10,""TaggingOption"":""Disabled""}")]
         [TestCase(@"{""artifactTypeID"":10,""EnableTagging"":""false""}", @"{""artifactTypeID"":10,""TaggingOption"":""Disabled""}")]
+        [TestCase(@"{""artifactTypeID"":10,""EnableTagging"":""false"", ""TaggingOption"":""Enabled""}", @"{""artifactTypeID"":10,""TaggingOption"":""Disabled""}")]
         public void Execute_ShouldProcess_WhenObsoleteTaggingSettingExists(string inputJson, string expectedResult)
         {
             // Arrange
