@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
+using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
@@ -23,12 +24,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
         private readonly IEHHelper _helper;
 
         private readonly string _sourceProviderGuid = Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY;
+        private readonly string _destinationConfigurationFieldName = IntegrationPointFields.DestinationConfiguration;
         private readonly Guid _integrationPointGuid = ObjectTypeGuids.IntegrationPointGuid;
         private readonly Guid _integrationPointProfileGuid = ObjectTypeGuids.IntegrationPointProfileGuid;
 
         private List<string> _fieldsNamesForUpdate => new List<string>
         {
-            IntegrationPointFields.DestinationConfiguration
+            _destinationConfigurationFieldName
         };
 
         public UpdateDestinationConfigurationTaggingSettingsCommand(IEHHelper helper, IRelativityObjectManager relativityObjectManager)
@@ -40,15 +42,49 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         public void Execute()
         {
-            SourceProvider sourceProvider = GetSourceProvider();
-            if (sourceProvider == null)
+            try
             {
-                _log.LogInformation("SourceProvider for Guid {providerGuid} does not exist. No RDOs have been updated", _sourceProviderGuid);
-                return;
+                SourceProvider sourceProvider = GetSourceProvider();
+                if (sourceProvider == null)
+                {
+                    _log.LogInformation("SourceProvider for Guid {providerGuid} does not exist. No RDOs have been updated", _sourceProviderGuid);
+                    return;
+                }
+
+                ExecuteInternal(sourceProvider, _integrationPointGuid);
+                ExecuteInternal(sourceProvider, _integrationPointProfileGuid);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Error occurred during execution of {type}", this.GetType().Name);
+            }
+        }
+
+        public RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
+        {
+            const string enableTaggingPropertyName = "EnableTagging";
+            const string taggingOptionPropertyName = "TaggingOption";
+
+            string destinationConfigurationFieldContent = value.FieldValues[_destinationConfigurationFieldName] as string;
+            IDictionary<string, object> valuePairs = JsonConvert.DeserializeObject<Dictionary<string, object>>(destinationConfigurationFieldContent);
+
+            if (!valuePairs.TryGetValue(enableTaggingPropertyName, out object currentTaggingSetting))
+            {
+                return null;
+            }
+            else
+            {
+                string taggingSettingStr = currentTaggingSetting.ToString().ToLower();
+                string newTaggingOptionValue = taggingSettingStr == "false" ? "Disabled" : "Enabled";
+
+                valuePairs.Remove(enableTaggingPropertyName);
+                valuePairs.Add(taggingOptionPropertyName, newTaggingOptionValue);
+
+                string updatedDestinationConfiguration = JsonConvert.SerializeObject(valuePairs, Formatting.None);
+                value.FieldValues[_destinationConfigurationFieldName] = updatedDestinationConfiguration;
             }
 
-            ExecuteInternal(sourceProvider, _integrationPointGuid);
-            ExecuteInternal(sourceProvider, _integrationPointProfileGuid);
+            return value;
         }
 
         private void ExecuteInternal(SourceProvider sourceProvider, Guid objectTypeGuid)
@@ -79,11 +115,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                     _log.LogInformation("No objects of type: {type} for SourceProvider {provderGuid} has been found.", objectTypeGuid.ToString(), _sourceProviderGuid);
                 }
             }
-        }
-
-        private RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto values)
-        {
-            return default;
         }
 
         private QueryRequest GetQueryRequest(int sourceProviderId, Guid objectTypeGuid)
