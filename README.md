@@ -71,11 +71,6 @@ Running Custom Tests against Hopper Relativity environment:
     jquery-postMessage.js
 * Workflow diagrams
 
-## Maintainers
-
-* Adler Sieben (adlersieben@relativity.com)
-* team-server-delta -working on code isolation
-
 ## Miscellaneous
 
 [Documentation](https://help.relativity.com/integrationpoints/Content/Relativity_Integration_Points/Integration_Points/Relativity_Integration_Points.htm)
