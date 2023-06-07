@@ -5,6 +5,7 @@ using System.IO;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 
@@ -24,8 +25,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly LoadFile _config;
         private readonly string _loadFileDirectory;
         private readonly ImportProviderSettings _providerSettings;
+        private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
 
-        public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader, IJobStopManager jobStopManager)
+        public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader, IJobStopManager jobStopManager, IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
         {
             _providerSettings = providerSettings;
             _config = config;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _extractedTextHasPathInfo = !string.IsNullOrEmpty(_providerSettings.ExtractedTextPathFieldIdentifier);
             _nativeFileHasPathInfo = !string.IsNullOrEmpty(_providerSettings.NativeFilePathFieldIdentifier);
             _loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
+            _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
 
             _schemaTable = new DataTable();
             _ordinalMap = new Dictionary<string, int>();

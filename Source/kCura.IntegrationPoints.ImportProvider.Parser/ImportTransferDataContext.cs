@@ -10,8 +10,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
     public class ImportTransferDataContext : IDataTransferContext, IDisposable
     {
-        public ImportTransferDataContext(IDataReaderFactory dataReaderFactory, string providerSettings,
-            List<FieldMap> mappedFields, IJobStopManager jobStopManager)
+        public ImportTransferDataContext(
+            IDataReaderFactory dataReaderFactory,
+            string providerSettings,
+            List<FieldMap> mappedFields,
+            IJobStopManager jobStopManager,
+            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
         {
             DataReader = dataReaderFactory.GetDataReader(mappedFields.ToArray(), providerSettings, jobStopManager);
         }

@@ -169,6 +169,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
+        private async Task<List<string>> GetNativePathList()
+        {
+            // 1. create additional data reader to retrieve natives paths
+            // 2. use FileIdentificationService to get metadata
+            // 3. store result (dictionary) somewhere
+
+
+
+        }
+
         protected override void FinalizeService(Job job)
         {
             base.FinalizeService(job);

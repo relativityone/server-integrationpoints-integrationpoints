@@ -16,6 +16,23 @@ namespace kCura.IntegrationPoints.ImportProvider.FileIdentification.OutsideInSer
 
         public FileFormat IdentifyFile(Stream stream, Exporter exporter)
         {
+            // TODO Retry
+            // OutsideIn.OutsideInException: OI process was killed by the OS due to a fatal exception
+            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
+            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
+
+            // OILink.OILinkErrorCodeException: OI DAOpenDocument failed - 13: not enough memory for allocation [13]
+            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
+            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
+
+            // OILink.OILinkErrorCodeException: OI DAOpenDocument failed - 65535: OI error code could not be mapped [7172963]
+            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
+            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
+
+
+            // FileTypeIdentificationException >> metrics
+
+
             try
             {
                 exporter.SetSourceFile(stream);

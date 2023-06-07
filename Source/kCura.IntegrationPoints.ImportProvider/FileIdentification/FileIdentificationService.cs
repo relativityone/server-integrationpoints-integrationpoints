@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.ImportProvider.FileIdentification.OutsideInServices;
+using kCura.IntegrationPoints.ImportProvider.Parser;
 using OutsideIn;
 using Relativity.API;
 
@@ -21,12 +22,12 @@ namespace kCura.IntegrationPoints.ImportProvider.FileIdentification
             _logger = logger;
         }
 
-        public async Task<IEnumerable<FileProperties>> IdentifyFilesAsync(IEnumerable<FileInfo> files)
+        public async Task<IDictionary<string, FileProperties>> IdentifyFilesAsync(IEnumerable<FileInfo> files)
         {
 
         }
 
-        public async Task<FileProperties> IdentifyFileAsync(Stream stream)
+        private async Task<FileProperties> IdentifyFileAsync(Stream stream)
         {
             try
             {

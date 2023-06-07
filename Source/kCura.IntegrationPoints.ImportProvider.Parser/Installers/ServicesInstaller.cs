@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Installers
             container.Register(Component.For<IPreviewJobFactory>().ImplementedBy<PreviewJobFactory>().LifestyleTransient());
             container.Register(Component.For<IImportFileLocationService>().ImplementedBy<ImportFileLocationService>().LifestyleTransient());
             container.Register(Component.For<IWebApiConfig>().ImplementedBy<WebApiConfig>().LifestyleSingleton());
+
+            container.Register(Component.For<IReadOnlyFileMetadataStore>().ImplementedBy<FileMetadataStore>().LifestyleSingleton());
         }
     }
 }

@@ -18,16 +18,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly IWinEddsFileReaderFactory _winEddsFileReaderFactory;
         private readonly IFieldParserFactory _fieldParserFactory;
         private readonly ISerializer _serializer;
+        private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
 
         public DataReaderFactory(IFieldParserFactory fieldParserFactory,
             IWinEddsLoadFileFactory winEddsLoadFileFactory,
             IWinEddsFileReaderFactory winEddsFileReaderFactory,
-            ISerializer serializer)
+            ISerializer serializer,
+            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
         {
             _fieldParserFactory = fieldParserFactory;
             _winEddsLoadFileFactory = winEddsLoadFileFactory;
             _winEddsFileReaderFactory = winEddsFileReaderFactory;
             _serializer = serializer;
+            _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
         }
 
         public IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager)
@@ -79,7 +82,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
             IArtifactReader reader = _winEddsFileReaderFactory.GetLoadFileReader(loadFile);
 
-            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager);
+            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore);
             rv.Init();
             return rv;
         }
