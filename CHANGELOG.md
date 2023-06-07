@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [12.4.1] - 06-07-2023
+## [12.5.0] - 06-07-2023
 
 ### Added
 
@@ -11,8 +11,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Bumped patch number in version.txt file.
-- Upgrade package version of relativitysync in Directory.Packages.props.
+- Bumped version to 12.5.0 in version.txt file.
+- Upgraded Relativity Sync version to 0.9.0.
 - Modified jquery-ui.css and jquery-ui.min.css file.
 - Modified _reference.js file with jquery version.
 - Removed older version files like jquery-3.5.1.intellisense.js, jquery-3.5.1.min.js, jquery-3.5.1.min.map, jquery-3.5.1.slim.min.js, jquery-3.5.1.slim.min.map, jquery-ui-1.12.1.min.js.
