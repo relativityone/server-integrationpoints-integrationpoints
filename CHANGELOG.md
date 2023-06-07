@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Added a new changelog.md
 
-### Chaged
+### Changed
 
 - Archived the existing changelog.md file
 - Removed ##Maintainers section from README.md
