@@ -2,13 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.5.1] - 06-08-2023
+
+### Changed
+
+- Made Code changes in periodicschedulerule.cs and periodicscheduleruletest.cs file.
+- Bumped the patch number
+- modified changelog.md file
+
 ## [12.4.0] - 05-25-2023
 
 ### Added
 
 - Added a new changelog.md
 
-### Chaged
+### Changed
 
 - Archived the existing changelog.md file
 - Removed ##Maintainers section from README.md
