@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public FileProperties GetMetadata(string filePath)
         {
-            return new FileProperties(1026, "Microsoft Excel 2000", 20);
+            return new FileProperties(1027, "Microsoft Excel 2000", 20);
         }
     }
 }
