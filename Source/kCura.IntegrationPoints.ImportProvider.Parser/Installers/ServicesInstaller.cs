@@ -3,6 +3,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services;
 using kCura.IntegrationPoints.ImportProvider.Parser.Services.Interfaces;
@@ -23,7 +25,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Installers
             container.Register(Component.For<IImportFileLocationService>().ImplementedBy<ImportFileLocationService>().LifestyleTransient());
             container.Register(Component.For<IWebApiConfig>().ImplementedBy<WebApiConfig>().LifestyleSingleton());
 
-            container.Register(Component.For<IReadOnlyFileMetadataStore>().ImplementedBy<FileMetadataStore>().LifestyleSingleton());
+            InstallFileIdentificationComponents(container);
+        }
+
+        public void InstallFileIdentificationComponents(IWindsorContainer container)
+        {
+            container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
+            container.Register(Component.For<IOutsideInService>().ImplementedBy<OutsideInService>().LifestyleTransient());
+            container.Register(Component.For<IFileIdentificationService>().ImplementedBy<FileIdentificationService>().LifestyleTransient());
+
+            var fileMetadataStore = new FileMetadataStore();
+            container.Register(Component.For<IReadOnlyFileMetadataStore>().Instance(fileMetadataStore).LifestyleSingleton());
+            container.Register(Component.For<IFileMetadataCollector>().Instance(fileMetadataStore).LifestyleSingleton());
         }
     }
 }

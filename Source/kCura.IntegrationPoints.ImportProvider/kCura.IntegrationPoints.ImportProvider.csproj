@@ -32,8 +32,5 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileIdentification\OutsideInServices\" />
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

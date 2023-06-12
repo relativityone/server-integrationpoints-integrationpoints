@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Core.Storage;
 using Relativity.Storage;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -20,7 +21,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly ISerializer _serializer;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
 
-        public DataReaderFactory(IFieldParserFactory fieldParserFactory,
+        public DataReaderFactory(
+            IFieldParserFactory fieldParserFactory,
             IWinEddsLoadFileFactory winEddsLoadFileFactory,
             IWinEddsFileReaderFactory winEddsFileReaderFactory,
             ISerializer serializer,

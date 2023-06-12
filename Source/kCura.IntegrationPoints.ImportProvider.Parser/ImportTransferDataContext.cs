@@ -14,8 +14,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IDataReaderFactory dataReaderFactory,
             string providerSettings,
             List<FieldMap> mappedFields,
-            IJobStopManager jobStopManager,
-            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
+            IJobStopManager jobStopManager)
         {
             DataReader = dataReaderFactory.GetDataReader(mappedFields.ToArray(), providerSettings, jobStopManager);
         }

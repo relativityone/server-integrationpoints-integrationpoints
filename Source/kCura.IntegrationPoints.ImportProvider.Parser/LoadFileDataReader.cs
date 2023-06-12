@@ -5,7 +5,7 @@ using System.IO;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 
