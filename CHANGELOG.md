@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Made Code changes in periodicschedulerule.cs and periodicscheduleruletest.cs file.
+- Made Correction for jobs miscalculated when Daylight Saving Time occurs
 - Updated the version to 12.6.0
 - modified changelog.md file
 
