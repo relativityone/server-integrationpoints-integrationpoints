@@ -129,6 +129,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override object GetValue(int i)
         {
+            if (i == Domain.Constants.SPECIAL_FILE_SIZE_INDEX)
+            {
+                return 20;
+            }
+            else if (i == Domain.Constants.SPECIAL_FILE_TYPE_INDEX)
+            {
+                return "Microsoft Excel 2000";
+            }
+            else if (i == Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX)
+            {
+                return 1026; // 1026 -> false
+            }
+
             return _currentLine[i];
         }
 
