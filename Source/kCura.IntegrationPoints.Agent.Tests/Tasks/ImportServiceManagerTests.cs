@@ -205,7 +205,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _jobStatusUpdater,
                 _automatedWorkflowsManager,
                 _jobTrackerFake,
-                null,
                 new EmptyDiagnosticLog());
         }
 

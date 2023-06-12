@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private bool _isClosed;
         private int _columnCount;
         private string[] _currentLine;
-        private FileProperties _currentNativeFile;
+        private FileMetadata _currentNativeFile;
         private readonly bool _extractedTextHasPathInfo;
         private readonly bool _nativeFileHasPathInfo;
         private readonly DataTable _schemaTable;

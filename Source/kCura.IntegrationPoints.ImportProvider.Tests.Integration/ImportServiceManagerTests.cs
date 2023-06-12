@@ -182,7 +182,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
-                null,
                 new EmptyDiagnosticLog());
         }
 
