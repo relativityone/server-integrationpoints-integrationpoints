@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private bool _isClosed;
         private int _columnCount;
         private string[] _currentLine;
+        private FileProperties _currentNativeFile;
         private readonly bool _extractedTextHasPathInfo;
         private readonly bool _nativeFileHasPathInfo;
         private readonly DataTable _schemaTable;
@@ -27,7 +28,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly ImportProviderSettings _providerSettings;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
 
-        public LoadFileDataReader(ImportProviderSettings providerSettings, LoadFile config, IArtifactReader reader, IJobStopManager jobStopManager, IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
+        public LoadFileDataReader(
+            ImportProviderSettings providerSettings,
+            LoadFile config,
+            IArtifactReader reader,
+            IJobStopManager jobStopManager,
+            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
         {
             _providerSettings = providerSettings;
             _config = config;
@@ -74,6 +80,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     && !Path.IsPathRooted(artifactValue)) // Do not rewrite paths if column contains full path info
                     {
                         _currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
+                        _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(artifactValue);
                     }
                     else
                     {
@@ -132,20 +139,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override object GetValue(int i)
         {
-            if (i == Domain.Constants.SPECIAL_FILE_SIZE_INDEX)
-            {
-                return 20;
-            }
-            else if (i == Domain.Constants.SPECIAL_FILE_TYPE_INDEX)
-            {
-                return "Microsoft Excel 2000";
-            }
-            else if (i == Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX)
-            {
-                return 1026; // 1026 -> false
-            }
-
-            return _currentLine[i];
+            return GetNativeValue(i)
+                ?? _currentLine[i];
         }
 
         public override bool Read()
@@ -183,6 +178,23 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         {
             return _loadFileReader.CountRecords();
         }
+
+        private object GetNativeValue(int i)
+        {
+            switch (i)
+            {
+                case Domain.Constants.SPECIAL_FILE_SIZE_INDEX:
+                    return _currentNativeFile?.Size;
+                case Domain.Constants.SPECIAL_FILE_TYPE_INDEX:
+                    return _currentNativeFile?.Description;
+                case Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX:
+                    return _currentNativeFile?.TypeId;
+                default:
+                    return null;
+            }
+        }
+
+        #region Not Implemented
 
         public ArtifactFieldCollection ReadArtifact()
         {
@@ -300,5 +312,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 throw new NotImplementedException();
             }
         }
+
+        #endregion
     }
 }

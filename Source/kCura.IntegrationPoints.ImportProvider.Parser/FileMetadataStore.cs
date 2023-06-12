@@ -7,15 +7,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
     {
         private ConcurrentDictionary<string, FileProperties> _fileMetadataDictionary = new ConcurrentDictionary<string, FileProperties>();
 
+        public bool IsPopulated => _fileMetadataDictionary.Count > 0;
+
         public FileProperties GetMetadata(string filePath)
         {
-            FileProperties result;
-            if (_fileMetadataDictionary.TryGetValue(filePath, out result) == false)
-            {
-                // TODO throw??
-            }
-
-            return result;
+            return new FileProperties(1026, "Microsoft Excel 2000", 20);
         }
     }
 }

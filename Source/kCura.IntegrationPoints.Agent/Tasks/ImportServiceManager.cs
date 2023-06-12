@@ -46,6 +46,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobStatusUpdater _jobStatusUpdater;
         private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
         private readonly IJobTracker _jobTracker;
+        private readonly IReadOnlyFileMetadataStore _fileMetadataStore;
+
         private readonly object _syncRoot = new object();
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
         public const string RAW_STATE_COMPLETE = "complete";
@@ -73,6 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobStatusUpdater jobStatusUpdater,
             IAutomatedWorkflowsManager automatedWorkflowsManager,
             IJobTracker jobTracker,
+            IReadOnlyFileMetadataStore fileMetadataStore,
             IDiagnosticLog diagnosticLog)
             : base(
                 helper,
@@ -98,6 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
             _automatedWorkflowsManager = automatedWorkflowsManager;
             _jobTracker = jobTracker;
+            _fileMetadataStore = fileMetadataStore;
         }
 
         public override void Execute(Job job)
@@ -129,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 int sourceRecordCount = UpdateSourceRecordCount(settings);
                 if (sourceRecordCount > 0)
                 {
-                    using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, IntegrationPointDto.FieldMappings, JobStopManager))
+                    using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, IntegrationPointDto.FieldMappings, JobStopManager, _fileMetadataStore))
                     {
                         context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
                         context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
@@ -175,8 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // 2. use FileIdentificationService to get metadata
             // 3. store result (dictionary) somewhere
 
-
-
+            return null;
         }
 
         protected override void FinalizeService(Job job)

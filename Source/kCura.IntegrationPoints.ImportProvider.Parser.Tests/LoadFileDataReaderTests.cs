@@ -283,7 +283,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
         private LoadFileDataReader PrepareSut()
         {
-            return new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager);
+            return new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager, null);
         }
 
         private void LoadArtifact(int recordIndex)
