@@ -126,8 +126,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
             finally
             {
-                await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName)
-                    .ConfigureAwait(false);
+                if (!token.IsDrainStopRequested)
+                {
+                    await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName).ConfigureAwait(false);
+                }
             }
         }
 

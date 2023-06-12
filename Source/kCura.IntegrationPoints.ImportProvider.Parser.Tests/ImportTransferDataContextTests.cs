@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
             dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<IJobStopManager>()).Returns(_dataReader);
 
-            _instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>(), Arg.Any<IJobStopManager>());
+            _instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>(), Arg.Any<IJobStopManager>(), null);
         }
 
         [Test]

@@ -135,6 +135,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 };
             }
         }
+
         public static class FieldOverlayBehaviorName
         {
             public const string USE_FIELD_SETTINGS = "Use Field Settings";

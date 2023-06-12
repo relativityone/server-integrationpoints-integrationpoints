@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             winEddsFileReaderFactory.GetLoadFileReader(Arg.Any<LoadFile>()).Returns(loadFileReader);
             winEddsFileReaderFactory.GetOpticonFileReader(Arg.Any<ImageLoadFile>()).Returns(Substitute.For<IImageReader>());
 
-            _instance = new DataReaderFactory(fieldParserFactory, winEddsLoadFileFactory, winEddsFileReaderFactory, _serializer);
+            _instance = new DataReaderFactory(fieldParserFactory, winEddsLoadFileFactory, winEddsFileReaderFactory, _serializer, null);
         }
 
         [Test]

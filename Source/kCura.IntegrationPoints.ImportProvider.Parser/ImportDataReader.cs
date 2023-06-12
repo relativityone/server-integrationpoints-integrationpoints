@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 {
                     // Add special folder path column
                     AddColumn(
-                        kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
+                        Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
                         sourceOrdinal,
                         curColIdx++);
 
@@ -52,8 +52,26 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 {
                     // Add special native file path column
                     AddColumn(
-                        kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+                        Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
                         sourceOrdinal,
+                        curColIdx++);
+
+                    // Add special file size column
+                    AddColumn(
+                        Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD,
+                        Domain.Constants.SPECIAL_FILE_SIZE_INDEX,
+                        curColIdx++);
+
+                    // Add special file size column
+                    AddColumn(
+                        Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
+                        Domain.Constants.SPECIAL_FILE_TYPE_INDEX,
+                        curColIdx++);
+
+                    // Add special OI file type id column
+                    AddColumn(
+                        Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD,
+                        Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX,
                         curColIdx++);
 
                     if (cur.DestinationField.FieldIdentifier != null)

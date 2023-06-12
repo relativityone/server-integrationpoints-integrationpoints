@@ -199,6 +199,49 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Once);
         }
 
+        [Test]
+        public async Task Execute_ShouldNotCleanupImportDirectory_WhenDrainStopped()
+        {
+            // Arrange
+            Guid batchInstance = Guid.NewGuid();
+            int jobHistoryId = 222;
+
+            CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
+            {
+                Batches = new List<CustomProviderBatch>(),
+                JobHistoryGuid = batchInstance,
+                JobHistoryID = jobHistoryId
+            };
+
+            JobHistory jobHistory = new JobHistory();
+
+            _idFilesBuilder
+                .Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new List<CustomProviderBatch>());
+
+            _jobHistoryService
+                .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(jobHistory);
+
+            CancellationTokenSource cancelToken = new CancellationTokenSource();
+            CancellationTokenSource drainStopToken = new CancellationTokenSource();
+
+            CompositeCancellationToken token = new CompositeCancellationToken(cancelToken.Token, drainStopToken.Token, Mock.Of<IAPILog>());
+
+            Job job = PrepareJob(WorkspaceId, Guid.NewGuid());
+
+            ImportJobRunner sut = PrepareSut();
+
+            // Act
+            drainStopToken.Cancel();
+            await sut.RunJobAsync(job, jobDetails, _integrationPointDto, Mock.Of<IDataSourceProvider>(), token);
+
+            // Assert
+            _relativityStorageService
+                .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Never);
+        }
+
         private Job PrepareJob(int workspaceId, Guid batchInstance)
         {
             Job job = new Job()
