@@ -21,8 +21,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         /// <inheritdoc />
         public FileMetadata GetMetadata(string filePath)
         {
-            FileMetadata result;
-            if (_fileMetadataDictionary.TryGetValue(filePath, out result) == false)
+            if (_fileMetadataDictionary.TryGetValue(filePath, out FileMetadata result) == false)
             {
                 throw new KeyNotFoundException();
             }

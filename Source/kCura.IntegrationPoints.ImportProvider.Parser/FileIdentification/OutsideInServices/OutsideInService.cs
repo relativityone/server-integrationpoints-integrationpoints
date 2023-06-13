@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using kCura.IntegrationPoints.Common.Handlers;
 using OutsideIn;
 using Relativity.API;
 
@@ -7,43 +8,50 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.Outsi
 {
     public class OutsideInService : IOutsideInService
     {
+        private readonly IRetryHandler _retryHandler;
         private readonly IAPILog _logger;
 
-        public OutsideInService(IAPILog logger)
+        public OutsideInService(IRetryHandler retryHandler, IAPILog logger)
         {
+            _retryHandler = retryHandler;
             _logger = logger;
         }
 
         public FileFormat IdentifyFile(Stream stream, Exporter exporter)
         {
-            // TODO Retry
-            // OutsideIn.OutsideInException: OI process was killed by the OS due to a fatal exception
-            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
-            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
-
-            // OILink.OILinkErrorCodeException: OI DAOpenDocument failed - 13: not enough memory for allocation [13]
-            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
-            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
-
-            // OILink.OILinkErrorCodeException: OI DAOpenDocument failed - 65535: OI error code could not be mapped [7172963]
-            // at OutsideIn.DocumentImpl.GetFileId(FileIdInfoFlagValue dwFlags)
-            // at FIleIdentify.FileIdentification.FileIdentificationStage.<>c__DisplayClass13_0.<StartConsumer>b__0()
-
-
-            // FileTypeIdentificationException >> metrics
-
-
             try
             {
-                exporter.SetSourceFile(stream);
-                FileFormat fileFormat = exporter.GetFileId(FileIdInfoFlagValue.Normal);
-                return fileFormat;
+                // as we do not have precise retry-policy configuration in RIP, we retry on every exception type here
+                return _retryHandler.Execute<FileFormat, Exception>(
+                    () =>
+                    {
+                        // TODO why do we need to reset the position?
+                        stream.Position = 0;
+                        exporter.SetSourceFile(stream);
+                        return exporter.GetFileId(FileIdInfoFlagValue.Normal);
+                    },
+                    exception => { _logger.LogWarning(exception, "Unable to identify file using OutsideIn.Exporter. Operation will be retried."); });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to identify file");
-                throw;
+                // if retries did not helped, our last hope is reading file metadata from metrics
+                return GetFileFormatFromMetrics(exporter) ?? throw ex;
             }
+        }
+
+        private FileFormat GetFileFormatFromMetrics(Exporter exporter)
+        {
+            var metrics = exporter.GetExportMetrics();
+            if (metrics.TryGetValue("oi.file_id", out object fileId))
+            {
+                var id = Convert.ToInt32(fileId);
+                if (id != 0 && id != FileFormat.UNMAPPEDSCCFI.GetId())
+                {
+                    return FileFormat.ForId(id);
+                }
+            }
+
+            return null;
         }
     }
 }

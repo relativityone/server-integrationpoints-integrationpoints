@@ -169,12 +169,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private async Task<List<string>> GetNativePathList()
-        {
-            // 1. create additional data reader to retrieve natives paths
-            // 2. use FileIdentificationService to get metadata and store
-            throw new Exception();
-        }
+        // private async Task<List<string>> GetNativePathList()
+        // {
+        //     // 1. create additional data reader to retrieve natives paths
+        //     // 2. use FileIdentificationService to get metadata and store
+        //     throw new Exception();
+        // }
 
         protected override void FinalizeService(Job job)
         {
@@ -370,10 +370,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
             using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
-                int recordCount =
-                    settings.DestinationConfiguration.ImageImport ?
+                int recordCount = settings.DestinationConfiguration.ImageImport ?
                     (int)((IOpticonDataReader)sourceReader).CountRecords() :
                     (int)((IArtifactReader)sourceReader).CountRecords();
+
+
+
+
 
                 lock (_syncRoot)
                 {

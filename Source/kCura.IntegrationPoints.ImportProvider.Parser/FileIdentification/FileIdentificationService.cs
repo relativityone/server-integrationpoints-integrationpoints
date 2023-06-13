@@ -89,8 +89,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
                 // TODO shouldn't we call IStorageAccess.GetFileMetadataAsync() here??
                 long fileSize = stream.Length;
 
-                // TODO why do we need to reset the position?
-                stream.Position = 0;
                 FileFormat fileFormat = _outsideInService.IdentifyFile(stream, exporter);
 
                 var fileMetadata = new FileMetadata(fileFormat.GetId(), fileFormat.GetDescription(), fileSize);
