@@ -91,6 +91,8 @@ namespace kCura.IntegrationPoints.Common.Kepler
                     .Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route")) // Thrown when there are bad routing entries.
                     .Or<ServiceException>(ex => ex.Message.Contains("Create Failed")) // Thrown when the create call failed.
                     .Or<ServiceException>(ex => ex.Message.Contains("Bad Gateway"))
+                    .Or<ServiceException>(ex => ex.Message.Contains("Gateway Time-out"))
+                    .Or<ServiceException>(ex => ex.Message.Contains("An error occurred while sending the request"))
                     .Or<ConflictException>(ex => ex.Message.Contains("Create Ancestry Failed"))
                     .Or<TaskCanceledException>() // Timeout
                     .Or<TimeoutException>() // Thrown when there is an infrastructure level timeout.
