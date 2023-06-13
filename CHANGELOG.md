@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [12.6.0] - 06-13-2023
 
-### Chaged
+### Changed
 
 - Made correction for jobs miscalculated when Daylight Saving Time occurs
 - Upgraded version to 12.6.0
@@ -15,7 +15,7 @@ All notable changes to this project will be documented in this file.
 
 - Added a new changelog.md
 
-### Chaged
+### Changed
 
 - Archived the existing changelog.md file
 - Removed ##Maintainers section from README.md
