@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.6.0] - 06-13-2023
+
+### Chaged
+
+- Made correction for jobs miscalculated when Daylight Saving Time occurs
+- Upgraded version to 12.6.0
+
 ## [12.4.0] - 05-25-2023
 
 ### Added
