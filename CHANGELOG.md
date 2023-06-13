@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - Made correction for jobs miscalculated when Daylight Saving Time occurs
 - Upgraded version to 12.6.0
+- 12.5.0 already taken care for jquery vulnerable ticket(https://git.kcura.com/projects/IN/repos/integrationpoints/pull-requests/3112/diff#version.txt) that needs to be merge.
 
 ## [12.4.0] - 05-25-2023
 
