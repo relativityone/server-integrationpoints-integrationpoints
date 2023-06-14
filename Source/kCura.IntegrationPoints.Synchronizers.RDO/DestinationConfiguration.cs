@@ -65,6 +65,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public string Provider { get; set; }
 
+        [JsonProperty(PropertyName = "destinationProviderType")]
+        public string DestinationProviderType { get; set; }
+
         public string SelectedCaseFileRepoPath { get; set; }
 
         public bool AutoNumberImages { get; set; }
