@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [12.5.0] - 06-13-2023
+## [12.5.0] - 06-14-2023
 
 ### Changed
-- Cherry-picked the changes from 510434a4fdc and merged into featured branch.
+
+- Backported [REL-673577] ticket from PR-2800 RelOne release-12.1-osier-server.
 - Bumped the minor version in version.txt file.
+- Revved the latest relativity sync version.
 
 ## [12.4.0] - 05-25-2023
 
