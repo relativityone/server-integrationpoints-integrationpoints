@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS.Api;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class ImportDataReader : DataReaderBase, IArtifactReader
+    public class ImportDataReader : DataReaderBase, IArtifactReader, INativeFileReader
     {
         private bool _isClosed;
-        private readonly IDataReader _sourceDataReader;
+        private readonly LoadFileDataReader _sourceDataReader;
         private readonly Dictionary<int, int> _ordinalMap; // map publicly available ordinals ==> source data reader ordinals
         private readonly DataTable _schemaTable;
 
-        public ImportDataReader(IDataReader sourceDataReader)
+        public ImportDataReader(LoadFileDataReader sourceDataReader)
         {
             _isClosed = false;
             _sourceDataReader = sourceDataReader;
@@ -137,7 +138,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
 
             return _sourceDataReader.Read();
+        }
 
+        public string ReadCurrenNative()
+        {
+            return _sourceDataReader.ReadCurrenNative();
         }
 
         public override string GetDataTypeName(int i)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 {
@@ -21,7 +20,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         {
             if (_fileMetadataDictionary.TryGetValue(filePath, out FileMetadata result) == false)
             {
-                throw new KeyNotFoundException();
+                return null;
             }
 
             return result;

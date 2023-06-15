@@ -6,12 +6,13 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class LoadFileDataReader : DataReaderBase, IArtifactReader
+    public class LoadFileDataReader : DataReaderBase, IArtifactReader, INativeFileReader
     {
         private bool _isClosed;
         private int _columnCount;
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private FileMetadata _currentNativeFile;
         private readonly bool _extractedTextHasPathInfo;
         private readonly bool _nativeFileHasPathInfo;
+        private readonly int _nativeFilePathIndex;
         private readonly DataTable _schemaTable;
         private readonly Dictionary<string, int> _ordinalMap;
         private readonly IArtifactReader _loadFileReader;
@@ -45,6 +47,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _nativeFileHasPathInfo = !string.IsNullOrEmpty(_providerSettings.NativeFilePathFieldIdentifier);
             _loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
+
+            _nativeFilePathIndex = int.Parse(_providerSettings.NativeFilePathFieldIdentifier);
 
             _schemaTable = new DataTable();
             _ordinalMap = new Dictionary<string, int>();
@@ -80,7 +84,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     && !Path.IsPathRooted(artifactValue)) // Do not rewrite paths if column contains full path info
                     {
                         _currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
-                        _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(artifactValue);
+                        _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(_currentLine[artifact.ArtifactID]);
                     }
                     else
                     {
@@ -167,16 +171,19 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             throw new NotImplementedException("IDataReader.GetFieldType should not be called on LoadFileDataReader");
         }
 
-        // IArtifactReader implementation
-
         public string ManageErrorRecords(string errorMessageFileLocation, string prePushErrorLineNumbersFileName)
         {
-            return ((IArtifactReader)_loadFileReader).ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
+            return _loadFileReader.ManageErrorRecords(errorMessageFileLocation, prePushErrorLineNumbersFileName);
         }
 
         public long? CountRecords()
         {
             return _loadFileReader.CountRecords();
+        }
+
+        public string ReadCurrenNative()
+        {
+            return GetString(_nativeFilePathIndex);
         }
 
         private object GetNativeValue(int i)

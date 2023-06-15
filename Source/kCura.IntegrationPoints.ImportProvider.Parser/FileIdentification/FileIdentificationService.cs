@@ -6,22 +6,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Storage;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices;
 using OutsideIn;
 using Relativity.API;
+using Relativity.Services.Field;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 {
     public class FileIdentificationService : IFileIdentificationService
     {
-        private const int NumberOfWorkers = 10;
+        //private const int NumberOfWorkers = 10;
+        private const int NumberOfWorkers = 1;
 
         private readonly IOutsideInService _outsideInService;
         private readonly IExporterFactory _exporterFactory;
         private readonly IRelativityStorageService _relativityStorageService;
         private readonly IFileMetadataCollector _fileMetadataCollector;
         private readonly IAPILog _logger;
+
+        private string _loadFileDirectory;
 
         public FileIdentificationService(
             IOutsideInService outsideInService,
@@ -37,7 +42,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             _logger = logger;
         }
 
-        public async Task IdentifyFilesAsync(BlockingCollection<ImportFileInfo> files)
+        public async Task IdentifyFilesAsync(ImportProviderSettings settings, BlockingCollection<string> files)
         {
             List<Task> workerTasks = new List<Task>();
 
@@ -50,7 +55,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             await Task.WhenAll(workerTasks);
         }
 
-        private async Task StartWorkerTask(int workerId, IEnumerable<ImportFileInfo> files)
+        private async Task StartWorkerTask(int workerId, IEnumerable<string> files)
         {
             await Task.Yield();
 
@@ -59,11 +64,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             // TODO ensure we can safely reuse the exporter instance (Relativity.Import creates the new one for every single request)
             using (Exporter exporter = _exporterFactory.CreateExporter())
             {
-                foreach (var importFile in files)
+                foreach (var file in files)
                 {
-                    using (Stream stream = await OpenFileStreamAsync(importFile.FilePath))
+                    try
                     {
-                        ReadAndStoreFileMetadata(importFile.FilePath, stream, exporter);
+                        using (Stream stream = await OpenFileStreamAsync(file))
+                        {
+                            FileMetadata fileMetadata = IdentifyFileMetadata(file, stream, exporter);
+                            if (_fileMetadataCollector.StoreMetadata(file, fileMetadata) == false)
+                            {
+                                _logger.LogWarning("Unable to store file metadata - already exists {filePath}", file);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error ocurred when opening the File - {file}", file);
                     }
                 }
             }
@@ -81,7 +97,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             return await _relativityStorageService.OpenFileAsync(openFileParameters, CancellationToken.None);
         }
 
-        private void ReadAndStoreFileMetadata(string filePath, Stream stream, Exporter exporter)
+        private FileMetadata IdentifyFileMetadata(string filePath, Stream stream, Exporter exporter)
         {
             try
             {
@@ -91,11 +107,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 
                 FileFormat fileFormat = _outsideInService.IdentifyFile(stream, exporter);
 
-                var fileMetadata = new FileMetadata(fileFormat.GetId(), fileFormat.GetDescription(), fileSize);
-                if (_fileMetadataCollector.StoreMetadata(filePath, fileMetadata) == false)
-                {
-                    _logger.LogWarning("Unable to store file metadata - already exists {filePath}", filePath);
-                }
+                return new FileMetadata(fileFormat.GetId(), fileFormat.GetDescription(), fileSize);
             }
             catch (Exception ex)
             {
