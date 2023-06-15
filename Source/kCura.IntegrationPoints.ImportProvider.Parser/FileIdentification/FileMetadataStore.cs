@@ -13,9 +13,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         /// <inheritdoc />
         public bool StoreMetadata(string filePath, FileMetadata metadata)
         {
-            bool result = _fileMetadataDictionary.TryAdd(filePath, metadata);
-            IsPopulated = true;
-            return result;
+            return _fileMetadataDictionary.TryAdd(filePath, metadata);
         }
 
         /// <inheritdoc />
@@ -28,8 +26,5 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 
             return result;
         }
-
-        /// <inheritdoc />
-        public bool IsPopulated { get; private set; }
     }
 }

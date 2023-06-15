@@ -12,10 +12,5 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         /// </summary>
         /// <exception cref="KeyNotFoundException"></exception>
         FileMetadata GetMetadata(string filePath);
-
-        /// <summary>
-        /// Indicates
-        /// </summary>
-        bool IsPopulated { get; }
     }
 }

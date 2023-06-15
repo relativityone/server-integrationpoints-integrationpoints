@@ -8,6 +8,7 @@ using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using NSubstitute.ExceptionExtensions;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -38,6 +39,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         LoadFile _loadFile;
         ImportProviderSettings _providerSettings;
 
+        IReadOnlyFileMetadataStore _fileMetadataStore;
+
         [SetUp]
         public override void SetUp()
         {
@@ -53,6 +56,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             _loadFileReader.CountRecords().Returns(_RECORDS.Length);
 
             _jobStopManager = Substitute.For<IJobStopManager>();
+
+            _fileMetadataStore = Substitute.For<IReadOnlyFileMetadataStore>();
 
             LoadArtifact(_ROOTED_PATH_ARTIFACT_INDEX);
         }
@@ -283,7 +288,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 
         private LoadFileDataReader PrepareSut()
         {
-            return new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager, null);
+            return new LoadFileDataReader(_providerSettings, _loadFile, _loadFileReader, _jobStopManager, _fileMetadataStore);
         }
 
         private void LoadArtifact(int recordIndex)

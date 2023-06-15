@@ -34,9 +34,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Installers
             container.Register(Component.For<IOutsideInService>().ImplementedBy<OutsideInService>().LifestyleTransient());
             container.Register(Component.For<IFileIdentificationService>().ImplementedBy<FileIdentificationService>().LifestyleTransient());
 
-            var fileMetadataStore = new FileMetadataStore();
-            container.Register(Component.For<IReadOnlyFileMetadataStore>().Instance(fileMetadataStore).LifestyleSingleton());
-            container.Register(Component.For<IFileMetadataCollector>().Instance(fileMetadataStore).LifestyleSingleton());
+            container.Register(Component
+                .For<IReadOnlyFileMetadataStore, IFileMetadataCollector>()
+                .ImplementedBy<FileMetadataStore>()
+                .LifestyleSingleton());
         }
     }
 }

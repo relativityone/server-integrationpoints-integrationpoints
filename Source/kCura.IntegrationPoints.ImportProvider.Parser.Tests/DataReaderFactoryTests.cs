@@ -11,6 +11,7 @@ using kCura.WinEDDS.Api;
 using kCura.Apps.Common.Utils.Serializers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
 {
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         private ImportSettingsBase _settings;
         private ISerializer _serializer;
         private IJobStopManager _jobStopManager;
+        private IReadOnlyFileMetadataStore _fileMetadataStore;
 
         [SetUp]
         public override void SetUp()
@@ -47,7 +49,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
             winEddsFileReaderFactory.GetLoadFileReader(Arg.Any<LoadFile>()).Returns(loadFileReader);
             winEddsFileReaderFactory.GetOpticonFileReader(Arg.Any<ImageLoadFile>()).Returns(Substitute.For<IImageReader>());
 
-            _instance = new DataReaderFactory(fieldParserFactory, winEddsLoadFileFactory, winEddsFileReaderFactory, _serializer, null);
+            _fileMetadataStore = Substitute.For<IReadOnlyFileMetadataStore>();
+
+            _instance = new DataReaderFactory(fieldParserFactory, winEddsLoadFileFactory, winEddsFileReaderFactory, _serializer, _fileMetadataStore);
         }
 
         [Test]

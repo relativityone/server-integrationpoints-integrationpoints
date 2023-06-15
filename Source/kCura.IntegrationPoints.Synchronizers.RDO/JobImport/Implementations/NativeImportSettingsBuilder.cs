@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
             target.MultiValueDelimiter = importSettings.MultiValueDelimiter;
             target.NativeFilePathSourceFieldName = importSettings.NativeFilePathSourceFieldName;
             target.NestedValueDelimiter = importSettings.NestedValueDelimiter;
-            target.OIFileIdColumnName = importSettings.OIFileIdColumnName; // Podać ID typu pliku z OutsideIn -> wpisać testowo 1
+            target.OIFileIdColumnName = importSettings.OIFileIdColumnName;
             target.OIFileIdMapped = importSettings.OIFileIdMapped;
             target.OIFileTypeColumnName = importSettings.OIFileTypeColumnName;
             target.SupportedByViewerColumn = importSettings.SupportedByViewerColumn;
