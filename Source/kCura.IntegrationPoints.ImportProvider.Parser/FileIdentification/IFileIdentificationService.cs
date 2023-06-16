@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 {
     public interface IFileIdentificationService
     {
-        Task IdentifyFilesAsync(ImportProviderSettings settings, BlockingCollection<string> files);
+        void IdentifyFilesAsync(ImportProviderSettings settings, BlockingCollection<string> files);
     }
 }

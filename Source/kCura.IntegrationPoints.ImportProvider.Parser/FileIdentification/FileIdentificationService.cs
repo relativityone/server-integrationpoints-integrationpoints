@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices;
@@ -23,42 +24,42 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         private readonly IOutsideInService _outsideInService;
         private readonly IExporterFactory _exporterFactory;
         private readonly IRelativityStorageService _relativityStorageService;
+        private readonly IDataTransferLocationService _dataTransferLocationService;
         private readonly IFileMetadataCollector _fileMetadataCollector;
         private readonly IAPILog _logger;
 
-        private string _loadFileDirectory;
+        private string _workspaceFileShareDirectory;
 
         public FileIdentificationService(
             IOutsideInService outsideInService,
             IExporterFactory exporterFactory,
             IFileMetadataCollector fileMetadataCollector,
             IRelativityStorageService relativityStorageService,
+            IDataTransferLocationService dataTransferLocationService,
             IAPILog logger)
         {
             _outsideInService = outsideInService;
             _exporterFactory = exporterFactory;
             _fileMetadataCollector = fileMetadataCollector;
             _relativityStorageService = relativityStorageService;
+            _dataTransferLocationService = dataTransferLocationService;
             _logger = logger;
         }
 
-        public async Task IdentifyFilesAsync(ImportProviderSettings settings, BlockingCollection<string> files)
+        public void IdentifyFilesAsync(ImportProviderSettings settings, BlockingCollection<string> files)
         {
-            List<Task> workerTasks = new List<Task>();
+            _logger.LogInformation("Running Files Identification...");
 
-            foreach (int workerId in Enumerable.Range(1, NumberOfWorkers))
-            {
-                Task task = StartWorkerTask(workerId, files.GetConsumingEnumerable());
-                workerTasks.Add(task);
-            }
+            _workspaceFileShareDirectory = _dataTransferLocationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId);
 
-            await Task.WhenAll(workerTasks);
+            _logger.LogInformation("Workspace Fileshare - {fileshare}", _workspaceFileShareDirectory);
+
+            _logger.LogInformation("Starting new Task...");
+            Task.Factory.StartNew(() => StartWorkerTask(1, files.GetConsumingEnumerable()));
         }
 
         private async Task StartWorkerTask(int workerId, IEnumerable<string> files)
         {
-            await Task.Yield();
-
             _logger.LogInformation("Field Identification Worker {workerId} started", workerId);
 
             // TODO ensure we can safely reuse the exporter instance (Relativity.Import creates the new one for every single request)
@@ -68,9 +69,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
                 {
                     try
                     {
-                        using (Stream stream = await OpenFileStreamAsync(file))
+                        string filePath = Path.GetFullPath(Path.Combine(_workspaceFileShareDirectory, file));
+
+                        _logger.LogInformation("Reading file {file} - Full Path - {fullPath}", file, filePath);
+
+                        using (Stream stream = await OpenFileStreamAsync(filePath))
                         {
-                            FileMetadata fileMetadata = IdentifyFileMetadata(file, stream, exporter);
+                            FileMetadata fileMetadata = IdentifyFileMetadata(filePath, stream, exporter);
+
+                            _logger.LogInformation("Identified FileMetadata - {@metadata}", fileMetadata);
                             if (_fileMetadataCollector.StoreMetadata(file, fileMetadata) == false)
                             {
                                 _logger.LogWarning("Unable to store file metadata - already exists {filePath}", file);
@@ -87,11 +94,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 
         private async Task<Stream> OpenFileStreamAsync(string filePath)
         {
+            _logger.LogInformation("Opening Stream - {filePath}", filePath);
+
             var openFileParameters = new OpenFileParameters
             {
                 Path = filePath,
                 OpenBehavior = OpenBehavior.OpenExisting,
                 ReadWriteMode = ReadWriteMode.ReadOnly,
+                OpenFileOptions = new OpenFileOptions { SeekMode = SeekMode.RandomAccess }
             };
 
             return await _relativityStorageService.OpenFileAsync(openFileParameters, CancellationToken.None);

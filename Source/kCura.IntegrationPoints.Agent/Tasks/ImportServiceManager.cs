@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Handlers;
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                         DiagnosticLog.LogDiagnostic("Context: {@context}", context);
 
-                        CalculateFileMetadataAsync().GetAwaiter().GetResult();
+                        CalculateFileMetadata();
 
                         DiagnosticLog.LogDiagnostic("Synchronizing...");
                         synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager, DiagnosticLog);
@@ -177,9 +178,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private async Task CalculateFileMetadataAsync()
+        private void CalculateFileMetadata()
         {
-            BlockingCollection<string> nativeFiles = new BlockingCollection<string>();
             using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
                 INativeFileReader nativeReader = sourceReader as INativeFileReader;
@@ -189,15 +189,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     Logger.LogInformation("Import Job is not configured to process files. There is no need to calculate files metadata.");
                 }
 
+                BlockingCollection<string> nativeFiles = new BlockingCollection<string>();
+
+                ImportProviderSettings settings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
+                _fileIdentificationService.IdentifyFilesAsync(settings, nativeFiles);
+
                 while (sourceReader.Read())
                 {
                     string nativeFilePath = nativeReader.ReadCurrenNative();
+                    Logger.LogInformation("Reading Native File - {nativeFile}", nativeFilePath);
                     nativeFiles.Add(nativeFilePath);
                 }
-            }
 
-            ImportProviderSettings settings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-            await _fileIdentificationService.IdentifyFilesAsync(settings, nativeFiles).ConfigureAwait(false);
+                nativeFiles.CompleteAdding();
+
+                while (nativeFiles.IsCompleted)
+                {
+                    Logger.LogInformation("Waiting for Files Identification to finish");
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+            }
         }
 
         protected override void FinalizeService(Job job)
