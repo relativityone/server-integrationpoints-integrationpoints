@@ -97,6 +97,6 @@ buildtools/
 *.runsettings
 FunctionalTestSettings
 .idea/
-*/package-lock.json
+package-lock.json
 .dccache
 node_modules/

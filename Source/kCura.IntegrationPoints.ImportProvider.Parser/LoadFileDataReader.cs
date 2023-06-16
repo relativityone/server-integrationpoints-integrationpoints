@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -29,13 +30,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly string _loadFileDirectory;
         private readonly ImportProviderSettings _providerSettings;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
+        private readonly IAPILog _logger;
 
         public LoadFileDataReader(
             ImportProviderSettings providerSettings,
             LoadFile config,
             IArtifactReader reader,
             IJobStopManager jobStopManager,
-            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
+            IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
+            IAPILog logger)
         {
             _providerSettings = providerSettings;
             _config = config;
@@ -47,7 +50,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _nativeFileHasPathInfo = !string.IsNullOrEmpty(_providerSettings.NativeFilePathFieldIdentifier);
             _loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
-
+            _logger = logger;
             _nativeFilePathIndex = int.Parse(_providerSettings.NativeFilePathFieldIdentifier);
 
             _schemaTable = new DataTable();
@@ -85,6 +88,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                     {
                         _currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
                         _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(_currentLine[artifact.ArtifactID]);
+                        _logger.LogInformation("Current Native File {@nativeFile}", _currentNativeFile);
                     }
                     else
                     {
@@ -143,6 +147,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override object GetValue(int i)
         {
+            _logger.LogInformation("Reading for index {index}", i);
             return GetNativeValue(i)
                 ?? _currentLine[i];
         }
@@ -191,10 +196,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             switch (i)
             {
                 case Domain.Constants.SPECIAL_FILE_SIZE_INDEX:
+                    _logger.LogInformation("Reading Size - {size}", _currentNativeFile?.Size);
                     return _currentNativeFile?.Size;
                 case Domain.Constants.SPECIAL_FILE_TYPE_INDEX:
+                    _logger.LogInformation("Reading File Type - {type}", _currentNativeFile?.Description);
                     return _currentNativeFile?.Description;
                 case Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX:
+                    _logger.LogInformation("Reading OI File Type - {type}", _currentNativeFile?.TypeId);
                     return _currentNativeFile?.TypeId;
                 default:
                     return null;

@@ -10,6 +10,7 @@ using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -20,19 +21,22 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly IFieldParserFactory _fieldParserFactory;
         private readonly ISerializer _serializer;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
+        private readonly IAPILog _logger;
 
         public DataReaderFactory(
             IFieldParserFactory fieldParserFactory,
             IWinEddsLoadFileFactory winEddsLoadFileFactory,
             IWinEddsFileReaderFactory winEddsFileReaderFactory,
             ISerializer serializer,
-            IReadOnlyFileMetadataStore readOnlyFileMetadataStore)
+            IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
+            IAPILog logger)
         {
             _fieldParserFactory = fieldParserFactory;
             _winEddsLoadFileFactory = winEddsLoadFileFactory;
             _winEddsFileReaderFactory = winEddsFileReaderFactory;
             _serializer = serializer;
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
+            _logger = logger;
         }
 
         public IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager)
@@ -84,7 +88,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
             IArtifactReader reader = _winEddsFileReaderFactory.GetLoadFileReader(loadFile);
 
-            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore);
+            _logger.LogInformation("ImportProviderSettings: {@settings}", settings);
+
+            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore, _logger);
             rv.Init();
             return rv;
         }

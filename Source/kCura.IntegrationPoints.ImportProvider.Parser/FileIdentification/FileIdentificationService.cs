@@ -69,16 +69,18 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
                 {
                     try
                     {
-                        string filePath = Path.GetFullPath(Path.Combine(_workspaceFileShareDirectory, file));
+                        string filePath = Path.Combine(_workspaceFileShareDirectory, file);
 
-                        _logger.LogInformation("Reading file {file} - Full Path - {fullPath}", file, filePath);
+                        string fullPath = Path.GetFullPath(filePath);
 
-                        using (Stream stream = await OpenFileStreamAsync(filePath))
+                        _logger.LogInformation("Reading file {file} - Full Path - {fullPath}", file, fullPath);
+
+                        using (Stream stream = await OpenFileStreamAsync(fullPath))
                         {
-                            FileMetadata fileMetadata = IdentifyFileMetadata(filePath, stream, exporter);
+                            FileMetadata fileMetadata = IdentifyFileMetadata(stream, exporter);
 
                             _logger.LogInformation("Identified FileMetadata - {@metadata}", fileMetadata);
-                            if (_fileMetadataCollector.StoreMetadata(file, fileMetadata) == false)
+                            if (_fileMetadataCollector.StoreMetadata(filePath, fileMetadata) == false)
                             {
                                 _logger.LogWarning("Unable to store file metadata - already exists {filePath}", file);
                             }
@@ -107,7 +109,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             return await _relativityStorageService.OpenFileAsync(openFileParameters, CancellationToken.None);
         }
 
-        private FileMetadata IdentifyFileMetadata(string filePath, Stream stream, Exporter exporter)
+        private FileMetadata IdentifyFileMetadata(Stream stream, Exporter exporter)
         {
             try
             {
@@ -121,8 +123,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get file properties {filePath}", filePath);
-
                 // TODO we should probably report item-level-error here instead of throwing this exception
                 throw;
             }
