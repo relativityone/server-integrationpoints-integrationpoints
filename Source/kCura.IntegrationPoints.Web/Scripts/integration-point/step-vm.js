@@ -277,7 +277,9 @@
 					heapData["RdoTypeName"] = model.rdoTypeName;
 					heapData["IsProfileSelected"] = false;					
 					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
-					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+                    heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+                    let destinationConfiguration = JSON.parse(model.destinationConfiguration);
+                    heapData["TaggingOption"] = destinationConfiguration.TaggingOption;
 					if (heapData["SchedulerIsEnabled"])
 					{
 						heapData["Scheduler-Frequency"] = model.scheduler.selectedFrequency;
@@ -299,7 +301,7 @@
 						heapData["MappedSourceFieldsCount"] = $('#selected-source-fields option').length;
 						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
 						heapData["MappedDestinationFieldsCount"] = $('#selected-workspace-fields option').length;
-						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
+                        let sourceConfiguration = JSON.parse(model.sourceConfiguration);                        
 						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "Folder";
 						heapData["SyncSourceType"] = sourceConfiguration.TypeOfExport == 3 ? "SavedSearch" : sourceConfiguration.TypeOfExport == 2 ? "Production" : "Unknown";
 						heapData["OverwriteMode"] = model.SelectedOverwrite;
