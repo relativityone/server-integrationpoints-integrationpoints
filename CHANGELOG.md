@@ -2,12 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [12.6.0] - 06-20-2023
-
-### Changed
-
-- Upgraded Relativity Sync version to 1.0.0-pre.144.
-
 ## [12.5.0] - 06-07-2023
 
 ### Added
