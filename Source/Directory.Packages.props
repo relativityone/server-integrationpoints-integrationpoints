@@ -17,7 +17,7 @@
     <FluentAssertions>4.19.4</FluentAssertions>
     <IntegrationPointsMyFirstProvider>12.3.2</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
-    <kCura>13.1.0</kCura>    
+    <kCura>13.1.0</kCura>
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
