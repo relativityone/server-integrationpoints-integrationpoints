@@ -278,7 +278,7 @@
 					heapData["IsProfileSelected"] = false;					
 					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
                     heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
-                    let destinationConfiguration = JSON.parse(model.destinationConfiguration);
+                    let destinationConfiguration = JSON.parse(model.destination);
                     heapData["TaggingOption"] = destinationConfiguration.TaggingOption;
 					if (heapData["SchedulerIsEnabled"])
 					{
