@@ -8,14 +8,6 @@ All notable changes to this project will be documented in this file.
 
 - [REL-848320](https://jira.kcura.com/browse/REL-848320) - scheduled jobs miscalculation changes - Backported [REL-620760](https://jira.kcura.com/browse/REL-620760) ticket from Server 2022 release.
 
-## [12.6.0] - 06-13-2023
-
-### Changed
-
-- Made correction for jobs miscalculated when Daylight Saving Time occurs
-- Upgraded version to 12.6.0
-- 12.5.0 already taken care for jquery vulnerable ticket(https://git.kcura.com/projects/IN/repos/integrationpoints/pull-requests/3112/diff#version.txt) that needs to be merge.
-
 ## [12.5.0] - 06-07-2023
 
 ### Added
