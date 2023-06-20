@@ -6,9 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- [REL-848321](https://jira.kcura.com/browse/REL-848321) 
-[SYNC] Backport "run IAPI as admin for non-admin users" to server 21 and 22
-Backported [REL-673577](https://jira.kcura.com/browse/REL-673577) ticket. 
+- [REL-848321](https://jira.kcura.com/browse/REL-848321) - backport changes implemented - Backported [REL-673577](https://jira.kcura.com/browse/REL-673577) ticket from Server 2022. 
 
 ## [12.5.0] - 06-07-2023
 
@@ -18,14 +16,13 @@ Backported [REL-673577](https://jira.kcura.com/browse/REL-673577) ticket.
 - Added and Renamed jquery files for jquery-ui-1.13.2.js, jquery-3.6.3.js, jquery-3.6.3.slim.js.
 
 ### Changed
+
 - Bumped version to 12.5.0 in version.txt file.
 - Upgraded Relativity Sync version to 0.9.0.
 - Modified jquery-ui.css and jquery-ui.min.css file.
 - Modified _reference.js file with jquery version.
 - Removed older version files like jquery-3.5.1.intellisense.js, jquery-3.5.1.min.js, jquery-3.5.1.min.map, jquery-3.5.1.slim.min.js, jquery-3.5.1.slim.min.map, jquery-ui-1.12.1.min.js.
 - Modified kCura.IntegrationPoints.Web.csproj with latest versions of jquery files.
-- Bumped the minor version in version.txt file.
-- Revved the latest relativity sync version.
 
 ## [12.4.0] - 05-25-2023
 
