@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.6.0] - 06-20-2023
+
+### Changed
+
+- [REL-848321](https://jira.kcura.com/browse/REL-848321) 
+[SYNC] Backport "run IAPI as admin for non-admin users" to server 21 and 22
+Backported [REL-673577](https://jira.kcura.com/browse/REL-673577) ticket. 
+
 ## [12.5.0] - 06-07-2023
 
 ### Added
@@ -10,8 +18,6 @@ All notable changes to this project will be documented in this file.
 - Added and Renamed jquery files for jquery-ui-1.13.2.js, jquery-3.6.3.js, jquery-3.6.3.slim.js.
 
 ### Changed
-- [REL-848321](https://jira.kcura.com/browse/REL-848321) - [SYNC] Backport "run IAPI as admin for non-admin users" to server 21 and 22 
-- [REL-673577](https://jira.kcura.com/browse/REL-673577) [SYNC] Backport "run IAPI as admin for non-admin users" to server 21 and 22
 - Bumped version to 12.5.0 in version.txt file.
 - Upgraded Relativity Sync version to 0.9.0.
 - Modified jquery-ui.css and jquery-ui.min.css file.
