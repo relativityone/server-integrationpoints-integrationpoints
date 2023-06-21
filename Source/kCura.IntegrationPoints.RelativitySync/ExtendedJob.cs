@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -37,6 +38,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         public int SubmittedById => Job.SubmittedBy;
 
         public int IntegrationPointId => Job.RelatedObjectArtifactID;
+
+        public string ExecutingApplication => RelEye.Values.IntegrationPointsApplication;
 
         public IntegrationPointDto IntegrationPointDto
         {

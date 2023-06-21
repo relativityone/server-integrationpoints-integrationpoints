@@ -50,6 +50,16 @@
             /// Service name.
             /// </summary>
             public const string ServiceName = "integrationpoints-relativity-sync";
+
+            /// <summary>
+            /// Integration Points Agent Service name.
+            /// </summary>
+            public const string IntegrationPointsApplication = "integrationpoints";
+
+            /// <summary>
+            /// Relativity Sync Agent Service name.
+            /// </summary>
+            public const string RelativitySyncApplication = "relativity-sync";
         }
 
         public static class EventNames

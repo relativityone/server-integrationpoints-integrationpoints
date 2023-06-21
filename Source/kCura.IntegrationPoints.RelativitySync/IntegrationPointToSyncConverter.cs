@@ -87,8 +87,12 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .ForContext("SourceConfiguration", sourceConfiguration, true)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
-            ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
-                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
+            ISyncContext syncContext = new SyncContext(
+                job.WorkspaceId,
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                job.JobHistoryId,
+                job.ExecutingApplication,
+                GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
