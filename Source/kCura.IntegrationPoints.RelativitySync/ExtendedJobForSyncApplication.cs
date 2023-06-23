@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 
@@ -21,5 +22,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         public Guid JobIdentifier { get; set; }
 
         public int JobHistoryId { get; set; }
+
+        public string ExecutingApplication => RelEye.Values.RelativitySyncApplication;
     }
 }

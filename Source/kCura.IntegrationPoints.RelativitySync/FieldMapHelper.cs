@@ -31,8 +31,6 @@ namespace kCura.IntegrationPoints.RelativitySync
                     FieldIdentifier = int.Parse(x.DestinationField.FieldIdentifier),
                     IsIdentifier = x.DestinationField.IsIdentifier
                 },
-                FieldMapType = x.FieldMapType.ToSyncFieldMapType(),
-
             }).ToList();
         }
 

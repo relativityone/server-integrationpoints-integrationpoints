@@ -87,8 +87,12 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .ForContext("SourceConfiguration", sourceConfiguration, true)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
-            ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
-                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
+            ISyncContext syncContext = new SyncContext(
+                job.WorkspaceId,
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                job.JobHistoryId,
+                job.ExecutingApplication,
+                GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
@@ -272,7 +276,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
 
-            foreach (SyncFieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+            foreach (SyncFieldMap fieldsMap in fieldsMapping)
             {
                 mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
             }
