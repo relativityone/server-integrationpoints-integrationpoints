@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
 
-            foreach (SyncFieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+            foreach (SyncFieldMap fieldsMap in fieldsMapping)
             {
                 mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
             }
