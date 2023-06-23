@@ -1403,560 +1403,467 @@
     </ArtifactViewField>
   </ArtifactViewFields>
   <Assemblies>
-    <Assembly>
-      <ArtifactId>1016743</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Castle.Windsor.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016744</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Newtonsoft.Json.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016746</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Parser.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016747</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016748</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Connection.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016749</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016750</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Renci.SshNet.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016751</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016753</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Agent.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016754</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Config.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016755</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016756</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Core.Contracts.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016757</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Data.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016758</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Email.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016759</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.EventHandlers.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016760</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1016762</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.DocumentTransferProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016763</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.LDAPProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016765</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016766</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.ScheduleQueue.AgentBase.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016767</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.ScheduleQueue.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016768</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>SystemInterface.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016769</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.Apps.Common.Utils.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016772</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.LongPath.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016773</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.ImportProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016774</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.ImportProvider.Parser.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016775</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.Apps.Common.Data.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016776</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.Apps.Common.Config.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016779</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>ZetaLongPaths.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016780</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Polly.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016781</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>FaspManager.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016782</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Transfer.Client.Aspera.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016783</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Transfer.Client.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016784</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Transfer.Client.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016785</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Transfer.Client.FileShare.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1016786</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Transfer.Client.Http.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1017440</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Castle.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>1196241</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.DataTransfer.MessageService.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>2907080</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Productions.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>3100668</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.Common.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4499254</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>LanguageExt.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4499255</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.ValueTuple.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4663381</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4663409</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Sync.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4663442</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Autofac.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4663502</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Banzai.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4663535</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Banzai.Autofac.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4702172</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Telemetry.Services.Interface.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4729587</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.DataExchange.Client.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>4940267</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>itextsharp.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5320737</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Reactive.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5375019</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.IntegrationPoints.Contracts.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5375020</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5375021</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5375022</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5376790</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5510911</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>WorkloadDiscovery.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5511033</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5511188</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5511355</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Threading.Tasks.Extensions.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537554</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Storage.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537555</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>DnsClient.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537556</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Text.Json.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537559</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Memory.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537594</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Runtime.CompilerServices.Unsafe.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537595</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Text.Encodings.Web.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537596</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Numerics.Vectors.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537602</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.AntiMalware.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537603</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Environment.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537630</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Storage.Extensions.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537631</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Microsoft.Bcl.AsyncInterfaces.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537632</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537634</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>System.Diagnostics.DiagnosticSource.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537646</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Storage.Files.DataLake.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537647</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Identity.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537648</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Security.KeyVault.Secrets.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537649</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Storage.Blobs.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537651</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Azure.Storage.Common.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537801</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Dapper.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5537802</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Dapper.Contrib.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539018</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Import.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539236</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Import.Private.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539439</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.Import.Models.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539467</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Relativity.HostingBridge.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539490</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Polly.Contrib.WaitAndRetry.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539595</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Serilog.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539867</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Serilog.Sinks.OpenTelemetry.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539868</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Serilog.Sinks.PeriodicBatching.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539869</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Grpc.Core.Api.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5539870</ArtifactId>
+    <Assembly>      
       <Keywords />
       <Name>Google.Protobuf.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
   <ResourceFiles>
-    <ResourceFile>
-      <ArtifactID>5511250</ArtifactID>
+    <ResourceFile>      
       <Name>integration-point-event-handler.js</Name>
       <FileType>1</FileType>
     </ResourceFile>
-    <ResourceFile>
-      <ArtifactID>5511251</ArtifactID>
+    <ResourceFile>      
       <Name>integration-point-profile-event-handler.js</Name>
       <FileType>1</FileType>
     </ResourceFile>
-    <ResourceFile>
-      <ArtifactID>5511280</ArtifactID>
+    <ResourceFile>      
       <Name>deploy.yaml</Name>
       <FileType>1</FileType>
     </ResourceFile>

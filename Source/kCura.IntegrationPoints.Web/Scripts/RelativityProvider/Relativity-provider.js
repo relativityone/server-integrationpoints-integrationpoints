@@ -277,7 +277,7 @@
         self.TypeOfExport.subscribe(function (value) {
             if (value === ExportEnums.SourceOptionsEnum.Production) {
                 
-                self.TaggingOption("enabled");
+                self.TaggingOption("Enabled");
 
                 var productionSetsPromise = IP.data.ajax({
                     type: "get",
