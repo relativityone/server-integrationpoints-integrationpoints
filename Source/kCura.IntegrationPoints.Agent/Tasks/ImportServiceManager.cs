@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -33,7 +35,6 @@ using Relativity.AutomatedWorkflows.SDK;
 using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Objects.Serialization;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -50,7 +51,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobStatusUpdater _jobStatusUpdater;
         private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
         private readonly IJobTracker _jobTracker;
+        private readonly IRipToggleProvider _toggleProvider;
         private readonly IFileIdentificationService _fileIdentificationService;
+        private readonly IDataTransferLocationService _dataTransferLocationService;
         private readonly object _syncRoot = new object();
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
         public const string RAW_STATE_COMPLETE = "complete";
@@ -78,7 +81,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobStatusUpdater jobStatusUpdater,
             IAutomatedWorkflowsManager automatedWorkflowsManager,
             IJobTracker jobTracker,
+            IRipToggleProvider toggleProvider,
             IFileIdentificationService fileIdentificationService,
+            IDataTransferLocationService dataTransferLocationService,
             IDiagnosticLog diagnosticLog)
             : base(
                 helper,
@@ -104,7 +109,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
             _automatedWorkflowsManager = automatedWorkflowsManager;
             _jobTracker = jobTracker;
+            _toggleProvider = toggleProvider;
             _fileIdentificationService = fileIdentificationService;
+            _dataTransferLocationService = dataTransferLocationService;
         }
 
         public override void Execute(Job job)
@@ -136,14 +143,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 int sourceRecordCount = UpdateSourceRecordCount(settings);
                 if (sourceRecordCount > 0)
                 {
-                    using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, IntegrationPointDto.FieldMappings, JobStopManager))
+                    bool processExtraFileMetadata = ShouldProcessExtraFileMetadata();
+                    if (processExtraFileMetadata)
+                    {
+                        GatherFileMetadataAsync().GetAwaiter().GetResult();
+                    }
+
+                    using (var context = new ImportTransferDataContext(
+                               _dataReaderFactory,
+                               providerSettings,
+                               IntegrationPointDto.FieldMappings,
+                               JobStopManager,
+                               processExtraFileMetadata))
                     {
                         context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
                         context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
 
                         DiagnosticLog.LogDiagnostic("Context: {@context}", context);
-
-                        CalculateFileMetadata();
 
                         DiagnosticLog.LogDiagnostic("Synchronizing...");
                         synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager, DiagnosticLog);
@@ -178,36 +194,52 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private void CalculateFileMetadata()
+        private bool ShouldProcessExtraFileMetadata()
         {
-            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
+            bool useCalToggleValue = _toggleProvider.IsEnabled<UseCalInLegacyTapiToggle>();
+            var nativeCopyMode = IntegrationPointDto.DestinationConfiguration.ImportNativeFileCopyMode;
+            return useCalToggleValue && nativeCopyMode == ImportNativeFileCopyModeEnum.CopyFiles;
+        }
+
+        private async Task GatherFileMetadataAsync()
+        {
+            try
             {
-                INativeFileReader nativeReader = sourceReader as INativeFileReader;
+                var watch = new Stopwatch();
+                watch.Start();
 
-                if (nativeReader == null)
+                var importProviderSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
+                string workspaceFileShareDirectory = _dataTransferLocationService.GetWorkspaceFileLocationRootPath(importProviderSettings.WorkspaceId);
+
+                using (INativeFilePathReader nativeFilePathReader = _dataReaderFactory.GetNativeFilePathReader(
+                           IntegrationPointDto.FieldMappings.ToArray(),
+                           IntegrationPointDto.SourceConfiguration,
+                           JobStopManager))
                 {
-                    Logger.LogInformation("Import Job is not configured to process files. There is no need to calculate files metadata.");
+                    var nativeFiles = new BlockingCollection<string>();
+                    Task identificationTask = _fileIdentificationService.IdentifyFilesAsync(nativeFiles);
+
+                    // the first row contains header with column names, let's skip it
+                    nativeFilePathReader.Read();
+
+                    while (nativeFilePathReader.Read())
+                    {
+                        string fullPath = Path.Combine(workspaceFileShareDirectory, nativeFilePathReader.GetCurrentNativeFilePath());
+                        DiagnosticLog.LogDiagnostic("Reading Native File - {nativeFile}", fullPath);
+                        nativeFiles.Add(fullPath);
+                    }
+
+                    nativeFiles.CompleteAdding();
+
+                    await identificationTask;
                 }
 
-                BlockingCollection<string> nativeFiles = new BlockingCollection<string>();
-
-                ImportProviderSettings settings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-                _fileIdentificationService.IdentifyFilesAsync(settings, nativeFiles);
-
-                while (sourceReader.Read())
-                {
-                    string nativeFilePath = nativeReader.ReadCurrenNative();
-                    Logger.LogInformation("Reading Native File - {nativeFile}", nativeFilePath);
-                    nativeFiles.Add(nativeFilePath);
-                }
-
-                nativeFiles.CompleteAdding();
-
-                while (nativeFiles.IsCompleted)
-                {
-                    Logger.LogInformation("Waiting for Files Identification to finish");
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
-                }
+                watch.Stop();
+                Logger.LogInformation("Files metadata gathered within {seconds} seconds", watch.Elapsed.Seconds);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Failed to gather file metadata", ex);
             }
         }
 
@@ -403,7 +435,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogUpdateSourceRecordCountStart();
             // Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
-            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
+            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(
+                       IntegrationPointDto.FieldMappings.ToArray(),
+                       IntegrationPointDto.SourceConfiguration,
+                       JobStopManager,
+                       addExtraNativeColumns: false))
             {
                 int recordCount = settings.DestinationConfiguration.ImageImport ?
                     (int)((IOpticonDataReader)sourceReader).CountRecords() :

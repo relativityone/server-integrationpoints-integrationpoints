@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.Outsi
 {
     public interface IOutsideInService
     {
-        FileFormat IdentifyFile(Stream stream, Exporter exporter);
+        FileFormat IdentifyFile(Stream stream);
     }
 }

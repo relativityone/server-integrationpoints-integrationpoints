@@ -33,6 +33,7 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
@@ -40,6 +41,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -182,7 +184,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
-                null,
+                Substitute.For<IRipToggleProvider>(),
+                Substitute.For<IFileIdentificationService>(),
+                Substitute.For<IDataTransferLocationService>(),
                 new EmptyDiagnosticLog());
         }
 

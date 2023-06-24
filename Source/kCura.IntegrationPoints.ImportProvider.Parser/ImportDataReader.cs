@@ -9,7 +9,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class ImportDataReader : DataReaderBase, IArtifactReader, INativeFileReader
+    public class ImportDataReader : DataReaderBase, IArtifactReader, INativeFilePathReader
     {
         private bool _isClosed;
         private readonly LoadFileDataReader _sourceDataReader;
@@ -57,23 +57,26 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                         sourceOrdinal,
                         curColIdx++);
 
-                    // Add special file size column
-                    AddColumn(
-                        Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD,
-                        Domain.Constants.SPECIAL_FILE_SIZE_INDEX,
-                        curColIdx++);
+                    if (_sourceDataReader.HasExtraNativeColumns)
+                    {
+                        // Add special file size column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD,
+                            Domain.Constants.SPECIAL_FILE_SIZE_INDEX,
+                            curColIdx++);
 
-                    // Add special file size column
-                    AddColumn(
-                        Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
-                        Domain.Constants.SPECIAL_FILE_TYPE_INDEX,
-                        curColIdx++);
+                        // Add special file size column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
+                            Domain.Constants.SPECIAL_FILE_TYPE_INDEX,
+                            curColIdx++);
 
-                    // Add special OI file type id column
-                    AddColumn(
-                        Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD,
-                        Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX,
-                        curColIdx++);
+                        // Add special OI file type id column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD,
+                            Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX,
+                            curColIdx++);
+                    }
 
                     if (cur.DestinationField.FieldIdentifier != null)
                     {
@@ -120,6 +123,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return _schemaTable;
         }
 
+        public string GetCurrentNativeFilePath()
+        {
+            return _sourceDataReader.GetCurrentNativeFilePath();
+        }
+
         public override int FieldCount => _schemaTable.Columns.Count;
 
         public override bool IsClosed => _isClosed;
@@ -138,11 +146,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
 
             return _sourceDataReader.Read();
-        }
-
-        public string ReadCurrenNative()
-        {
-            return _sourceDataReader.ReadCurrenNative();
         }
 
         public override string GetDataTypeName(int i)

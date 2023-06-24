@@ -8,34 +8,41 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.Outsi
 {
     public class OutsideInService : IOutsideInService
     {
+        private readonly IExporterFactory _exporterFactory;
         private readonly IRetryHandler _retryHandler;
         private readonly IAPILog _logger;
 
-        public OutsideInService(IRetryHandler retryHandler, IAPILog logger)
+        public OutsideInService(IExporterFactory exporterFactory, IRetryHandler retryHandler, IAPILog logger)
         {
+            _exporterFactory = exporterFactory;
             _retryHandler = retryHandler;
             _logger = logger;
         }
 
-        public FileFormat IdentifyFile(Stream stream, Exporter exporter)
+        public FileFormat IdentifyFile(Stream stream)
         {
-            try
+            using (Exporter exporter = _exporterFactory.CreateExporter())
             {
-                // as we do not have precise retry-policy configuration in RIP, we retry on every exception type here
-                return _retryHandler.Execute<FileFormat, Exception>(
-                    () =>
-                    {
-                        // TODO why do we need to reset the position?
-                        stream.Position = 0;
-                        exporter.SetSourceFile(stream);
-                        return exporter.GetFileId(FileIdInfoFlagValue.Normal);
-                    },
-                    exception => { _logger.LogWarning(exception, "Unable to identify file using OutsideIn.Exporter. Operation will be retried."); });
-            }
-            catch (Exception ex)
-            {
-                // if retries did not helped, our last hope is reading file metadata from metrics
-                return GetFileFormatFromMetrics(exporter) ?? throw ex;
+                try
+                {
+                    // as we do not have precise retry-policy configuration in RIP, we retry on every exception type here
+                    return _retryHandler.Execute<FileFormat, Exception>(
+                        () =>
+                        {
+                            stream.Position = 0;
+                            exporter.SetSourceFile(stream);
+                            return exporter.GetFileId(FileIdInfoFlagValue.Normal);
+                        },
+                        exception =>
+                        {
+                            _logger.LogWarning(exception, "Unable to identify file using OutsideIn.Exporter. Operation will be retried.");
+                        });
+                }
+                catch (Exception ex)
+                {
+                    // if retries did not helped, our last hope is reading file metadata from metrics
+                    return GetFileFormatFromMetrics(exporter) ?? throw ex;
+                }
             }
         }
 

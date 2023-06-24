@@ -4,6 +4,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.DataExchange.Service;
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly IFieldParserFactory _fieldParserFactory;
         private readonly ISerializer _serializer;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
+        private readonly IDiagnosticLog _diagnosticLogger;
         private readonly IAPILog _logger;
 
         public DataReaderFactory(
@@ -29,6 +31,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IWinEddsFileReaderFactory winEddsFileReaderFactory,
             ISerializer serializer,
             IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
+            IDiagnosticLog diagnosticLogger,
             IAPILog logger)
         {
             _fieldParserFactory = fieldParserFactory;
@@ -36,15 +39,16 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _winEddsFileReaderFactory = winEddsFileReaderFactory;
             _serializer = serializer;
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
+            _diagnosticLogger = diagnosticLogger;
             _logger = logger;
         }
 
-        public IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager)
+        public IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager, bool addExtraNativeColumns)
         {
             ImportProviderSettings providerSettings = _serializer.Deserialize<ImportProviderSettings>(options);
             if (int.Parse(providerSettings.ImportType) == (int)ImportType.ImportTypeValue.Document)
             {
-                LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings, jobStopManager);
+                LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings, jobStopManager, addExtraNativeColumns);
                 ImportDataReader idr = new ImportDataReader(lfdr);
                 idr.Setup(fieldMaps);
                 return idr;
@@ -53,6 +57,15 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             {
                 return GetOpticonDataReader(providerSettings, jobStopManager);
             }
+        }
+
+        public INativeFilePathReader GetNativeFilePathReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager)
+        {
+            ImportProviderSettings providerSettings = _serializer.Deserialize<ImportProviderSettings>(options);
+            LoadFileDataReader lfdr = GetLoadFileDataReader(fieldMaps, providerSettings, jobStopManager, addExtraNativeColumns: false);
+            ImportDataReader idr = new ImportDataReader(lfdr);
+            idr.Setup(fieldMaps);
+            return idr;
         }
 
         private OpticonDataReader GetOpticonDataReader(ImportProviderSettings settings, IJobStopManager jobStopManager)
@@ -64,7 +77,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return rv;
         }
 
-        private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings, IJobStopManager jobStopManager)
+        private LoadFileDataReader GetLoadFileDataReader(FieldMap[] fieldMaps, ImportProviderSettings settings, IJobStopManager jobStopManager, bool addExtraNativeColumns)
         {
             string fieldIdentifierColumnName = fieldMaps.FirstOrDefault(x => x.SourceField.IsIdentifier)?.SourceField.DisplayName;
 
@@ -90,7 +103,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
             _logger.LogInformation("ImportProviderSettings: {@settings}", settings);
 
-            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore, _logger);
+            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore, _diagnosticLogger, addExtraNativeColumns);
             rv.Init();
             return rv;
         }

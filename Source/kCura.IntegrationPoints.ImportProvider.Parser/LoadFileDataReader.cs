@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class LoadFileDataReader : DataReaderBase, IArtifactReader, INativeFileReader
+    public class LoadFileDataReader : DataReaderBase, IArtifactReader
     {
         private bool _isClosed;
         private int _columnCount;
@@ -30,7 +29,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly string _loadFileDirectory;
         private readonly ImportProviderSettings _providerSettings;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
-        private readonly IAPILog _logger;
+        private readonly IDiagnosticLog _diagnosticLogger;
+
+        public bool HasExtraNativeColumns { get; }
 
         public LoadFileDataReader(
             ImportProviderSettings providerSettings,
@@ -38,20 +39,25 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IArtifactReader reader,
             IJobStopManager jobStopManager,
             IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
-            IAPILog logger)
+            IDiagnosticLog diagnosticLogger,
+            bool hasExtraNativeColumns)
         {
             _providerSettings = providerSettings;
             _config = config;
             _loadFileReader = reader;
             _jobStopManager = jobStopManager;
+            _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
+            _diagnosticLogger = diagnosticLogger;
+            HasExtraNativeColumns = hasExtraNativeColumns;
+
             _isClosed = false;
             _columnCount = 0;
+            _loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
             _extractedTextHasPathInfo = !string.IsNullOrEmpty(_providerSettings.ExtractedTextPathFieldIdentifier);
             _nativeFileHasPathInfo = !string.IsNullOrEmpty(_providerSettings.NativeFilePathFieldIdentifier);
-            _loadFileDirectory = Path.GetDirectoryName(_providerSettings.LoadFile);
-            _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
-            _logger = logger;
-            _nativeFilePathIndex = int.Parse(_providerSettings.NativeFilePathFieldIdentifier);
+            _nativeFilePathIndex = _nativeFileHasPathInfo
+                ? int.Parse(_providerSettings.NativeFilePathFieldIdentifier)
+                : -1;
 
             _schemaTable = new DataTable();
             _ordinalMap = new Dictionary<string, int>();
@@ -59,7 +65,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public void Init()
         {
-            // Accessing the ColumnNames is necessary to properly intialize the loadFileReader;
+            // Accessing the ColumnNames is necessary to properly initialize the loadFileReader;
             // Otherwise ReadArtifact() throws "Object reference not set to an instance of an object."
             _columnCount = _loadFileReader.GetColumnNames(_config).Length;
             for (int i = 0; i < _columnCount; i++)
@@ -70,7 +76,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
         }
 
-        // Get a line stored for the current row, based on delimter settings in the _config
+        // Get a line stored for the current row, based on delimiter settings in the _config
         private void ReadCurrentRecord()
         {
             _currentLine = new string[_columnCount];
@@ -81,25 +87,31 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 foreach (ArtifactField artifact in artifacts)
                 {
                     string artifactValue = artifact.ValueAsString;
+
                     if (((_extractedTextHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.ExtractedTextPathFieldIdentifier)
                     || (_nativeFileHasPathInfo && artifact.ArtifactID.ToString() == _providerSettings.NativeFilePathFieldIdentifier))
                     && !string.IsNullOrEmpty(artifactValue) // If the path is empty, there is no native and we shouldn't attempt to join the paths
                     && !Path.IsPathRooted(artifactValue)) // Do not rewrite paths if column contains full path info
                     {
                         _currentLine[artifact.ArtifactID] = Path.Combine(_loadFileDirectory, artifactValue);
-                        _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(_currentLine[artifact.ArtifactID]);
-                        _logger.LogInformation("Current Native File {@nativeFile}", _currentNativeFile);
                     }
                     else
                     {
                         _currentLine[artifact.ArtifactID] = artifactValue;
                     }
                 }
+
+                if (HasExtraNativeColumns)
+                {
+                    _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(_currentLine[_nativeFilePathIndex]);
+                    _diagnosticLogger.LogDiagnostic("Current Native File {@nativeFile}", _currentNativeFile);
+                }
             }
+
             // This exception causes problems generating error file creation and can crash the ImportAPI job.
             // Catching this exception and blanking _currentLine causes a "Identity value not set" error in Job History Errors tab,
             // but the error file generation and document import proceeds correctly.
-            catch (kCura.WinEDDS.LoadFileBase.ColumnCountMismatchException)
+            catch (LoadFileBase.ColumnCountMismatchException)
             {
                 for (int i = 0; i < _currentLine.Length; i++)
                 {
@@ -147,9 +159,42 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override object GetValue(int i)
         {
-            _logger.LogInformation("Reading for index {index}", i);
-            return GetNativeValue(i)
-                ?? _currentLine[i];
+            _diagnosticLogger.LogDiagnostic("Reading for index {index}", i);
+
+            if (i >= _columnCount)
+            {
+                return TryGetSpecialFieldValue(i);
+            }
+
+            // if it failed to read native file metadata from FileIdentificationService (_currentNativeFile == null),
+            // return null file-path to IAPI - it will result with item-level-error
+            if (i == _nativeFilePathIndex && HasExtraNativeColumns && _currentNativeFile == null)
+            {
+                return null;
+            }
+
+            return _currentLine[i];
+        }
+
+        private object TryGetSpecialFieldValue(int i)
+        {
+            switch (i)
+            {
+                case Domain.Constants.SPECIAL_FILE_SIZE_INDEX:
+                    _diagnosticLogger.LogDiagnostic("Reading Size - {size}", _currentNativeFile?.Size);
+                    return _currentNativeFile?.Size;
+
+                case Domain.Constants.SPECIAL_FILE_TYPE_INDEX:
+                    _diagnosticLogger.LogDiagnostic("Reading File Type - {type}", _currentNativeFile?.Description);
+                    return _currentNativeFile?.Description;
+
+                case Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX:
+                    _diagnosticLogger.LogDiagnostic("Reading OI File Type - {type}", _currentNativeFile?.TypeId);
+                    return _currentNativeFile?.TypeId;
+
+                default:
+                    return null;
+            }
         }
 
         public override bool Read()
@@ -186,27 +231,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return _loadFileReader.CountRecords();
         }
 
-        public string ReadCurrenNative()
+        public string GetCurrentNativeFilePath()
         {
             return GetString(_nativeFilePathIndex);
-        }
-
-        private object GetNativeValue(int i)
-        {
-            switch (i)
-            {
-                case Domain.Constants.SPECIAL_FILE_SIZE_INDEX:
-                    _logger.LogInformation("Reading Size - {size}", _currentNativeFile?.Size);
-                    return _currentNativeFile?.Size;
-                case Domain.Constants.SPECIAL_FILE_TYPE_INDEX:
-                    _logger.LogInformation("Reading File Type - {type}", _currentNativeFile?.Description);
-                    return _currentNativeFile?.Description;
-                case Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX:
-                    _logger.LogInformation("Reading OI File Type - {type}", _currentNativeFile?.TypeId);
-                    return _currentNativeFile?.TypeId;
-                default:
-                    return null;
-            }
         }
 
         #region Not Implemented
