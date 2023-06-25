@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.RelativitySync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -12,7 +10,6 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
-using SyncFieldMapType = Relativity.Sync.Storage.FieldMapType;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -40,53 +37,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         }
 
         [Test]
-        public void FixedSyncMapping_ShouldHandleMappingWithoutIdentifier()
-        {
-            // Arrange
-            List<FieldMap> fieldMap = new List<FieldMap>
-            {
-                new FieldMap
-                {
-                    DestinationField = new FieldEntry
-                    {
-                        FieldIdentifier = "1",
-                        DisplayName = "abc"
-                    },
-                    SourceField = new FieldEntry
-                    {
-                        FieldIdentifier = "1",
-                        DisplayName = "abc [Object Identifier]"
-                    },
-                    FieldMapType = FieldMapTypeEnum.None
-                }
-            };
-
-            List<SyncFieldMap> expectedFieldsMapping = new List<SyncFieldMap>
-            {
-                new SyncFieldMap
-                {
-                    DestinationField = new SyncFieldEntry
-                    {
-                        FieldIdentifier = 1,
-                        DisplayName = "abc"
-                    },
-                    SourceField = new SyncFieldEntry
-                    {
-                        FieldIdentifier = 1,
-                        DisplayName = "abc [Object Identifier]"
-                    },
-                    FieldMapType = SyncFieldMapType.None
-                }
-            };
-
-            // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMap, _loggerFake.Object);
-
-            // Assert
-            fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
-        }
-
-        [Test]
         public void FixedSyncMapping_ShouldRemoveSuffixFromIdentifierMapping()
         {
             // Arrange
@@ -98,11 +48,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                     {
                         FieldIdentifier = "1",
                         DisplayName = "abc [Object Identifier]",
+                        IsIdentifier = true
                     },
                     SourceField = new FieldEntry
                     {
                         FieldIdentifier = "1",
                         DisplayName = "abc [Object Identifier]",
+                        IsIdentifier = true
                     },
                     FieldMapType = FieldMapTypeEnum.Identifier
                 }
@@ -115,14 +67,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                     DestinationField = new SyncFieldEntry
                     {
                         FieldIdentifier = 1,
-                        DisplayName = "abc"
+                        DisplayName = "abc",
+                        IsIdentifier = true
                     },
                     SourceField = new SyncFieldEntry
                     {
                         FieldIdentifier = 1,
-                        DisplayName = "abc"
+                        DisplayName = "abc",
+                        IsIdentifier = true
                     },
-                    FieldMapType = SyncFieldMapType.Identifier
                 }
             };
 
@@ -188,14 +141,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                     DestinationField = new SyncFieldEntry
                     {
                         FieldIdentifier = 3,
-                        DisplayName = "field"
+                        DisplayName = "field",
+                        IsIdentifier = false
                     },
                     SourceField = new SyncFieldEntry
                     {
                         FieldIdentifier = 3,
-                        DisplayName = "Field"
+                        DisplayName = "Field",
+                        IsIdentifier = false
                     },
-                    FieldMapType = fieldMapTypeNotToBeRemoved.ToSyncFieldMapType()
                 }
             };
 
