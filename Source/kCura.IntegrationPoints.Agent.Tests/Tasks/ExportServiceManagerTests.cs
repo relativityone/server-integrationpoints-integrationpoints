@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -80,7 +81,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private IScheduleRuleFactory _scheduleRuleFactory;
         private ISerializer _serializer;
         private IExportDataSanitizer _exportDataSanitizer;
-        private IAPILog _logger;
         private Job _job;
         private JobHistory _jobHistory;
         private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
@@ -102,11 +102,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             _job = job;
             _helper = Substitute.For<IHelper>();
-            _logger = Substitute.For<IAPILog>();
-            ILogFactory logFactory = Substitute.For<ILogFactory>();
-            logFactory.GetLogger().Returns(_logger);
-            _helper.GetLoggerFactory().Returns(logFactory);
-            _logger.ForContext<ServiceManagerBase>().Returns(_logger);
             _caseContext = Substitute.For<ICaseServiceContext>();
             ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
             _exporterFactory = Substitute.For<IExporterFactory>();
@@ -235,11 +230,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _jobHistoryService,
                 _jobHistoryErrorService,
                 _jobStatisticsService,
-                toggleProvider: null,
                 agentValidator: _agentValidator,
                 integrationPointService: _integrationPointService,
                 documentRepository: _documentRepository,
                 exportDataSanitizer: _exportDataSanitizer,
+                Substitute.For<ILogger<ExportServiceManager>>(),
                 diagnosticLog: new EmptyDiagnosticLog());
             _managerFactory.CreateJobHistoryManager().Returns(_historyManager);
         }
@@ -453,11 +448,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _documentRepository,
                 _exportDataSanitizer);
             _jobHistoryErrorRepository.Received(0).DeleteItemLevelErrorsSavedSearch(Arg.Any<int>());
-            _logger.LogError(
-                exception,
-                "Failed to delete temp Saved Search {SavedSearchArtifactId}.",
-                _configuration.SavedSearchArtifactId
-            );
         }
 
         [TestCase(JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None, JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.Run)]
@@ -507,11 +497,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _jobHistoryService,
                 _jobHistoryErrorService,
                 _jobStatisticsService,
-                null,
                 _agentValidator,
                 _integrationPointService,
                 _documentRepository,
                 _exportDataSanitizer,
+                Substitute.For<ILogger<ExportServiceManager>>(),
                 diagnosticLog);
             try
             {

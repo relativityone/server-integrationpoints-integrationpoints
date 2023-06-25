@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
 using Relativity.Services.ResourceServer;
@@ -19,11 +20,11 @@ namespace kCura.IntegrationPoints.Core.Storage
 
         private readonly IHelper _helper;
         private readonly IKeplerServiceFactory _serviceFactory;
-        private readonly IAPILog _logger;
+        private readonly ILogger<RelativityStorageService> _logger;
 
         private IStorageAccess<string> _storageAccess;
 
-        public RelativityStorageService(IHelper helper, IKeplerServiceFactory serviceFactory, IAPILog logger)
+        public RelativityStorageService(IHelper helper, IKeplerServiceFactory serviceFactory, ILogger<RelativityStorageService> logger)
         {
             _helper = helper;
             _serviceFactory = serviceFactory;

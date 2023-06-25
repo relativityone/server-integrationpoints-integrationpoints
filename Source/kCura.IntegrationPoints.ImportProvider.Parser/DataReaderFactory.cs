@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
 using kCura.IntegrationPoints.Core.Models;
@@ -11,7 +12,6 @@ using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly ISerializer _serializer;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
         private readonly IDiagnosticLog _diagnosticLogger;
-        private readonly IAPILog _logger;
+        private readonly ILogger<DataReaderFactory> _logger;
 
         public DataReaderFactory(
             IFieldParserFactory fieldParserFactory,
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             ISerializer serializer,
             IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
             IDiagnosticLog diagnosticLogger,
-            IAPILog logger)
+            ILogger<DataReaderFactory> logger)
         {
             _fieldParserFactory = fieldParserFactory;
             _winEddsLoadFileFactory = winEddsLoadFileFactory;

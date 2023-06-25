@@ -7,6 +7,7 @@ using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
@@ -318,6 +319,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 IManagerFactory managerFactory,
                 IEnumerable<IBatchStatus> batchStatuses,
                 IAgentValidator agentValidator,
+                ILogger<SyncManager> logger,
                 IDiagnosticLog diagnosticLog)
                     : base(
                         caseServiceContext,
@@ -334,6 +336,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                         managerFactory,
                         batchStatuses,
                         agentValidator,
+                        logger,
                         diagnosticLog)
             {
             }

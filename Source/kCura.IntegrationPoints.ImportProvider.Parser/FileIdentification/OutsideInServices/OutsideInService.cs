@@ -1,8 +1,8 @@
 using System;
 using System.IO;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using OutsideIn;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices
 {
@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.Outsi
     {
         private readonly IExporterFactory _exporterFactory;
         private readonly IRetryHandler _retryHandler;
-        private readonly IAPILog _logger;
+        private readonly ILogger<OutsideInService> _logger;
 
-        public OutsideInService(IExporterFactory exporterFactory, IRetryHandler retryHandler, IAPILog logger)
+        public OutsideInService(IExporterFactory exporterFactory, IRetryHandler retryHandler, ILogger<OutsideInService> logger)
         {
             _exporterFactory = exporterFactory;
             _retryHandler = retryHandler;

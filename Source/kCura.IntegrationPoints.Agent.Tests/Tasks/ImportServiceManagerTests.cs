@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Objects;
@@ -37,7 +38,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
-using Moq;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -211,6 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IRipToggleProvider>(),
                 Substitute.For<IFileIdentificationService>(),
                 Substitute.For<IDataTransferLocationService>(),
+                Substitute.For<ILogger<ImportServiceManager>>(),
                 new EmptyDiagnosticLog());
         }
 

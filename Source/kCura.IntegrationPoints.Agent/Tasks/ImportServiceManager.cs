@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core;
@@ -54,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IRipToggleProvider _toggleProvider;
         private readonly IFileIdentificationService _fileIdentificationService;
         private readonly IDataTransferLocationService _dataTransferLocationService;
+        private readonly ILogger<ImportServiceManager> _logger;
         private readonly object _syncRoot = new object();
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
         public const string RAW_STATE_COMPLETE = "complete";
@@ -84,6 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IRipToggleProvider toggleProvider,
             IFileIdentificationService fileIdentificationService,
             IDataTransferLocationService dataTransferLocationService,
+            ILogger<ImportServiceManager> logger,
             IDiagnosticLog diagnosticLog)
             : base(
                 helper,
@@ -99,6 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 synchronizerFactory,
                 agentValidator,
                 integrationPointService,
+                logger.ForContext<ServiceManagerBase>(),
                 diagnosticLog)
         {
             _helper = helper;
@@ -106,12 +110,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _dataReaderFactory = dataReaderFactory;
             _importFileLocationService = importFileLocationService;
             _jobStatusUpdater = jobStatusUpdater;
-            Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
             _automatedWorkflowsManager = automatedWorkflowsManager;
             _jobTracker = jobTracker;
             _toggleProvider = toggleProvider;
             _fileIdentificationService = fileIdentificationService;
             _dataTransferLocationService = dataTransferLocationService;
+            _logger = logger;
         }
 
         public override void Execute(Job job)
@@ -235,11 +239,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 }
 
                 watch.Stop();
-                Logger.LogInformation("Files metadata gathered within {seconds} seconds", watch.Elapsed.Seconds);
+                _logger.LogInformation("Files metadata gathered within {seconds} seconds", watch.Elapsed.Seconds);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Failed to gather file metadata", ex);
+                _logger.LogError("Failed to gather file metadata", ex);
             }
         }
 
@@ -251,7 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void RemoveTrackingEntry(Job job, Guid batchId, bool isBatchFinished)
         {
-            Logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished)  ;
+            _logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished)  ;
             _jobTracker.CheckEntries(job, batchId.ToString(), isBatchFinished);
         }
 
@@ -272,7 +276,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             if (IsDrainStopped())
             {
-                Logger.LogInformation("ImportServiceManager job {jobId} was DrainStopped.", job.JobId);
+                _logger.LogInformation("ImportServiceManager job {jobId} was DrainStopped.", job.JobId);
                 if (AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
                 {
                     UpdateJobWithProcessedItemsCount(job, processedItemsCount);
@@ -285,7 +289,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void UpdateJobWithProcessedItemsCount(Job job, int processedItemsCount)
         {
-            Logger.LogInformation("Update Job Details {jobId} with processed items {processedItemsCount}", job.JobId, processedItemsCount);
+            _logger.LogInformation("Update Job Details {jobId} with processed items {processedItemsCount}", job.JobId, processedItemsCount);
             TaskParameters updatedTaskParameters = UpdateJobDetails(job, processedItemsCount);
             job.JobDetails = Serializer.Serialize(updatedTaskParameters);
             JobService.UpdateJobDetails(job);
@@ -317,7 +321,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             long totalItems = (jobHistory.TotalItems ?? int.MaxValue);
 
-            Logger.LogInformation("Checking if some documents left to process {processedItemsCount}/{totalItemsCount}", processedItemCount, totalItems);
+            _logger.LogInformation("Checking if some documents left to process {processedItemsCount}/{totalItemsCount}", processedItemCount, totalItems);
 
             return processedItemCount < totalItems;
         }
@@ -342,11 +346,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                Logger.LogInformation("For workspace artifact ID : {AutomatedWorkflow.DestinationWorkspaceArtifactId} {AutomatedWorkflow.TriggerName} trigger {AutomatedWorkflow.TriggerValue} called with status {AutomatedWorkflow.Status}.", workspaceId, triggerName, RAW_TRIGGER_INPUT_VALUE, state);
+                _logger.LogInformation("For workspace artifact ID : {AutomatedWorkflow.DestinationWorkspaceArtifactId} {AutomatedWorkflow.TriggerName} trigger {AutomatedWorkflow.TriggerValue} called with status {AutomatedWorkflow.Status}.", workspaceId, triggerName, RAW_TRIGGER_INPUT_VALUE, state);
 
                 if (!await IsAutomatedWorkflowsInstalledAsync(workspaceId).ConfigureAwait(false))
                 {
-                    Logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " isn't installed in workspace {workspaceArtifactId}.", workspaceId);
+                    _logger.LogInformation(_AUTOMATED_WORKFLOWS_APPLICATION_NAME + " isn't installed in workspace {workspaceArtifactId}.", workspaceId);
 
                     return;
                 }
@@ -369,12 +373,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     await _automatedWorkflowsManager.SendTriggerAsync(workspaceId, triggerName, body).ConfigureAwait(false);
                 }).ConfigureAwait(false);
 
-                Logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workspaceId, triggerName);
+                _logger.LogInformation("For workspace : {0} trigger {1} finished sending.", workspaceId, triggerName);
             }
             catch (Exception ex)
             {
                 string message = "Error occured while executing trigger : {0} for workspace artifact ID : {1}";
-                Logger.LogError(ex, message, triggerName, workspaceId);
+                _logger.LogError(ex, message, triggerName, workspaceId);
             }
         }
 
@@ -471,12 +475,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
             LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration);
 
-            Logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
+            _logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
                 currentLoadFile, storedLoadFileParameters);
 
             if (storedLoadFileParameters == null)
             {
-                Logger.LogWarning("TaskParameters doesn't contain LoadFile parameters, but should.");
+                _logger.LogWarning("TaskParameters doesn't contain LoadFile parameters, but should.");
                 UpdateJobWithLoadFileDetails(job, currentLoadFile);
             }
             else
@@ -508,7 +512,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void UpdateJobWithLoadFileDetails(Job job, LoadFileInfo loadFile)
         {
-            Logger.LogInformation("Updating Job {jobId} details with LoadFileInfo {@loadFile}", job.JobId, loadFile);
+            _logger.LogInformation("Updating Job {jobId} details with LoadFileInfo {@loadFile}", job.JobId, loadFile);
             TaskParameters taskParameters = GetTaskParameters(job);
             taskParameters.BatchParameters = new LoadFileTaskParameters
             {
@@ -523,7 +527,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ValidateLoadFileHasNotChanged(LoadFileTaskParameters storedLoadFileParameters, LoadFileInfo currentLoadFile)
         {
-            Logger.LogInformation("Validating if LoadFile has not changed since the job was scheduled...");
+            _logger.LogInformation("Validating if LoadFile has not changed since the job was scheduled...");
             if (currentLoadFile.Size != storedLoadFileParameters.Size || currentLoadFile.LastModifiedDate != storedLoadFileParameters.LastModifiedDate)
             {
                 ValidationResult result = new ValidationResult(false, "Load File has been modified.");
@@ -540,37 +544,37 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         #region Logging
         private void LogExecuteFinalize(Job job)
         {
-            Logger.LogInformation("Finalized execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+            _logger.LogInformation("Finalized execution of job in Import Service Manager. job: {JobId}.", job.JobId);
         }
 
         private void LogExecuteSuccesfulEnd(Job job)
         {
-            Logger.LogInformation("Succesfully finished execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+            _logger.LogInformation("Succesfully finished execution of job in Import Service Manager. job: {JobId}.", job.JobId);
         }
 
         private void LogExecuteStart(Job job)
         {
-            Logger.LogInformation("Starting execution of job in Import Service Manager. job: {JobId}.", job.JobId);
+            _logger.LogInformation("Starting execution of job in Import Service Manager. job: {JobId}.", job.JobId);
         }
 
         private void LogGetImportApiSettingsObjectForUserSuccesfulEnd(Job job)
         {
-            Logger.LogInformation("Succesfully finished getting Import API settings for user. job: {JobId}.", job.JobId);
+            _logger.LogInformation("Succesfully finished getting Import API settings for user. job: {JobId}.", job.JobId);
         }
 
         private void LogGetImportApiSettingsObjectForUserStart(Job job)
         {
-            Logger.LogInformation("Getting Import API settings for user. job: {JobId}.", job.JobId);
+            _logger.LogInformation("Getting Import API settings for user. job: {JobId}.", job.JobId);
         }
 
         private void LogUpdateSourceRecordSuccesfulEnd()
         {
-            Logger.LogInformation("Succesfully finished updating source record count.");
+            _logger.LogInformation("Succesfully finished updating source record count.");
         }
 
         private void LogUpdateSourceRecordCountStart()
         {
-            Logger.LogInformation("Started updating source record count.");
+            _logger.LogInformation("Started updating source record count.");
         }
         #endregion
     }

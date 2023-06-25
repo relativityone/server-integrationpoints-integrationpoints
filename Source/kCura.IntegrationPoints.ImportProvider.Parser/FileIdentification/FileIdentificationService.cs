@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices;
 using OutsideIn;
-using Relativity.API;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
@@ -22,14 +22,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         private readonly IRelativityStorageService _relativityStorageService;
         private readonly IFileMetadataCollector _fileMetadataCollector;
 
-        private readonly IAPILog _logger;
+        private readonly ILogger<FileIdentificationService> _logger;
         private readonly IDiagnosticLog _diagnosticLogger;
 
         public FileIdentificationService(
             IOutsideInService outsideInService,
             IFileMetadataCollector fileMetadataCollector,
             IRelativityStorageService relativityStorageService,
-            IAPILog logger,
+            ILogger<FileIdentificationService> logger,
             IDiagnosticLog diagnosticLogger)
         {
             _outsideInService = outsideInService;
