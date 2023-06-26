@@ -16,8 +16,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
         public RelativityProviderSources Source { get; } = RelativityProviderSources.SavedSearch;
 
         public string SavedSearch { get; set; }
-
-        public YesNo TagDocumentsWithJobName { get; set; }
     }
 
     internal class RelativityProviderConnectToProductionSource : RelativityProviderConnectToSource
