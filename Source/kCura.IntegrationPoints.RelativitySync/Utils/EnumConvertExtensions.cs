@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Sync.Configuration;
 
-using SyncFieldMapType = Relativity.Sync.Storage.FieldMapType;
-
 namespace kCura.IntegrationPoints.RelativitySync.Utils
 {
     public static class EnumConvertExtensions
@@ -34,17 +32,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Utils
                     return ImportNativeFileCopyMode.DoNotImportNativeFiles;
                 default:
                     throw new InvalidEnumArgumentException(nameof(importNativeFileCopyMode));
-            }
-        }
-
-        public static SyncFieldMapType ToSyncFieldMapType(this FieldMapTypeEnum fieldMapType)
-        {
-            switch (fieldMapType)
-            {
-                case FieldMapTypeEnum.Identifier:
-                    return SyncFieldMapType.Identifier;
-                default:
-                    return SyncFieldMapType.None;
             }
         }
 

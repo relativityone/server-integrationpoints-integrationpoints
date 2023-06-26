@@ -21,5 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         Guid JobIdentifier { get; }
 
         int JobHistoryId { get; }
+
+        string ExecutingApplication { get; }
     }
 }

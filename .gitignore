@@ -97,7 +97,7 @@ buildtools/
 *.runsettings
 FunctionalTestSettings
 .idea/
-/package-lock.json
+package-lock.json
 .dccache
 node_modules/
 Source/kCura.IntegrationPoints.Web/package-lock.json
