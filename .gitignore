@@ -100,5 +100,3 @@ FunctionalTestSettings
 package-lock.json
 .dccache
 node_modules/
-Source/kCura.IntegrationPoints.Web/package-lock.json
-Source/kCura.IntegrationPoints.Web/Scripts/RelativityForms/package-lock.json
