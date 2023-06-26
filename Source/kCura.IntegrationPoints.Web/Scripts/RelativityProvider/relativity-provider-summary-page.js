@@ -93,10 +93,8 @@ var loadData = function (ko, dataContainer) {
 			return self.productionPrecedence() +  self.imagePrecedence();
 		}, self);
 		this.copyFilesToRepository = formatToYesOrNo(dataContainer.destinationConfiguration.importNativeFile);
-		this.createSavedSearch = formatToYesOrNo(dataContainer.destinationConfiguration.CreateSavedSearchForTagging);
-		this.enableTagging = formatToYesOrNo(dataContainer.destinationConfiguration.EnableTagging);
-		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration, dataContainer.destinationConfiguration);
-		
+		this.createSavedSearch = formatToYesOrNo(dataContainer.destinationConfiguration.CreateSavedSearchForTagging);		
+		this.stats = new SavedSearchStatistics(dataContainer.sourceConfiguration, dataContainer.destinationConfiguration);		
 	};
 
 	var viewModel = new Model(dataContainer);

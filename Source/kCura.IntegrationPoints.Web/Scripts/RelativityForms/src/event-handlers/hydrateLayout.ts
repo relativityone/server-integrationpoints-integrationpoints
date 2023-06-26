@@ -125,11 +125,25 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
         })   
 
         convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));
-        convenienceApi.fieldHelper.setValue("Tag Documents", formatToYesOrNo(destinationConfiguration["EnableTagging"]));
+        convenienceApi.fieldHelper.setValue("Tag Documents", convertTaggingOptionValueForUser(destinationConfiguration));
     }
 }
 
 function importImageFiles(destinationConfiguration: Object) {
     return (destinationConfiguration["ImageImport"] == 'true' && (!destinationConfiguration["ImagePrecedence"] || destinationConfiguration["ImagePrecedence"].length == 0));
+}
+
+function convertTaggingOptionValueForUser(destinationConfiguration: Object) {
+    let output = "";
+    if (destinationConfiguration["TaggingOption"] == "Enabled") {
+        output = "Yes (Source and Destination Workspaces)";
+    }
+    else if (destinationConfiguration["TaggingOption"] == "DestinationOnly") {
+        output = "Yes (Destination Workspace Only)";
+    }
+    else {
+        output = "No";
+    }
+    return output;
 }
 

@@ -161,8 +161,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
                 case RelativityProviderSources.SavedSearch:
                     relativityProviderConnectToSource = new RelativityProviderConnectToSavedSearchSource
                     {
-                        SavedSearch = savedSearchName,
-                        TagDocumentsWithJobName = YesNo.Yes,
+                        SavedSearch = savedSearchName
                     };
                     break;
                 case RelativityProviderSources.Production:

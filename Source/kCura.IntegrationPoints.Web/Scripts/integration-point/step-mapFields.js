@@ -193,8 +193,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = model.SecuredConfiguration;
 		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
-
-		self.EnableTagging = ko.observable(destinationModel.EnableTagging);
+        
+        self.TaggingOption = ko.observable(destinationModel.TaggingOption);
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -303,8 +303,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ImageImport = ko.observable(model.ImageImport || "false");
 
 		let isSmartOverwriteToggleEnabled = IP.data.params['EnableSmartOverwriteFeatureToggleValue'];
-		self.IsSmartOverwriteVisible = ko.observable(isSmartOverwriteToggleEnabled && this.IsRelativityProvider() && !isNonDocumentObjectFlow);
-		self.IsSmartOverwriteControlEnabled = ko.observable(self.EnableTagging() === "false" && self.ImageImport() === "false");
+		self.IsSmartOverwriteVisible = ko.observable(isSmartOverwriteToggleEnabled && this.IsRelativityProvider() && !isNonDocumentObjectFlow);        
+        self.IsSmartOverwriteControlEnabled = ko.observable(self.TaggingOption() !== "Enabled" && self.ImageImport() === "false");
 		self.UseSmartOverwrite = ko.observable(model.UseSmartOverwrite || false);
 
 		this.CheckRelativityProviderExportType = function (exportType) {
@@ -380,8 +380,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 				root.utils.UI.disable("#fieldMappings", false);
 				self.ImportNativeFileCopyModeEnabled("true");
-				self.importNativeFileCopyMode("DoNotImportNativeFiles");
-				self.IsSmartOverwriteControlEnabled(self.EnableTagging() === "false");
+				self.importNativeFileCopyMode("DoNotImportNativeFiles");                
+                self.IsSmartOverwriteControlEnabled(self.TaggingOption() !== "Enabled");
 			}
 		});
 
@@ -1382,8 +1382,8 @@ ko.validation.insertValidationMessage = function (element) {
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
-					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
-					_destination.EnableTagging = this.model.EnableTagging();
+					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();                    
+                    _destination.TaggingOption = this.model.TaggingOption();
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {
@@ -1416,8 +1416,8 @@ ko.validation.insertValidationMessage = function (element) {
 				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
-				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
-				this.returnModel.EnableTagging = this.model.EnableTagging();
+				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;                
+                this.returnModel.TaggingOption = this.model.TaggingOption();
 
 				if (this.model.IsRelativityProvider()) {
 
