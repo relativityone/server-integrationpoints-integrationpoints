@@ -92,9 +92,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IDataTransferLocationService ls = Substitute.For<IDataTransferLocationService>();
             ls.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).Returns(_testDataDirectory);
             lsFactory.CreateService(Arg.Any<int>()).Returns(ls);
-            _windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
 
+            _windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
             _windsorContainer.Register(Component.For<IRelativityObjectManager>().Instance(ObjectManager));
+            _windsorContainer.Register(
+                Component.For<IReadOnlyFileMetadataStore, IFileMetadataCollector>()
+                .Instance(Substitute.For<IReadOnlyFileMetadataStore, IFileMetadataCollector>())
+                .LifestyleSingleton());
 
             // TestRdoSynchronizer
             TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(

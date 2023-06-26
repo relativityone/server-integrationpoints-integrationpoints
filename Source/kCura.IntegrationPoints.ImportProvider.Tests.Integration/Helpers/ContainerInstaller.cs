@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
@@ -72,6 +73,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
             windsorContainer.Register(Component.For<IAPILog>().Instance(Substitute.For<IAPILog>()).LifestyleSingleton());
             windsorContainer.Register(Component.For<ISerilogLoggerInstrumentationService>().Instance(Substitute.For<ISerilogLoggerInstrumentationService>()).LifestyleSingleton());
             windsorContainer.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
+            windsorContainer.Register(Component.For<IDiagnosticLog>().Instance(Substitute.For<IDiagnosticLog>()).LifestyleSingleton());
         }
 
         private static void RegisterSerializer(WindsorContainer windsorContainer)
@@ -87,7 +89,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
             windsorContainer.Register(Component.For<IRelativityTokenProvider>().ImplementedBy<RelativityTokenProvider>().LifestyleTransient());
             windsorContainer.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifestyleTransient());
             windsorContainer.Register(Component.For<IImportJobFactory>().ImplementedBy<ImportJobFactory>().LifestyleTransient());
-
         }
 
         private static void RegisterConfig(WindsorContainer windsorContainer)
