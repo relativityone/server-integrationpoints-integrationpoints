@@ -19,3 +19,5 @@ Relativity.OAuth2Client.Interfaces
 SystemWrapper.Wrappers
 iTextSharp
 Relativity.HostingBridge.SDK
+Relativity.Storage
+Relativity.Storage.Extensions

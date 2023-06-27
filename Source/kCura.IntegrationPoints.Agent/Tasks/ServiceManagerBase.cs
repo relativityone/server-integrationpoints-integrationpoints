@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -31,8 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     public abstract class ServiceManagerBase : ITaskWithJobHistory
     {
         private readonly IAgentValidator _agentValidator;
-
-        protected IAPILog Logger { get; set; }
+        private readonly ILogger<ServiceManagerBase> _logger;
 
         protected IJobService JobService { get; }
 
@@ -82,10 +82,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             ISynchronizerFactory synchronizerFactory,
             IAgentValidator agentValidator,
             IIntegrationPointService integrationPointService,
+            ILogger<ServiceManagerBase> logger,
             IDiagnosticLog diagnosticLog)
         {
             _agentValidator = agentValidator;
-            Logger = helper.GetLoggerFactory().GetLogger().ForContext<ServiceManagerBase>();
+            _logger = logger;
             JobService = jobService;
             Serializer = serializer;
             JobHistoryService = jobHistoryService;
@@ -391,7 +392,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected void HandleGenericException(Exception ex, Job job)
         {
-            AgentExceptionHelper.HandleException(JobHistoryErrorService, JobHistoryService, Logger, ex, job, Result, JobHistory);
+            AgentExceptionHelper.HandleException(JobHistoryErrorService, JobHistoryService, _logger.ForContext<AgentExceptionHelper>(), ex, job, Result, JobHistory);
         }
 
         protected virtual void RunValidation(Job job)
@@ -406,110 +407,110 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             foreach (Exception ex in exceptions)
             {
-                Logger.LogError(ex, "There was a problem while configuring batch exceptions for job: {JobId}.", job.JobId);
+                _logger.LogError(ex, "There was a problem while configuring batch exceptions for job: {JobId}.", job.JobId);
             }
         }
 
         protected virtual void LogJobStoppedException(Job job, OperationCanceledException e)
         {
-            Logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
+            _logger.LogInformation(e, "Job {JobId} has been stopped.", job.JobId);
         }
 
         protected virtual void LogSettingJobAsUnstoppableError(Job job, Exception e)
         {
-            Logger.LogError(e, "Failed to set job state as unstoppable for job {JobId}.", job.JobId);
+            _logger.LogError(e, "Failed to set job state as unstoppable for job {JobId}.", job.JobId);
         }
 
         protected virtual void LogUpdatingStoppedJobStatusError(Job job, Exception exception)
         {
-            Logger.LogError(exception, "Failed to update job ({JobId}) status after job has been stopped.", job.JobId);
+            _logger.LogError(exception, "Failed to update job ({JobId}) status after job has been stopped.", job.JobId);
         }
 
         protected virtual void LogCompletingJobError(Job job, Exception exception, IBatchStatus batchStatus)
         {
-            Logger.LogError(exception, "Failed to complete job {JobId}. Error occured in BatchStatus {BatchStatusType}.", job.JobId, batchStatus.GetType());
+            _logger.LogError(exception, "Failed to complete job {JobId}. Error occured in BatchStatus {BatchStatusType}.", job.JobId, batchStatus.GetType());
         }
 
         protected virtual void LogUpdatingIntegrationPointRuntimesError(Job job, Exception e)
         {
-            Logger.LogError(e, "Failed to update Integration Point runtimes for job {JobId}.", job.JobId);
+            _logger.LogError(e, "Failed to update Integration Point runtimes for job {JobId}.", job.JobId);
         }
 
         protected virtual void LogLoadingIntegrationPointDtoError(Job job)
         {
-            Logger.LogError("Failed to retrieve corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
+            _logger.LogError("Failed to retrieve corresponding Integration Point ({IntegrationPointId}) for job {JobId}.", job.RelatedObjectArtifactID, job.JobId);
         }
 
         private void LogInitializeServiceEnd(Job job)
         {
-            Logger.LogInformation("Finished initializing service for job: {JobId}", job.JobId);
+            _logger.LogInformation("Finished initializing service for job: {JobId}", job.JobId);
         }
 
         private void LogInitializeServiceStart(Job job)
         {
-            Logger.LogInformation("Initializing service for job: {JobId}", job.JobId);
+            _logger.LogInformation("Initializing service for job: {JobId}", job.JobId);
         }
 
         private void LogFinalizeServiceEnd(Job job)
         {
-            Logger.LogInformation("Finalized service for job: {JobId}", job.JobId);
+            _logger.LogInformation("Finalized service for job: {JobId}", job.JobId);
         }
 
         private void LogFinalizeServiceStart(Job job)
         {
-            Logger.LogInformation("Started finalizing service for job: {JobId}", job.JobId);
+            _logger.LogInformation("Started finalizing service for job: {JobId}", job.JobId);
         }
 
         private void LogLoadIntegrationPointDtoSuccessfulEnd(Job job)
         {
-            Logger.LogInformation("Successfully loaded integration point DTO for job : {JobId}", job.JobId);
+            _logger.LogInformation("Successfully loaded integration point DTO for job : {JobId}", job.JobId);
         }
 
         private void LogLoadInformationPointDtoStart(Job job)
         {
-            Logger.LogInformation("Loading integration point DTO for job: {JobId}", job.JobId);
+            _logger.LogInformation("Loading integration point DTO for job: {JobId}", job.JobId);
         }
 
         private void LogUpdateIntegrationPointRuntimesSuccessfulEnd(Job job)
         {
-            Logger.LogInformation("Successfully updated integration point runtimes for job: {JobId}", job.JobId);
+            _logger.LogInformation("Successfully updated integration point runtimes for job: {JobId}", job.JobId);
         }
 
         private void LogUpdateIntegrationPointRuntimesStart(Job job)
         {
-            Logger.LogInformation("Trying to update integration point runtimes for job: {JobId}", job.JobId);
+            _logger.LogInformation("Trying to update integration point runtimes for job: {JobId}", job.JobId);
         }
 
         private void LogSetJobStateAsUnstoppable(Job job)
         {
-            Logger.LogInformation("Updating job state to Unstoppable, job: {JobId}", job.JobId);
+            _logger.LogInformation("Updating job state to Unstoppable, job: {JobId}", job.JobId);
         }
 
         private void LogLoadSourceProviderStart()
         {
-            Logger.LogInformation("Loading source provider in Service Manager Base.");
+            _logger.LogInformation("Loading source provider in Service Manager Base.");
         }
 
         private void LogLoadSourceProviderEnd()
         {
-            Logger.LogInformation("Finished loading source provider in Service Manager Base.");
+            _logger.LogInformation("Finished loading source provider in Service Manager Base.");
         }
 
         private void LogConfigureBatchExceptionsSuccessfulEnd(Job job)
         {
-            Logger.LogInformation("Successfully configured batch exceptions for job: {JobId}", job.JobId);
+            _logger.LogInformation("Successfully configured batch exceptions for job: {JobId}", job.JobId);
         }
 
         private void LogConfigureBatchExceptionsStart(Job job)
         {
-            Logger.LogInformation("Started configuring batch exceptions for job: {JobId}", job.JobId);
+            _logger.LogInformation("Started configuring batch exceptions for job: {JobId}", job.JobId);
         }
 
         private IntegrationPointsException LogCreateDestinationProviderError(Exception e)
         {
             string message = "Error occurred when creating destination provider";
             var exc = new IntegrationPointsException(message, e);
-            Logger.LogError(exc, exc.Message);
+            _logger.LogError(exc, exc.Message);
             return exc;
         }
 
@@ -518,7 +519,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             string message = $"Error occurred when updating job status for job with ID: {jobHistory.JobID}";
             string template = "Error occurred when updating job status for job with ID: {JobID}";
             var exc = new IntegrationPointsException(message, e);
-            Logger.LogError(exc, template, jobHistory);
+            _logger.LogError(exc, template, jobHistory);
             return exc;
         }
 

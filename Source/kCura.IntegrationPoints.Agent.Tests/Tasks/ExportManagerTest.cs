@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -76,6 +77,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 new List<IBatchStatus>(),
                 _exportInitProcessService,
                 agentValidator,
+                Substitute.For<ILogger<ExportManager>>(),
                 Substitute.For<IDiagnosticLog>());
         }
 

@@ -48,6 +48,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                     if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
                     {
                         RegisterField(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, map.SourceField.FieldIdentifier);
+                        RegisterField(Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD);
+                        RegisterField(Constants.SPECIAL_FILE_TYPE_FIELD_NAME, Constants.SPECIAL_FILE_TYPE_FIELD);
+                        RegisterField(Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD_NAME, Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD);
                     }
                     else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
                     {
@@ -73,6 +76,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             RegisterSpecialField(columns, Constants.SPECIAL_FILE_NAME_FIELD_NAME, Constants.SPECIAL_FILE_NAME_FIELD);
             RegisterSpecialField(columns, Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, Constants.SPECIAL_SOURCEWORKSPACE_FIELD);
             RegisterSpecialField(columns, Constants.SPECIAL_SOURCEJOB_FIELD_NAME, Constants.SPECIAL_SOURCEJOB_FIELD);
+
+            RegisterSpecialField(columns, Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD_NAME, Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD);
         }
 
         private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifier)
