@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.6.0] - 06-20-2023
+
+### Changed
+
+- [REL-848321](https://jira.kcura.com/browse/REL-848321) - backport changes implemented - Backported [REL-673577](https://jira.kcura.com/browse/REL-673577) ticket from Server 2022. 
+
 ## [12.5.0] - 06-07-2023
 
 ### Added
