@@ -51,7 +51,7 @@ nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.20.25
-nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
+nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
 nuget Relativity.Transfer.Client ~> 8.0.0-pre.66
 
 //Relativity transient packages
