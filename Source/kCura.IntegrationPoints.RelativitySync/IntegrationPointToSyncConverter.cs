@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             if (!_toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle"))
             {
-                destinationConfiguration.EnableTagging = true;
+                destinationConfiguration.TaggingOption = TaggingOptionEnum.Enabled;
             }
 
             if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
