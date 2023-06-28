@@ -102,6 +102,8 @@ nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
+nuget Azure.Security.KeyVault.Secrets ~> 4.3.0
+
 group Tests
 framework: auto-detect
 strategy: min
@@ -145,7 +147,9 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.51
+nuget Relativity.Sync 1.0.52
+
+nuget Azure.Security.KeyVault.Secrets ~> 4.3.0
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -153,12 +157,17 @@ nuget Relativity.IntegrationPoints.Contracts 1.0.9
 nuget Relativity.IntegrationPoints.SDK 1.0.9
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 
+nuget Relativity.Storage 1.7.3
+nuget Relativity.Storage.Extensions 1.7.3
+
+nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
+
 group Sync
 framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.51
+nuget Relativity.Sync 1.0.52
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
@@ -172,3 +181,9 @@ nuget Relativity.Telemetry.APM 2019.1.1
 nuget SystemWrapper.Interfaces 0.25.0.186
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
+
+nuget Relativity.Storage 1.7.3
+nuget Relativity.Storage.Extensions 1.7.3
+
+nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
+nuget Azure.Security.KeyVault.Secrets ~> 4.3.0
