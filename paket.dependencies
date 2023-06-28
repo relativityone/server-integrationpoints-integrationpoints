@@ -51,7 +51,7 @@ nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.20.25
-nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
+nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
 nuget Relativity.Transfer.Client ~> 8.0.0-pre.66
 
 //Relativity transient packages
@@ -160,8 +160,6 @@ nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 nuget Relativity.Storage 1.7.3
 nuget Relativity.Storage.Extensions 1.7.3
 
-nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
-
 group Sync
 framework: auto-detect
 strategy: min
@@ -185,5 +183,4 @@ nuget Relativity.OAuth2Client.Interfaces 1.5.3
 nuget Relativity.Storage 1.7.3
 nuget Relativity.Storage.Extensions 1.7.3
 
-nuget Relativity.DataTransfer.Legacy.SDK 0.3.38
 nuget Azure.Security.KeyVault.Secrets ~> 4.3.0
