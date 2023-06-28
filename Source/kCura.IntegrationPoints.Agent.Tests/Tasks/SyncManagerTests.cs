@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -112,7 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance = new SyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
                 _integrationPointService, _serializer, guidService, _jobHistoryService,
                 _jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
-                batchStatuses, _agentValidator, new EmptyDiagnosticLog())
+                batchStatuses, _agentValidator, Substitute.For<ILogger<SyncManager>>(), new EmptyDiagnosticLog())
             {
                 BatchInstance = _batchInstance,
                 IntegrationPointDto = _integrationPoint
@@ -160,6 +161,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
+                Substitute.For<ILogger<SyncManager>>(),
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob(null);
 
@@ -192,6 +194,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
+                Substitute.For<ILogger<SyncManager>>(),
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = _jobGuidValue }));
 
@@ -224,6 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
+                Substitute.For<ILogger<SyncManager>>(),
                 diagnosticLog: new EmptyDiagnosticLog());
             Job job = GetJob("BAD_GUID");
 
@@ -636,7 +640,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 IManagerFactory managerFactory,
                 IEnumerable<IBatchStatus> batchStatuses,
                 IAgentValidator agentValidator) : base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService,
-                jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, new EmptyDiagnosticLog())
+                jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, Substitute.For<ILogger<SyncManager>>(), new EmptyDiagnosticLog())
             {
             }
 

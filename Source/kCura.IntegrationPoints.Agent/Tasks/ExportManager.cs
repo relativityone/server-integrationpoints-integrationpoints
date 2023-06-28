@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     public class ExportManager : SyncManager
     {
         private readonly IExportInitProcessService _exportInitProcessService;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExportManager> _logger;
 
         public override int BatchSize
         {
@@ -42,7 +43,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobService jobService,
             IHelper helper,
             IIntegrationPointService integrationPointService,
-            ISerializer serializer, IGuidService guidService,
+            ISerializer serializer,
+            IGuidService guidService,
             IJobHistoryService jobHistoryService,
             IJobHistoryErrorService jobHistoryErrorService,
             IScheduleRuleFactory scheduleRuleFactory,
@@ -50,13 +52,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IEnumerable<IBatchStatus> batchStatuses,
             IExportInitProcessService exportInitProcessService,
             IAgentValidator agentValidator,
+            ILogger<ExportManager> logger,
             IDiagnosticLog diagnosticLog)
             : base(
-                caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
-                scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, diagnosticLog)
+                caseServiceContext,
+                providerFactory,
+                jobManager,
+                jobService,
+                helper,
+                integrationPointService,
+                serializer,
+                guidService,
+                jobHistoryService,
+                jobHistoryErrorService,
+                scheduleRuleFactory,
+                managerFactory,
+                batchStatuses,
+                agentValidator,
+                logger.ForContext<SyncManager>(),
+                diagnosticLog)
         {
             _exportInitProcessService = exportInitProcessService;
-            _logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
+            _logger = logger;
         }
 
         protected override TaskType GetTaskType()

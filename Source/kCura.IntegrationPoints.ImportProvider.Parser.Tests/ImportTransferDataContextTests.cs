@@ -21,9 +21,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Tests
         {
             _dataReader = Substitute.For<IDataReader>();
             IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
-            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<IJobStopManager>()).Returns(_dataReader);
+            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), Arg.Any<bool>()).Returns(_dataReader);
 
-            _instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>(), Arg.Any<IJobStopManager>());
+            _instance = new ImportTransferDataContext(dataReaderFactory, string.Empty, new List<FieldMap>(), Arg.Any<IJobStopManager>(), Arg.Any<bool>());
         }
 
         [Test]

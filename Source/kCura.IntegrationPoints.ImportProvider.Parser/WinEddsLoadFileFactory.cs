@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Net;
 using System.IO;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.Core.Services;

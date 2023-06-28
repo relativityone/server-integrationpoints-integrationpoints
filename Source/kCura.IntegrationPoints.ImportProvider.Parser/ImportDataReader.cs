@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS.Api;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
-    public class ImportDataReader : DataReaderBase, IArtifactReader
+    public class ImportDataReader : DataReaderBase, IArtifactReader, INativeFilePathReader
     {
         private bool _isClosed;
-        private readonly IDataReader _sourceDataReader;
+        private readonly LoadFileDataReader _sourceDataReader;
         private readonly Dictionary<int, int> _ordinalMap; // map publicly available ordinals ==> source data reader ordinals
         private readonly DataTable _schemaTable;
 
-        public ImportDataReader(IDataReader sourceDataReader)
+        public ImportDataReader(LoadFileDataReader sourceDataReader)
         {
             _isClosed = false;
             _sourceDataReader = sourceDataReader;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 {
                     // Add special folder path column
                     AddColumn(
-                        kCura.IntegrationPoints.Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
+                        Domain.Constants.SPECIAL_FOLDERPATH_FIELD,
                         sourceOrdinal,
                         curColIdx++);
 
@@ -52,9 +53,30 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 {
                     // Add special native file path column
                     AddColumn(
-                        kCura.IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+                        Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
                         sourceOrdinal,
                         curColIdx++);
+
+                    if (_sourceDataReader.HasExtraNativeColumns)
+                    {
+                        // Add special file size column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD,
+                            Domain.Constants.SPECIAL_FILE_SIZE_INDEX,
+                            curColIdx++);
+
+                        // Add special file size column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_FILE_TYPE_FIELD,
+                            Domain.Constants.SPECIAL_FILE_TYPE_INDEX,
+                            curColIdx++);
+
+                        // Add special OI file type id column
+                        AddColumn(
+                            Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_FIELD,
+                            Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX,
+                            curColIdx++);
+                    }
 
                     if (cur.DestinationField.FieldIdentifier != null)
                     {
@@ -101,6 +123,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             return _schemaTable;
         }
 
+        public string GetCurrentNativeFilePath()
+        {
+            return _sourceDataReader.GetCurrentNativeFilePath();
+        }
+
         public override int FieldCount => _schemaTable.Columns.Count;
 
         public override bool IsClosed => _isClosed;
@@ -119,7 +146,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             }
 
             return _sourceDataReader.Read();
-
         }
 
         public override string GetDataTypeName(int i)

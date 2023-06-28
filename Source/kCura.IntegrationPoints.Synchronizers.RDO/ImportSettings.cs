@@ -54,6 +54,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public string OIFileTypeColumnName { get; set; }
 
+        public string OIFileIdColumnName { get; set; }
+
         public string SupportedByViewerColumn { get; set; }
 
         public string ParentObjectIdSourceFieldName { get; set; }
