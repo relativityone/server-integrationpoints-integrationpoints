@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.7.0] - 06-20-2023
+
+### Changed
+
+- [REL-848320](https://jira.kcura.com/browse/REL-848320) - scheduled jobs miscalculation changes - Backported [REL-620760](https://jira.kcura.com/browse/REL-620760) ticket from Server 2022 release.
+
 ## [12.6.0] - 06-20-2023
 
 ### Changed
