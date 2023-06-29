@@ -17,6 +17,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public List<JobTest> JobsInQueue { get; } = new List<JobTest>();
 
+        public List<SyncJobTest> SyncJobsInQueue { get; } = new List<SyncJobTest>();
+
         public Dictionary<string, List<EntityManagerTest>> EntityManagersResourceTables { get; } = new Dictionary<string, List<EntityManagerTest>>();
 
         public Dictionary<string, List<JobTrackerTest>> JobTrackerResourceTables { get; } = new Dictionary<string, List<JobTrackerTest>>();

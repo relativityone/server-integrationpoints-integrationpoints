@@ -12,4 +12,5 @@ Relativity.Platform.Agent.WorkloadDiscovery.SDK
 Relativity.AutomatedWorkflows.SDK
 Relativity.Storage
 Relativity.Storage.Extensions
+Relativity.Sync.Services.Interfaces
 iTextSharp

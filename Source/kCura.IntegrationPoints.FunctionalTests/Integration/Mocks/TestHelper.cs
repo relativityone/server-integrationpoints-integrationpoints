@@ -15,6 +15,7 @@ using Relativity.Services.ResourceServer;
 using Relativity.Services.Search;
 using Relativity.Services.View;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Services.Interfaces.V1;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -36,6 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
             RegisterProxyInServiceManagerMock<IObjectTypeManager>(proxy.ObjectTypeManager.Object);
             RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
+            RegisterProxyInServiceManagerMock<Relativity.Services.Interfaces.Workspace.IWorkspaceManager>(proxy.WorkspaceManager_Interfaces.Object);
             RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
             RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
             RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
@@ -52,6 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IDocumentConfigurationController>(proxy.DocumentConfigurationController.Object);
             RegisterProxyInServiceManagerMock<IRDOConfigurationController>(proxy.RdoConfigurationController.Object);
             RegisterProxyInServiceManagerMock<IAdvancedConfigurationController>(proxy.AdvancedConfigurationController.Object);
+            RegisterProxyInServiceManagerMock<ISyncService>(proxy.SyncService.Object);
         }
 
         public Mock<IDBContext> DbContextMock => _dbContext;

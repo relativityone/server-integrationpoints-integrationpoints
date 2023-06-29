@@ -268,7 +268,7 @@ NUGET
       Relativity.API (>= 17.7)
       Relativity.Services.Interfaces.Helpers (>= 13.7.1)
       Relativity.Storage (>= 1.7.3)
-    Relativity.Sync.Services.Interfaces (0.0.6-pre.10)
+    Relativity.Sync.Services.Interfaces (1.0.53)
       Relativity.Kepler (>= 2.18)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (3003.1.0)
