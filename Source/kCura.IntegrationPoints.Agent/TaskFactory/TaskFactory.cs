@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
         {
             ICustomProviderFlowCheck newFlowCheck = _container.Resolve<ICustomProviderFlowCheck>();
-            bool useNewFlow = newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
+            bool useNewFlow = newFlowCheck.ShouldBeUsed(integrationPointDto);
 
             _logger.LogInformation("Using new flow to execute Custom Provider import: {useNewFlow}", useNewFlow);
 
