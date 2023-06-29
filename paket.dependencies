@@ -37,9 +37,9 @@ nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 nuget Relativity.Platform.Agent.WorkloadDiscovery.SDK
 nuget Relativity.Productions.Services.Interfaces 11.1.0
-nuget Relativity.Storage
-nuget Relativity.Storage.Extensions
-nuget Relativity.Telemetry.APM 2019.1.1 
+nuget Relativity.Storage 1.7.3
+nuget Relativity.Storage.Extensions 1.7.3
+nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
@@ -80,7 +80,7 @@ nuget ZetaLongPaths 1.0.0.16
 nuget System.ValueTuple
 nuget iTextSharp 5.5.13.1
 nuget SystemWrapper.Interfaces 0.25.0.186
-nuget System.Runtime.CompilerServices.Unsafe ~> 6.0.0 
+nuget System.Runtime.CompilerServices.Unsafe ~> 6.0.0
 nuget Dapper 2.0.123
 nuget Dapper.Contrib 2.0.78
 
@@ -145,7 +145,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.39
+nuget Relativity.Sync 1.0.51
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -158,7 +158,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.39
+nuget Relativity.Sync 1.0.51
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4

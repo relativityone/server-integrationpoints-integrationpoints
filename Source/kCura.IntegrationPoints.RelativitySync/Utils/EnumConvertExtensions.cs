@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Sync.Configuration;
 
-using SyncFieldMapType = Relativity.Sync.Storage.FieldMapType;
-
 namespace kCura.IntegrationPoints.RelativitySync.Utils
 {
     public static class EnumConvertExtensions
@@ -37,17 +35,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Utils
             }
         }
 
-        public static SyncFieldMapType ToSyncFieldMapType(this FieldMapTypeEnum fieldMapType)
-        {
-            switch (fieldMapType)
-            {
-                case FieldMapTypeEnum.Identifier:
-                    return SyncFieldMapType.Identifier;
-                default:
-                    return SyncFieldMapType.None;
-            }
-        }
-
         public static ImportOverwriteMode ToSyncImportOverwriteMode(this ImportOverwriteModeEnum importOverWriteMode)
         {
             switch (importOverWriteMode)
@@ -75,6 +62,21 @@ namespace kCura.IntegrationPoints.RelativitySync.Utils
                     return FieldOverlayBehavior.ReplaceValues;
                 default:
                     throw new ArgumentException(fieldOverlayBehavior);
+            }
+        }
+
+        public static TaggingOption ToSyncTaggingOption(this TaggingOptionEnum taggingOption)
+        {
+            switch (taggingOption)
+            {
+                case TaggingOptionEnum.Enabled:
+                    return TaggingOption.Enabled;
+                case TaggingOptionEnum.Disabled:
+                    return TaggingOption.Disabled;
+                case TaggingOptionEnum.DestinationOnly:
+                    return TaggingOption.DestinationOnly;
+                default:
+                    throw new ArgumentException(nameof(taggingOption));
             }
         }
     }

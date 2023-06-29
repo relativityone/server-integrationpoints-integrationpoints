@@ -69,6 +69,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         private void PrepareImportJob()
         {
             _builder.PopulateFrom(ImportSettings, ImportJob.Settings);
+            _logger.LogInformation("NativeJobImport Settings - {@settings}", ImportJob.Settings);
+
             ImportJob.SourceData.SourceData = _sourceData;
         }
     }

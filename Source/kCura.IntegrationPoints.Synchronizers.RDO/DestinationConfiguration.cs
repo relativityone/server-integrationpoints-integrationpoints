@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
             ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
-            EnableTagging = true;
+            TaggingOption = TaggingOptionEnum.Enabled;
         }
 
         [JsonProperty(PropertyName = "artifactTypeID")]
@@ -65,6 +65,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public string Provider { get; set; }
 
+        [JsonProperty(PropertyName = "destinationProviderType")]
+        public string DestinationProviderType { get; set; }
+
         public string SelectedCaseFileRepoPath { get; set; }
 
         public bool AutoNumberImages { get; set; }
@@ -91,8 +94,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         [JsonConverter(typeof(JsonQuotesConverter))]
         public bool CreateSavedSearchForTagging { get; set; }
 
-        [JsonConverter(typeof(JsonQuotesConverter))]
-        public bool EnableTagging { get; set; }
+        [JsonProperty(PropertyName = "TaggingOption")]
+        public TaggingOptionEnum TaggingOption { get; set; }
 
         [JsonConverter(typeof(JsonQuotesConverter))]
         public bool UseFolderPathInformation { get; set; }

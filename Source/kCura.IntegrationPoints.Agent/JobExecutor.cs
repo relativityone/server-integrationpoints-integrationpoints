@@ -19,16 +19,14 @@ namespace kCura.IntegrationPoints.Agent
         private const string START_PROCESSING_JOB_MESSAGE_TEMPLATE = "Started : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
         private const string FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE = "Finished : " + PROCESSING_JOB_MESSAGE_TEMPLATE;
         private readonly ITaskProvider _taskProvider;
-        private readonly IAgentNotifier _agentNotifier;
         private readonly IJobService _jobService;
         private readonly IAPILog _logger;
 
         public event ExceptionEventHandler JobExecutionError;
 
-        public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
+        public JobExecutor(ITaskProvider taskProvider, IJobService jobService, IAPILog logger)
         {
             _taskProvider = taskProvider ?? throw new ArgumentNullException(nameof(taskProvider));
-            _agentNotifier = agentNotifier ?? throw new ArgumentNullException(nameof(agentNotifier));
             _jobService = jobService ?? throw new ArgumentNullException(nameof(jobService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -90,7 +88,6 @@ namespace kCura.IntegrationPoints.Agent
 
                 LogJobState(job, JobLogState.Finished);
                 string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-                _agentNotifier.NotifyAgent(LogCategory.Info, msg);
                 LogFinishingExecuteTask(job);
 
                 return GetTaskResult(job.JobId);
@@ -106,7 +103,6 @@ namespace kCura.IntegrationPoints.Agent
         {
             string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID,
                 job.TaskType);
-            _agentNotifier.NotifyAgent(LogCategory.Info, agentMessage);
             LogOnStartJobProcessing(agentMessage, job.JobId, job.WorkspaceID, job.TaskType);
         }
 

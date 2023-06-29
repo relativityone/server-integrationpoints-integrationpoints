@@ -12,16 +12,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
     public class ImportJobFactory : IImportJobFactory
     {
         private readonly IMessageService _messageService;
+        private readonly IAPILog _logger;
 
-        public ImportJobFactory(IMessageService messageService)
+        public ImportJobFactory(IMessageService messageService, IAPILog logger)
         {
             _messageService = messageService;
+            _logger = logger;
         }
 
         public IJobImport Create(IImportAPI importApi, ImportSettings settings, IDataTransferContext context, IHelper helper)
         {
             IJobImport rv;
-            switch (GetJobContextType(settings))
+            JobContextType type = GetJobContextType(settings);
+            _logger.LogInformation("Creating ImportJob of type {type}", type);
+            switch (type)
             {
                 case JobContextType.RelativityToRelativityImagesProduction:
                     IImportSettingsBaseBuilder<ImageSettings> imageProductionRelativityToRelativityImportSettingsBuilder = new ImageRelativityToRelativityImportSettingsBuilder(importApi);

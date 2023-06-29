@@ -4,15 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Provider;
@@ -127,8 +126,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
             finally
             {
-                await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName)
-                    .ConfigureAwait(false);
+                if (!token.IsDrainStopRequested)
+                {
+                    await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName).ConfigureAwait(false);
+                }
             }
         }
 

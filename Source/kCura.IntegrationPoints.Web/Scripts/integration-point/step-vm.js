@@ -275,10 +275,11 @@
 					heapData["ImportExport"] = model.isExportType ? "Export" : "Import";
 					heapData["LogErrors"] = model.logErrors;
 					heapData["RdoTypeName"] = model.rdoTypeName;
-					heapData["IsProfileSelected"] = false;
-					heapData["EnableTagging"] = model.EnableTagging;
+					heapData["IsProfileSelected"] = false;					
 					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
-					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+                    heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
+                    let destinationConfiguration = JSON.parse(model.destination);
+                    heapData["TaggingOption"] = destinationConfiguration.TaggingOption;
 					if (heapData["SchedulerIsEnabled"])
 					{
 						heapData["Scheduler-Frequency"] = model.scheduler.selectedFrequency;
@@ -286,7 +287,9 @@
 						
 						let startDate = Date.parse(model.scheduler.startDate);
 						let endDate = Date.parse(model.scheduler.endDate);
-						let scheduleTimePeriod = (endDate - startDate)/1000/3600/24 // days calculation
+						let durationMs = endDate - startDate;
+						let durationDays = durationMs / 1000 / 3600 / 24;
+						let scheduleTimePeriod = Math.round(durationDays);
 						heapData["Scheduler-TimePeriod_days"] = scheduleTimePeriod;
 					}
 
@@ -298,7 +301,7 @@
 						heapData["MappedSourceFieldsCount"] = $('#selected-source-fields option').length;
 						heapData["DestinationFieldsCount"] = $('#workspace-fields option').length;
 						heapData["MappedDestinationFieldsCount"] = $('#selected-workspace-fields option').length;
-						let sourceConfiguration = JSON.parse(model.sourceConfiguration);
+                        let sourceConfiguration = JSON.parse(model.sourceConfiguration);                        
 						heapData["DestinationLocation"] = sourceConfiguration.ProductionImport ? "Production Set" : "Folder";
 						heapData["SyncSourceType"] = sourceConfiguration.TypeOfExport == 3 ? "SavedSearch" : sourceConfiguration.TypeOfExport == 2 ? "Production" : "Unknown";
 						heapData["OverwriteMode"] = model.SelectedOverwrite;
@@ -354,8 +357,7 @@
 					heapData["ImportExport"] = model.isExportType ? "Export" : "Import";
 					heapData["LogErrors"] = model.logErrors;
 					heapData["RdoTypeName"] = model.rdoTypeName;
-					heapData["IsProfileSelected"] = true;
-					heapData["EnableTagging"] = model.EnableTagging;
+					heapData["IsProfileSelected"] = true;					
 					heapData["NotificationEmailsAdded"] = model.notificationEmails !== undefined && model.notificationEmails !== "";
 					heapData["SchedulerIsEnabled"] = model.scheduler.enableScheduler === "true";
 					if (heapData["SchedulerIsEnabled"])
@@ -366,7 +368,7 @@
 						let startDate = Date.parse(model.scheduler.startDate);
 						let endDate = Date.parse(model.scheduler.endDate);
 						let scheduleTimePeriod = (endDate - startDate)/1000/3600/24 // days calculation
-						heapData["Scheduler-TimePeriod_days"] = scheduleTimePeriod;
+						heapData["Scheduler-TimePeriod_days"] = Math.round(scheduleTimePeriod);
 					}
 
 					if (IsSyncJob())

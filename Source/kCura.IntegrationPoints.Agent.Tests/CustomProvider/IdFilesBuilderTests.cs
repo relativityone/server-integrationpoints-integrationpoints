@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;

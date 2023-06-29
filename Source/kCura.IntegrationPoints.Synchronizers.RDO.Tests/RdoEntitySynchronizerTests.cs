@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             base.FixtureSetUp();
 
             _settings = JsonConvert.SerializeObject(new ImportSettings(new DestinationConfiguration()));
-            _importJobFactory = new ImportJobFactory(Mock.Of<IMessageService>());
+            _importJobFactory = new ImportJobFactory(Mock.Of<IMessageService>(), new EmptyLogger());
         }
 
         [SetUp]

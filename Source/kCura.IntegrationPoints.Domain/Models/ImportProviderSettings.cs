@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace kCura.IntegrationPoints.Domain.Models
+﻿namespace kCura.IntegrationPoints.Domain.Models
 {
     public class ImportProviderSettings : ImportSettingsBase
     {

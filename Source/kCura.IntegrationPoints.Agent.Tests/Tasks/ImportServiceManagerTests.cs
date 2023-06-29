@@ -25,6 +25,8 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -35,6 +37,7 @@ using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -131,8 +134,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             JobStatisticsService jobStatisticsService = Substitute.For<JobStatisticsService>();
 
-            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC, Arg.Any<IJobStopManager>()).Returns(loadFileReader);
-            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE, Arg.Any<IJobStopManager>()).Returns(opticonFileReader);
+            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC, Arg.Any<IJobStopManager>(), Arg.Any<bool>()).Returns(loadFileReader);
+            dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE, Arg.Any<IJobStopManager>(), Arg.Any<bool>()).Returns(opticonFileReader);
 
             _integrationPoint = new IntegrationPointDto
             {
@@ -205,6 +208,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _jobStatusUpdater,
                 _automatedWorkflowsManager,
                 _jobTrackerFake,
+                Substitute.For<IRipToggleProvider>(),
+                Substitute.For<IFileIdentificationService>(),
+                Substitute.For<IDataTransferLocationService>(),
+                Substitute.For<ILogger<ImportServiceManager>>(),
                 new EmptyDiagnosticLog());
         }
 

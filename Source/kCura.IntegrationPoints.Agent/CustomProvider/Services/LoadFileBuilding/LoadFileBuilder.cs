@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
+using kCura.IntegrationPoints.Core.Storage;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;

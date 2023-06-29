@@ -81,6 +81,7 @@
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\Serilog.Sinks.OpenTelemetry.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\Serilog.Sinks.PeriodicBatching.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\Grpc.Core.Api.dll</Assembly>
+					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\Google.Protobuf.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\SystemInterface.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\ZetaLongPaths.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Productions.Services.Interfaces.dll</Assembly>

@@ -406,14 +406,19 @@ namespace kCura.IntegrationPoints.Common.Tests.Kepler
 
         private static IEnumerable<Exception> ConnectionExceptionsToRetry()
         {
-            yield return new ServiceNotFoundException();
-            yield return new TemporarilyUnavailableException();
-            yield return new ServiceException("Failed to determine route");
-            yield return new ServiceException("Create Failed");
-            yield return new ServiceException("An unexpected server error occurred: Bad Gateway - An invalid response was received from the upstream server");
-            yield return new ConflictException("Create Ancestry Failed...");
-            yield return new TimeoutException();
-            yield return new Exception("Socket exception", new SocketException());
+            return new[]
+            {
+                new ServiceNotFoundException(),
+                new TemporarilyUnavailableException(),
+                new ServiceException("Failed to determine route"),
+                new ServiceException("Create Failed"),
+                new ServiceException("Bad Gateway"),
+                new ServiceException("Gateway Time-out"),
+                new ServiceException("An unexpected server error occurred: Bad Gateway - An invalid response was received from the upstream server"),
+                new ConflictException("Create Ancestry Failed"),
+                new TimeoutException(),
+                new Exception("Socket exception", new SocketException())
+            };
         }
     }
 }

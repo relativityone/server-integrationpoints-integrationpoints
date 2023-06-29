@@ -43,6 +43,8 @@ namespace kCura.ScheduleQueue.AgentBase
         private readonly Guid _agentInstanceGuid;
         private readonly bool _shouldReadJobOnce = false; // Only for testing purposes. DO NOT MODIFY IT!
 
+        private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
+
         private IAgentService _agentService;
         private IQueueQueryManager _queueManager;
         private Lazy<IKubernetesMode> _kubernetesModeLazy;
@@ -108,8 +110,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
         protected IJobService JobService => _jobService;
 
-        private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
-
         public sealed override void Execute()
         {
             using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
@@ -120,7 +120,7 @@ namespace kCura.ScheduleQueue.AgentBase
                     return;
                 }
 
-                NotifyAgentTab(LogCategory.Debug, "Started.");
+                Logger.LogInformation("Integration Points Agent execution started...");
 
                 try
                 {
@@ -130,14 +130,11 @@ namespace kCura.ScheduleQueue.AgentBase
 
                     ProcessQueueJobs();
 
-                    CleanupQueueJobs();
-
                     CompleteExecution();
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
-                    _jobService.UnlockJobs(_agentId.Value);
                     DidWork = false;
                 }
 
@@ -151,7 +148,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
         protected virtual void Initialize()
         {
-            NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
+            Logger.LogInformation("Initialize Agent core services");
 
             if (_queueManager == null)
             {
@@ -220,28 +217,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
         protected abstract TaskResult ProcessJob(Job job);
 
-        protected void NotifyAgentTab(LogCategory category, string message, string detailmessage = null)
-        {
-            string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
-            switch (category)
-            {
-                case LogCategory.Debug:
-                    RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-                    break;
-                case LogCategory.Info:
-                    RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
-                    break;
-                case LogCategory.Warn:
-                    RaiseWarning(msg);
-                    break;
-                case LogCategory.Exception:
-                    RaiseError(msg, detailmessage);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(category));
-            }
-        }
-
         protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
 
         protected int GetAgentID()
@@ -268,10 +243,13 @@ namespace kCura.ScheduleQueue.AgentBase
                     transientStateJobTimeout);
 
                 IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
-                    .Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
+                    .Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked())
+                    .ToList();
 
                 foreach (Job job in transientStateJobs)
                 {
+                    Logger.ForContext("TransientJob", job.RemoveSensitiveData(), true).LogInformation("Handling Transient Job {jobId}", job.JobId);
+
                     if (IsAzureADWorker(job))
                     {
                         Logger.LogInformation(
@@ -282,9 +260,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    KubernetesException k8sException = new KubernetesException($"Job {job.JobId} failed because Job Agent stopped due to underlying system layer error and job was left in unknown state. Please try to run this job again.");
-
-                    Logger.LogError(k8sException, "Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
+                    Logger.LogError("Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
 
                     SendJobInTransientStateMetric(job);
 
@@ -295,7 +271,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    job.MarkJobAsFailed(k8sException, false, false);
+                    job.MarkJobAsFailed(KubernetesException.CreateTransientJobException(job), false, false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
@@ -326,6 +302,8 @@ namespace kCura.ScheduleQueue.AgentBase
                 }
 
                 SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
+
+                Logger.LogInformation("Checking if {taskType} job is typeof AzureAD - {applicationIdentifier}", sourceProvider.ApplicationIdentifier);
 
                 return Guid.Parse(sourceProvider.ApplicationIdentifier) == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5");
             }
@@ -400,20 +378,16 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void CompleteExecution()
         {
-            NotifyAgentTab(LogCategory.Debug, "Completed.");
             LogExecuteComplete();
         }
 
         private void InitializeManagerConfigSettingsFactory()
         {
-            NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
         }
 
         private void CheckQueueTable()
         {
-            NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
-
             _agentService.InstallQueueTable();
         }
 
@@ -493,17 +467,11 @@ namespace kCura.ScheduleQueue.AgentBase
                     }
                 }
 
-                if (ToBeRemoved)
-                {
-                    _jobService.UnlockJobs(_agentId.Value); // what if exception
-                }
-
-                DidWork = true;
+                DidWork = false;
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
-                _jobService.UnlockJobs(_agentId.Value);
                 DidWork = false;
             }
         }
@@ -561,17 +529,15 @@ namespace kCura.ScheduleQueue.AgentBase
         {
             if (!Enabled)
             {
-                NotifyAgentTab(LogCategory.Info, "Agent was disabled. Terminating job processing task.");
+                Logger.LogInformation("Agent was disabled. Terminating job processing task.");
                 return null;
             }
 
             if (ToBeRemoved)
             {
-                NotifyAgentTab(LogCategory.Info, "Agent is going to be removed. Cannot process any more jobs.");
+                Logger.LogInformation("Agent is going to be removed. Cannot process any more jobs.");
                 return null;
             }
-
-            NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
             if (IsKubernetesMode)
             {
@@ -587,17 +553,11 @@ namespace kCura.ScheduleQueue.AgentBase
             return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value, rootJobId);
         }
 
-        private void CleanupQueueJobs()
-        {
-            NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
-            _jobService.CleanupJobQueueTable();
-        }
-
         private IAPILog InitializeLogger()
         {
             if (Helper == null)
             {
-                NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
+                Logger.LogError("Logger initialization failed. Helper is null.");
             }
 
             IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
@@ -653,9 +613,7 @@ namespace kCura.ScheduleQueue.AgentBase
             {
                 IEnumerable<Job> jobs = _jobService.GetAllScheduledJobs();
 
-                Logger.LogInformation(
-                    "Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
-                    string.Join(";", jobs?.Select(x => $"{x.JobId}-{x.RootJobId}-{x.LockedByAgentID}-{x.StopState}") ?? new List<string>()));
+                Logger.LogInformation("Jobs in queue:\n{@jobsInQueue}", jobs.Select(x => x.RemoveSensitiveData()));
             }
             catch (Exception ex)
             {

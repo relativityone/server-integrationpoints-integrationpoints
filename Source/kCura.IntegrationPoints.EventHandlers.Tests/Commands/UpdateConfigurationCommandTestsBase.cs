@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             ObjectManagerMock.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdatePerObjectsRequest>()), Times.Never);
         }
 
-        protected void ShouldBeUpdated(RelativityObjectSlim objectSlim)
+        protected virtual void ShouldBeUpdated(RelativityObjectSlim objectSlim)
         {
             ObjectManagerMock.Verify(m => m.UpdateAsync(It.IsAny<int>(),
                 It.IsAny<MassUpdatePerObjectsRequest>()), Times.Once);

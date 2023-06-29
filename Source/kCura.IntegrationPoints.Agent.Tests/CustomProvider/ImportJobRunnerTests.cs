@@ -9,16 +9,15 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -199,6 +198,49 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             action.ShouldThrow<InvalidOperationException>();
             _relativityStorageService
                 .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Execute_ShouldNotCleanupImportDirectory_WhenDrainStopped()
+        {
+            // Arrange
+            Guid batchInstance = Guid.NewGuid();
+            int jobHistoryId = 222;
+
+            CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
+            {
+                Batches = new List<CustomProviderBatch>(),
+                JobHistoryGuid = batchInstance,
+                JobHistoryID = jobHistoryId
+            };
+
+            JobHistory jobHistory = new JobHistory();
+
+            _idFilesBuilder
+                .Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(new List<CustomProviderBatch>());
+
+            _jobHistoryService
+                .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(jobHistory);
+
+            CancellationTokenSource cancelToken = new CancellationTokenSource();
+            CancellationTokenSource drainStopToken = new CancellationTokenSource();
+
+            CompositeCancellationToken token = new CompositeCancellationToken(cancelToken.Token, drainStopToken.Token, Mock.Of<IAPILog>());
+
+            Job job = PrepareJob(WorkspaceId, Guid.NewGuid());
+
+            ImportJobRunner sut = PrepareSut();
+
+            // Act
+            drainStopToken.Cancel();
+            await sut.RunJobAsync(job, jobDetails, _integrationPointDto, Mock.Of<IDataSourceProvider>(), token);
+
+            // Assert
+            _relativityStorageService
+                .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Never);
         }
 
         private Job PrepareJob(int workspaceId, Guid batchInstance)

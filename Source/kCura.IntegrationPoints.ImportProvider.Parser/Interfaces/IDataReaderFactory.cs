@@ -6,6 +6,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
     public interface IDataReaderFactory
     {
-        IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager);
+        IDataReader GetDataReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager, bool addExtraNativeColumns);
+
+        INativeFilePathReader GetNativeFilePathReader(FieldMap[] fieldMaps, string options, IJobStopManager jobStopManager);
     }
 }

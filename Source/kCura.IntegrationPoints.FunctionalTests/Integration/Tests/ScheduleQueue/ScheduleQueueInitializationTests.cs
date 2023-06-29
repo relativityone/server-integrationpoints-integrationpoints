@@ -54,14 +54,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             FakeAgent sut = FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container);
 
             // Act
-            sut.Enabled = false;
-
             sut.Execute();
 
             // Assert
-            sut.VerifyJobsWereNotProcessed(new[] {jobWithoutWorkspace.JobId});
+            sut.VerifyJobsWereNotProcessed(new[] { jobWithoutWorkspace.JobId });
 
-            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new[]{jobWithoutWorkspace.JobId});
+            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(new[] { jobWithoutWorkspace.JobId });
         }
     }
 }

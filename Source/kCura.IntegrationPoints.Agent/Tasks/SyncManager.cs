@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Attributes;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Extensions;
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     public class SyncManager : BatchManagerBase<string>, ITaskWithJobHistory
     {
         private readonly IAgentValidator _agentValidator;
-        private readonly IAPILog _logger;
+        private readonly ILogger<SyncManager> _logger;
         private readonly ICaseServiceContext _caseServiceContext;
         private readonly IDataProviderFactory _providerFactory;
         private readonly IGuidService _guidService;
@@ -63,6 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IEnumerable<IBatchStatus> batchStatuses,
             IAgentValidator agentValidator,
+            ILogger<SyncManager> logger,
             IDiagnosticLog diagnosticLog) : base(helper, diagnosticLog)
         {
             _caseServiceContext = caseServiceContext;
@@ -83,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             BatchInstance = Guid.NewGuid();
             _batchStatus = batchStatuses;
             _agentValidator = agentValidator;
-            _logger = Helper.GetLoggerFactory().GetLogger().ForContext<SyncManager>();
+            _logger = logger;
         }
 
         public IEnumerable<IBatchStatus> BatchStatus
@@ -301,7 +303,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
             catch (Exception ex)
             {
-                AgentExceptionHelper.HandleException(_jobHistoryErrorService, _jobHistoryService, _logger, ex, job, taskResult, JobHistory);
+                AgentExceptionHelper.HandleException(_jobHistoryErrorService, _jobHistoryService, _logger.ForContext<AgentExceptionHelper>(), ex, job, taskResult, JobHistory);
 
                 // we want to rethrow, so it can be added to error tab if necessary
                 if (ex is IntegrationPointsException || ex is IntegrationPointValidationException || ex is PermissionException)

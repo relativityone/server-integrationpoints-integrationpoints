@@ -15,7 +15,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Utility.Extensions;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -88,14 +87,18 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .ForContext("SourceConfiguration", sourceConfiguration, true)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
-            ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
-                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
+            ISyncContext syncContext = new SyncContext(
+                job.WorkspaceId,
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                job.JobHistoryId,
+                job.ExecutingApplication,
+                GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
             if (!_toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle"))
             {
-                destinationConfiguration.EnableTagging = true;
+                destinationConfiguration.TaggingOption = TaggingOptionEnum.Enabled;
             }
 
             if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
@@ -136,8 +139,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         DestinationLocationType.Folder, destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyImagesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncImageMode(),
-                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
-                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
+                        TaggingOption = destinationConfiguration.TaggingOption.ToSyncTaggingOption()
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
@@ -188,8 +190,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         destinationConfiguration.DestinationFolderArtifactId)
                     {
                         CopyNativesMode = destinationConfiguration.ImportNativeFileCopyMode.ToSyncNativeMode(),
-                        // This is simplified assignment of TaggingOption value. We need to extend it in: REL-833771
-                        TaggingOption = destinationConfiguration.EnableTagging ? TaggingOption.Enabled : TaggingOption.Disabled
+                        TaggingOption = destinationConfiguration.TaggingOption.ToSyncTaggingOption()
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointDto.FieldMappings, mappingBuilder))
@@ -230,7 +231,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return null;
             }
 
-            if (destinationConfiguration.EnableTagging || !destinationConfiguration.UseSmartOverwrite)
+            if (destinationConfiguration.TaggingOption == TaggingOptionEnum.Enabled || !destinationConfiguration.UseSmartOverwrite)
             {
                 return null;
             }
@@ -275,7 +276,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
 
-            foreach (SyncFieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+            foreach (SyncFieldMap fieldsMap in fieldsMapping)
             {
                 mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
             }

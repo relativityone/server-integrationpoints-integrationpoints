@@ -119,26 +119,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
         }
 
-        [IdentifiedTest("0B9C8AC9-B23F-4920-A124-6295D7E7201B")]
-        public void Agent_ShouldUnlockTheJob_WhenUnexpectedExceptionHasBeenThrown()
-        {
-            // Arrange
-            JobTest job = PrepareJob();
-
-            var jobsInQueue = new[] { job.JobId };
-
-            var sut = PrepareSut();
-
-            sut.ProcessJobMockFunc = j => throw new Exception();
-
-            // Act
-            sut.Execute();
-
-            // Assert
-            FakeRelativityInstance.Helpers.JobHelper
-                .VerifyJobsAreNotLockedByAgent(sut.AgentID, jobsInQueue);
-        }
-
         [IdentifiedTest("DED49CD4-5B3A-4FD9-81C9-CBCCD419CDC5")]
         public void Agent_ShouldProcessAndDelete_WhenUserDoesNotExist()
         {

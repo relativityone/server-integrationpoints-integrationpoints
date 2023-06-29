@@ -1,11 +1,12 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -17,9 +18,9 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly ISerializer _serializer;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExtendedJob> _logger;
 
-        public ExtendedJob(Job job, IJobHistoryService jobHistoryService, IIntegrationPointService integrationPointService, ISerializer serializer, IAPILog logger)
+        public ExtendedJob(Job job, IJobHistoryService jobHistoryService, IIntegrationPointService integrationPointService, ISerializer serializer, ILogger<ExtendedJob> logger)
         {
             Job = job;
             _jobHistoryService = jobHistoryService;
@@ -37,6 +38,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         public int SubmittedById => Job.SubmittedBy;
 
         public int IntegrationPointId => Job.RelatedObjectArtifactID;
+
+        public string ExecutingApplication => RelEye.Values.IntegrationPointsApplication;
 
         public IntegrationPointDto IntegrationPointDto
         {

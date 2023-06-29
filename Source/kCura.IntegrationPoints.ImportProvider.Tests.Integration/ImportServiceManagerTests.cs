@@ -20,7 +20,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
@@ -33,6 +32,7 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
@@ -40,6 +40,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -91,9 +92,13 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IDataTransferLocationService ls = Substitute.For<IDataTransferLocationService>();
             ls.GetWorkspaceFileLocationRootPath(Arg.Any<int>()).Returns(_testDataDirectory);
             lsFactory.CreateService(Arg.Any<int>()).Returns(ls);
-            _windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
 
+            _windsorContainer.Register(Component.For<IDataTransferLocationServiceFactory>().Instance(lsFactory));
             _windsorContainer.Register(Component.For<IRelativityObjectManager>().Instance(ObjectManager));
+            _windsorContainer.Register(
+                Component.For<IReadOnlyFileMetadataStore, IFileMetadataCollector>()
+                .Instance(Substitute.For<IReadOnlyFileMetadataStore, IFileMetadataCollector>())
+                .LifestyleSingleton());
 
             // TestRdoSynchronizer
             TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(
@@ -182,6 +187,10 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
+                Substitute.For<IRipToggleProvider>(),
+                Substitute.For<IFileIdentificationService>(),
+                Substitute.For<IDataTransferLocationService>(),
+                Substitute.For<ILogger<ImportServiceManager>>(),
                 new EmptyDiagnosticLog());
         }
 

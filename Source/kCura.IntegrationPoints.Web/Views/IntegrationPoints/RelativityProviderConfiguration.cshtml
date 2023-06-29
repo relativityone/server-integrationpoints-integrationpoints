@@ -120,15 +120,19 @@
                             <div class="field-value">
                                 <ul>
                                     <li>
-                                        <label><input id="enable-tagging" type="radio" value="true" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">Yes</label>
+                                        <label><input id="enable-tagging" type="radio" name="taggingGroup" value="Enabled" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">Yes (Source and Destination Workspaces)</label>
                                     </li>
                                     <li>
-                                        <label><input id="disable-tagging" type="radio" value="false" data-bind="checked: EnableTagging, enable: CreateSavedSearchForTagging() == 'false'">No</label>
+                                        <label><input id="destinationOnly-tagging" type="radio" name="taggingGroup" value="DestinationOnly" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">Yes (Destination Workspace Only)</label>
+                                    </li>
+                                    <li>
+                                        <label><input id="disable-tagging" type="radio" name="taggingGroup" value="Disabled" data-bind="checked: TaggingOption, enable: CreateSavedSearchForTagging() == 'false'">No</label>
                                     </li>
                                 </ul>
                                 <div id="infoMsg">
-                                    <br />&emsp; NOTE: <strong>Tags enable</strong> records to be identified with the job name in the source and destination workspaces. <br />
-                                    &emsp; <strong>Disabling tags</strong> speeds up the job processing.
+                                    <br />&emsp; NOTE: <br />
+                                    &emsp; Tags enable records to be identified with the job name in the source and destination workspaces. Disabling tags speeds up the job processing. <br />
+                                    &emsp; Smart Overwrite feature requires tags to be disabled or to be enabled in the destination workspace only.
                                 </div>
                             </div>
                         </div>

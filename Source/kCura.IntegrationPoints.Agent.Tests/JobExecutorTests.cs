@@ -31,9 +31,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _taskProviderFake.Setup(x => x.GetTask(It.IsAny<Job>()))
                 .Returns(task.Object);
 
-            Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
             _jobServiceFake = new Mock<IJobService>();
-            _sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _logMock.Object);
+            _sut = new JobExecutor(_taskProviderFake.Object, _jobServiceFake.Object, _logMock.Object);
         }
 
         [Test]
