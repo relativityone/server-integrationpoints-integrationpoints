@@ -10,6 +10,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             ObjectManager = new ObjectManagerStub();
             ObjectTypeManager = new ObjectTypeManagerStub();
             WorkspaceManager = new WorkspaceManagerStub();
+            WorkspaceManager_Interfaces = new Kepler.RelativityServicesInterfaces.WorkspaceManagerStub();
             PermissionManager = new PermissionManagerStub();
             InstanceSettingManager = new InstanceSettingManagerStub(context);
             GroupManager = new GroupManagerStub(context.User);
@@ -26,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             DocumentConfigurationController = new DocumentConfigurationControllerStub();
             RdoConfigurationController = new RdoConfigurationControllerStub();
             AdvancedConfigurationController = new AdvancedConfigurationControllerStub();
+            SyncService = new SyncServiceStub();
         }
 
         public ObjectManagerStub ObjectManager { get; }
@@ -33,6 +35,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         public ObjectTypeManagerStub ObjectTypeManager { get; }
 
         public WorkspaceManagerStub WorkspaceManager { get; }
+
+        public Kepler.RelativityServicesInterfaces.WorkspaceManagerStub WorkspaceManager_Interfaces { get; }
 
         public PermissionManagerStub PermissionManager { get; }
 
@@ -66,11 +70,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public AdvancedConfigurationControllerStub AdvancedConfigurationController { get; }
 
+        public SyncServiceStub SyncService { get; }
+
         public void Setup(RelativityInstanceTest relativity)
         {
             ObjectManager.Setup(relativity);
             ObjectTypeManager.Setup(relativity);
             WorkspaceManager.Setup(relativity);
+            WorkspaceManager_Interfaces.Setup(relativity);
             ArtifactGuidManager.Setup(relativity);
             ErrorManager.Setup(relativity);
             ChoiceQueryManager.Setup(relativity);
@@ -84,6 +91,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             DocumentConfigurationController.Setup(relativity);
             RdoConfigurationController.Setup(relativity);
             AdvancedConfigurationController.Setup(relativity);
+            SyncService.Setup(relativity);
 
             SetupFixedMocks();
         }
@@ -91,6 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         private void SetupFixedMocks()
         {
             WorkspaceManager.SetupWorkspaceMock();
+            WorkspaceManager_Interfaces.SetupWorkspaceMock();
             ObjectTypeManager.SetupObjectTypeManager();
             InstanceSettingManager.SetupInstanceSetting();
             GroupManager.SetupGroupManager();
@@ -108,6 +117,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             DocumentConfigurationController.SetupDocumentConfigurationController();
             RdoConfigurationController.SetupRdoConfigurationController();
             AdvancedConfigurationController.SetupAdvancedConfigurationController();
+            SyncService.SetupMock();
         }
     }
 }

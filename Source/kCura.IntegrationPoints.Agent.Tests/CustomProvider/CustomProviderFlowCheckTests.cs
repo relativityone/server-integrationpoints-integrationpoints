@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
-        public async Task ShouldBeUsedAsync_ShouldReturnTrue_WhenCriteriaAreMet()
+        public void ShouldBeUsed_ShouldReturnTrue_WhenCriteriaAreMet()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
@@ -46,14 +46,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupNewCustomProviderToggle(true);
 
             // Act
-            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = _sut.ShouldBeUsed(integrationPoint);
 
             // Assert
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task ShouldBeUsedAsync_ShouldReturnFalse_WhenToggleIsDisabled()
+        public void ShouldBeUsed_ShouldReturnFalse_WhenToggleIsDisabled()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
@@ -61,14 +61,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupNewCustomProviderToggle(false);
 
             // Act
-            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = _sut.ShouldBeUsed(integrationPoint);
 
             // Assert
             result.Should().BeFalse();
         }
 
         [Test]
-        public async Task ShouldBeUsedAsync_ShouldReturnFalse_WhenManagersLinking()
+        public void ShouldBeUsed_ShouldReturnFalse_WhenManagersLinking()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
@@ -76,23 +76,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupNewCustomProviderToggle(true);
 
             // Act
-            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = _sut.ShouldBeUsed(integrationPoint);
 
             // Assert
             result.Should().BeFalse();
         }
 
         [Test]
-        public async Task ShouldBeUsedAsync_ShouldReturnFalse_WhenExceptionThrown()
+        public void ShouldBeUsed_ShouldReturnFalse_WhenExceptionThrown()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
 
-            _toggleProviderFake.Setup(x => x.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>())
+            _toggleProviderFake.Setup(x => x.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>())
                 .Throws<Exception>();
 
             // Act
-            bool result = await _sut.ShouldBeUsedAsync(integrationPoint).ConfigureAwait(false);
+            bool result = _sut.ShouldBeUsed(integrationPoint);
 
             // Assert
             result.Should().BeFalse();
@@ -101,8 +101,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private void SetupNewCustomProviderToggle(bool value)
         {
             _toggleProviderFake
-                .Setup(x => x.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>())
-                .ReturnsAsync(value);
+                .Setup(x => x.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>())
+                .Returns(value);
         }
     }
 }

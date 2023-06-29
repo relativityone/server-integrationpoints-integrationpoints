@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Channels;
 using AutoFixture;
 using Castle.Windsor;
 using FluentAssertions;
@@ -13,8 +14,10 @@ using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -38,7 +41,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private Mock<IWindsorContainer> _containerFake;
         private Mock<ICustomProviderFlowCheck> _newCustomProviderCheckFake;
         private Mock<IRelativitySyncConstrainsChecker> _relativitySyncCheckerFake;
+        private Mock<IRelativityStorageService> _storageServiceFake;
+        private Mock<IRipToggleProvider> _toggleProviderFake;
+
         private ITaskFactory _instance;
+
         private IFixture _fxt;
 
         [SetUp]
@@ -65,9 +72,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             _newCustomProviderCheckFake = new Mock<ICustomProviderFlowCheck>();
             _newCustomProviderCheckFake.Setup(
-                    x => x.ShouldBeUsedAsync(
+                    x => x.ShouldBeUsed(
                         It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
+                .Returns(true);
 
             _relativitySyncCheckerFake = new Mock<IRelativitySyncConstrainsChecker>();
 
@@ -75,13 +82,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _containerFake.Setup(x => x.Resolve<ICustomProviderFlowCheck>()).Returns(_newCustomProviderCheckFake.Object);
             _containerFake.Setup(x => x.Resolve<IRelativitySyncConstrainsChecker>()).Returns(_relativitySyncCheckerFake.Object);
 
+            _storageServiceFake = new Mock<IRelativityStorageService>();
+
+            _toggleProviderFake = new Mock<IRipToggleProvider>();
+
             _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
                 taskExceptionMediator,
                 _jobSynchronizationChecker,
                 jobHistoryServiceFactory,
                 _containerFake.Object,
-                integrationPointService);
+                integrationPointService,
+                _storageServiceFake.Object,
+                _toggleProviderFake.Object);
         }
 
         [Test]
@@ -215,8 +228,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var agentBase = new TestAgentBase(Guid.NewGuid());
 
-            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
+            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsed(It.IsAny<IntegrationPointDto>()))
+                .Returns(true);
 
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
 
@@ -249,6 +262,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             // Assert
             task.Should().Be(expectedTask);
+        }
+
+        [Test]
+        public void CreateTask_ShouldInjectRelativityStorageToTAPI_WhenToggleIsEnabled()
+        {
+            // Arrange
+            int jobId = 342343;
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+
+            Job job = new JobBuilder().WithJobId(jobId).Build();
+
+            _toggleProviderFake.Setup(x => x.IsEnabled<UseCalInLegacyTapiToggle>())
+                .Returns(true);
+
+            // Act
+            _instance.CreateTask(job, agentBase);
+
+            // Assert
+            _storageServiceFake.Verify(x => x.GetStorageAccessAsync(), Times.Once);
         }
 
         private IIntegrationPointService CreateIntegrationPointServiceMock()

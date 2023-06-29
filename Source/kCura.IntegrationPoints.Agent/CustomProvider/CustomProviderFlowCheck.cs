@@ -18,11 +18,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _log = log;
         }
 
-        public async Task<bool> ShouldBeUsedAsync(IntegrationPointDto integrationPoint)
+        public bool ShouldBeUsed(IntegrationPointDto integrationPoint)
         {
             try
             {
-                bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableImportApiV2ForCustomProvidersToggle>();
+                bool isToggleEnabled = _toggleProvider.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>();
                 bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
 
                 bool result = isToggleEnabled && !isManagersLinkingEnabled;

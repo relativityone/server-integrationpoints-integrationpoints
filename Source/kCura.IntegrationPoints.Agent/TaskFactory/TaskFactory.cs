@@ -1,29 +1,38 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Storage;
+using Relativity.Transfer.FileShare;
 
 namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
     public class TaskFactory : ITaskFactory
     {
         private readonly IWindsorContainer _container;
+        private readonly IAgentHelper _helper;
         private readonly ITaskExceptionMediator _taskExceptionMediator;
         private readonly IAPILog _logger;
         private readonly IJobSynchronizationChecker _jobSynchronizationChecker;
         private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
         private readonly IIntegrationPointService _integrationPointService;
+        private readonly IRelativityStorageService _relativityStorageService;
+        private readonly IRipToggleProvider _toggleProvider;
 
         public TaskFactory(
             IAgentHelper helper,
@@ -31,14 +40,19 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             IJobSynchronizationChecker jobSynchronizationChecker,
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
             IWindsorContainer container,
-            IIntegrationPointService integrationPointService)
+            IIntegrationPointService integrationPointService,
+            IRelativityStorageService relativityStorageService,
+            IRipToggleProvider toggleProvider)
         {
+            _helper = helper;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
             _taskExceptionMediator = taskExceptionMediator;
             _jobSynchronizationChecker = jobSynchronizationChecker;
             _jobHistoryServiceFactory = jobHistoryServiceFactory;
             _container = container;
             _integrationPointService = integrationPointService;
+            _relativityStorageService = relativityStorageService;
+            _toggleProvider = toggleProvider;
         }
 
         public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -56,9 +70,12 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             ITaskFactoryJobHistoryService jobHistoryServices = _jobHistoryServiceFactory.CreateJobHistoryService(integrationPointDto);
             try
             {
+                InjectStorageAccessToTapiConfiguration();
+
                 jobHistoryServices.SetJobIdOnJobHistory(job);
                 TaskType taskType;
                 Enum.TryParse(job.TaskType, true, out taskType);
+
                 LogCreateTaskSyncCheck(job, taskType);
 
                 switch (taskType)
@@ -108,10 +125,27 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             }
         }
 
+        private void InjectStorageAccessToTapiConfiguration()
+        {
+            if (_toggleProvider.IsEnabled<UseCalInLegacyTapiToggle>())
+            {
+                LogInjectionOfStorageAccessToTapiConfiguration();
+
+                IStorageAccess<string> storageAccess = _relativityStorageService.GetStorageAccessAsync()
+                    .GetAwaiter().GetResult();
+
+                var type = typeof(FileShareClientConfiguration).Assembly.GetTypes()
+                    .First(x => x.Name == "FileShareTransferCommand");
+                var field = type.GetFields(BindingFlags.NonPublic | BindingFlags.Static).First(x => x.Name == "storageAccess");
+
+                field.SetValue(null, storageAccess);
+            }
+        }
+
         private bool NewCustomProviderFlowShouldBeUsed(IntegrationPointDto integrationPointDto)
         {
             ICustomProviderFlowCheck newFlowCheck = _container.Resolve<ICustomProviderFlowCheck>();
-            bool useNewFlow = newFlowCheck.ShouldBeUsedAsync(integrationPointDto).GetAwaiter().GetResult();
+            bool useNewFlow = newFlowCheck.ShouldBeUsed(integrationPointDto);
 
             _logger.LogInformation("Using new flow to execute Custom Provider import: {useNewFlow}", useNewFlow);
 
@@ -162,6 +196,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private void LogCreatingTaskInformation(Job job)
         {
             _logger.LogInformation("Attempting to create task {TaskType} for job {JobId}.", job.TaskType, job.JobId);
+        }
+
+        private void LogInjectionOfStorageAccessToTapiConfiguration()
+        {
+            _logger.LogInformation("Injecting StorageAccess to TAPI Configuration.");
         }
 
         private void LogCreateTaskSyncCheck(Job job, TaskType taskType)

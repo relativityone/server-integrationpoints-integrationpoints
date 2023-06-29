@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, int integrationPointId)
         {
-            if (!await _toggleProvider.IsEnabledAsync<EnableSmartOverwriteFeatureToggle>().ConfigureAwait(false))
+            if (!_toggleProvider.IsEnabled<EnableSmartOverwriteFeatureToggle>())
             {
                 return null;
             }

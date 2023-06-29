@@ -1618,9 +1618,14 @@
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Sync.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <Keywords />
+      <Name>Relativity.Sync.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>      
@@ -1776,11 +1781,6 @@
     <Assembly>      
       <Keywords />
       <Name>Azure.Identity.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>      
-      <Keywords />
-      <Name>Azure.Security.KeyVault.Secrets.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>      

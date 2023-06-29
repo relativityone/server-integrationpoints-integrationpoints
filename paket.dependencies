@@ -46,13 +46,10 @@ nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.HostingBridge.SDK 0.2.0
 
-// Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
-
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.19.4
+nuget Relativity.DataExchange.Client.SDK 1.20.25
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
-nuget Relativity.Transfer.Client 7.4.10
+nuget Relativity.Transfer.Client 8.0.0-pre.66
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
@@ -102,6 +99,9 @@ nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
+// Relativity Sync packages
+nuget Relativity.Sync.Services.Interfaces 1.0.56
+
 group Tests
 framework: auto-detect
 strategy: min
@@ -145,7 +145,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.51
+nuget Relativity.Sync 1.0.56
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -158,7 +158,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.51
+nuget Relativity.Sync 1.0.56
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
