@@ -1785,11 +1785,6 @@
     </Assembly>
     <Assembly>      
       <Keywords />
-      <Name>Azure.Security.KeyVault.Secrets.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>      
-      <Keywords />
       <Name>Azure.Storage.Blobs.dll</Name>
       <Notes />
     </Assembly>

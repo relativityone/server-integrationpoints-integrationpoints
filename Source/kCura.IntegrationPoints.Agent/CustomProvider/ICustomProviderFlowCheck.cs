@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
     internal interface ICustomProviderFlowCheck
     {
-        Task<bool> ShouldBeUsedAsync(IntegrationPointDto integrationPoint);
+        bool ShouldBeUsed(IntegrationPointDto integrationPoint);
     }
 }

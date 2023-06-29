@@ -102,8 +102,8 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 });
 
             _toggleProvider = new Mock<IRipToggleProvider>();
-            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
-                .ReturnsAsync(false);
+            _toggleProvider.Setup(x => x.IsEnabled<EnableRelativitySyncApplicationToggle>())
+                .Returns(false);
 
             _providerTypeService = new Mock<IProviderTypeService>();
             _providerTypeService.Setup(s => s.GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID))
