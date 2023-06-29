@@ -789,7 +789,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Renci.SshNet">
-          <HintPath>..\..\packages\SSH.NET\lib\net40\Renci.SshNet.dll</HintPath>
+          <HintPath>..\..\packages\SSH.NET\lib\net35\Renci.SshNet.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

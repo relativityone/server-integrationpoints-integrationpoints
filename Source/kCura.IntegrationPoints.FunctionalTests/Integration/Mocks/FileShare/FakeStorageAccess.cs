@@ -49,9 +49,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
-        public IAsyncEnumerable<DirectoryEntry[]> EnumerateDirectoryPagedAsync(string path,
+        public IAsyncEnumerable<DirectoryEntry[]> EnumerateDirectoryPagedAsync(
+            string path,
             EnumerateDirectoryPagedOptions enumerateDirectoryPagedOptions = null,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }
@@ -79,14 +80,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
-        public Task<byte[]> ReadAllBytesAsync(string path, ReadAllBytesOptions readAllBytesOptions = null,
-            CancellationToken cancellationToken = new CancellationToken())
+        public Task<byte[]> ReadAllBytesAsync(
+            string path,
+            ReadAllBytesOptions readAllBytesOptions = null,
+            CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<string> ReadAllTextAsync(string path, ReadAllTextOptions readAllTextOptions = null,
-            CancellationToken cancellationToken = new CancellationToken())
+        public Task<string> ReadAllTextAsync(
+            string path,
+            ReadAllTextOptions readAllTextOptions = null,
+            CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }

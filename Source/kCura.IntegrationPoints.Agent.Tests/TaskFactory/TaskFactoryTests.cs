@@ -65,9 +65,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             _newCustomProviderCheckFake = new Mock<ICustomProviderFlowCheck>();
             _newCustomProviderCheckFake.Setup(
-                    x => x.ShouldBeUsedAsync(
+                    x => x.ShouldBeUsed(
                         It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
+                .Returns(true);
 
             _relativitySyncCheckerFake = new Mock<IRelativitySyncConstrainsChecker>();
 
@@ -215,8 +215,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var agentBase = new TestAgentBase(Guid.NewGuid());
 
-            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
+            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsed(It.IsAny<IntegrationPointDto>()))
+                .Returns(true);
 
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
 

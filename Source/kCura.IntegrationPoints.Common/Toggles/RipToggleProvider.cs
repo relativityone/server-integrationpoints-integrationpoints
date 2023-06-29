@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -30,41 +29,15 @@ namespace kCura.IntegrationPoints.Common.Toggles
             return IsEnabledByName(typeof(T).FullName);
         }
 
-        public async Task<bool> IsEnabledAsync<T>() where T : IToggle
-        {
-            return await IsEnabledByNameAsync(typeof(T).FullName).ConfigureAwait(false);
-        }
-
         public bool IsEnabledByName(string toggleName)
         {
-            _dictionarySemaphore.WaitAsync().GetAwaiter().GetResult();
+            _dictionarySemaphore.Wait();
             try
             {
                 bool toggleValue;
                 if (!_cache.TryGetValue(toggleName, out toggleValue))
                 {
                     toggleValue = _toggleProvider.IsEnabledByName(toggleName);
-                    SendToggleLog(toggleName, toggleValue);
-                    _cache.Add(toggleName, toggleValue);
-                }
-
-                return toggleValue;
-            }
-            finally
-            {
-                _dictionarySemaphore.Release();
-            }
-        }
-
-        public async Task<bool> IsEnabledByNameAsync(string toggleName)
-        {
-            await _dictionarySemaphore.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                bool toggleValue;
-                if (!_cache.TryGetValue(toggleName, out toggleValue))
-                {
-                    toggleValue = await _toggleProvider.IsEnabledByNameAsync(toggleName).ConfigureAwait(false);
                     SendToggleLog(toggleName, toggleValue);
                     _cache.Add(toggleName, toggleValue);
                 }
