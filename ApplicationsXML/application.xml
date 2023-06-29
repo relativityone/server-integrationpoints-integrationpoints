@@ -1618,9 +1618,14 @@
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Sync.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <Keywords />
+      <Name>Relativity.Sync.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>      

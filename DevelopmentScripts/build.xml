@@ -56,6 +56,7 @@
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Environment.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Numerics.Vectors.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.dll</Assembly>
+					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.Services.Interfaces.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>

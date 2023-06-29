@@ -33,7 +33,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                     SubmitJobRequestDTO request = new SubmitJobRequestDTO()
                     {
                         WorkspaceID = workspaceArtifactId,
-                        UserID = userId,
                         SyncConfigurationArtifactID = syncConfigurationId
                     };
                     Guid jobId = await syncService.SubmitJobAsync(request).ConfigureAwait(false);
