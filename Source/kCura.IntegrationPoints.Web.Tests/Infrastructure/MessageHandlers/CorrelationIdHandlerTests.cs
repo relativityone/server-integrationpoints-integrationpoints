@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Infrastructure.MessageHandlers
 
             // assert
             _loggerMock.Verify(x =>
-                x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.WebRequestCorrelationId)}", expectedCorrelationId.ToString())
+                x.LogContextPushProperty($"RIP.{nameof(WebCorrelationContext.CorrelationId)}", expectedCorrelationId.ToString())
             );
         }
 

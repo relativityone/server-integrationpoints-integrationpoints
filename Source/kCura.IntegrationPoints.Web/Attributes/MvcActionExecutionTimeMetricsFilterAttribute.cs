@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Metrics;
@@ -9,6 +10,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
     public class MvcActionExecutionTimeMetricsFilterAttribute : System.Web.Mvc.ActionFilterAttribute
     {
         private const string _TIMESTAMP_KEY_NAME = "MvcActionExecutionStartTimestamp";
+        private const string WEB_CORRELATION_ID_HEADER_NAME = "X-Correlation-ID";
 
         public IWindsorContainer Container { get; set; } = WindsorServiceLocator.Container;
 
@@ -42,7 +44,10 @@ namespace kCura.IntegrationPoints.Web.Attributes
             GetService<IControllerActionExecutionTimeMetrics>().LogExecutionTime(
                 FormatURL(filterContext.HttpContext.Request.RawUrl),
                 (DateTime)filterContext.HttpContext.Items[_TIMESTAMP_KEY_NAME],
-                filterContext.HttpContext.Request.HttpMethod);
+                filterContext.HttpContext.Request.HttpMethod,
+                filterContext.HttpContext.Request.Headers.AllKeys.Contains(WEB_CORRELATION_ID_HEADER_NAME)
+                    ? filterContext.HttpContext.Request.Headers[WEB_CORRELATION_ID_HEADER_NAME]
+                    : Guid.NewGuid().ToString());
         }
 
         /// <summary>

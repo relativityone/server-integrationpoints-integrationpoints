@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core
 
                 #region Custom Page
 
-                public const string BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME = "IntegrationPoint.CustomPage.ResponseTime";
+                public const string BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME = "IntegrationPoints.CustomPage.ResponseTime";
 
                 #endregion
 

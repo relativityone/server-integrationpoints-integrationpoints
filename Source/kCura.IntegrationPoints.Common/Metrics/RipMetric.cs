@@ -6,11 +6,12 @@ namespace kCura.IntegrationPoints.Common.Metrics
     public class RipMetric
     {
         private Dictionary<string, object> _customData;
-        private RipMetric(string name, RipMetricType type, string workflowId)
+
+        private RipMetric(string name, RipMetricType type, string correlationId)
         {
             Name = name;
             Type = type;
-            WorkflowId = workflowId;
+            CorrelationId = correlationId;
         }
 
         /// <summary>
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Common.Metrics
         /// <summary>
         /// ID that correlates the metric to a particular system usage workflow.
         /// </summary>
-        public string WorkflowId { get; set; }
+        public string CorrelationId { get; set; }
 
         /// <summary>
         /// Value of this metric.
@@ -54,25 +55,25 @@ namespace kCura.IntegrationPoints.Common.Metrics
             }
         }
 
-        public static RipMetric TimedOperation(string name, TimeSpan duration, string workflowId)
+        public static RipMetric TimedOperation(string name, TimeSpan duration, string correlationId)
         {
-            return new RipMetric(name, RipMetricType.TimedOperation, workflowId)
+            return new RipMetric(name, RipMetricType.TimedOperation, correlationId)
             {
                 Value = duration.TotalMilliseconds
             };
         }
 
-        public static RipMetric PointInTimeLong(string name, long value, string workflowId)
+        public static RipMetric PointInTimeLong(string name, long value, string correlationId)
         {
-            return new RipMetric(name, RipMetricType.PointInTimeLong, workflowId)
+            return new RipMetric(name, RipMetricType.PointInTimeLong, correlationId)
             {
                 Value = value
             };
         }
 
-        public static RipMetric PointInTimeDouble(string name, double value, string workflowId)
+        public static RipMetric PointInTimeDouble(string name, double value, string correlationId)
         {
-            return new RipMetric(name, RipMetricType.PointInTimeDouble, workflowId)
+            return new RipMetric(name, RipMetricType.PointInTimeDouble, correlationId)
             {
                 Value = value
             };

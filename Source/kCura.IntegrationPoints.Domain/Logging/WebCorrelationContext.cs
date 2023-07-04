@@ -7,13 +7,10 @@ namespace kCura.IntegrationPoints.Domain.Logging
     {
         public Guid? CorrelationId { get; set; }
 
-        public Guid? WebRequestCorrelationId { get; set; }
-
         public override Dictionary<string, object> ToDictionary()
         {
             Dictionary<string, object> baseProperties = base.ToDictionary();
             baseProperties.Add(nameof(CorrelationId), CorrelationId);
-            baseProperties.Add(nameof(WebRequestCorrelationId), WebRequestCorrelationId);
             return baseProperties;
         }
 
@@ -25,7 +22,6 @@ namespace kCura.IntegrationPoints.Domain.Logging
             }
             base.SetValuesFromDictionary(dictionary);
             CorrelationId = GetValueOrDefault<Guid?>(dictionary, nameof(CorrelationId));
-            WebRequestCorrelationId = GetValueOrDefault<Guid?> (dictionary, nameof(WebRequestCorrelationId));
         }
     }
 }

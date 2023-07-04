@@ -7,7 +7,6 @@ using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
@@ -226,7 +225,7 @@ namespace kCura.IntegrationPoints.Agent
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
-                .ActivateTimer(job.JobId, GetCorrelationId(job, container.Resolve<ISerializer>()), job.TaskType);
+                .ActivateTimer(job.JobId, GetBatchInstanceId(container, job).ToString(), job.TaskType);
         }
 
         private IDisposable StartHeartbeatReporting(IWindsorContainer container, Job job)
@@ -235,27 +234,9 @@ namespace kCura.IntegrationPoints.Agent
                 .ActivateHeartbeat(job.JobId);
         }
 
-        private string GetCorrelationId(Job job, ISerializer serializer)
-        {
-            string result = string.Empty;
-            try
-            {
-                TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-                result = taskParameters.BatchInstance.ToString();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, "Error occurred while retrieving batch instance for job: {jobId}", job.JobId);
-            }
-            return result;
-        }
 
         private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
         {
-            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
-            Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-            string correlationId = batchInstanceId.ToString();
-
             var correlationContext = new AgentCorrelationContext
             {
                 JobId = job.JobId,
@@ -264,21 +245,26 @@ namespace kCura.IntegrationPoints.Agent
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
                 ActionName = _RELATIVITY_SYNC_JOB_TYPE,
-                WorkflowId = correlationId
+                WorkflowId = GetBatchInstanceId(container, job).ToString()
             };
             return correlationContext;
+        }
+
+        private Guid GetBatchInstanceId(IWindsorContainer container, Job job)
+        {
+            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
+            return taskParameterHelper.GetBatchInstance(job);
         }
 
         private void SendJobStartedMessage(IWindsorContainer container, Job job)
         {
             try
             {
-                ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
                 IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
                 IProviderTypeService providerTypeService = container.Resolve<IProviderTypeService>();
                 IMessageService messageService = container.Resolve<IMessageService>();
 
-                Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+                Guid batchInstanceId = GetBatchInstanceId(container, job);
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
                 if (!IsJobResumed(container, batchInstanceId))
                 {

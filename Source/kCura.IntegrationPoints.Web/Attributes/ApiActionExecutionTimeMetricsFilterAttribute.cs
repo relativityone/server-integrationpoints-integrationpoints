@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using Castle.Windsor;
@@ -43,7 +44,8 @@ namespace kCura.IntegrationPoints.Web.Attributes
             GetService<IControllerActionExecutionTimeMetrics>().LogExecutionTime(
                 FormatURL(actionExecutedContext.Request.RequestUri.AbsolutePath),
                 (DateTime)actionExecutedContext.Request.Properties[_TIMESTAMP_KEY_NAME],
-                actionExecutedContext.Request.Method.Method);
+                actionExecutedContext.Request.Method.Method,
+                actionExecutedContext.Request.GetCorrelationId().ToString());
         }
 
         /// <summary>

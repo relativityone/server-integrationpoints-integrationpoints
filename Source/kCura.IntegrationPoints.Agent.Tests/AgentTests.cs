@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
@@ -247,6 +248,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
             Mock<IConfig> config = new Mock<IConfig>();
 
+            Mock<IRipMetrics> ripMetrics = new Mock<IRipMetrics>();
+
             Mock<IRelativitySyncConstrainsChecker> relativitySyncConstrainsChecker = new Mock<IRelativitySyncConstrainsChecker>();
             relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<int>())).Returns(false);
 
@@ -278,6 +281,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             RegisterMock(jobContextProvider);
             RegisterMock(serializer);
             RegisterMock(config);
+            RegisterMock(ripMetrics);
             RegisterMock(relativitySyncConstrainsChecker);
             RegisterMock(taskParameterHelper);
             RegisterMock(_integrationPointServiceMock);
