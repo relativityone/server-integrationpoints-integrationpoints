@@ -42,18 +42,17 @@ Task Test -Description "Run tests that don't require a deployed environment." {
     Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
-Task FunctionalTest -Description "Run tests that require a deployed environment." {
+Task FunctionalTest -Description "Run tests that require a deployed environment." -Depends SetChromePath {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    
     $Env:Branch
-    if($Env:Branch -eq 'master') {
+    if($Env:Branch -eq 'server-main') {
         Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
     } else {
         Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
     }
 }
 
-Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
+Task NightlyTest -Description "Run Nightly tests that require a deployed environment." -Depends SetChromePath,OneTimeTestsSetup {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
     Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
@@ -113,6 +112,18 @@ Task Rebuild -Description "Do a rebuild" {
         ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
         ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
+}
+
+Task SetChromePath -Description "Sets path to portable Chromium" {
+    $directoryToPortableChrome = [System.IO.Path]::Combine($BuildToolsDir, 'Relativity.Chromium.Portable', 'tools')
+    $pathToPortableChrome = [System.IO.Path]::Combine($directoryToPortableChrome, 'chrome.exe')
+    if (!(Test-Path -Path $pathToPortableChrome)) {
+        throw "The tests cannot be run because the portable chrome driver '$pathToPortableChrome' cannot be found"
+    }
+
+    Write-Host "Set unit test to use chrome ${pathToPortableChrome}"
+    $env:CHROME_BIN = $pathToPortableChrome
+    $env:Path += ";$directoryToPortableChrome"
 }
 
 Task Help -Alias ? -Description "Display task information" {

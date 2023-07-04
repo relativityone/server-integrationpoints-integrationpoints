@@ -12,7 +12,6 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[SetUpFixture]
-	[Ignore("REL-841500: Resolve all unit and functional tests of RIP")]
 	public class TestsSetUpFixture
 	{
 		private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
