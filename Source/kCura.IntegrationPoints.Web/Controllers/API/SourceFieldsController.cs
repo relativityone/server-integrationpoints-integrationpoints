@@ -46,6 +46,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             List<FieldEntry> fields = provider.GetFields(new DataSourceProviderConfiguration(data.Options.ToString(), data.Credentials)).OrderBy(x => x.DisplayName).ToList();
 
             List<ClassifiedFieldDTO> result = new List<ClassifiedFieldDTO>();
+
+            // Every provider has its own logic of setting FieldIdentifier property value,
+            // but we always need to have value convertable to integer. Otherwise saving IP is impossible when user select
+            // field for "Use Folder Path" option when importing data from Custom Providers. See: REL-833836
             if (fields.Any(x => !int.TryParse(x.FieldIdentifier, out _)))
             {
                 int idx = 0;
