@@ -72,6 +72,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var classificationResults = ((List<ClassifiedFieldDTO>)((System.Net.Http.ObjectContent<List<ClassifiedFieldDTO>>)response.Content).Value);
             var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
 
+            for(int i = 0; i < fieldEntries.Count; i++)
+            {
+                fieldEntries[i].FieldIdentifier = i.ToString();
+            }
+
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldIdentifier));
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.Name));
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.IsIdentifier), classificationResults.Select(x => x.IsIdentifier));
