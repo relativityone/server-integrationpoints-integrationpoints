@@ -45,15 +45,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             IDataSourceProvider provider = _factory.GetDataProvider(applicationGuid, data.Type);
             List<FieldEntry> fields = provider.GetFields(new DataSourceProviderConfiguration(data.Options.ToString(), data.Credentials)).OrderBy(x => x.DisplayName).ToList();
 
-            List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
+            List<ClassifiedFieldDTO> result = new List<ClassifiedFieldDTO>();
+            int idx = 0;
+            foreach (FieldEntry field in fields)
             {
-                ClassificationLevel = ClassificationLevel.AutoMap,
-                FieldIdentifier = x.FieldIdentifier,
-                Name = x.ActualName,
-                Type = x.Type,
-                IsIdentifier = x.IsIdentifier,
-                IsRequired = x.IsRequired
-            }).ToList();
+                ClassifiedFieldDTO classifiedFieldDTO = new ClassifiedFieldDTO
+                {
+                    ClassificationLevel = ClassificationLevel.AutoMap,
+                    FieldIdentifier = int.TryParse(field.FieldIdentifier, out _) ? field.FieldIdentifier : idx.ToString(),
+                    Name = field.ActualName,
+                    Type = field.Type,
+                    IsIdentifier = field.IsIdentifier,
+                    IsRequired = field.IsRequired
+                };
+
+                result.Add(classifiedFieldDTO);
+                idx++;
+            }
 
             return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
         }
