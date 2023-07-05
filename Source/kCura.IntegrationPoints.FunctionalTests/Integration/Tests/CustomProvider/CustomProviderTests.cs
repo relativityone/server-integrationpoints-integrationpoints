@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
+using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -63,6 +64,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             // Consider creation of Object Manager Stub for Setting Total Items
 
+            // Arrange
+            var job = ScheduleImportCustomProviderJob();
+
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
+            VerifyFileExistenceAndContent(job);
+
+            Proxy.ImportJobController.Mock.Verify(x => x.CreateAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>(), kCura.IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_NAME, It.IsAny<string>()), Times.Once);
+            Proxy.ImportJobController.Mock.Verify(x => x.BeginAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Once);
+            Proxy.ImportJobController.Mock.Verify(x => x.GetProgressAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Exactly(2));
+            Proxy.ImportJobController.Mock.Verify(x => x.EndAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Once);
+            Proxy.ImportJobController.Mock.Verify(x => x.CancelAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Never);
+
+            Proxy.ImportSourceControllerStub.Mock.Verify(x => x.AddSourceAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()), Times.Once);
+
+
             UpdateRequest setTotalItemsRequest = new UpdateRequest
             {
                 Object = new RelativityObjectRef
@@ -82,22 +104,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                 }
             };
 
-
-
-            // Import Job Controller. Stubs Exists for CreateAsync and BeginAsync. Just add checkers - Proxy.ImportJobController.Mock.Verify
-            // Add GetProgressAsync mock
-
-            // Arrange
-            var job = ScheduleImportCustomProviderJob();
-
-            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
-
-            // Act
-            sut.Execute();
-
-            // Assert
-            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
-            VerifyFileExistenceAndContent(job);
+            Proxy.ObjectManager.Mock.Verify(
+                x => x.UpdateAsync(
+                    SourceWorkspace.ArtifactId,
+                    It.Is<UpdateRequest>(
+                        y =>
+                            y.FieldValues.FirstOrDefault().Field.Guid == JobHistoryFieldGuids.TotalItemsGuid)),
+                Times.Once);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
