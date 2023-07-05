@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             sut.Execute();
 
             // Assert
-            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryErrorJobFailedGuid);
             VerifyFileExistenceAndContent(job);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();

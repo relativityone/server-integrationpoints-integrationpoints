@@ -221,6 +221,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
             container.Register(Component.For<IDocumentImportSettingsBuilder>().ImplementedBy<DocumentImportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<IRdoImportSettingsBuilder>().ImplementedBy<RdoImportSettingsBuilder>().LifestyleTransient());
+            container.Register(Component.For<IItemLevelErrorHandler>().ImplementedBy<ItemLevelErrorHandler>().LifestyleTransient());
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
         }

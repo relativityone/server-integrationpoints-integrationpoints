@@ -46,13 +46,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private AdvancedImportSettings CreateAdvancedImportSettings()
         {
-            var advancedSettings = new AdvancedImportSettings()
-            {
-                Other = new AdvancedOtherSettings
-                {
-                    AuditLevel = AuditLevel.FullAudit
-                }
-            };
+            var advancedSettings = new AdvancedImportSettings();
 
             return advancedSettings;
         }

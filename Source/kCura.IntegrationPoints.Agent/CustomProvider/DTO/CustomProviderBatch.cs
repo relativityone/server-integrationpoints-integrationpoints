@@ -15,5 +15,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
         public bool IsAddedToImportQueue { get; set; }
 
         public int NumberOfRecords { get; set; }
+
+        public BatchStatus Status { get; set; }
     }
 }

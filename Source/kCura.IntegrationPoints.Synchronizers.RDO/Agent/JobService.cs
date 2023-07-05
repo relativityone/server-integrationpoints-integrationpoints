@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private void LogUpdateJobDetails(Job job)
         {
-            _log.LogInformation("Attempting to update JobDetails for job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
+            _log.LogInformation("Attempting to update JobDetails for job with ID: {jobId} - JobInfo: {@jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
         public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
