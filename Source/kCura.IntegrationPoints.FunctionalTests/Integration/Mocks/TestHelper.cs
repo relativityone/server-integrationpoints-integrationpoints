@@ -55,6 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IRDOConfigurationController>(proxy.RdoConfigurationController.Object);
             RegisterProxyInServiceManagerMock<IAdvancedConfigurationController>(proxy.AdvancedConfigurationController.Object);
             RegisterProxyInServiceManagerMock<ISyncService>(proxy.SyncService.Object);
+            RegisterProxyInServiceManagerMock<IImportSourceController>(proxy.ImportSourceControllerStub.Object);
         }
 
         public Mock<IDBContext> DbContextMock => _dbContext;
