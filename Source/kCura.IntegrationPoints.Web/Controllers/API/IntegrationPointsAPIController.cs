@@ -37,32 +37,28 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpGet]
-        [LogApiExceptionFilter(Message = "Unable to retrive integration point data.")]
+        [LogApiExceptionFilter(Message = "Unable to retrieve integration point data.")]
         public HttpResponseMessage Get(int id)
         {
             try
             {
-                var model = new IntegrationPointWebModel
-                {
-                    ArtifactID = id,
-                    LogErrors = true,
+                IntegrationPointWebModel webModel = id > 0
+                    ? _integrationPointService.Read(id).ToWebModel(_serializer)
+                    : new IntegrationPointWebModel
+                        {
+                            // we need this hack because frontend logic rely on this:
+                            // export-provider-fields-step.js: [if (typeof ip.sourceConfiguration === "string")]
+                            SourceConfiguration = string.Empty,
+                            LogErrors = true,
+                        };
 
-                    // we need this hack because frontend logic rely on this:
-                    // export-provider-fields-step.js: [if (typeof ip.sourceConfiguration === "string")]
-                    SourceConfiguration = string.Empty,
-                };
 
-                if (id > 0)
+                if (webModel.DestinationProvider == 0)
                 {
-                    model = _integrationPointService.Read(id).ToWebModel(_serializer);
+                    webModel.DestinationProvider = _provider.GetRdoSynchronizerId();
                 }
 
-                if (model.DestinationProvider == 0)
-                {
-                    model.DestinationProvider = _provider.GetRdoSynchronizerId();
-                }
-
-                return Request.CreateResponse(HttpStatusCode.Accepted, model);
+                return Request.CreateResponse(HttpStatusCode.Accepted, webModel);
             }
             catch (Exception exception)
             {

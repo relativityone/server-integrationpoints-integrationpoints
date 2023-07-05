@@ -83,15 +83,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profile.")]
         public HttpResponseMessage Get(int artifactId)
         {
-            IntegrationPointProfileWebModel webModel;
-            if (artifactId > 0)
-            {
-                webModel = _profileService.Read(artifactId).ToWebModel(_serializer);
-            }
-            else
-            {
-                webModel = new IntegrationPointProfileWebModel();
-            }
+            IntegrationPointProfileWebModel webModel = artifactId > 0
+                ? _profileService.Read(artifactId).ToWebModel(_serializer)
+                : new IntegrationPointProfileWebModel
+                    {
+                        // we need this hack because frontend logic rely on this:
+                        // export-provider-fields-step.js: [if (typeof ip.sourceConfiguration === "string")]
+                        SourceConfiguration = string.Empty,
+                        LogErrors = true,
+                    };
 
             return Request.CreateResponse(HttpStatusCode.OK, webModel);
         }
