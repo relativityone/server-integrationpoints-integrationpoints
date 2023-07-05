@@ -7,6 +7,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;

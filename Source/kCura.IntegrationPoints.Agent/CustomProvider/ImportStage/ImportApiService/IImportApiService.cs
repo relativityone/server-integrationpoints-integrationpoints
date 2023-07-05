@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Sources;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService
 {
     /// <summary>
     /// An interface for ImportAPI v2.0 kepler calls.

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services

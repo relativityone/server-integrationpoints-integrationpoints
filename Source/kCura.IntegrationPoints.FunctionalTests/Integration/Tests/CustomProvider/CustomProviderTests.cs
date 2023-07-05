@@ -23,6 +23,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
     {
         private readonly ManagementTestData _managementTestData = new ManagementTestData();
 
+        /* 
+        Basic implementation:
+            IAPI 2.0 calls
+            job history updates
+            status updates
+            
+        Additional tests:
+            k8s crashes
+            IdFilesBuilder - partly done
+            
+
+        */
+
         public override void SetUp()
         {
             base.SetUp();

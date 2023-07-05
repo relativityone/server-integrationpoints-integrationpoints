@@ -8,6 +8,7 @@ using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Common.Helpers;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
@@ -27,8 +26,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 bool result = isToggleEnabled && !isManagersLinkingEnabled;
 
-                _log.LogInformation("Using IAPI 2.0 in Custom Providers flow: {result} because is toggle enabled: {isToggleEnabled}, is managers linking enabled: {isManagersLinkingEnabled}",
-                    result, isToggleEnabled, isManagersLinkingEnabled);
+                _log.LogInformation(
+                    "Using IAPI 2.0 in Custom Providers flow: {result} because is toggle enabled: {isToggleEnabled}, is managers linking enabled: {isManagersLinkingEnabled}",
+                    result,
+                    isToggleEnabled,
+                    isManagersLinkingEnabled);
 
                 return result;
             }
