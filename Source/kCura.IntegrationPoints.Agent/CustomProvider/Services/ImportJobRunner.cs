@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
@@ -30,9 +31,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
         private readonly IJobProgressHandler _jobProgressHandler;
         private readonly IJobHistoryService _jobHistoryService;
+        private readonly INotificationService _notificationService;
         private readonly IAPILog _logger;
 
-        public ImportJobRunner(IImportApiService importApiService, IJobDetailsService jobDetailsService, IIdFilesBuilder idFilesBuilder, ILoadFileBuilder loadFileBuilder, IRelativityStorageService relativityStorageService, IImportApiRunnerFactory importApiRunnerFactory, IJobProgressHandler jobProgressHandler, IJobHistoryService jobHistoryService, IAPILog logger)
+        public ImportJobRunner(
+            IImportApiService importApiService,
+            IJobDetailsService jobDetailsService,
+            IIdFilesBuilder idFilesBuilder,
+            ILoadFileBuilder loadFileBuilder,
+            IRelativityStorageService relativityStorageService,
+            IImportApiRunnerFactory importApiRunnerFactory,
+            IJobProgressHandler jobProgressHandler,
+            IJobHistoryService jobHistoryService,
+            INotificationService notificationService,
+            IAPILog logger)
         {
             _importApiService = importApiService;
             _jobDetailsService = jobDetailsService;
@@ -42,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _importApiRunnerFactory = importApiRunnerFactory;
             _jobProgressHandler = jobProgressHandler;
             _jobHistoryService = jobHistoryService;
+            _notificationService = notificationService;
             _logger = logger;
         }
 
@@ -130,6 +143,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 {
                     await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName).ConfigureAwait(false);
                 }
+
+                await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto).ConfigureAwait(false);
             }
         }
 

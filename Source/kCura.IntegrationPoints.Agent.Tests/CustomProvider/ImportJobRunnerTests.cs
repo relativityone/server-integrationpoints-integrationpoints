@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
@@ -43,6 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IImportApiRunnerFactory> _importApiRunnerFactory;
         private Mock<IJobProgressHandler> _jobProgressHandler;
         private Mock<IJobHistoryService> _jobHistoryService;
+        private Mock<INotificationService> _notificationService;
 
         private Mock<IStorageAccess<string>> _storageAccess;
         private Mock<IImportApiRunner> _importApiRunner;
@@ -58,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobDetailsService = new Mock<IJobDetailsService>();
             _idFilesBuilder = new Mock<IIdFilesBuilder>();
             _loadFileBuilder = new Mock<ILoadFileBuilder>();
+            _notificationService = new Mock<INotificationService>();
 
             _relativityStorageService = new Mock<IRelativityStorageService>();
             _relativityStorageService
@@ -268,6 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _importApiRunnerFactory.Object,
                 _jobProgressHandler.Object,
                 _jobHistoryService.Object,
+                _notificationService.Object,
                 Mock.Of<IAPILog>());
         }
     }
