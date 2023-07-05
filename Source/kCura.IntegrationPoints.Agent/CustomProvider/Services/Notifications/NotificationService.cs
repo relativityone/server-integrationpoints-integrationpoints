@@ -76,10 +76,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
         private string GetEmailBody(Data.JobHistory jobHistory)
         {
             StringBuilder emailBodyBuilder = new StringBuilder();
-            emailBodyBuilder.AppendLine(NotificationConstants._MESSAGE_CONTENT.ToH2HeaderHtml());
-            emailBodyBuilder.AppendLine(NotificationConstants._BODY_NAME.ToBoldedHtmlFont() + jobHistory.Name);
-            emailBodyBuilder.AppendLine(NotificationConstants._BODY_DESTINATION.ToBoldedHtmlFont() + jobHistory.DestinationWorkspace);
-            emailBodyBuilder.AppendLine(NotificationConstants._BODY_STATUS.ToBoldedHtmlFont() + jobHistory.JobStatus.Name);
+            emailBodyBuilder.AppendLine(NotificationConstants._MESSAGE_CONTENT.ToH3HeaderHtml());
+            emailBodyBuilder.AppendLine(NotificationConstants._BODY_NAME.ToLineWithBoldedSectionHtml(jobHistory.Name));
+            emailBodyBuilder.AppendLine(NotificationConstants._BODY_DESTINATION.ToLineWithBoldedSectionHtml(jobHistory.DestinationWorkspace));
+            emailBodyBuilder.AppendLine(NotificationConstants._BODY_STATUS.ToLineWithBoldedSectionHtml(jobHistory.JobStatus.Name));
 
             // TODO: consider adding: stats with items transferred / failed / total           
 
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
             {
                 // TODO: get error msg (see: JobHistoryErrorQuery.cs), prepare default string for empty msg case handling
                 string errorMsg = "Test error msg";
-                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToBoldedHtmlFont() + errorMsg);
+                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToLineWithBoldedSectionHtml(errorMsg));
             }
 
             return emailBodyBuilder.ToString();

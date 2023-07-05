@@ -8,14 +8,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
 {
     internal static class FormatExtensions
     {
-        public static string ToBoldedHtmlFont(this string input)
+        public static string ToLineWithBoldedSectionHtml(this string input, string injectedValue)
         {
-            return $"<b>{input}</b>";
+            return $"<b>{input}</b>{injectedValue}<br>";
         }
 
-        public static string ToH2HeaderHtml(this string input)
+        public static string ToH3HeaderHtml(this string input)
         {
-            return $"<h2>{input}</h2>";
+            return $"<h3>{input}</h3>";
         }
     }
 }
