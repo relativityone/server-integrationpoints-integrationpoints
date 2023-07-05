@@ -12,6 +12,7 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 using FileInfo = System.IO.FileInfo;
 
@@ -23,16 +24,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
     {
         private readonly ManagementTestData _managementTestData = new ManagementTestData();
 
-        /* 
+        /*
         Basic implementation:
             IAPI 2.0 calls
             job history updates
             status updates
-            
+
         Additional tests:
             k8s crashes
             IdFilesBuilder - partly done
-            
+            JobDetailsService.UpdateJobDetailsAsync
 
         */
 
@@ -53,9 +54,39 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             Context.InstanceSettings.CustomProviderProgressUpdateInterval = TimeSpan.FromSeconds(100);
         }
 
+
+
         [Test]
         public void CustomProviderTest_SystemTest()
         {
+            // Add More batches - currently is only 1.
+
+            // Consider creation of Object Manager Stub for Setting Total Items
+
+            UpdateRequest setTotalItemsRequest = new UpdateRequest
+            {
+                Object = new RelativityObjectRef
+                {
+                    ArtifactID = 100055
+                },
+                FieldValues = new[]
+                {
+                    new FieldRefValuePair
+                    {
+                        Field = new FieldRef
+                        {
+                            Guid = JobHistoryFieldGuids.TotalItemsGuid
+                        },
+                        Value = 4
+                    }
+                }
+            };
+
+
+
+            // Import Job Controller. Stubs Exists for CreateAsync and BeginAsync. Just add checkers - Proxy.ImportJobController.Mock.Verify
+            // Add GetProgressAsync mock
+
             // Arrange
             var job = ScheduleImportCustomProviderJob();
 

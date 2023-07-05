@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Moq;
 using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
@@ -30,6 +31,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                             string.Empty,
                             string.Empty));
                 });
+
+            Mock.Setup(x => x.GetProgressAsync(It.IsAny<int>(), It.IsAny<Guid>())).Returns((int workspaceId, Guid importJobId) =>
+            {
+                return Task.FromResult(
+                    new ValueResponse<ImportProgress>(
+                        importJobId,
+                        true,
+                        string.Empty,
+                        string.Empty,
+                        new ImportProgress(4, 4, 0)));
+            });
         }
     }
 }
