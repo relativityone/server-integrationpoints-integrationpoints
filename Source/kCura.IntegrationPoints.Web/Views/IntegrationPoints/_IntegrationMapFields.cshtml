@@ -139,7 +139,7 @@
                                 <input id="image-include-original-images-checkbox" type="checkbox" data-bind="checked: IncludeOriginalImages" />
                             </div>
                         </div>
-                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'true'">
+                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'true' && IsImportFromLoadFileOrExport()">
                             <div class="field-label required " data-bind="text: copyNativeLabel"></div>
                             <div class="field-value">
                                 <ul>
@@ -155,7 +155,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'false' && IsImportFromLoadFile()">
+                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'false' && IsImportFromLoadFileOrExport()">
                             <div class="field-label required " data-bind="text: copyNativeLabel"></div>
                             <div class="field-value">
                                 <ul>
