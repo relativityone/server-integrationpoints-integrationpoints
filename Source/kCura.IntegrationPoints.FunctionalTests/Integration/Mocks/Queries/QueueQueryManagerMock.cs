@@ -14,10 +14,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         private readonly TestContext _context;
         private int _scheduleQueueCreateRequestCount;
 
+        public List<KeyValuePair<long, string>> JobDetailsUpdateExecutions { get; }
+
         public QueueQueryManagerMock(RelativityInstanceTest database, TestContext context)
         {
             _db = database;
             _context = context;
+            JobDetailsUpdateExecutions = new List<KeyValuePair<long, string>>();
         }
 
         public ICommand CreateScheduleQueueTable()
@@ -248,6 +251,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
                 if (job != null)
                 {
                     job.JobDetails = jobDetails;
+                    JobDetailsUpdateExecutions.Add(new KeyValuePair<long, string>(jobId, jobDetails));
                 }
             });
         }

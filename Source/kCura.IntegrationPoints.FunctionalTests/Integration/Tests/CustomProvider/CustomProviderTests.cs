@@ -1,17 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
+using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
@@ -24,6 +32,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
     public class CustomProviderTests : TestsBase
     {
         private readonly ManagementTestData _managementTestData = new ManagementTestData();
+
+        private ImportState[] ImportStates { get; set; }
 
         /*
         Basic implementation:
@@ -51,19 +61,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             Context.ToggleValues.SetValue<EnableImportApiV2ForCustomProvidersToggle>(true);
 
-            Context.InstanceSettings.CustomProviderBatchSize = 5;
+            Context.InstanceSettings.CustomProviderBatchSize = 2;
             Context.InstanceSettings.CustomProviderProgressUpdateInterval = TimeSpan.FromSeconds(100);
+
+            ImportStates = new[]
+            {
+                ImportState.New, ImportState.Configured, ImportState.Scheduled, ImportState.Idle, ImportState.Completed
+            };
+
+            SetupWaitForJobToFinish();
         }
-
-
 
         [Test]
         public void CustomProviderTest_SystemTest()
         {
-            // Add More batches - currently is only 1.
-
-            // Consider creation of Object Manager Stub for Setting Total Items
-
             // Arrange
             var job = ScheduleImportCustomProviderJob();
 
@@ -73,46 +84,135 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             sut.Execute();
 
             // Assert
+            CustomProviderJobDetails jobDetails = GetJobDetails(job.JobDetails);
             VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
-            VerifyFileExistenceAndContent(job);
+            VerifyFileExistenceAndContent(job, jobDetails);
+            VerifyTotalItems(jobDetails);
+            VerifyImportJobControllerExecutions(job, jobDetails);
 
-            Proxy.ImportJobController.Mock.Verify(x => x.CreateAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>(), kCura.IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_NAME, It.IsAny<string>()), Times.Once);
-            Proxy.ImportJobController.Mock.Verify(x => x.BeginAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Once);
-            Proxy.ImportJobController.Mock.Verify(x => x.GetProgressAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Exactly(2));
-            Proxy.ImportJobController.Mock.Verify(x => x.EndAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Once);
-            Proxy.ImportJobController.Mock.Verify(x => x.CancelAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>()), Times.Never);
+            var batchesCount = _managementTestData.Data.Count / Context.InstanceSettings.CustomProviderBatchSize;
 
-            Proxy.ImportSourceControllerStub.Mock.Verify(x => x.AddSourceAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()), Times.Once);
+            Proxy.ImportSourceControllerStub.Mock.Verify(
+                x => x.AddSourceAsync(
+                    SourceWorkspace.ArtifactId,
+                    jobDetails.JobHistoryGuid,
+                    It.IsAny<Guid>(),
+                    It.IsAny<DataSourceSettings>()), Times.Exactly(batchesCount));
 
+            var queueQueryManager = (QueueQueryManagerMock)Container.Resolve<IQueueQueryManager>();
+            var expectedJobDetailsUpdateExecutionsCount = batchesCount + 1;
+            var jobDetailsUpdateExecutions = queueQueryManager.JobDetailsUpdateExecutions;
 
-            UpdateRequest setTotalItemsRequest = new UpdateRequest
+            jobDetailsUpdateExecutions.Count.Should().Be(expectedJobDetailsUpdateExecutionsCount);
+
+            var expectedIsAddedToImportQueue = new List<List<bool>>
             {
-                Object = new RelativityObjectRef
+                new List<bool>
                 {
-                    ArtifactID = 100055
+                    false,
+                    false
                 },
-                FieldValues = new[]
+                new List<bool>
                 {
-                    new FieldRefValuePair
-                    {
-                        Field = new FieldRef
-                        {
-                            Guid = JobHistoryFieldGuids.TotalItemsGuid
-                        },
-                        Value = 4
-                    }
+                    true,
+                    false
+                },
+                new List<bool>
+                {
+                    true,
+                    true
                 }
             };
 
+            for (int i = 0; i < expectedJobDetailsUpdateExecutionsCount; i++)
+            {
+                jobDetailsUpdateExecutions[i].Key.ShouldBeEquivalentTo(job.JobId);
+
+                var customProviderJobDetails = Serializer.Deserialize<CustomProviderJobDetails>(jobDetailsUpdateExecutions[i].Value);
+                customProviderJobDetails.Batches.Count.ShouldBeEquivalentTo(batchesCount);
+                for (int j = 0; j < batchesCount; j++)
+                {
+                    customProviderJobDetails.Batches[j].BatchID.ShouldBeEquivalentTo(j);
+                    customProviderJobDetails.Batches[j].IsAddedToImportQueue.ShouldBeEquivalentTo(expectedIsAddedToImportQueue[i][j]);
+                    customProviderJobDetails.Batches[j].NumberOfRecords.ShouldBeEquivalentTo(Context.InstanceSettings.CustomProviderBatchSize);
+                }
+            }
+
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        }
+
+        private void VerifyTotalItems(CustomProviderJobDetails jobDetails)
+        {
             Proxy.ObjectManager.Mock.Verify(
                 x => x.UpdateAsync(
                     SourceWorkspace.ArtifactId,
                     It.Is<UpdateRequest>(
                         y =>
-                            y.FieldValues.FirstOrDefault().Field.Guid == JobHistoryFieldGuids.TotalItemsGuid)),
+                            y.Object.ArtifactID == jobDetails.JobHistoryID &&
+                            y.FieldValues.FirstOrDefault().Field.Guid == JobHistoryFieldGuids.TotalItemsGuid &&
+                            (int)y.FieldValues.FirstOrDefault().Value == _managementTestData.Data.Count)),
                 Times.Once);
+        }
 
-            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        private void VerifyImportJobControllerExecutions(JobTest job, CustomProviderJobDetails jobDetails)
+        {
+            Proxy.ImportJobController.Mock.Verify(
+                x => x.CreateAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid,
+                    kCura.IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_NAME, job.JobId.ToString()),
+                Times.Once);
+            Proxy.ImportJobController.Mock.Verify(x => x.BeginAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid),
+                Times.Once);
+            Proxy.ImportJobController.Mock.Verify(
+                x => x.GetProgressAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid), Times.Exactly(2));
+            Proxy.ImportJobController.Mock.Verify(x => x.GetDetailsAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid),
+                Times.Exactly(ImportStates.Length));
+            Proxy.ImportJobController.Mock.Verify(x => x.EndAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid),
+                Times.Once);
+            Proxy.ImportJobController.Mock.Verify(x => x.CancelAsync(SourceWorkspace.ArtifactId, jobDetails.JobHistoryGuid),
+                Times.Never);
+        }
+
+        private void SetupWaitForJobToFinish()
+        {
+            var jobProgressHandler = Container.Resolve<IJobProgressHandler>();
+            jobProgressHandler.GetType().GetField("_waitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(jobProgressHandler, TimeSpan.FromMilliseconds(200));
+            Container.Register(Component.For<IJobProgressHandler>().UsingFactoryMethod(() => jobProgressHandler)
+                .LifestyleTransient().IsDefault());
+
+            var callIdx = 0;
+            var importJobDetails = new ValueResponse<ImportDetails>(
+                Guid.Empty,
+                true,
+                string.Empty,
+                string.Empty,
+                new ImportDetails(
+                    ImportState.Unknown,
+                    "Rip and SFU",
+                    Context.User.ArtifactId,
+                    DateTime.Today,
+                    Context.User.ArtifactId,
+                    DateTime.UtcNow));
+
+            Proxy.ImportJobController.Mock.Setup(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .Callback((int workspaceId, Guid importJobId) =>
+                {
+                    importJobDetails = new ValueResponse<ImportDetails>(
+                        importJobId,
+                        true,
+                        string.Empty,
+                        string.Empty,
+                        new ImportDetails(
+                            ImportStates[callIdx],
+                            kCura.IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_NAME,
+                            Context.User.ArtifactId,
+                            DateTime.Today,
+                            Context.User.ArtifactId,
+                            DateTime.UtcNow));
+                    callIdx++;
+                })
+                .Returns((int workspaceId, Guid importJobId) => Task.FromResult(
+                    importJobDetails));
         }
 
         private JobTest ScheduleImportCustomProviderJob()
@@ -134,9 +234,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
         }
 
-        private void VerifyFileExistenceAndContent(JobTest job)
+        private void VerifyFileExistenceAndContent(JobTest job, CustomProviderJobDetails jobDetails)
         {
-            CustomProviderJobDetails jobDetails = GetJobDetails(job.JobDetails);
             string idFullFilePath = jobDetails.Batches.First().IDsFilePath;
 
             File.Exists(idFullFilePath).Should().BeTrue();

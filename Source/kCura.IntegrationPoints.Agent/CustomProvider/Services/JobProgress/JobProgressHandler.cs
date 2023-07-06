@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
         private readonly ITimerFactory _timerFactory;
         private readonly IInstanceSettings _instanceSettings;
         private readonly IAPILog _logger;
+        private readonly TimeSpan _waitForJobToFinishInterval = TimeSpan.FromSeconds(5);
 
         public JobProgressHandler(IImportApiService importApiService, IJobHistoryService jobHistoryService, ITimerFactory timerFactory, IInstanceSettings instanceSettings, IAPILog logger)
         {
@@ -61,8 +62,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public async Task WaitForJobToFinish(ImportJobContext importJobContext, CompositeCancellationToken token)
         {
-            TimeSpan interval = TimeSpan.FromSeconds(5);
-
             ImportDetails result;
             ImportState state = ImportState.Unknown;
             do
@@ -77,7 +76,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
                     return;
                 }
 
-                await Task.Delay(interval).ConfigureAwait(false);
+                await Task.Delay(_waitForJobToFinishInterval).ConfigureAwait(false);
 
                 result = await _importApiService.GetJobImportStatusAsync(importJobContext).ConfigureAwait(false);
                 if (result.State != state)
