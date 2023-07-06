@@ -1,25 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
@@ -28,141 +35,206 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [Category("Unit")]
     public class CustomProviderTaskTests
     {
-        private const int WorkspaceId = 111;
-        private const int SourceProviderId = 222;
-
         private Mock<ICancellationTokenFactory> _cancellationTokenFactory;
         private Mock<IAgentValidator> _agentValidator;
         private Mock<IJobDetailsService> _jobDetailsService;
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<ISourceProviderService> _sourceProviderService;
         private Mock<IImportJobRunner> _importJobRunner;
+        private Mock<IJobHistoryService> _jobHistoryService;
+        private Mock<IJobHistoryErrorService> _jobHistoryErrorService;
+        private Mock<IIdFilesBuilder> _idFilesBuilder;
+        private Mock<IRelativityStorageService> _relativityStorageService;
         private Mock<IAPILog> _logger;
+
+        private IFixture _fxt;
+
+        private CustomProviderTask _sut;
+
+        private CustomProviderJobDetails _jobDetails;
 
         [SetUp]
         public void SetUp()
         {
+            _fxt = FixtureFactory.Create();
+
             _cancellationTokenFactory = new Mock<ICancellationTokenFactory>();
             _agentValidator = new Mock<IAgentValidator>();
             _jobDetailsService = new Mock<IJobDetailsService>();
             _integrationPointService = new Mock<IIntegrationPointService>();
             _sourceProviderService = new Mock<ISourceProviderService>();
             _importJobRunner = new Mock<IImportJobRunner>();
+            _jobHistoryService = new Mock<IJobHistoryService>();
+            _jobHistoryErrorService = new Mock<IJobHistoryErrorService>();
+            _idFilesBuilder = new Mock<IIdFilesBuilder>();
+
+            _relativityStorageService = new Mock<IRelativityStorageService>();
+            _relativityStorageService.Setup(x => x.PrepareImportDirectoryAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new DirectoryInfo(Path.GetTempPath()));
+
             _logger = new Mock<IAPILog>();
 
-            var destinationConfiguration = new DestinationConfiguration()
-            {
-                CaseArtifactId = WorkspaceId
-            };
+            _jobDetails = _fxt.Create<CustomProviderJobDetails>();
 
-            IntegrationPointDto integrationPointDto = new IntegrationPointDto()
-            {
-                DestinationConfiguration = destinationConfiguration,
-                FieldMappings = Enumerable.Range(0, 3).Select(x => new FieldMap()).ToList(),
-                SourceProvider = SourceProviderId
-            };
+            SetupJobDetails();
 
-            _integrationPointService.Setup(x => x.Read(It.IsAny<int>())).Returns(integrationPointDto);
-        }
-
-        [Test]
-        public void Execute_GoldFlow()
-        {
-            // Arrange
-            const int jobId = 5;
-            Guid batchInstance = Guid.NewGuid();
-
-            CustomProviderJobDetails jobDetails = new CustomProviderJobDetails()
-            {
-                JobHistoryGuid = batchInstance
-            };
-
-            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(WorkspaceId, It.IsAny<string>()))
-                .ReturnsAsync(jobDetails);
-            Job job = PrepareJob(WorkspaceId, batchInstance, jobId);
-
-            CustomProviderTask sut = PrepareSut();
-
-            // Act
-            sut.Execute(job);
-
-            // Assert
-            _agentValidator.Verify(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()), Times.Once);
-            _jobDetailsService.Verify(x => x.GetJobDetailsAsync(WorkspaceId, It.Is<string>(str => str == job.JobDetails)));
-            _sourceProviderService.Verify(x => x.GetSourceProviderAsync(WorkspaceId, SourceProviderId));
-            _cancellationTokenFactory.Verify(x => x.GetCancellationToken(batchInstance, job.JobId));
-
-            _importJobRunner.Verify(x => x.RunJobAsync(
-                It.IsAny<Job>(),
-                It.IsAny<CustomProviderJobDetails>(),
-                It.IsAny<IntegrationPointDto>(),
-                It.IsAny<IDataSourceProvider>(),
-                It.IsAny<CompositeCancellationToken>()));
-        }
-
-        [Test]
-        public void Execute_ShouldNotExecuteJob_WhenValidationFails()
-        {
-            // Arrange
-            IntegrationPointValidationException exception = new IntegrationPointValidationException(new ValidationResult());
-            _agentValidator
-                .Setup(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()))
-                .Throws(exception);
-
-            Job job = new Job();
-            CustomProviderTask sut = PrepareSut();
-
-            // Act & Assert
-            Assert.Throws<IntegrationPointValidationException>(() => sut.Execute(job));
-            _agentValidator.Verify(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()), Times.Once);
-
-            _jobDetailsService.Verify(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Never);
-            _sourceProviderService.Verify(x => x.GetSourceProviderAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-            _cancellationTokenFactory.Verify(x => x.GetCancellationToken(It.IsAny<Guid>(), It.IsAny<long>()), Times.Never);
-
-            _importJobRunner.Verify(
-                x => x.RunJobAsync(
-                    It.Is<Job>(j => j == job),
-                    It.IsAny<CustomProviderJobDetails>(),
-                    It.IsAny<IntegrationPointDto>(),
-                    It.IsAny<IDataSourceProvider>(),
-                    It.IsAny<CompositeCancellationToken>()),
-                Times.Never);
-        }
-
-        private Job PrepareJob(int workspaceId, Guid jobHistoryGuid, int jobId)
-        {
-            Job job = new Job()
-            {
-                JobDetails = new JSONSerializer().Serialize(new TaskParameters()
-                {
-                    BatchInstance = jobHistoryGuid
-                }),
-                WorkspaceID = workspaceId,
-                JobId = jobId,
-            };
-
-            return job;
-        }
-
-        private CustomProviderTask PrepareSut()
-        {
-            return new CustomProviderTask(
+            _sut = new CustomProviderTask(
                 _cancellationTokenFactory.Object,
                 _agentValidator.Object,
                 _jobDetailsService.Object,
                 _integrationPointService.Object,
                 _sourceProviderService.Object,
                 _importJobRunner.Object,
+                _jobHistoryService.Object,
+                _jobHistoryErrorService.Object,
+                _idFilesBuilder.Object,
+                _relativityStorageService.Object,
                 _logger.Object);
         }
 
-        private bool VerifyJob(Job job, int numberOfBatches)
+        [Test]
+        public void Execute_ShouldBeValidationFailed_WhenValidationThrows()
         {
-            CustomProviderJobDetails jobDetails = new JSONSerializer().Deserialize<CustomProviderJobDetails>(job.JobDetails);
-            jobDetails.JobHistoryGuid.Should().NotBe(Guid.Empty);
-            jobDetails.Batches.Count.Should().Be(numberOfBatches);
-            return true;
+            // Arrange
+            Job job = PrepareBasicJob();
+
+            _agentValidator.Setup(x => x.Validate(It.IsAny<IntegrationPointDto>(), It.IsAny<int>()))
+                .Throws(new IntegrationPointValidationException(new ValidationResult(false)));
+
+            // Act
+            _sut.Execute(job);
+
+            // Assert
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryValidationFailedGuid));
+
+            _jobHistoryErrorService.Verify(
+                x => x.AddJobErrorAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<IntegrationPointValidationException>()));
         }
+
+        [Test]
+        public void Execute_ShouldConfigureBatches_WhenDoNotExist()
+        {
+            // Arrange
+            _jobDetails = _fxt.Build<CustomProviderJobDetails>()
+                .With(x => x.Batches, new List<CustomProviderBatch>())
+                .Create();
+
+            Job job = PrepareBasicJob();
+
+            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(), It.IsAny<string>()))
+                .ReturnsAsync(_fxt.CreateMany<CustomProviderBatch>().ToList());
+
+            SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
+
+            // Act
+            _sut.Execute(job);
+
+            // Assert
+            _jobDetails.Batches.Should().NotBeEmpty();
+
+            int expectedTotalCount = _jobDetails.Batches.Sum(y => y.NumberOfRecords);
+
+            _jobHistoryService.Verify(x => x.SetTotalItemsAsync(
+                It.IsAny<int>(), It.IsAny<int>(), expectedTotalCount));
+
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryProcessingGuid));
+        }
+
+        [Test]
+        public void Execute_GoldFlow()
+        {
+            // Arrange
+            List<CustomProviderBatch> batches = _fxt.Build<CustomProviderBatch>()
+                .With(x => x.Status, IntegrationPoints.Agent.CustomProvider.DTO.BatchStatus.Completed)
+                .CreateMany()
+                .ToList();
+
+            _jobDetails = _fxt.Build<CustomProviderJobDetails>()
+                .With(x => x.Batches, new List<CustomProviderBatch>())
+                .Create();
+
+            Job job = PrepareBasicJob();
+
+            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(
+                    It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(), It.IsAny<string>()))
+                .ReturnsAsync(batches);
+
+            SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
+
+            // Act
+            _sut.Execute(job);
+
+            // Assert
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));
+        }
+
+        private Job PrepareJob(IntegrationPointDto integrationPoint, Guid jobHistoryGuid)
+        {
+            TaskParameters parameters = _fxt.Build<TaskParameters>()
+                .With(x => x.BatchInstance, jobHistoryGuid)
+                .Create();
+
+            Job job = _fxt.Build<Job>()
+                .With(x => x.JobDetails, new JSONSerializer().Serialize(parameters))
+                .With(x => x.RelatedObjectArtifactID, integrationPoint.ArtifactId)
+                .With(x => x.WorkspaceID, integrationPoint.DestinationConfiguration.CaseArtifactId)
+                .Create();
+
+            return job;
+        }
+
+        private Job PrepareBasicJob()
+        {
+            Guid jobHistoryGuid = Guid.NewGuid();
+
+            IntegrationPointDto integrationPoint = SetupIntegrationPoint();
+
+            return PrepareJob(integrationPoint, jobHistoryGuid);
+        }
+
+        private IntegrationPointDto SetupIntegrationPoint()
+        {
+            IntegrationPointDto integrationPointDto = _fxt.Create<IntegrationPointDto>();
+
+            _integrationPointService.Setup(x => x.Read(It.IsAny<int>())).Returns(integrationPointDto);
+
+            return integrationPointDto;
+        }
+
+        private void SetupImportJobRunner(ImportJobResult result)
+        {
+            _importJobRunner.Setup(x => x.RunJobAsync(
+                    It.IsAny<Job>(),
+                    It.IsAny<CustomProviderJobDetails>(),
+                    It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<IDataSourceProvider>(),
+                    It.IsAny<CompositeCancellationToken>()))
+                .ReturnsAsync(result);
+        }
+
+        private void SetupJobDetails()
+        {
+            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .Returns(() => Task.FromResult(_jobDetails));
+
+            _jobDetailsService.Setup(x => x.UpdateJobDetailsAsync(It.IsAny<Job>(), It.IsAny<CustomProviderJobDetails>()))
+                .Returns((Job job, CustomProviderJobDetails jobDetails) =>
+                {
+                    _jobDetails = jobDetails;
+
+                    return Task.CompletedTask;
+                });
+        }
+
+        //private bool VerifyJob(Job job, int numberOfBatches)
+        //{
+        //    CustomProviderJobDetails jobDetails = new JSONSerializer().Deserialize<CustomProviderJobDetails>(job.JobDetails);
+        //    jobDetails.JobHistoryGuid.Should().NotBe(Guid.Empty);
+        //    jobDetails.Batches.Count.Should().Be(numberOfBatches);
+        //    return true;
+        //}
     }
 }
