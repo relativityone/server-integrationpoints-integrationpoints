@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -19,15 +20,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
     {
         private readonly IKeplerServiceFactory _keplerServiceFactory;
         private readonly IJobHistoryService _jobHistoryService;
+        private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IAPILog _logger;
 
         public NotificationService(
             IJobHistoryService jobHistoryService,
             IKeplerServiceFactory keplerServiceFactory,
+            IJobHistoryErrorService jobHistoryErrorService,
             IAPILog logger)
         {
             _jobHistoryService = jobHistoryService;
             _keplerServiceFactory = keplerServiceFactory;
+            _jobHistoryService = jobHistoryService;
             _logger = logger;
         }
 
@@ -67,18 +71,21 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
                 throw new Exception($"Notification request preparation failed. Could not get job history with id: {jobContext.JobHistoryId}");
             }
 
+            string subject = GetSubject(jobHistory);
+            string body = await GetEmailBody(jobContext.WorkspaceId, jobHistory).ConfigureAwait(false);
+
             EmailNotificationRequest emailRequest = new EmailNotificationRequest
             {
-                Subject = GetSubject(jobHistory),
+                Subject = subject,
                 Recipients = emailRecipients,
-                Body = GetEmailBody(jobHistory),
+                Body = body,
                 IsBodyHtml = true
             };
 
             return emailRequest;
         }
 
-        private string GetEmailBody(Data.JobHistory jobHistory)
+        private async Task<string> GetEmailBody(int sourceWorkspaceArtifactId, Data.JobHistory jobHistory)
         {
             StringBuilder emailBodyBuilder = new StringBuilder();
 
@@ -90,9 +97,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
 
             if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
             {
-                // TODO: get error msg (see: JobHistoryErrorQuery.cs)
-                string errorMsg = "Test error msg";
-                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToLineWithBoldedSectionHtml(errorMsg ?? NotificationConstants._ERROR_DEFAULT_MSG));
+                Data.JobHistoryError error = await _jobHistoryErrorService.GetLastJobLevelError(sourceWorkspaceArtifactId, jobHistory.ArtifactId).ConfigureAwait(false);
+                string errorMsg = error?.Error ?? NotificationConstants._ERROR_DEFAULT_MSG;
+                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToLineWithBoldedSectionHtml(errorMsg));
             }
 
             return emailBodyBuilder.ToString();

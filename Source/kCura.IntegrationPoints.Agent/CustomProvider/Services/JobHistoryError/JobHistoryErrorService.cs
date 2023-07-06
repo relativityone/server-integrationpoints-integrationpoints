@@ -114,6 +114,45 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
             }
         }
 
+        public async Task<Data.JobHistoryError> GetLastJobLevelError(int workspaceId, int jobHistoryId)
+        {
+            string historyCondition = $"'{JobHistoryErrorFields.JobHistory}' == OBJECT {jobHistoryId}";
+            string expectedChoiceGuids = string.Join(",", ErrorTypeChoices.JobHistoryErrorJob.Guids.Select(x => x.ToString()));
+            string choiceJobErrorCondition = $"'{JobHistoryErrorFields.ErrorType}' IN CHOICE [{expectedChoiceGuids}]";
+            string condition = $"{historyCondition} AND {choiceJobErrorCondition}";
+
+            Data.JobHistoryError jobHistoryError = null;
+            try
+            {
+                QueryRequest query = new QueryRequest
+                {
+                    Fields = GetFields(),
+                    Sorts = new List<Sort>()
+                {
+                    new Sort
+                    {
+                      Direction = SortEnum.Descending,
+                      FieldIdentifier = new FieldRef { Name = "Artifact ID" }
+                    }
+                },
+                    Condition = condition
+                };
+
+                using (IObjectManager objectManager = await _keplerServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                {
+                    QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, 1).ConfigureAwait(false);
+                    RelativityObject relativityObject = result.Objects.FirstOrDefault();
+                    jobHistoryError = relativityObject?.ToRDO<Data.JobHistoryError>();
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.LogWarning("Error on GetLastJobLevelError occurred for job history ID: {id}", jobHistoryId);
+            }
+
+            return jobHistoryError;
+        }
+
         private async Task CreateItemLevelErrorsInBatchesAsync(int workspaceArtifactId, int jobHistoryArtifactId, IList<ItemLevelError> createJobHistoryErrorDtos)
         {
             const double numOfBatches = 2;
