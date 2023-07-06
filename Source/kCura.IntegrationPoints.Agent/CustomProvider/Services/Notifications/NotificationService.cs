@@ -62,6 +62,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
         {
             Data.JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryByGuidAsync(jobContext.WorkspaceId, jobContext.JobHistoryGuid).ConfigureAwait(false);
 
+            if (jobHistory == null)
+            {
+                throw new Exception($"Notification request preparation failed. Could not get job history with id: {jobContext.JobHistoryId}");
+            }
+
             EmailNotificationRequest emailRequest = new EmailNotificationRequest
             {
                 Subject = GetSubject(jobHistory),
@@ -76,18 +81,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
         private string GetEmailBody(Data.JobHistory jobHistory)
         {
             StringBuilder emailBodyBuilder = new StringBuilder();
+
             emailBodyBuilder.AppendLine(NotificationConstants._MESSAGE_CONTENT.ToH3HeaderHtml());
             emailBodyBuilder.AppendLine(NotificationConstants._BODY_NAME.ToLineWithBoldedSectionHtml(jobHistory.Name));
             emailBodyBuilder.AppendLine(NotificationConstants._BODY_DESTINATION.ToLineWithBoldedSectionHtml(jobHistory.DestinationWorkspace));
             emailBodyBuilder.AppendLine(NotificationConstants._BODY_STATUS.ToLineWithBoldedSectionHtml(jobHistory.JobStatus.Name));
-
-            // TODO: consider adding: stats with items transferred / failed / total           
+            emailBodyBuilder.AppendLine(NotificationConstants._BODY_STATISTICS.ToJobStatisticsFormattedHtml(jobHistory));
 
             if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryErrorJobFailed))
             {
-                // TODO: get error msg (see: JobHistoryErrorQuery.cs), prepare default string for empty msg case handling
+                // TODO: get error msg (see: JobHistoryErrorQuery.cs)
                 string errorMsg = "Test error msg";
-                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToLineWithBoldedSectionHtml(errorMsg));
+                emailBodyBuilder.AppendLine(NotificationConstants._BODY_ERROR.ToLineWithBoldedSectionHtml(errorMsg ?? NotificationConstants._ERROR_DEFAULT_MSG));
             }
 
             return emailBodyBuilder.ToString();
