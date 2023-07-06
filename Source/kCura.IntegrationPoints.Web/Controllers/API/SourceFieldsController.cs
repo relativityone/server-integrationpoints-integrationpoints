@@ -45,15 +45,42 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             IDataSourceProvider provider = _factory.GetDataProvider(applicationGuid, data.Type);
             List<FieldEntry> fields = provider.GetFields(new DataSourceProviderConfiguration(data.Options.ToString(), data.Credentials)).OrderBy(x => x.DisplayName).ToList();
 
-            List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
+            List<ClassifiedFieldDTO> result = new List<ClassifiedFieldDTO>();
+
+            // Every provider has its own logic of setting FieldIdentifier property value,
+            // but we always need to have value convertable to integer. Otherwise saving IP is impossible when user select
+            // field for "Use Folder Path" option when importing data from Custom Providers. See: REL-833836
+            if (fields.Any(x => !int.TryParse(x.FieldIdentifier, out _)))
             {
-                ClassificationLevel = ClassificationLevel.AutoMap,
-                FieldIdentifier = x.FieldIdentifier,
-                Name = x.ActualName,
-                Type = x.Type,
-                IsIdentifier = x.IsIdentifier,
-                IsRequired = x.IsRequired
-            }).ToList();
+                int idx = 0;
+                foreach (FieldEntry field in fields)
+                {
+                    ClassifiedFieldDTO classifiedFieldDTO = new ClassifiedFieldDTO
+                    {
+                        ClassificationLevel = ClassificationLevel.AutoMap,
+                        FieldIdentifier = idx.ToString(),
+                        Name = field.ActualName,
+                        Type = field.Type,
+                        IsIdentifier = field.IsIdentifier,
+                        IsRequired = field.IsRequired
+                    };
+
+                    result.Add(classifiedFieldDTO);
+                    idx++;
+                }
+            }
+            else
+            {
+                result = fields.Select(x => new ClassifiedFieldDTO
+                {
+                    ClassificationLevel = ClassificationLevel.AutoMap,
+                    FieldIdentifier = x.FieldIdentifier,
+                    Name = x.ActualName,
+                    Type = x.Type,
+                    IsIdentifier = x.IsIdentifier,
+                    IsRequired = x.IsRequired
+                }).ToList();
+            }
 
             return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
         }

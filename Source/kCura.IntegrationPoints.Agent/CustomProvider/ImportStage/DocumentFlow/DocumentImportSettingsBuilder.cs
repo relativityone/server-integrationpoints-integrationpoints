@@ -162,13 +162,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 return withFolders.WithFolders(f =>
                     f.WithRootFolderID(destinationFolderArtifactId, r =>
-                        r.WithAllDocumentsInRootFolder()));
+                        r.WithFolderPathDefinedInColumn(folderPathFieldIndex)));
             }
             else
             {
                 return withFolders.WithFolders(f =>
                     f.WithRootFolderID(destinationFolderArtifactId, r =>
-                        r.WithFolderPathDefinedInColumn(folderPathFieldIndex)));
+                        r.WithAllDocumentsInRootFolder()));
             }
         }
 
