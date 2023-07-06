@@ -155,7 +155,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'false'">
+                        <div class="field-row" data-bind="visible: isDocument() == 'true' && ImportNativeFileCopyModeEnabled() == 'false' && IsImportFromLoadFile()">
                             <div class="field-label required " data-bind="text: copyNativeLabel"></div>
                             <div class="field-value">
                                 <ul>
