@@ -1,11 +1,10 @@
-﻿using Relativity.Testing.Identification;
-using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+﻿using NUnit.Framework;
 
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-	using NUnit.Framework;
-
 	[TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{
