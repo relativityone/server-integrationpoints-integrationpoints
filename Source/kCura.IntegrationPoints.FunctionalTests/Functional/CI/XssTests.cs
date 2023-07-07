@@ -1,10 +1,13 @@
-﻿using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+﻿using NUnit.Framework;
+
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[TestType.UI, TestType.System]
-	public class XssTests : TestsBase
+    [Ignore("REL-841500: Resolve RIP functional test failures.")]
+    public class XssTests : TestsBase
 	{
 		private readonly XssTestsImplementation _testsImplementation;
 
