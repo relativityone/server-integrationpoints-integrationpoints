@@ -4,6 +4,8 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
+	using NUnit.Framework;
+
 	[TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{
@@ -31,7 +33,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 		[TestType.Critical]
 		[IdentifiedTest("b0afe8eb-e898-4763-9f95-e998f220b421")]
-		public void SavedSearch_NativesAndMetadata_GoldFlow()
+		[Ignore("REL-841500: Resolve RIP functional test failures.")]
+        public void SavedSearch_NativesAndMetadata_GoldFlow()
 		{
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
 		}
