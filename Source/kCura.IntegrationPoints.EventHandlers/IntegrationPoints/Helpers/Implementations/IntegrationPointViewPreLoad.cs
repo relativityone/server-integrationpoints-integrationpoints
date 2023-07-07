@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using kCura.EventHandler;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
@@ -23,6 +26,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IRelativityObjectManager _objectManager;
         private readonly IEHHelper _helper;
 
+        private IAPILog _logger;
+
         public IntegrationPointViewPreLoad(
             ICaseServiceContext context,
             IRelativityProviderConfiguration relativityProviderSourceConfiguration,
@@ -37,6 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             _fieldsConstants = fieldsConstants;
             _objectManager = objectManager;
             _helper = helper;
+            _logger = helper.GetLoggerFactory().GetLogger();
         }
 
         public void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact)
@@ -103,10 +109,24 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             try
             {
-                string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
-                string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
+                //IAPILog logger = helper.GetLoggerFactory().GetLogger();
+                IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+                            _objectManager,
+                            new SecretsRepository(
+                                SecretStoreFacadeFactory_Deprecated.Create(_helper.GetSecretStore, _logger), _logger), _logger);
 
-                Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(dbSourceConfiguration);
+                string sourceConfiguration = integrationPointRepository.GetSourceConfigurationAsync(artifact.ArtifactID)
+                    .GetAwaiter()
+                    .GetResult();
+                //string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
+                //string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
+
+                // TODO: remove after tests
+                _logger.LogInformation(
+                        "Source Configuration for Integration Point ID {id}: {sourceConfiguration}",
+                        artifact.ArtifactID, sourceConfiguration);
+
+                Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(sourceConfiguration);
                 int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
 
                 return ripSavedSearchArtifactId;

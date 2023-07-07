@@ -1,6 +1,7 @@
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
         {
             ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
             IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-            Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
+            Domain.Managers.IInstanceSettingsManager instanceSettingsManager = new InstanceSettingsManager(repositoryFactory);
             IRelativityProviderConfiguration relativityProviderSourceConfiguration =
                 RelativityProviderSourceConfigurationFactory.Create(helper, instanceSettingsManager);
 
