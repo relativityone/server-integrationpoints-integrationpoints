@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
@@ -109,7 +108,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             try
             {
-                //IAPILog logger = helper.GetLoggerFactory().GetLogger();
                 IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
                             _objectManager,
                             new SecretsRepository(
@@ -118,13 +116,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 string sourceConfiguration = integrationPointRepository.GetSourceConfigurationAsync(artifact.ArtifactID)
                     .GetAwaiter()
                     .GetResult();
-                //string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
-                //string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
-
-                // TODO: remove after tests
-                _logger.LogInformation(
-                        "Source Configuration for Integration Point ID {id}: {sourceConfiguration}",
-                        artifact.ArtifactID, sourceConfiguration);
 
                 Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(sourceConfiguration);
                 int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
@@ -133,12 +124,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
             catch
             {
-                helper
-                    .GetLoggerFactory()
-                    .GetLogger()
-                    .LogError(
-                        "Unable to get SavedSearchArtifactId for integrationPoint - {integrationPoint}",
-                        integrationPointName);
+                _logger.LogError(
+                         "Unable to get SavedSearchArtifactId for integrationPoint - {integrationPoint}",
+                         integrationPointName);
                 throw;
             }
         }
