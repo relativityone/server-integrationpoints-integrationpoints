@@ -129,13 +129,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
                     ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuids.JobHistoryErrorGuid },
                     Fields = GetFields(),
                     Sorts = new List<Sort>()
-                {
-                    new Sort
                     {
-                      Direction = SortEnum.Descending,
-                      FieldIdentifier = new FieldRef { Name = "Artifact ID" }
-                    }
-                },
+                        new Sort
+                        {
+                          Direction = SortEnum.Descending,
+                          FieldIdentifier = new FieldRef { Name = "Artifact ID" }
+                        }
+                    },
                     Condition = condition
                 };
 

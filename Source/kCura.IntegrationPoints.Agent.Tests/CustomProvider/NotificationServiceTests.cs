@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(_jobHistoryFake);
 
             // Act
-            await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake).ConfigureAwait(false);
+            await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake.EmailNotificationRecipients).ConfigureAwait(false);
 
             // Assert
             _emailNotificationManagerMock.Verify(x => x.SendEmailNotificationAsync(It.IsAny<EmailNotificationRequest>()), Times.Once);
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(_jobHistoryFake);
 
             // Act
-            await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake).ConfigureAwait(false);
+            await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake.EmailNotificationRecipients).ConfigureAwait(false);
 
             // Assert
             _emailNotificationManagerMock.Verify(x => x.SendEmailNotificationAsync(It.IsAny<EmailNotificationRequest>()), Times.Never);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                       .ThrowsAsync(new Exception());
 
             // Act
-            Func<Task> sendEmail = async () => await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake).ConfigureAwait(false);
+            Func<Task> sendEmail = async () => await _sut.PrepareAndSendEmailNotificationAsync(_importJobContextFake, _integrationPointFake.EmailNotificationRecipients).ConfigureAwait(false);
 
             // Assert
             sendEmail.ShouldNotThrow<Exception>();

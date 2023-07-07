@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
 {
     internal interface INotificationService
     {
-        Task PrepareAndSendEmailNotificationAsync(ImportJobContext jobContext, IntegrationPointDto integrationPoint);
+        Task PrepareAndSendEmailNotificationAsync(ImportJobContext jobContext, string emails);
     }
 }

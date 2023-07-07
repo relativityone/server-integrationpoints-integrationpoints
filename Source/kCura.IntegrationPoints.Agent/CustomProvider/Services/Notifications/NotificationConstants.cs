@@ -17,6 +17,5 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
         public const string _BODY_STATUS = "Status: ";
         public const string _BODY_ERROR = "Error: ";
         public const string _BODY_STATISTICS = "Job summary: ";
-
     }
 }

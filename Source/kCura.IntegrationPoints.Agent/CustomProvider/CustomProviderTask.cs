@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 if (integrationPointDto != null)
                 {
                     var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
-                    await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto).ConfigureAwait(false);
+                    await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto.EmailNotificationRecipients).ConfigureAwait(false);
                 }
                 else
                 {

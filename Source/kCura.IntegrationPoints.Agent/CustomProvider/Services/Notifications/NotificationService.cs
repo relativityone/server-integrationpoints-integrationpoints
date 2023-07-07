@@ -35,11 +35,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
             _logger = logger;
         }
 
-        public async Task PrepareAndSendEmailNotificationAsync(ImportJobContext jobContext, IntegrationPointDto integrationPoint)
+        public async Task PrepareAndSendEmailNotificationAsync(ImportJobContext jobContext, string emails)
         {
             try
             {
-                List<string> emailRecipients = GetRecipientsList(integrationPoint);
+                List<string> emailRecipients = GetRecipientsList(emails);
 
                 if (emailRecipients.Any())
                 {
@@ -110,12 +110,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
             return string.Format(CultureInfo.InvariantCulture, NotificationConstants._SUBJECT_CONTENT, jobHistory.Name, jobHistory.JobStatus.Name);
         }
 
-        private List<string> GetRecipientsList(IntegrationPointDto integrationPoint)
+        private List<string> GetRecipientsList(string emails)
         {
             List<string> recipients = new List<string>();
-            if (!string.IsNullOrWhiteSpace(integrationPoint.EmailNotificationRecipients))
+            if (!string.IsNullOrWhiteSpace(emails))
             {
-                recipients = integrationPoint.EmailNotificationRecipients
+                recipients = emails
                     .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
                     .ToList();
             }
