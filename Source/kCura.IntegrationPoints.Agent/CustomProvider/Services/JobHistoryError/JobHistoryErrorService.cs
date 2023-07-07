@@ -126,6 +126,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
             {
                 QueryRequest query = new QueryRequest
                 {
+                    ObjectType = new ObjectTypeRef { Guid = ObjectTypeGuids.JobHistoryErrorGuid },
                     Fields = GetFields(),
                     Sorts = new List<Sort>()
                 {
