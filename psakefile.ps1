@@ -44,12 +44,7 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." -Depends SetChromePath {
     $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    $Env:Branch
-    if($Env:Branch -eq 'server-main') {
-        Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
-    } else {
-        Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
-    }
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
 }
 
 Task NightlyTest -Description "Run Nightly tests that require a deployed environment." -Depends SetChromePath,OneTimeTestsSetup {
