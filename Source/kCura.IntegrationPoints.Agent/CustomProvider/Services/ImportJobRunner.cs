@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
         private readonly IJobProgressHandler _jobProgressHandler;
         private readonly IItemLevelErrorHandler _errorsHandler;
-        private readonly INotificationService _notificationService;
+
         private readonly IAPILog _logger;
 
         public ImportJobRunner(
@@ -42,7 +40,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IImportApiRunnerFactory importApiRunnerFactory,
             IJobProgressHandler jobProgressHandler,
             IItemLevelErrorHandler errorsHandler,
-            INotificationService notificationService,
             IAPILog logger)
         {
             _importApiService = importApiService;
@@ -52,7 +49,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _importApiRunnerFactory = importApiRunnerFactory;
             _jobProgressHandler = jobProgressHandler;
             _errorsHandler = errorsHandler;
-            _notificationService = notificationService;
             _logger = logger;
         }
 
@@ -129,8 +125,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 {
                     await _relativityStorageService.DeleteDirectoryRecursiveAsync(importDirectory.FullName).ConfigureAwait(false);
                 }
-
-                await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto).ConfigureAwait(false);
             }
         }
 
