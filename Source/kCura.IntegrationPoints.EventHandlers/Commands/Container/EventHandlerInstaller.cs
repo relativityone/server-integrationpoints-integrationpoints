@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
@@ -107,7 +106,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
             container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
             container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
             container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
-            container.Register(Component.For<MigrateSecretCatalogPathToSecretStorePathCommand>().ImplementedBy<MigrateSecretCatalogPathToSecretStorePathCommand>().LifestyleTransient());
 
             container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
             container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
@@ -118,8 +116,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
             container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
             container.Register(Component.For<UpdateDestinationConfigurationTaggingSettingsCommand>().ImplementedBy<UpdateDestinationConfigurationTaggingSettingsCommand>().LifestyleTransient());
-
-            container.AddSecretStoreMigrator();
         }
     }
 }
