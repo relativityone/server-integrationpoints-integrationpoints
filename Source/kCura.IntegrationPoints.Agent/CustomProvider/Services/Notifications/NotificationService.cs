@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
             }
 
             string subject = GetSubject(jobHistory);
-            string body = await GetEmailBody(jobContext.WorkspaceId, jobHistory).ConfigureAwait(false);
+            string body = await GetEmailBodyAsync(jobContext.WorkspaceId, jobHistory).ConfigureAwait(false);
 
             EmailNotificationRequest emailRequest = new EmailNotificationRequest
             {
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
             return emailRequest;
         }
 
-        private async Task<string> GetEmailBody(int sourceWorkspaceArtifactId, Data.JobHistory jobHistory)
+        private async Task<string> GetEmailBodyAsync(int sourceWorkspaceArtifactId, Data.JobHistory jobHistory)
         {
             StringBuilder emailBodyBuilder = new StringBuilder();
 
