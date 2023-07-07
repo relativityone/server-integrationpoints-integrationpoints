@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
             }
             catch (Exception ex)
             {
-                _log.LogWarning("Error on GetLastJobLevelError occurred for job history ID: {id}", jobHistoryId);
+                _log.LogWarning(ex, "Error on GetLastJobLevelError occurred for job history ID: {id}", jobHistoryId);
             }
 
             return jobHistoryError;

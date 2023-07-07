@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications
         {
             _jobHistoryService = jobHistoryService;
             _keplerServiceFactory = keplerServiceFactory;
-            _jobHistoryService = jobHistoryService;
+            _jobHistoryErrorService = jobHistoryErrorService;
             _logger = logger;
         }
 
