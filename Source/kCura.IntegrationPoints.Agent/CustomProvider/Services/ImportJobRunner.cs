@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
@@ -30,6 +29,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
         private readonly IJobProgressHandler _jobProgressHandler;
         private readonly IItemLevelErrorHandler _errorsHandler;
+
         private readonly IAPILog _logger;
 
         public ImportJobRunner(

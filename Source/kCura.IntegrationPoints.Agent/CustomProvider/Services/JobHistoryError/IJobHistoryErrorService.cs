@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
         Task AddJobErrorAsync(int workspaceId, int jobHistoryId, Exception ex);
 
         Task CreateItemLevelErrorsAsync(int workspaceId, int jobHistoryId, IList<ItemLevelError> errors);
+
+        Task<Data.JobHistoryError> GetLastJobLevelError(int workspaceId, int jobHistoryId);
     }
 }

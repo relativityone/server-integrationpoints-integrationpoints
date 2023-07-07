@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IJobHistoryErrorService> _jobHistoryErrorService;
         private Mock<IIdFilesBuilder> _idFilesBuilder;
         private Mock<IRelativityStorageService> _relativityStorageService;
+        private Mock<INotificationService> _notificationService;
         private Mock<IAPILog> _logger;
 
         private IFixture _fxt;
@@ -67,6 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryService = new Mock<IJobHistoryService>();
             _jobHistoryErrorService = new Mock<IJobHistoryErrorService>();
             _idFilesBuilder = new Mock<IIdFilesBuilder>();
+            _notificationService = new Mock<INotificationService>();
 
             _relativityStorageService = new Mock<IRelativityStorageService>();
             _relativityStorageService.Setup(x => x.PrepareImportDirectoryAsync(It.IsAny<int>(), It.IsAny<Guid>()))
@@ -89,6 +92,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _jobHistoryErrorService.Object,
                 _idFilesBuilder.Object,
                 _relativityStorageService.Object,
+                _notificationService.Object,
                 _logger.Object);
         }
 

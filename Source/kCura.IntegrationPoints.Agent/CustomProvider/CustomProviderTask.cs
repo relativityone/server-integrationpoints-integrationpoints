@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.SourceProvider;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IIdFilesBuilder _idFilesBuilder;
         private readonly IRelativityStorageService _relativityStorageService;
+        private readonly INotificationService _notificationService;
         private readonly IAPILog _logger;
 
         public CustomProviderTask(
@@ -48,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             IJobHistoryErrorService jobHistoryErrorService,
             IIdFilesBuilder idFilesBuilder,
             IRelativityStorageService relativityStorageService,
+            INotificationService notificationService,
             IAPILog logger)
         {
             _cancellationTokenFactory = cancellationTokenFactory;
@@ -60,6 +63,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _jobHistoryErrorService = jobHistoryErrorService;
             _idFilesBuilder = idFilesBuilder;
             _relativityStorageService = relativityStorageService;
+            _notificationService = notificationService;
             _logger = logger;
         }
 
@@ -71,9 +75,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private async Task ExecuteAsync(Job job)
         {
             CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
+            IntegrationPointDto integrationPointDto = null;
             try
             {
-                IntegrationPointDto integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+                integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
@@ -96,6 +101,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             catch (Exception e)
             {
                 await HandleExceptionAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid, e).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (integrationPointDto != null)
+                {
+                    var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
+                    await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto.EmailNotificationRecipients).ConfigureAwait(false);
+                }
+                else
+                {
+                    _logger.LogWarning("Integration Point object is null. Email notification will not be send.");
+                }
             }
         }
 
