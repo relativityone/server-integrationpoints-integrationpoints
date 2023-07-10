@@ -79,12 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             DataSourceSettings settings = await _sut.CreateDataFileAsync(
                 batch,
                 provider,
-                new IntegrationPointInfo()
-                {
-                    SecuredConfiguration = integrationPointDto.SecuredConfiguration,
-                    SourceConfiguration = integrationPointDto.SourceConfiguration,
-                    FieldMap = fieldMap
-                },
+                new IntegrationPointInfo(integrationPointDto),
                 importDirectory);
 
             // Assert

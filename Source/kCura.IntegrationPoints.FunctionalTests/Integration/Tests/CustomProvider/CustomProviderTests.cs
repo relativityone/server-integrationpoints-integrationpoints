@@ -79,6 +79,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             VerifyTotalItems(jobDetails);
             VerifyImportJobControllerExecutions(job, jobDetails);
             VerifyAddToImportQueue(job, jobDetails);
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryErrorJobFailedGuid);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }

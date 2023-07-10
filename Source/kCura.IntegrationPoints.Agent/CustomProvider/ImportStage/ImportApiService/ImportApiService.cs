@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
@@ -201,6 +202,30 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiServ
                     .ConfigureAwait(false);
 
                 response.Validate();
+            }
+        }
+
+        public async Task<DataSourceDetails> GetDataSourceDetailsAsync(ImportJobContext importJobContext, Guid sourceId)
+        {
+            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+            {
+                ValueResponse<DataSourceDetails> response = await importSource.GetDetailsAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryGuid, sourceId)
+                    .ConfigureAwait(false);
+
+                DataSourceDetails details = response.UnwrapOrThrow();
+                return details;
+            }
+        }
+
+        public async Task<ImportErrors> GetDataSourceErrorsAsync(ImportJobContext importJobContext, Guid sourceId, int length)
+        {
+            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+            {
+                ValueResponse<ImportErrors> response = await importSource.GetItemErrorsAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryGuid, sourceId, 0, length)
+                    .ConfigureAwait(false);
+
+                ImportErrors errors = response.UnwrapOrThrow();
+                return errors;
             }
         }
     }

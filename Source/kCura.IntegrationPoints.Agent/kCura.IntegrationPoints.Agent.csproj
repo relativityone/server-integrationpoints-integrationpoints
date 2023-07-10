@@ -60,7 +60,6 @@
     <PackageReference Include="Relativity.Services.Interfaces.Private" Version="14.1.2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CustomProvider\DTO\" />
     <Folder Include="CustomProvider\Services\JobDetails\" />
     <Folder Include="CustomProvider\Services\InstanceSettings" />
     <Folder Include="CustomProvider\Services\LoadFileBuilding\" />

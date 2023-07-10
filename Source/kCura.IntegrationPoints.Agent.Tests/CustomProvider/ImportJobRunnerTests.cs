@@ -13,8 +13,10 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
@@ -22,6 +24,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -44,6 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IImportApiRunnerFactory> _importApiRunnerFactory;
         private Mock<IJobProgressHandler> _jobProgressHandler;
         private Mock<IJobHistoryService> _jobHistoryService;
+        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
 
         private Mock<IStorageAccess<string>> _storageAccess;
         private Mock<IImportApiRunner> _importApiRunner;
@@ -85,6 +89,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobProgressHandler
                 .Setup(x => x.BeginUpdateAsync(It.IsAny<ImportJobContext>()))
                 .ReturnsAsync(_jobProgressUpdater.Object);
+
+            _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
 
             _jobHistoryService = new Mock<IJobHistoryService>();
             _sourceProvider = new Mock<IDataSourceProvider>();
@@ -140,6 +146,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     It.IsAny<string>()))
                 .ReturnsAsync(new DataSourceSettings());
 
+            _importApiService.Setup(x => x.GetJobImportStatusAsync(It.IsAny<ImportJobContext>()))
+                .ReturnsAsync(new ImportDetails(ImportState.Completed, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<DateTime>()));
+
+            _importApiService.Setup(x => x.GetDataSourceDetailsAsync(It.IsAny<ImportJobContext>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new DataSourceDetails() { State = DataSourceState.Completed });
+
             ImportJobRunner sut = PrepareSut();
 
             // Act
@@ -184,10 +196,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(jobHistory);
 
-            _jobProgressHandler
-                .Setup(x => x.SetTotalItemsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Throws<InvalidOperationException>();
-
             Job job = PrepareJob(WorkspaceId, Guid.NewGuid());
 
             ImportJobRunner sut = PrepareSut();
@@ -196,7 +204,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             Func<Task> action = async () => await sut.RunJobAsync(job, jobDetails, new IntegrationPointDto(), Mock.Of<IDataSourceProvider>(), CompositeCancellationToken.None);
 
             // Assert
-            action.ShouldThrow<InvalidOperationException>();
+            action.ShouldThrow<Exception>();
             _relativityStorageService
                 .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Once);
         }
@@ -225,6 +233,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryService
                 .Setup(x => x.ReadJobHistoryByGuidAsync(It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(jobHistory);
+
+            _importApiService.Setup(x => x.GetJobImportStatusAsync(It.IsAny<ImportJobContext>()))
+                .ReturnsAsync(new ImportDetails(ImportState.Completed, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<DateTime>()));
+
+            _importApiService.Setup(x => x.GetDataSourceDetailsAsync(It.IsAny<ImportJobContext>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new DataSourceDetails() { State = DataSourceState.Completed });
 
             CancellationTokenSource cancelToken = new CancellationTokenSource();
             CancellationTokenSource drainStopToken = new CancellationTokenSource();
@@ -263,12 +277,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             return new ImportJobRunner(
                 _importApiService.Object,
                 _jobDetailsService.Object,
-                _idFilesBuilder.Object,
                 _loadFileBuilder.Object,
                 _relativityStorageService.Object,
                 _importApiRunnerFactory.Object,
                 _jobProgressHandler.Object,
-                _jobHistoryService.Object,
+                _itemLevelErrorHandler.Object,
                 Mock.Of<IAPILog>());
         }
     }

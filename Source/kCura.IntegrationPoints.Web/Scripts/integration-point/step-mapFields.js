@@ -258,9 +258,9 @@ ko.validation.insertValidationMessage = function (element) {
 		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
 		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
-		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] &&
-										IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId &&
-										this.IsRelativityProvider();
+		this.IsNotImportFromCustomProviders = ko.observable(model.source.selectedType == "548f0873-8e5e-4da6-9f27-5f9cda764636" || model.isExportType);
+
+		var isNonDocumentObjectFlow = IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId && this.IsRelativityProvider();
 		self.IsNonDocumentObjectFlow = ko.observable();
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 

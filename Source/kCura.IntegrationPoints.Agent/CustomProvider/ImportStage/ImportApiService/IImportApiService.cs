@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Sources;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService
@@ -50,5 +51,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiServ
         Task<ImportProgress> GetJobImportProgressValueAsync(ImportJobContext importJobContext);
 
         Task<ImportDetails> GetJobImportStatusAsync(ImportJobContext importJobContext);
+
+        Task<DataSourceDetails> GetDataSourceDetailsAsync(ImportJobContext importJobContext, Guid sourceId);
+
+        Task<ImportErrors> GetDataSourceErrorsAsync(ImportJobContext importJobContext, Guid sourceId, int length);
     }
 }

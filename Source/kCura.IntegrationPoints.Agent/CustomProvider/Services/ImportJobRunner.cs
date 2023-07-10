@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,17 +6,19 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
+using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Sync;
+using BatchStatus = kCura.IntegrationPoints.Agent.CustomProvider.DTO.BatchStatus;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
@@ -25,49 +26,50 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     {
         private readonly IImportApiService _importApiService;
         private readonly IJobDetailsService _jobDetailsService;
-        private readonly IIdFilesBuilder _idFilesBuilder;
         private readonly ILoadFileBuilder _loadFileBuilder;
         private readonly IRelativityStorageService _relativityStorageService;
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
         private readonly IJobProgressHandler _jobProgressHandler;
-        private readonly IJobHistoryService _jobHistoryService;
+        private readonly IItemLevelErrorHandler _errorsHandler;
+
         private readonly IAPILog _logger;
 
-        public ImportJobRunner(IImportApiService importApiService, IJobDetailsService jobDetailsService, IIdFilesBuilder idFilesBuilder, ILoadFileBuilder loadFileBuilder, IRelativityStorageService relativityStorageService, IImportApiRunnerFactory importApiRunnerFactory, IJobProgressHandler jobProgressHandler, IJobHistoryService jobHistoryService, IAPILog logger)
+        public ImportJobRunner(
+            IImportApiService importApiService,
+            IJobDetailsService jobDetailsService,
+            ILoadFileBuilder loadFileBuilder,
+            IRelativityStorageService relativityStorageService,
+            IImportApiRunnerFactory importApiRunnerFactory,
+            IJobProgressHandler jobProgressHandler,
+            IItemLevelErrorHandler errorsHandler,
+            IAPILog logger)
         {
             _importApiService = importApiService;
             _jobDetailsService = jobDetailsService;
-            _idFilesBuilder = idFilesBuilder;
             _loadFileBuilder = loadFileBuilder;
             _relativityStorageService = relativityStorageService;
             _importApiRunnerFactory = importApiRunnerFactory;
             _jobProgressHandler = jobProgressHandler;
-            _jobHistoryService = jobHistoryService;
+            _errorsHandler = errorsHandler;
             _logger = logger;
         }
 
-        public async Task RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, CompositeCancellationToken token)
+        public async Task<ImportJobResult> RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, IDataSourceProvider sourceProvider, CompositeCancellationToken token)
         {
             var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
 
             DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
-
             try
             {
-                if (!jobDetails.Batches.Any())
-                {
-                    jobDetails.Batches = await CreateBatchesAsync(sourceProvider, integrationPointDto, importDirectory.FullName).ConfigureAwait(false);
-                    await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-                }
-
-                int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
-                await _jobProgressHandler.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
-
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(integrationPointDto.DestinationConfiguration);
 
-                List<IndexedFieldMap> fieldMapping = IndexFieldMappings(integrationPointDto.FieldMappings);
+                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
 
-                await importApiRunner.RunImportJobAsync(importJobContext, integrationPointDto.DestinationConfiguration, fieldMapping);
+                await importApiRunner.RunImportJobAsync(
+                        importJobContext,
+                        integrationPointDto.DestinationConfiguration,
+                        integrationPointInfo.FieldMap)
+                    .ConfigureAwait(false);
 
                 using (await _jobProgressHandler.BeginUpdateAsync(importJobContext).ConfigureAwait(false))
                 {
@@ -78,28 +80,24 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             continue;
                         }
 
-                        DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(
+                        await AddBatchToImportDataSourceAsync(
                                 batch,
+                                jobDetails,
                                 sourceProvider,
-                                new IntegrationPointInfo()
-                                {
-                                    SourceConfiguration = integrationPointDto.SourceConfiguration,
-                                    SecuredConfiguration = integrationPointDto.SecuredConfiguration,
-                                    FieldMap = fieldMapping
-                                },
-                                importDirectory.FullName)
+                                integrationPointInfo,
+                                importDirectory,
+                                importJobContext,
+                                job)
                             .ConfigureAwait(false);
-
-                        await _importApiService.AddDataSourceAsync(importJobContext, batch.BatchGuid, dataSourceSettings).ConfigureAwait(false);
-                        batch.IsAddedToImportQueue = true;
-                        await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-                        await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
                     }
 
                     await _importApiService.EndJobAsync(importJobContext).ConfigureAwait(false);
 
-                    await _jobProgressHandler.WaitForJobToFinish(importJobContext, token).ConfigureAwait(false);
+                    ImportJobResult importJobResult = await WaitForJobToFinishAsync(job, importJobContext, jobDetails, token).ConfigureAwait(false);
+
                     await _jobProgressHandler.SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false);
+
+                    return importJobResult;
                 }
             }
             catch (ImportApiResponseException ex)
@@ -112,7 +110,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     ex.Response.ErrorMessage);
 
                 await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
-                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
 
                 throw;
             }
@@ -121,7 +118,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 _logger.LogError(ex, "Failed to execute Custom Provider job");
 
                 await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
-                await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid).ConfigureAwait(false);
 
                 throw;
             }
@@ -134,15 +130,88 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             }
         }
 
-        private async Task<List<CustomProviderBatch>> CreateBatchesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPointDto, string importDirectory)
+        private async Task AddBatchToImportDataSourceAsync(
+            CustomProviderBatch batch,
+            CustomProviderJobDetails jobDetails,
+            IDataSourceProvider sourceProvider,
+            IntegrationPointInfo integrationPointInfo,
+            DirectoryInfo importDirectory,
+            ImportJobContext importJobContext,
+            Job job)
         {
-            List<CustomProviderBatch> batches = await _idFilesBuilder.BuildIdFilesAsync(provider, integrationPointDto, importDirectory).ConfigureAwait(false);
-            return batches;
+            DataSourceSettings dataSourceSettings = await _loadFileBuilder.CreateDataFileAsync(
+                    batch,
+                    sourceProvider,
+                    integrationPointInfo,
+                    importDirectory.FullName)
+                .ConfigureAwait(false);
+
+            await _importApiService.AddDataSourceAsync(importJobContext, batch.BatchGuid, dataSourceSettings).ConfigureAwait(false);
+            batch.IsAddedToImportQueue = true;
+            await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
+            await _jobProgressHandler.UpdateReadItemsCountAsync(job, jobDetails).ConfigureAwait(false);
         }
 
-        private static List<IndexedFieldMap> IndexFieldMappings(List<FieldMap> fieldMappings)
+        private async Task<ImportJobResult> WaitForJobToFinishAsync(Job job, ImportJobContext importJobContext, CustomProviderJobDetails details, CompositeCancellationToken token)
         {
-            return fieldMappings.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
+            TimeSpan interval = TimeSpan.FromSeconds(5);
+
+            ImportDetails result;
+            ImportState state = ImportState.Unknown;
+            do
+            {
+                if (token.IsStopRequested)
+                {
+                    await _importApiService.CancelJobAsync(importJobContext).ConfigureAwait(false);
+                    new ImportJobResult { Status = JobEndStatus.Canceled };
+                }
+
+                if (token.IsDrainStopRequested)
+                {
+                    new ImportJobResult { Status = JobEndStatus.DrainStopped };
+                }
+
+                await Task.Delay(interval).ConfigureAwait(false);
+
+                result = await _importApiService.GetJobImportStatusAsync(importJobContext).ConfigureAwait(false);
+                if (result.State != state)
+                {
+                    state = result.State;
+                    _logger.LogInformation("Import status: {@status}", result);
+                }
+
+                await HandleDataSourceStatusAsync(job, importJobContext, details).ConfigureAwait(false);
+            }
+            while (!result.IsFinished);
+
+            return ImportJobResult.FromImportDetails(result);
+        }
+
+        private async Task HandleDataSourceStatusAsync(Job job, ImportJobContext importJobContext, CustomProviderJobDetails details)
+        {
+            foreach (var batch in details.Batches.Where(x => x.Status == BatchStatus.Started))
+            {
+                DataSourceDetails dataSourceDetails = await _importApiService.GetDataSourceDetailsAsync(importJobContext, batch.BatchGuid).ConfigureAwait(false);
+                if (dataSourceDetails.IsFinished())
+                {
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSourceDetails.State);
+                    switch (dataSourceDetails.State)
+                    {
+                        case DataSourceState.Completed:
+                            batch.Status = BatchStatus.Completed;
+                            break;
+                        case DataSourceState.CompletedWithItemErrors:
+                            batch.Status = BatchStatus.CompletedWithErrors;
+                            await _errorsHandler.HandleItemErrorsAsync(importJobContext, batch).ConfigureAwait(false);
+                            break;
+                        case DataSourceState.Failed:
+                            batch.Status = BatchStatus.Failed;
+                            break;
+                    }
+
+                    await _jobDetailsService.UpdateJobDetailsAsync(job, details).ConfigureAwait(false);
+                }
+            }
         }
     }
 }
