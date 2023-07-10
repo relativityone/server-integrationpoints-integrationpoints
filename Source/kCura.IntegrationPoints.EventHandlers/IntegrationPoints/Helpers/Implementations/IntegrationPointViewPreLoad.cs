@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(sourceConfiguration);
                 if (!int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId))
                 {
-                    _logger.LogWarning("Could not retrive integer value of SavedSearchArtifactId field in SourceConfiguration for Integration Point ID {id}", artifact.ArtifactID);
+                    _logger.LogWarning("Could not retreive integer value of SavedSearchArtifactId field in SourceConfiguration for Integration Point ID {id}", artifact.ArtifactID);
                 }
 
                 return ripSavedSearchArtifactId;
