@@ -69,11 +69,6 @@
             return toggleValue;
         }
 
-        var promise = getToggleValue('kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle');
-        promise.then(function (result) {
-            IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
-        });
-
 		var promise = getToggleValue('kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle');
 		promise.then(function (result) {
 			IP.data.params['EnableTaggingToggleValue'] = result;

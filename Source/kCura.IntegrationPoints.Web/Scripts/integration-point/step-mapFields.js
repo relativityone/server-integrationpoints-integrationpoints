@@ -260,9 +260,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.IsNotImportFromCustomProviders = ko.observable(model.source.selectedType == "548f0873-8e5e-4da6-9f27-5f9cda764636" || model.isExportType);
 
-		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] &&
-										IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId &&
-										this.IsRelativityProvider();
+		var isNonDocumentObjectFlow = IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId && this.IsRelativityProvider();
 		self.IsNonDocumentObjectFlow = ko.observable();
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 

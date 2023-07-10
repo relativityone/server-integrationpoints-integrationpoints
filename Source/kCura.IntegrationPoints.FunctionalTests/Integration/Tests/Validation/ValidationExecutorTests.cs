@@ -1,52 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Castle.MicroKernel.Registration;
 using FluentAssertions;
-using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
-using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
-using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 {
     public class ValidationExecutorTests : TestsBase
     {
-        [IdentifiedTest("C9B3283F-8488-4654-9C44-46D37C15B57F")]
-        public void NonDocumentSync_ValidateOnSave_ShouldValidateAndNotThrow()
-        {
-            // Act & Assert
-            SetupNonDocumentFlowToggle(true);
-            ValidateOnOperationShouldNotThrow(PrepareNonDocumentSyncIntegrationPoint(), (executor, context) => executor.ValidateOnSave(context));
-        }
-
-        [IdentifiedTest("E407A9A3-8263-4016-B2AE-0B2B793EABC8")]
-        public void NonDocumentSync_ValidateOnSave_ShouldThrow_WhenToggleIsDisabled()
-        {
-            // Act & Assert
-            ValidateOnOperationShouldThrow<IntegrationPointValidationException>(PrepareNonDocumentSyncIntegrationPoint(), (executor, context) => executor.ValidateOnSave(context));
-        }
-
-        [IdentifiedTest("36D3CD2E-E7A7-4140-B8CA-82750B680D51")]
-        public void NonDocumentSync_ValidateOnRun_ShouldValidateAndNotThrow()
-        {
-            // Act & Assert
-            SetupNonDocumentFlowToggle(true);
-            ValidateOnOperationShouldNotThrow(PrepareNonDocumentSyncIntegrationPoint(), (executor, context) => executor.ValidateOnRun(context));
-        }
-
-        [IdentifiedTest("D9197049-35D2-42E4-B656-4346B3248F44")]
-        public void NonDocumentSync_ValidateOnRun_ShouldThrow_WhenToggleIsDisabled()
-        {
-            // Act & Assert
-            ValidateOnOperationShouldThrow<IntegrationPointValidationException>(PrepareNonDocumentSyncIntegrationPoint(), (executor, context) => executor.ValidateOnRun(context));
-        }
-
         [IdentifiedTest("486B0390-AF71-45CA-AC81-5830D00BF00C")]
         public void ValidateOnSave_ShouldValidateAndNotThrow()
         {
@@ -174,11 +138,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             IntegrationPointTest integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
             return integrationPoint;
-        }
-
-        private void SetupNonDocumentFlowToggle(bool enable)
-        {
-            Context.ToggleValues.SetValue<EnableSyncNonDocumentFlowToggle>(enable);
         }
     }
 }
