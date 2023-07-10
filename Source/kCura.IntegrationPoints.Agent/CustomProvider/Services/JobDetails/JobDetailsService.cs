@@ -84,10 +84,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
                 {
                     return deserializedBatchInstance.Value;
                 }
-                else
-                {
-                    return GetJobHistoryGuid(jobDetails);
-                }
+
+                return GetJobHistoryGuid(jobDetails);
             }
             catch
             {
