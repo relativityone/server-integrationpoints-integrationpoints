@@ -56,17 +56,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
                 if (savedSearchArtifactId == 0 & productionId == 0 & sourceViewId == 0)
                 {
-                    int workspaceId = _helper.GetActiveCaseID();
-
-                    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-                    logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
-                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, _helper, workspaceId);
+                    _logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
+                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact);
                     sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
 
-                    string savedSearchName = GetSavedSearchName(_helper, dbSavedSearchArtifactId);
+                    string savedSearchName = GetSavedSearchName(dbSavedSearchArtifactId);
                     sourceConfiguration["SavedSearch"] = savedSearchName;
 
-                    logger.LogInformation(
+                    _logger.LogInformation(
                         "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}.",
                         dbSavedSearchArtifactId,
                         savedSearchName);
@@ -103,7 +100,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             return value;
         }
 
-        private int GetSavedSearchArtifactId(Artifact artifact, IEHHelper helper, int workspaceId)
+        private int GetSavedSearchArtifactId(Artifact artifact)
         {
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             try
@@ -131,7 +128,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
         }
 
-        private string GetSavedSearchName(IEHHelper helper, int savedSearchArtifactId)
+        private string GetSavedSearchName(int savedSearchArtifactId)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -153,10 +150,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
             catch
             {
-                helper
-                    .GetLoggerFactory()
-                    .GetLogger()
-                    .LogError(
+                _logger.LogError(
                         "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
                         savedSearchArtifactId);
                 throw;
