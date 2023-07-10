@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AutoFixture.AutoMoq;
+using AutoFixture;
+using Castle.Core.Logging;
 using FluentAssertions;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -7,8 +10,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
+using kCura.Utility;
 using Moq;
 using Newtonsoft.Json;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
@@ -31,6 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IAPILog> _loggerMock;
         private Mock<IDBContext> _dbContextMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
+        private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
         private Artifact _artifact;
         private IntegrationPointViewPreLoad _sut;
         private const string _INTEGRATION_POINT_NAME = "A7 Integration Point";
@@ -54,7 +60,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _caseServiceContextMock = new Mock<ICaseServiceContext>();
             _relativityObjectManagerServiceMock = new Mock<IRelativityObjectManagerService>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
+            _integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
             _helperMock = new Mock<IEHHelper>();
+            _loggerMock = new Mock<IAPILog>();
 
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_relativityObjectManagerServiceMock.Object);
             _relativityObjectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
@@ -66,6 +74,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _objectManagerMock
                 .Setup(x => x.Read<SourceProvider>(_SOURCE_PROVIDER_VALUE, ExecutionIdentity.CurrentUser))
                 .Returns(sourceProvider);
+
+            Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
+            _helperMock.Setup(x => x.GetLoggerFactory()).Returns(loggerFactoryMock.Object);
+            loggerFactoryMock.Setup(x => x.GetLogger()).Returns(_loggerMock.Object);
 
             FieldCollection fields = new FieldCollection();
             _artifact = new Artifact(1093775, 1003663, 1000044, "Integration Point", false, fields);
@@ -236,6 +248,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             IDictionary<string, object> sourceConfiguration = new Dictionary<string, object>();
             sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = 0;
             CreateArtifactFields(sourceConfiguration);
+
             PrepareResetSavedSearchMocks();
             _objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser)).Throws(new Exception());
 
@@ -308,15 +321,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
         private void PrepareResetSavedSearchMocks()
         {
-            Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
-            _loggerMock = new Mock<IAPILog>();
             _dbContextMock = new Mock<IDBContext>();
 
             _helperMock.Setup(x => x.GetDBContext(It.IsAny<int>())).Returns(_dbContextMock.Object);
 
             _helperMock.Setup(x => x.GetActiveCaseID()).Returns(_WORKSPACE_ID);
-            _helperMock.Setup(x => x.GetLoggerFactory()).Returns(loggerFactoryMock.Object);
-            loggerFactoryMock.Setup(x => x.GetLogger()).Returns(_loggerMock.Object);
 
             Dictionary<string, object> dbSourceConfiguration = new Dictionary<string, object>();
             dbSourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = _SAVEDSEARCH_ARTIFACT_ID_VALUE;
