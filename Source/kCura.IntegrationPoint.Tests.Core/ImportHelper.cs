@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			// Specifies the ArtifactID of a document identifier field, such as a control number.
 			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 			importJob.SourceData.SourceData = data;
 
 			// Production settings

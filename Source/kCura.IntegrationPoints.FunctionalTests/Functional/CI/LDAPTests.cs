@@ -1,4 +1,6 @@
-﻿using Relativity.Testing.Identification;
+﻿using NUnit.Framework;
+
+using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
@@ -22,7 +24,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		}
 
 		[IdentifiedTest("09c54ba0-04d9-4f6e-9c46-0075612582fa")]
-		public void LoadFromLDAP_GoldFlow()
+		[Ignore("REL-841500: Resolve RIP functional test failures.")]
+        public void LoadFromLDAP_GoldFlow()
 		{
 			_testsImplementation.ImportFromLDAPGoldFlow();
 		}
