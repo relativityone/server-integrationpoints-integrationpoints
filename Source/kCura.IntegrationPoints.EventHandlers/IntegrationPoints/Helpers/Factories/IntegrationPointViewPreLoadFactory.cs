@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -45,12 +46,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
                 logger,
                 objectManagerFacadeFactory);
 
+            IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+                            relativityObjectManager,
+                            new SecretsRepository(
+                                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), logger), logger);
+
             return new IntegrationPointViewPreLoad(
                 caseServiceContext,
                 relativityProviderSourceConfiguration,
                 relativityProviderDestinationConfiguration,
                 integrationPointBaseFieldsConstants,
                 relativityObjectManager,
+                integrationPointRepository,
                 helper);
         }
     }

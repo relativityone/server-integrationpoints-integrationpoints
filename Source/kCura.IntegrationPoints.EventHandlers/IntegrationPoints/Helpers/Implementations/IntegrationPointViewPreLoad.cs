@@ -5,9 +5,7 @@ using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
@@ -23,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IRelativityProviderConfiguration _relativityProviderSourceConfiguration;
         private readonly IRelativityProviderConfiguration _relativityProviderDestinationConfiguration;
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IEHHelper _helper;
+        private readonly IIntegrationPointRepository _integrationPointRepository;
 
         private IAPILog _logger;
 
@@ -33,6 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration,
             IIntegrationPointBaseFieldsConstants fieldsConstants,
             IRelativityObjectManager objectManager,
+            IIntegrationPointRepository integrationPointRepository,
             IEHHelper helper)
         {
             _context = context;
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             _relativityProviderDestinationConfiguration = relativityProviderDestinationConfiguration;
             _fieldsConstants = fieldsConstants;
             _objectManager = objectManager;
-            _helper = helper;
+            _integrationPointRepository = integrationPointRepository;
             _logger = helper.GetLoggerFactory().GetLogger();
         }
 
@@ -105,12 +104,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             try
             {
-                IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-                            _objectManager,
-                            new SecretsRepository(
-                                SecretStoreFacadeFactory_Deprecated.Create(_helper.GetSecretStore, _logger), _logger), _logger);
-
-                string sourceConfiguration = integrationPointRepository.GetSourceConfigurationAsync(artifact.ArtifactID)
+                string sourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(artifact.ArtifactID)
                     .GetAwaiter()
                     .GetResult();
 
