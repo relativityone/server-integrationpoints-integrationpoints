@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        public async Task Entities_GoldFlow()
+        public void Entities_GoldFlow()
         {
             _testsImplementation.EntitiesPushGoldFlow();
         }
