@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using Relativity.Import.V1.Models.Errors;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError

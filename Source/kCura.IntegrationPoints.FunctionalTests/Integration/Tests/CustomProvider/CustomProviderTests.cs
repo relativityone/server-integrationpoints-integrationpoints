@@ -74,12 +74,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
             // Assert
             CustomProviderJobDetails jobDetails = GetJobDetails(job.JobDetails);
-            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryPendingGuid);
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
             VerifyFileExistenceAndContent(job, jobDetails);
             VerifyTotalItems(jobDetails);
             VerifyImportJobControllerExecutions(job, jobDetails);
             VerifyAddToImportQueue(job, jobDetails);
-            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryErrorJobFailedGuid);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
@@ -125,6 +124,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                 })
                 .Returns((int workspaceId, Guid importJobId) => Task.FromResult(
                     importJobDetails));
+
+            Proxy.ImportSourceControllerStub.Mock.Setup(
+                x => x.GetDetailsAsync(SourceWorkspace.ArtifactId, It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .Returns((int workspaceId, Guid importJobId, Guid sourceId) =>
+                    Task.FromResult(new ValueResponse<DataSourceDetails>(
+                        importJobId,
+                        true,
+                        string.Empty,
+                        string.Empty,
+                        new DataSourceDetails
+                        {
+                            State = DataSourceState.Completed
+                        })));
         }
 
         private void VerifyTotalItems(CustomProviderJobDetails jobDetails)
@@ -177,7 +189,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                     It.IsAny<Guid>(),
                     It.IsAny<DataSourceSettings>()), Times.Exactly(batchesCount));
 
-            var expectedJobDetailsUpdateExecutionsCount = batchesCount + 1;
+            var expectedJobDetailsUpdateExecutionsCount = batchesCount * 2 + 1;
             var jobDetailsUpdateExecutions = QueueQueryManagerMock.JobDetailsUpdateExecutions;
 
             jobDetailsUpdateExecutions.Count.Should().Be(expectedJobDetailsUpdateExecutionsCount);
@@ -191,13 +203,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                 customProviderJobDetails.Batches.Count.ShouldBeEquivalentTo(batchesCount);
                 for (int j = 0; j < batchesCount; j++)
                 {
+                    var isAllBatchesAddedToQueue = j < i;
                     customProviderJobDetails.Batches[j].BatchID.ShouldBeEquivalentTo(j);
-                    customProviderJobDetails.Batches[j].IsAddedToImportQueue.ShouldBeEquivalentTo(j < i);
+                    customProviderJobDetails.Batches[j].IsAddedToImportQueue.ShouldBeEquivalentTo(isAllBatchesAddedToQueue);
                     customProviderJobDetails.Batches[j].NumberOfRecords
                         .ShouldBeEquivalentTo(Context.InstanceSettings.CustomProviderBatchSize);
+
+                    var cutOffIdx = i % (batchesCount + 1);
+                    customProviderJobDetails.Batches[j].Status.ShouldBeEquivalentTo( i > batchesCount ? j <= cutOffIdx ? BatchStatus.Completed : BatchStatus.Started : BatchStatus.Started);
                 }
 
-                if (i > 0)
+                if (i > 0 && i < batchesCount + 1)
                 {
                     Proxy.ObjectManager.Mock.Verify(
                         x => x.UpdateAsync(

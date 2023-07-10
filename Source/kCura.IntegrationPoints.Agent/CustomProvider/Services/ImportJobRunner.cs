@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
@@ -24,6 +23,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     internal class ImportJobRunner : IImportJobRunner
     {
+        internal TimeSpan WaitForJobToFinishInterval = TimeSpan.FromSeconds(1);
+
         private readonly IImportApiService _importApiService;
         private readonly IJobDetailsService _jobDetailsService;
         private readonly ILoadFileBuilder _loadFileBuilder;
@@ -154,8 +155,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private async Task<ImportJobResult> WaitForJobToFinishAsync(Job job, ImportJobContext importJobContext, CustomProviderJobDetails details, CompositeCancellationToken token)
         {
-            TimeSpan interval = TimeSpan.FromSeconds(5);
-
             ImportDetails result;
             ImportState state = ImportState.Unknown;
             do
@@ -171,7 +170,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     new ImportJobResult { Status = JobEndStatus.DrainStopped };
                 }
 
-                await Task.Delay(interval).ConfigureAwait(false);
+                await Task.Delay(WaitForJobToFinishInterval).ConfigureAwait(false);
 
                 result = await _importApiService.GetJobImportStatusAsync(importJobContext).ConfigureAwait(false);
                 if (result.State != state)
