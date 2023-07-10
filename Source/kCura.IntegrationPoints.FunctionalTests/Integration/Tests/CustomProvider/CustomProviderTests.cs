@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -36,17 +35,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
         private ImportState[] ImportStates { get; set; }
 
-        /*
-        Basic implementation:
-            IAPI 2.0 calls
-            job history updates
-            status updates
-
-        Additional tests:
-            k8s crashes
-
-        */
-
         public override void SetUp()
         {
             base.SetUp();
@@ -67,6 +55,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             {
                 ImportState.New, ImportState.Configured, ImportState.Scheduled, ImportState.Idle, ImportState.Completed
             };
+
+            QueueQueryManagerMock.JobDetailsUpdateExecutions = new List<KeyValuePair<long, string>>();
 
             SetupWaitForJobToFinish();
         }
@@ -96,7 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         private void SetupWaitForJobToFinish()
         {
             var jobProgressHandler = Container.Resolve<IJobProgressHandler>();
-            jobProgressHandler.GetType().GetField("_waitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
+            jobProgressHandler.GetType().GetField("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(jobProgressHandler, TimeSpan.FromMilliseconds(200));
             Container.Register(Component.For<IJobProgressHandler>().UsingFactoryMethod(() => jobProgressHandler)
                 .LifestyleTransient().IsDefault());
