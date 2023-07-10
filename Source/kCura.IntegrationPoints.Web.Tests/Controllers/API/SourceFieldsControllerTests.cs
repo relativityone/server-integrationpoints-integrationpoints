@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _dataSourceProvider = Substitute.For<IDataSourceProvider>();
             _configuration = Substitute.For<HttpConfiguration>();
 
-            _fieldA = new FieldEntry() { FieldIdentifier = "AAA", DisplayName = "aaa", IsIdentifier = true};
+            _fieldA = new FieldEntry() { FieldIdentifier = "AAA", DisplayName = "aaa", IsIdentifier = true };
             _fieldB = new FieldEntry() { FieldIdentifier = "BBB", DisplayName = "bbb" };
             _fieldC = new FieldEntry() { FieldIdentifier = "CCC", DisplayName = "ccc" };
             _fieldD = new FieldEntry() { FieldIdentifier = "DDD", DisplayName = "ddd" };
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _instance = new SourceFieldsController(_sourceProviderIdentifier, _factory)
             {
-                Configuration =  _configuration,
+                Configuration = _configuration,
                 Request = new System.Net.Http.HttpRequestMessage()
             };
             _instance.Configuration = _configuration;
@@ -66,16 +66,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase]
         public void GetSourceFieldsGoldFlow()
         {
-            var response = _instance.Get(new SourceOptions() { Options  = _options, Type = _dataType, Credentials = _credentials });
+            var response = _instance.Get(new SourceOptions() { Options = _options, Type = _dataType, Credentials = _credentials });
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             var classificationResults = ((List<ClassifiedFieldDTO>)((System.Net.Http.ObjectContent<List<ClassifiedFieldDTO>>)response.Content).Value);
             var fieldEntries = new List<FieldEntry>() { _fieldA, _fieldB, _fieldC, _fieldD };
-
-            for(int i = 0; i < fieldEntries.Count; i++)
-            {
-                fieldEntries[i].FieldIdentifier = i.ToString();
-            }
 
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.FieldIdentifier), classificationResults.Select(x => x.FieldIdentifier));
             CollectionAssert.AreEqual(fieldEntries.Select(x => x.DisplayName), classificationResults.Select(x => x.Name));
