@@ -25,40 +25,18 @@
 
 	this.selectedDestinationType.subscribe(function (selectedValue) {
 
-		var destType = self.selectedDestinationTypeGuid();
-		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
+		var rdoTypesToDisplay = self.allRdoTypes();
 
-		var disableRdoSelection = destType === relativityDestinationProviderGuid && enableSyncNonDocumentFlow === false;
-		self.isDestinationObjectDisabled(disableRdoSelection);
-		
-		if (destType === loadFileProviderGuid ||
-			(typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' ||
-			parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null ||
-			enableSyncNonDocumentFlow === true)) {
-
-				var rdoTypesToDisplay = self.allRdoTypes();
-
-				if (enableSyncNonDocumentFlow && parentModel.isSyncFlow()) {
-					rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
-				}
-
-				self.rdoTypes(rdoTypesToDisplay);
-
-				if (typeof self.artifactTypeID() === 'undefined') {
-					self.artifactTypeID(parentModel.DefaultRdoTypeId);
-				}
+		if (parentModel.isSyncFlow()) {
+			rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
 		}
-		else {
-			if ($.isArray(parentModel.source.SourceProviderConfiguration.compatibleRdoTypes)) {
-				var rdosToDisplay = [];
-				$.each(self.allRdoTypes(), function () {
-					if (parentModel.source.SourceProviderConfiguration.compatibleRdoTypes.indexOf(this.value) > -1) {
-						rdosToDisplay.push(this);
-					}
-				});
-				self.rdoTypes(rdosToDisplay);
-			}
+
+		self.rdoTypes(rdoTypesToDisplay);
+
+		if (typeof self.artifactTypeID() === 'undefined') {
+			self.artifactTypeID(parentModel.DefaultRdoTypeId);
 		}
+
 		IP.messaging.publish("DestinationProviderTypeChanged", self.selectedDestinationType());
 	});
 

@@ -61,36 +61,18 @@
 	};
 
 	this.selectedType.subscribe(function (selectedValue) {
-
-		var isLoadFileDestinationProvider = parentModel.destination.selectedDestinationTypeGuid() === loadFileProviderGuid;
-		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
-
 		$.each(self.sourceTypes(), function () {
 			if (this.value === selectedValue) {
 				self.sourceProvider = this.artifactID;
-				if (typeof this.model.config.compatibleRdoTypes === 'undefined' ||
-					this.model.config.compatibleRdoTypes === null ||
-					isLoadFileDestinationProvider ||
-					enableSyncNonDocumentFlow === true)
-					{
-						var rdoTypesToDisplay = parentModel.destination.allRdoTypes();
 
-						if (enableSyncNonDocumentFlow && parentModel.isSyncFlow()) {
-							rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
-						}
+				var rdoTypesToDisplay = parentModel.destination.allRdoTypes();
 
-						parentModel.destination.rdoTypes(rdoTypesToDisplay);
+				if (parentModel.isSyncFlow()) {
+					rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
 				}
-				else {
-					var compatibleRdos = this.model.config.compatibleRdoTypes;
-					var rdosToDisplay = [];
-					$.each(parentModel.destination.allRdoTypes(), function () {
-						if (compatibleRdos.indexOf(this.value) > -1) {
-							rdosToDisplay.push(this);
-						}
-					});
-					parentModel.destination.rdoTypes(rdosToDisplay);
-				}
+
+				parentModel.destination.rdoTypes(rdoTypesToDisplay);
+
 				self.SourceProviderConfiguration = this.model.config;
 				parentModel.destination.UpdateSelectedItem();
 			}
