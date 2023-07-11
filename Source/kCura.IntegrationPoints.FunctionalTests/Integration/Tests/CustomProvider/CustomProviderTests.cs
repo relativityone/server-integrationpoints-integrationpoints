@@ -65,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         public void CustomProviderTest_SystemTest()
         {
             // Arrange
-            var job = ScheduleImportCustomProviderJob();
+            JobTest job = NewMethod();
 
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
@@ -83,15 +83,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
+        private JobTest NewMethod()
+        {
+            return ScheduleImportCustomProviderJob();
+        }
+
         private void SetupWaitForJobToFinish()
         {
-            var jobProgressHandler = Container.Resolve<IJobProgressHandler>();
+            IJobProgressHandler jobProgressHandler = Container.Resolve<IJobProgressHandler>();
             jobProgressHandler.GetType().GetField("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(jobProgressHandler, TimeSpan.FromMilliseconds(200));
             Container.Register(Component.For<IJobProgressHandler>().UsingFactoryMethod(() => jobProgressHandler)
                 .LifestyleTransient().IsDefault());
 
-            var callIdx = 0;
+            int callIdx = 0;
             var importJobDetails = new ValueResponse<ImportDetails>(
                 Guid.Empty,
                 true,
@@ -180,7 +185,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
         private void VerifyAddToImportQueue(JobTest job, CustomProviderJobDetails jobDetails)
         {
-            var batchesCount = _managementTestData.Data.Count / Context.InstanceSettings.CustomProviderBatchSize;
+            int batchesCount = _managementTestData.Data.Count / Context.InstanceSettings.CustomProviderBatchSize;
 
             Proxy.ImportSourceControllerStub.Mock.Verify(
                 x => x.AddSourceAsync(
@@ -189,8 +194,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                     It.IsAny<Guid>(),
                     It.IsAny<DataSourceSettings>()), Times.Exactly(batchesCount));
 
-            var expectedJobDetailsUpdateExecutionsCount = batchesCount * 2 + 1;
-            var jobDetailsUpdateExecutions = QueueQueryManagerMock.JobDetailsUpdateExecutions;
+            int expectedJobDetailsUpdateExecutionsCount = batchesCount * 2 + 1;
+            List<KeyValuePair<long, string>> jobDetailsUpdateExecutions = QueueQueryManagerMock.JobDetailsUpdateExecutions;
 
             jobDetailsUpdateExecutions.Count.Should().Be(expectedJobDetailsUpdateExecutionsCount);
 
@@ -198,19 +203,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             {
                 jobDetailsUpdateExecutions[i].Key.ShouldBeEquivalentTo(job.JobId);
 
-                var customProviderJobDetails =
-                    Serializer.Deserialize<CustomProviderJobDetails>(jobDetailsUpdateExecutions[i].Value);
+                CustomProviderJobDetails customProviderJobDetails = Serializer.Deserialize<CustomProviderJobDetails>(jobDetailsUpdateExecutions[i].Value);
                 customProviderJobDetails.Batches.Count.ShouldBeEquivalentTo(batchesCount);
                 for (int j = 0; j < batchesCount; j++)
                 {
-                    var isAllBatchesAddedToQueue = j < i;
+                    bool isBatchAddedToQueue = j < i;
                     customProviderJobDetails.Batches[j].BatchID.ShouldBeEquivalentTo(j);
-                    customProviderJobDetails.Batches[j].IsAddedToImportQueue.ShouldBeEquivalentTo(isAllBatchesAddedToQueue);
+                    customProviderJobDetails.Batches[j].IsAddedToImportQueue.ShouldBeEquivalentTo(isBatchAddedToQueue);
                     customProviderJobDetails.Batches[j].NumberOfRecords
                         .ShouldBeEquivalentTo(Context.InstanceSettings.CustomProviderBatchSize);
 
-                    var cutOffIdx = i % (batchesCount + 1);
-                    customProviderJobDetails.Batches[j].Status.ShouldBeEquivalentTo( i > batchesCount ? j <= cutOffIdx ? BatchStatus.Completed : BatchStatus.Started : BatchStatus.Started);
+                    int cutOffIdx = i % (batchesCount + 1);
+                    BatchStatus expectedBatchStatus = BatchStatus.Started;
+                    if (i > batchesCount)
+                    {
+                        if (j <= cutOffIdx)
+                        {
+                            expectedBatchStatus = BatchStatus.Completed;
+                        }
+                    }
+
+                    customProviderJobDetails.Batches[j].Status.ShouldBeEquivalentTo(expectedBatchStatus);
                 }
 
                 if (i > 0 && i < batchesCount + 1)
