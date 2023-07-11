@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -14,6 +15,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 {
     internal class JobProgressHandler : IJobProgressHandler
     {
+        internal readonly TimeSpan WaitForJobToFinishInterval = TimeSpan.FromSeconds(30);
+
         private readonly IImportApiService _importApiService;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly ITimerFactory _timerFactory;
@@ -36,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
             _logger.LogInformation("Progress update interval: {interval}", interval);
 
-            ITimer timer = _timerFactory.Create(async (state) => await SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
+            ITimer timer = _timerFactory.Create(async state => await SafeUpdateProgressAsync(importJobContext).ConfigureAwait(false), null, TimeSpan.Zero, interval, "CustomProviderProgressUpdateTimer");
             return timer;
         }
 
@@ -60,8 +63,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
 
         public async Task WaitForJobToFinish(ImportJobContext importJobContext, CompositeCancellationToken token)
         {
-            TimeSpan interval = TimeSpan.FromSeconds(5);
-
             ImportDetails result;
             ImportState state = ImportState.Unknown;
             do
@@ -76,7 +77,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress
                     return;
                 }
 
-                await Task.Delay(interval).ConfigureAwait(false);
+                await Task.Delay(WaitForJobToFinishInterval).ConfigureAwait(false);
 
                 result = await _importApiService.GetJobImportStatusAsync(importJobContext).ConfigureAwait(false);
                 if (result.State != state)

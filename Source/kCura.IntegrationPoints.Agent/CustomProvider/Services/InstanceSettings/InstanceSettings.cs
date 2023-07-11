@@ -29,8 +29,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings
         public async Task<TimeSpan> GetCustomProviderProgressUpdateIntervalAsync()
         {
             int intervalInSeconds =
-                await GetAsync<int>(Constants.InstanceSettings.CUSTOM_PROVIDER_PROGRESS_UPDATE_INTERVAL_SECONDS,
-                    Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, 5);
+                await GetAsync<int>(
+                    Constants.InstanceSettings.CUSTOM_PROVIDER_PROGRESS_UPDATE_INTERVAL_SECONDS,
+                    Constants.InstanceSettings.INTEGRATION_POINTS_SECTION,
+                    5);
             return TimeSpan.FromSeconds(intervalInSeconds);
         }
 

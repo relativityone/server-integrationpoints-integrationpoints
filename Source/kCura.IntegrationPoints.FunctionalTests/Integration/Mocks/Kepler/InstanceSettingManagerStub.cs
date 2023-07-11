@@ -67,8 +67,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 settings => ((int)settings.CustomProviderProgressUpdateInterval.TotalSeconds).ToString());
         }
 
-        private void SetupInstanceSettingInternal(InstanceSettings settings,
-            string name, string section, Expression<Func<InstanceSettings, string>> returnedValueFunc)
+        private void SetupInstanceSettingInternal(
+            InstanceSettings settings,
+            string name,
+            string section,
+            Expression<Func<InstanceSettings, string>> returnedValueFunc)
         {
             Mock.Setup(x => x.QueryAsync(
                 It.Is<Relativity.Services.Query>(q => q.Condition ==

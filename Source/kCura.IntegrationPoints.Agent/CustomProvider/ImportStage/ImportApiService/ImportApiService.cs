@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Kepler;
 using Relativity.API;
@@ -10,7 +11,7 @@ using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService
 {
     /// <inheritdoc/>
     internal class ImportApiService : IImportApiService
@@ -79,7 +80,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             await CreateAdvancedConfigurationAsync(importJobContext, configuration.AdvancedSettings).ConfigureAwait(false);
         }
 
-        public async Task AddDataSourceAsync(ImportJobContext importJobContext,
+        public async Task AddDataSourceAsync(
+            ImportJobContext importJobContext,
             Guid sourceId,
             DataSourceSettings dataSourceSettings)
         {
@@ -91,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             sourceId,
                             dataSourceSettings)
                         .ConfigureAwait(false))
-                    .Validate($"{nameof(ImportApiService.AddDataSourceAsync)} failed.");
+                    .Validate($"{nameof(AddDataSourceAsync)} failed.");
             }
         }
 
@@ -105,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             importJobContext.WorkspaceId,
                             importJobContext.JobHistoryGuid)
                         .ConfigureAwait(false))
-                    .Validate($"{nameof(ImportApiService.CancelJobAsync)} failed.");
+                    .Validate($"{nameof(CancelJobAsync)} failed.");
             }
         }
 
@@ -119,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             importJobContext.WorkspaceId,
                             importJobContext.JobHistoryGuid)
                         .ConfigureAwait(false))
-                    .Validate($"{nameof(ImportApiService.EndJobAsync)} failed.");
+                    .Validate($"{nameof(EndJobAsync)} failed.");
             }
         }
 
@@ -131,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                             importJobContext.WorkspaceId,
                             importJobContext.JobHistoryGuid)
                         .ConfigureAwait(false))
-                    .UnwrapOrThrow($"{nameof(ImportApiService.GetJobImportStatusAsync)} failed.");
+                    .UnwrapOrThrow($"{nameof(GetJobImportStatusAsync)} failed.");
             }
         }
 

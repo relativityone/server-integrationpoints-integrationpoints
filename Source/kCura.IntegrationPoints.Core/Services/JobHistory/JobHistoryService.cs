@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
 using Relativity.API;
-using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Relativity.Import.V1;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService
 {
     internal class ImportApiResponseException : Exception
     {

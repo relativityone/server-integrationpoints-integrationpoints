@@ -56,6 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
                 return _jobDetails;
             }
+
             set { _jobDetails = value; }
         }
 

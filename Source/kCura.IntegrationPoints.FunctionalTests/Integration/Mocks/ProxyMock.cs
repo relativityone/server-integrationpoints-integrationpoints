@@ -28,6 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RdoConfigurationController = new RdoConfigurationControllerStub();
             AdvancedConfigurationController = new AdvancedConfigurationControllerStub();
             SyncService = new SyncServiceStub();
+            ImportSourceControllerStub = new ImportSourceControllerStub();
         }
 
         public ObjectManagerStub ObjectManager { get; }
@@ -72,6 +73,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public SyncServiceStub SyncService { get; }
 
+        public ImportSourceControllerStub ImportSourceControllerStub { get; }
+
         public void Setup(RelativityInstanceTest relativity)
         {
             ObjectManager.Setup(relativity);
@@ -92,6 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RdoConfigurationController.Setup(relativity);
             AdvancedConfigurationController.Setup(relativity);
             SyncService.Setup(relativity);
+            ImportSourceControllerStub.Setup(relativity);
 
             SetupFixedMocks();
         }
@@ -118,6 +122,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RdoConfigurationController.SetupRdoConfigurationController();
             AdvancedConfigurationController.SetupAdvancedConfigurationController();
             SyncService.SetupMock();
+            ImportSourceControllerStub.SetupImportSourceController();
         }
     }
 }
