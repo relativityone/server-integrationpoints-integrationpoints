@@ -21,7 +21,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IRelativityProviderConfiguration _relativityProviderSourceConfiguration;
         private readonly IRelativityProviderConfiguration _relativityProviderDestinationConfiguration;
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IEHHelper _helper;
+        private readonly IIntegrationPointRepository _integrationPointRepository;
+
+        private IAPILog _logger;
 
         public IntegrationPointViewPreLoad(
             ICaseServiceContext context,
@@ -29,6 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration,
             IIntegrationPointBaseFieldsConstants fieldsConstants,
             IRelativityObjectManager objectManager,
+            IIntegrationPointRepository integrationPointRepository,
             IEHHelper helper)
         {
             _context = context;
@@ -36,7 +39,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             _relativityProviderDestinationConfiguration = relativityProviderDestinationConfiguration;
             _fieldsConstants = fieldsConstants;
             _objectManager = objectManager;
-            _helper = helper;
+            _integrationPointRepository = integrationPointRepository;
+            _logger = helper.GetLoggerFactory().GetLogger();
         }
 
         public void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact)
@@ -51,17 +55,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
                 if (savedSearchArtifactId == 0 & productionId == 0 & sourceViewId == 0)
                 {
-                    int workspaceId = _helper.GetActiveCaseID();
-
-                    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
-                    logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
-                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, _helper, workspaceId);
+                    _logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
+                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact);
                     sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
 
-                    string savedSearchName = GetSavedSearchName(_helper, dbSavedSearchArtifactId);
+                    string savedSearchName = GetSavedSearchName(dbSavedSearchArtifactId);
                     sourceConfiguration["SavedSearch"] = savedSearchName;
 
-                    logger.LogInformation(
+                    _logger.LogInformation(
                         "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}.",
                         dbSavedSearchArtifactId,
                         savedSearchName);
@@ -98,32 +99,33 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             return value;
         }
 
-        private int GetSavedSearchArtifactId(Artifact artifact, IEHHelper helper, int workspaceId)
+        private int GetSavedSearchArtifactId(Artifact artifact)
         {
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             try
             {
-                string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
-                string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
+                string sourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(artifact.ArtifactID)
+                    .GetAwaiter()
+                    .GetResult();
 
-                Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(dbSourceConfiguration);
-                int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
+                Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(sourceConfiguration);
+                if (!int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId))
+                {
+                    _logger.LogWarning("Could not retreive integer value of SavedSearchArtifactId field in SourceConfiguration for Integration Point ID {id}", artifact.ArtifactID);
+                }
 
                 return ripSavedSearchArtifactId;
             }
             catch
             {
-                helper
-                    .GetLoggerFactory()
-                    .GetLogger()
-                    .LogError(
-                        "Unable to get SavedSearchArtifactId for integrationPoint - {integrationPoint}",
-                        integrationPointName);
+                _logger.LogError(
+                         "Unable to get SavedSearchArtifactId for integrationPoint - {integrationPoint}",
+                         integrationPointName);
                 throw;
             }
         }
 
-        private string GetSavedSearchName(IEHHelper helper, int savedSearchArtifactId)
+        private string GetSavedSearchName(int savedSearchArtifactId)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -145,10 +147,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
             catch
             {
-                helper
-                    .GetLoggerFactory()
-                    .GetLogger()
-                    .LogError(
+                _logger.LogError(
                         "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
                         savedSearchArtifactId);
                 throw;

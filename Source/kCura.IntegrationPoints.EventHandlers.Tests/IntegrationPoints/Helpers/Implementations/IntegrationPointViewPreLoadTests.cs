@@ -29,8 +29,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IRelativityObjectManagerService> _relativityObjectManagerServiceMock;
         private Mock<IEHHelper> _helperMock;
         private Mock<IAPILog> _loggerMock;
-        private Mock<IDBContext> _dbContextMock;
         private Mock<IRelativityObjectManager> _objectManagerMock;
+        private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
         private Artifact _artifact;
         private IntegrationPointViewPreLoad _sut;
         private const string _INTEGRATION_POINT_NAME = "A7 Integration Point";
@@ -54,7 +54,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _caseServiceContextMock = new Mock<ICaseServiceContext>();
             _relativityObjectManagerServiceMock = new Mock<IRelativityObjectManagerService>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
+            _integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
             _helperMock = new Mock<IEHHelper>();
+            _loggerMock = new Mock<IAPILog>();
 
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_relativityObjectManagerServiceMock.Object);
             _relativityObjectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
@@ -67,6 +69,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 .Setup(x => x.Read<SourceProvider>(_SOURCE_PROVIDER_VALUE, ExecutionIdentity.CurrentUser))
                 .Returns(sourceProvider);
 
+            Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
+            _helperMock.Setup(x => x.GetLoggerFactory()).Returns(loggerFactoryMock.Object);
+            loggerFactoryMock.Setup(x => x.GetLogger()).Returns(_loggerMock.Object);
+
             FieldCollection fields = new FieldCollection();
             _artifact = new Artifact(1093775, 1003663, 1000044, "Integration Point", false, fields);
 
@@ -76,6 +82,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 _relativityProviderDestinationConfigurationMock.Object,
                 _fieldsConstants,
                 _objectManagerMock.Object,
+                _integrationPointRepositoryMock.Object,
                 _helperMock.Object);
         }
 
@@ -206,14 +213,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         }
 
         [Test]
-        public void ResetSavedSearch_ShouldLogError_WhenFailedToGetSourceConfigurationFromDatabase()
+        public void ResetSavedSearch_ShouldLogError_WhenFailedToGetSourceConfiguration()
         {
             // Arrange
             IDictionary<string, object> sourceConfiguration = new Dictionary<string, object>();
             sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = 0;
             CreateArtifactFields(sourceConfiguration);
-            PrepareResetSavedSearchMocks();
-            _dbContextMock.Setup(x => x.ExecuteSqlStatementAsScalar<string>(It.IsAny<string>())).Throws(new Exception());
+
+            _integrationPointRepositoryMock.Setup(x => x.GetSourceConfigurationAsync(_artifact.ArtifactID)).Throws(new Exception());
 
             // Act
             Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact);
@@ -236,7 +243,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             IDictionary<string, object> sourceConfiguration = new Dictionary<string, object>();
             sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = 0;
             CreateArtifactFields(sourceConfiguration);
-            PrepareResetSavedSearchMocks();
+            string sourceConfigurationJson = JsonConvert.SerializeObject(sourceConfiguration);
+            _integrationPointRepositoryMock.Setup(x => x.GetSourceConfigurationAsync(_artifact.ArtifactID)).ReturnsAsync(sourceConfigurationJson);
+
             _objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser)).Throws(new Exception());
 
             // Act
@@ -248,7 +257,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 x =>
                     x.LogError(
                         "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
-                        _SAVEDSEARCH_ARTIFACT_ID_VALUE),
+                        sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY]),
                 Times.Once);
             ResetSavedSearchAssert(Times.Once(), Times.Never(), _SAVEDSEARCH_ARTIFACT_ID_VALUE.ToString(), false);
         }
@@ -308,21 +317,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
         private void PrepareResetSavedSearchMocks()
         {
-            Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
-            _loggerMock = new Mock<IAPILog>();
-            _dbContextMock = new Mock<IDBContext>();
+            IDictionary<string, object> sourceConfiguration = new Dictionary<string, object>();
+            sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = _SAVEDSEARCH_ARTIFACT_ID_VALUE;
 
-            _helperMock.Setup(x => x.GetDBContext(It.IsAny<int>())).Returns(_dbContextMock.Object);
-
-            _helperMock.Setup(x => x.GetActiveCaseID()).Returns(_WORKSPACE_ID);
-            _helperMock.Setup(x => x.GetLoggerFactory()).Returns(loggerFactoryMock.Object);
-            loggerFactoryMock.Setup(x => x.GetLogger()).Returns(_loggerMock.Object);
-
-            Dictionary<string, object> dbSourceConfiguration = new Dictionary<string, object>();
-            dbSourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = _SAVEDSEARCH_ARTIFACT_ID_VALUE;
-            string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{_WORKSPACE_ID}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{_INTEGRATION_POINT_NAME}'";
-            _dbContextMock.Setup(x => x.ExecuteSqlStatementAsScalar<string>(sqlQuery))
-                .Returns(JsonConvert.SerializeObject(dbSourceConfiguration));
+            string sourceConfigurationJson = JsonConvert.SerializeObject(sourceConfiguration);
+            _integrationPointRepositoryMock.Setup(x => x.GetSourceConfigurationAsync(_artifact.ArtifactID)).ReturnsAsync(sourceConfigurationJson);
 
             List<RelativityObject> result = new List<RelativityObject>
             {

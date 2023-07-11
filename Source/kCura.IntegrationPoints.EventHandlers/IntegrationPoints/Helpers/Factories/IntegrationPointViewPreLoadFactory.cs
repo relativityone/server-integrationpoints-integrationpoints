@@ -1,10 +1,12 @@
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -20,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
         {
             ICaseServiceContext caseServiceContext = ServiceContextFactory.CreateCaseServiceContext(helper, helper.GetActiveCaseID());
             IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-            Domain.Managers.IInstanceSettingsManager instanceSettingsManager =new InstanceSettingsManager(repositoryFactory);
+            Domain.Managers.IInstanceSettingsManager instanceSettingsManager = new InstanceSettingsManager(repositoryFactory);
             IRelativityProviderConfiguration relativityProviderSourceConfiguration =
                 RelativityProviderSourceConfigurationFactory.Create(helper, instanceSettingsManager);
 
@@ -44,12 +46,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
                 logger,
                 objectManagerFacadeFactory);
 
+            IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+                            relativityObjectManager,
+                            new SecretsRepository(
+                                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), logger), logger);
+
             return new IntegrationPointViewPreLoad(
                 caseServiceContext,
                 relativityProviderSourceConfiguration,
                 relativityProviderDestinationConfiguration,
                 integrationPointBaseFieldsConstants,
                 relativityObjectManager,
+                integrationPointRepository,
                 helper);
         }
     }
