@@ -222,7 +222,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			});
         
-        if (typeof model.EntityManagerFieldContainsLink === "undefined" && artifactTypeId !== 10) {
+        if (typeof model.EntityManagerFieldContainsLink === "undefined" && artifactTypeId !== documentArtifactTypeId) {
             model.EntityManagerFieldContainsLink = "true";
         }
 
