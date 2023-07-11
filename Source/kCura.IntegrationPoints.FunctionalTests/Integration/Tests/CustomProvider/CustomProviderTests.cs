@@ -65,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
         public void CustomProviderTest_SystemTest()
         {
             // Arrange
-            JobTest job = NewMethod();
+            JobTest job = ScheduleImportCustomProviderJob();
 
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
@@ -81,11 +81,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             VerifyAddToImportQueue(job, jobDetails);
 
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
-        }
-
-        private JobTest NewMethod()
-        {
-            return ScheduleImportCustomProviderJob();
         }
 
         private void SetupWaitForJobToFinish()
