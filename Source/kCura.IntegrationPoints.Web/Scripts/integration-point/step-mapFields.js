@@ -221,10 +221,10 @@ ko.validation.insertValidationMessage = function (element) {
 					params: this.mappedWorkspace
 				}
 			});
-
-		if (typeof model.EntityManagerFieldContainsLink === "undefined") {
-			model.EntityManagerFieldContainsLink = "true";
-		}
+        
+        if (typeof model.EntityManagerFieldContainsLink === "undefined" && artifactTypeId !== 10) {
+            model.EntityManagerFieldContainsLink = "true";
+        }
 
 		this.EntityManagerFieldContainsLink = ko.observable(model.EntityManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
