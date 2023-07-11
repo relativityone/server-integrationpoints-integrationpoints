@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,6 +75,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
             IntegrationPointDto integrationPointDto = null;
+
+            await _jobHistoryService.TryUpdateStartTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
+
             try
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
@@ -113,6 +115,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 {
                     _logger.LogWarning("Integration Point object is null. Email notification will not be send.");
                 }
+
+                await _jobHistoryService.TryUpdateEndTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
             }
         }
 
