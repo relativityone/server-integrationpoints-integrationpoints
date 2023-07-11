@@ -1,18 +1,19 @@
-﻿using System;
+﻿using System.IO;
+
 using Atata;
-using System.IO;
+
 using NUnit.Framework;
+
+using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Web;
-using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers;
+using Relativity.Testing.Framework.Models;
+using Relativity.Testing.Framework.Web;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
 	[SetUpFixture]
-	[Ignore("REL-841500: Resolve all unit and functional tests of RIP")]
 	public class TestsSetUpFixture
 	{
 		private const string STANDARD_ACCOUNT_EMAIL_FORMAT = "rip_func_user{0}@mail.com";
@@ -25,7 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			RelativityFacade.Instance.RelyOn<CoreComponent>();
 			RelativityFacade.Instance.RelyOn<ApiComponent>();
 			RelativityFacade.Instance.RelyOn<WebComponent>();
-
 			RelativityFacade.Instance.Resolve<IAccountPoolService>().StandardAccountEmailFormat = STANDARD_ACCOUNT_EMAIL_FORMAT;
 
 			if (TemplateWorkspaceExists())
@@ -34,9 +34,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			}
 
 			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
-
 			InstallIntegrationPointsToWorkspace(workspaceId);
-		}
+			SetDevelopmentModeToTrue();
+			if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
+			{
+				InstallARMTestServicesToWorkspace();
+			}
+        }
 
 		[OneTimeTearDown]
 		public void TearDown()
@@ -62,7 +66,30 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
 
-		public static void CopyScreenshotsToBase()
+		private static void InstallARMTestServicesToWorkspace()
+		{
+			string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
+
+			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
+			                .InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
+				                                                   {
+					                                                   CreateIfMissing = true
+				                                                   });
+		}
+
+        private void SetDevelopmentModeToTrue()
+		{
+			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+			                .Require(new Testing.Framework.Models.InstanceSetting
+				                         {
+					                         Name = "DevelopmentMode",
+					                         Section = "kCura.ARM",
+					                         Value = "True",
+					                         ValueType = InstanceSettingValueType.TrueFalse
+				                         });
+		}
+
+        public static void CopyScreenshotsToBase()
 		{
 			string screenshotExtension = "*.png";
 			string basePath = GetBaseArchiveDirectoryPath();

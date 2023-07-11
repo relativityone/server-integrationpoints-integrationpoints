@@ -15,8 +15,8 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
 {
     [TestFixture, Category("Unit")]
     [NonParallelizable]
-    [Ignore("REL-841500: Resolve all unit and functional tests of RIP")]
-    class AppDomainHelperTests
+    [Ignore("REL-841500: Resolve flaky RIP unit and functional tests")]
+    public class AppDomainHelperTests
     {
         private IAppDomainHelper _sut;
         private AppDomain _appDomain;

@@ -1,18 +1,16 @@
 ﻿using Atata;
-using System.IO;
-using NUnit.Framework;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api.Services;
-using Relativity.Testing.Framework.Models;
-using Relativity.Testing.Framework.Web.Navigation;
-using Relativity.Testing.Framework.Web.Extensions;
+
+using FluentAssertions;
+
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
-using System.Threading.Tasks;
-using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Web.Extensions;
 using Relativity.Testing.Framework.Web.Models;
+using Relativity.Testing.Framework.Web.Navigation;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -27,39 +25,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void OnSetUpFixture()
         {
-            // Installing necessary app
-            SetDevelopmentModeToTrue();
-            if (RelativityFacade.Instance.Resolve<ILibraryApplicationService>().Get("ARM Test Services") == null)
-            {
-	            InstallARMTestServicesToWorkspace();
-            }
-            
-            // Preparing data for LoadFile and placing it in the right location
+	        // Preparing data for LoadFile and placing it in the right location
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
-        }
-
-        private void SetDevelopmentModeToTrue()
-        {
-            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
-                .Require(new Testing.Framework.Models.InstanceSetting
-                    {
-                        Name = "DevelopmentMode",
-                        Section = "kCura.ARM",
-                        Value = "True",
-                        ValueType = InstanceSettingValueType.TrueFalse
-                    });
-        }
-
-        private static void InstallARMTestServicesToWorkspace()
-        {
-            string rapFileLocation = TestConfig.ARMTestServicesRapFileLocation;
-
-            RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-                .InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-            {
-                CreateIfMissing = true
-            });
         }
 
         public void ImportNativesFromLoadFileGoldFlow()
