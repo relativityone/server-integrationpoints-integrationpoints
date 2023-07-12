@@ -87,7 +87,7 @@
 			var getBasePath = IP.utils.getBasePath();
 			var route = IP.redirect.get();
 			if (!IP.redirect.isEdit()) {
-				route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
+				route = document.URL.toLowerCase().split('custompages')[0] + "@Html.Raw(@Model.URL)";
 			}
 			window.top.location =route;
 		});
