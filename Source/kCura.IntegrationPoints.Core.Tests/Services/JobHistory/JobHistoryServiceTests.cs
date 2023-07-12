@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _workspaceManager = Substitute.For<IWorkspaceManager>();
             _logger = Substitute.For<IAPILog>();
-            _serializer = Substitute.For<ISerializer>();
 
             _integrationPoint = new IntegrationPointDto
             {
@@ -64,8 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance = new JobHistoryService(
                 _relativityObjectManager,
                 _workspaceManager,
-                _logger,
-                _serializer);
+                _logger);
         }
 
         [Test]
@@ -156,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
                     x.Condition.Contains(artifactId.ToString())));
         }
-        
+
         [Test]
         public void UpdateRdoWithoutDocuments_Succeeds_Test()
         {

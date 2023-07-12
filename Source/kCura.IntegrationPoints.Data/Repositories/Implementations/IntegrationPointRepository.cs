@@ -191,34 +191,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _objectManager.Update(artifactId, fieldValues);
         }
 
-        public void UpdateSourceConfiguration(int artifactId, string sourceConfiguration)
-        {
-            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
-            {
-                new FieldRefValuePair
-                {
-                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid },
-                    Value = sourceConfiguration,
-                },
-            };
-
-            _objectManager.Update(artifactId, fieldValues);
-        }
-
-        public void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration)
-        {
-            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
-            {
-                new FieldRefValuePair
-                {
-                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid },
-                    Value = destinationConfiguration,
-                },
-            };
-
-            _objectManager.Update(artifactId, fieldValues);
-        }
-
         public void Delete(int integrationPointID)
         {
             _objectManager.Delete(integrationPointID);

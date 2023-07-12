@@ -18,13 +18,11 @@ using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
 using kCura.IntegrationPoints.EventHandlers.Commands.Metrics;
-using kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity;
 using kCura.IntegrationPoints.EventHandlers.Context;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
-using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
@@ -95,20 +93,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 
             container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());
             container.Register(Component.For<PreCascadeDeleteIntegrationPointCommand>().ImplementedBy<PreCascadeDeleteIntegrationPointCommand>().LifestyleTransient());
-            container.Register(Component.For<RemoveAgentJobLogTableCommand>().ImplementedBy<RemoveAgentJobLogTableCommand>().LifestyleTransient());
-            container.Register(Component.For<ImportNativeFileCopyModeUpdater>().ImplementedBy<ImportNativeFileCopyModeUpdater>().LifestyleTransient());
-            container.Register(Component.For<SetImportNativeFileCopyModeCommand>().ImplementedBy<SetImportNativeFileCopyModeCommand>().LifestyleTransient());
-            container.Register(Component.For<IRemoveSecuredConfigurationFromIntegrationPointService>().ImplementedBy<RemoveSecuredConfigurationFromIntegrationPointService>().LifestyleSingleton());
-            container.Register(Component.For<UpdateRelativityConfigurationCommand>().ImplementedBy<UpdateRelativityConfigurationCommand>().LifestyleTransient());
             container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
                 .LifestyleTransient());
             container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
             container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
             container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
-            container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
-
-            container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
-            container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
 
             container.Register(Component.For<NonDocumentObjectMigrationCommand>().ImplementedBy<NonDocumentObjectMigrationCommand>().LifestyleTransient());
 

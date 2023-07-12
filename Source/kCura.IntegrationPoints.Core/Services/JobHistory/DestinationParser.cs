@@ -25,11 +25,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
         }
 
-        public string[] GetElements(string destinationWorkspace)
-        {
-            return destinationWorkspace.Split(_SEPARATOR);
-        }
-
         private Exception CreateWrongFormatException(string destinationWorkspace, Exception e)
         {
             return new Exception(string.Format(parsingError, destinationWorkspace), e);
