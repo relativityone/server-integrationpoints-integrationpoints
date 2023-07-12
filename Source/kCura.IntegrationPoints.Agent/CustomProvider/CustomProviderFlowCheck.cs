@@ -26,7 +26,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
                 bool isDocumentFlow = integrationPoint.DestinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
 
-                bool result = isDocumentFlow ? isToggleEnabled : isToggleEnabled && !isManagersLinkingEnabled;
+                bool result;
+                if (isDocumentFlow)
+                {
+                    result = isToggleEnabled;
+                }
+                else
+                {
+                    result = isToggleEnabled && !isManagersLinkingEnabled;
+                }
 
                 _log.LogInformation(
                     "Using IAPI 2.0 in Custom Providers flow: {result} because is toggle enabled: {isToggleEnabled}, is document transfer: {documentFlow}, is managers linking enabled: {isManagersLinkingEnabled}",
