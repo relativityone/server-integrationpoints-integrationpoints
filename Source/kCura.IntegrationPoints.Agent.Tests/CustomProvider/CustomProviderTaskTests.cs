@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _sut.Execute(job);
 
             // Assert
-            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryValidationFailedGuid));
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryValidationFailedGuid));
 
             _jobHistoryErrorService.Verify(
                 x => x.AddJobErrorAsync(
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryService.Verify(x => x.SetTotalItemsAsync(
                 It.IsAny<int>(), It.IsAny<int>(), expectedTotalCount));
 
-            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryProcessingGuid));
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryProcessingGuid));
         }
 
         [Test]
@@ -173,8 +173,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             // Assert
             _jobHistoryService.Verify(x => x.TryUpdateStartTimeAsync(job.WorkspaceID, _jobDetails.JobHistoryID));
-            _jobHistoryService.Verify(x => x.TryUpdateEndTimeAsync(job.WorkspaceID, _jobDetails.JobHistoryID));
-            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));
+            _jobHistoryService.Verify(x => x.TryUpdateEndTimeAsync(job.WorkspaceID, job.RelatedObjectArtifactID, _jobDetails.JobHistoryID));
+            _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));
         }
 
         private Job PrepareJob(IntegrationPointDto integrationPoint, Guid jobHistoryGuid)

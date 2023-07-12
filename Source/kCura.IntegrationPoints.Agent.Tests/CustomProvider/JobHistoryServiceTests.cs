@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     {
         private Mock<IKeplerServiceFactory> _keplerServiceFactory;
         private Mock<IObjectManager> _objectManager;
+        private Mock<IIntegrationPointRdoService> _integrationPointRdoService;
         private Mock<IDateTime> _dateTime;
         private Mock<IAPILog> _logger;
         private JobHistoryService _sut;
@@ -37,6 +39,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     EventHandlerStatuses = new List<EventHandlerStatus>()
                 });
 
+            _integrationPointRdoService = new Mock<IIntegrationPointRdoService>();
+
             _dateTime = new Mock<IDateTime>();
 
             _keplerServiceFactory = new Mock<IKeplerServiceFactory>();
@@ -49,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.ForContext<JobHistoryService>())
                 .Returns(_logger.Object);
 
-            _sut = new JobHistoryService(_keplerServiceFactory.Object, _dateTime.Object, _logger.Object);
+            _sut = new JobHistoryService(_keplerServiceFactory.Object, _dateTime.Object, _integrationPointRdoService.Object, _logger.Object);
         }
 
         [Test]
@@ -58,10 +62,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
+            int integrationPointId = 333;
             Guid expectedStatusGuid = JobStatusChoices.JobHistoryProcessingGuid;
 
             // Act
-            await _sut.UpdateStatusAsync(workspaceId, jobHistoryId, expectedStatusGuid);
+            await _sut.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, expectedStatusGuid);
 
             // Assert
             _objectManager
@@ -69,6 +74,51 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
                     ((ChoiceRef)request.FieldValues.Single().Value).Guid == expectedStatusGuid)));
+        }
+
+        [TestCaseSource(nameof(StatusesThatShouldNotUpdateHasErrors))]
+        public async Task UpdateStatusAsync_ShouldNotUpdateHasErrors(Guid statusGuid)
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            int integrationPointId = 333;
+
+            // Act
+            await _sut.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, statusGuid);
+
+            // Assert
+            _integrationPointRdoService.Verify(x => x.TryUpdateHasErrorsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()), Times.Never);
+        }
+
+        [TestCaseSource(nameof(StatusesThatShouldUpdateHasErrorsToTrue))]
+        public async Task UpdateStatusAsync_ShouldUpdateHasErrorsToTrue(Guid statusGuid)
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            int integrationPointId = 333;
+
+            // Act
+            await _sut.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, statusGuid);
+
+            // Assert
+            _integrationPointRdoService.Verify(x => x.TryUpdateHasErrorsAsync(It.IsAny<int>(), It.IsAny<int>(), true), Times.Once);
+        }
+
+        [TestCaseSource(nameof(StatusesThatShouldUpdateHasErrorsToFalse))]
+        public async Task UpdateStatusAsync_ShouldUpdateHasErrorsToFalse(Guid statusGuid)
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            int integrationPointId = 333;
+
+            // Act
+            await _sut.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, statusGuid);
+
+            // Assert
+            _integrationPointRdoService.Verify(x => x.TryUpdateHasErrorsAsync(It.IsAny<int>(), It.IsAny<int>(), false), Times.Once);
         }
 
         [Test]
@@ -119,12 +169,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
+            int integrationPointId = 333;
 
             DateTime endTime = DateTime.UtcNow;
             _dateTime.Setup(x => x.UtcNow).Returns(endTime);
 
             // Act
-            await _sut.TryUpdateEndTimeAsync(workspaceId, jobHistoryId);
+            await _sut.TryUpdateEndTimeAsync(workspaceId, integrationPointId, jobHistoryId);
 
             // Assert
             _objectManager
@@ -132,6 +183,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.EndTimeUTCGuid &&
                     (DateTime)request.FieldValues.Single().Value == endTime)));
+
+            _integrationPointRdoService.Verify(x => x.TryUpdateLastRuntimeAsync(workspaceId, integrationPointId, endTime), Times.Once);
         }
 
         [Test]
@@ -140,6 +193,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             // Arrange
             int workspaceId = 111;
             int jobHistoryId = 222;
+            int integrationPointId = 333;
 
             DateTime endTime = DateTime.UtcNow;
             _dateTime.Setup(x => x.UtcNow).Returns(endTime);
@@ -149,7 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Throws<ServiceException>();
 
             // Act
-            Func<Task> action = () => _sut.TryUpdateEndTimeAsync(workspaceId, jobHistoryId);
+            Func<Task> action = () => _sut.TryUpdateEndTimeAsync(workspaceId, integrationPointId, jobHistoryId);
 
             // Assert
             action.ShouldNotThrow();
@@ -211,6 +265,38 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsTransferredGuid && (int)field.Value == transferredItemsCount) &&
                     request.FieldValues.Any(field => field.Field.Guid == JobHistoryFieldGuids.ItemsWithErrorsGuid && (int)field.Value == failedItemsCount))));
+        }
+
+        private static IEnumerable<Guid> StatusesThatShouldNotUpdateHasErrors()
+        {
+            return new[]
+            {
+                JobStatusChoices.JobHistoryValidatingGuid,
+                JobStatusChoices.JobHistoryPendingGuid,
+                JobStatusChoices.JobHistoryProcessingGuid,
+                JobStatusChoices.JobHistoryStoppingGuid,
+                JobStatusChoices.JobHistoryStoppedGuid,
+                JobStatusChoices.JobHistorySuspendingGuid,
+                JobStatusChoices.JobHistorySuspendedGuid,
+            };
+        }
+
+        private static IEnumerable<Guid> StatusesThatShouldUpdateHasErrorsToTrue()
+        {
+            return new[]
+            {
+                JobStatusChoices.JobHistoryValidationFailedGuid,
+                JobStatusChoices.JobHistoryCompletedWithErrorsGuid,
+                JobStatusChoices.JobHistoryErrorJobFailedGuid
+            };
+        }
+
+        private static IEnumerable<Guid> StatusesThatShouldUpdateHasErrorsToFalse()
+        {
+            return new[]
+            {
+                JobStatusChoices.JobHistoryCompletedGuid,
+            };
         }
     }
 }

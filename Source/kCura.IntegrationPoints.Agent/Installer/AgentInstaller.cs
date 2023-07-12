@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
@@ -216,6 +217,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IJobProgressHandler>().ImplementedBy<JobProgressHandler>().LifestyleTransient());
             container.Register(Component.For<IImportJobRunner>().ImplementedBy<ImportJobRunner>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
+            container.Register(Component.For<IIntegrationPointRdoService>().ImplementedBy<IntegrationPointRdoService>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
             container.Register(Component.For<IImportApiRunnerFactory>().ImplementedBy<ImportApiRunnerFactory>().LifestyleTransient());
