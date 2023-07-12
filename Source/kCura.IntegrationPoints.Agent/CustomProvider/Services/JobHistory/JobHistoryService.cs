@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -13,11 +14,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
     public class JobHistoryService : IJobHistoryService
     {
         private readonly IKeplerServiceFactory _keplerServiceFactory;
+        private readonly IDateTime _dateTime;
         private readonly IAPILog _logger;
 
-        public JobHistoryService(IKeplerServiceFactory keplerServiceFactory, IAPILog logger)
+        public JobHistoryService(IKeplerServiceFactory keplerServiceFactory, IDateTime dateTime, IAPILog logger)
         {
             _keplerServiceFactory = keplerServiceFactory;
+            _dateTime = dateTime;
             _logger = logger.ForContext<JobHistoryService>();
         }
 
@@ -43,6 +46,58 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             {
                 _logger.LogError(ex, "Failed to update Job History status. Job History ID: {jobHistoryId}", jobHistoryId);
                 throw;
+            }
+        }
+
+        public async Task TryUpdateStartTimeAsync(int workspaceId, int jobHistoryId)
+        {
+            DateTime startTime = _dateTime.UtcNow;
+
+            try
+            {
+                FieldRefValuePair[] fieldsToUpdate = new[]
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.StartTimeUTCGuid
+                        },
+                        Value = startTime
+                    }
+                };
+
+                await UpdateJobHistoryAsync(workspaceId, jobHistoryId, fieldsToUpdate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to set Start Time UTC: {startTime} for Job History ID: {jobHistoryId}", startTime, jobHistoryId);
+            }
+        }
+
+        public async Task TryUpdateEndTimeAsync(int workspaceId, int jobHistoryId)
+        {
+            DateTime endTime = _dateTime.UtcNow;
+
+            try
+            {
+                FieldRefValuePair[] fieldsToUpdate = new[]
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.EndTimeUTCGuid
+                        },
+                        Value = endTime
+                    }
+                };
+
+                await UpdateJobHistoryAsync(workspaceId, jobHistoryId, fieldsToUpdate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to set End Time UTC: {endTime} for Job History ID: {jobHistoryId}", endTime, jobHistoryId);
             }
         }
 

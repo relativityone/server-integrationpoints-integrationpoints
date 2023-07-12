@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -19,6 +22,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     {
         private Mock<IKeplerServiceFactory> _keplerServiceFactory;
         private Mock<IObjectManager> _objectManager;
+        private Mock<IDateTime> _dateTime;
         private Mock<IAPILog> _logger;
         private JobHistoryService _sut;
 
@@ -33,6 +37,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     EventHandlerStatuses = new List<EventHandlerStatus>()
                 });
 
+            _dateTime = new Mock<IDateTime>();
+
             _keplerServiceFactory = new Mock<IKeplerServiceFactory>();
             _keplerServiceFactory
                 .Setup(x => x.CreateProxyAsync<IObjectManager>())
@@ -43,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.ForContext<JobHistoryService>())
                 .Returns(_logger.Object);
 
-            _sut = new JobHistoryService(_keplerServiceFactory.Object, _logger.Object);
+            _sut = new JobHistoryService(_keplerServiceFactory.Object, _dateTime.Object, _logger.Object);
         }
 
         [Test]
@@ -63,6 +69,90 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     request.Object.ArtifactID == jobHistoryId &&
                     request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
                     ((ChoiceRef)request.FieldValues.Single().Value).Guid == expectedStatusGuid)));
+        }
+
+        [Test]
+        public async Task TryUpdateStartTimeAsync_ShouldUpdate()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+
+            DateTime startTime = DateTime.UtcNow;
+            _dateTime.Setup(x => x.UtcNow).Returns(startTime);
+
+            // Act
+            await _sut.TryUpdateStartTimeAsync(workspaceId, jobHistoryId);
+
+            // Assert
+            _objectManager
+                .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
+                    request.Object.ArtifactID == jobHistoryId &&
+                    request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.StartTimeUTCGuid &&
+                    (DateTime)request.FieldValues.Single().Value == startTime)));
+        }
+
+        [Test]
+        public void TryUpdateStartTimeAsync_ShouldNotThrow()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+
+            DateTime startTime = DateTime.UtcNow;
+            _dateTime.Setup(x => x.UtcNow).Returns(startTime);
+
+            _objectManager
+                .Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
+                .Throws<ServiceException>();
+
+            // Act
+            Func<Task> action = () => _sut.TryUpdateStartTimeAsync(workspaceId, jobHistoryId);
+
+            // Assert
+            action.ShouldNotThrow();
+        }
+
+        [Test]
+        public async Task TryUpdateEndTimeAsync_ShouldUpdate()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+
+            DateTime endTime = DateTime.UtcNow;
+            _dateTime.Setup(x => x.UtcNow).Returns(endTime);
+
+            // Act
+            await _sut.TryUpdateEndTimeAsync(workspaceId, jobHistoryId);
+
+            // Assert
+            _objectManager
+                .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
+                    request.Object.ArtifactID == jobHistoryId &&
+                    request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.EndTimeUTCGuid &&
+                    (DateTime)request.FieldValues.Single().Value == endTime)));
+        }
+
+        [Test]
+        public void TryUpdateEndTimeAsync_ShouldNotThrow()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+
+            DateTime endTime = DateTime.UtcNow;
+            _dateTime.Setup(x => x.UtcNow).Returns(endTime);
+
+            _objectManager
+                .Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
+                .Throws<ServiceException>();
+
+            // Act
+            Func<Task> action = () => _sut.TryUpdateEndTimeAsync(workspaceId, jobHistoryId);
+
+            // Assert
+            action.ShouldNotThrow();
         }
 
         [Test]
