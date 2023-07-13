@@ -172,6 +172,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _sut.Execute(job);
 
             // Assert
+            _jobHistoryService.Verify(x => x.TryUpdateStartTimeAsync(job.WorkspaceID, _jobDetails.JobHistoryID));
+            _jobHistoryService.Verify(x => x.TryUpdateEndTimeAsync(job.WorkspaceID, _jobDetails.JobHistoryID));
             _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));
         }
 

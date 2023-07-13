@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
@@ -37,12 +35,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 log.Object);
         }
 
-        [Test]
-        public void ShouldBeUsed_ShouldReturnTrue_WhenCriteriaAreMet()
+        [TestCase(true, 10)]
+        [TestCase(false, 1000064)]
+        public void ShouldBeUsed_ShouldReturnTrue_WhenCriteriaAreMet(bool entityManagerFieldContainsLink, int artifactTypeId)
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = false;
+            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = entityManagerFieldContainsLink;
+            integrationPoint.DestinationConfiguration.ArtifactTypeId = artifactTypeId;
             SetupNewCustomProviderToggle(true);
 
             // Act
@@ -68,11 +68,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
-        public void ShouldBeUsed_ShouldReturnFalse_WhenManagersLinking()
+        public void ShouldBeUsed_ShouldReturnFalse_WhenManagersLinkingAndNonDocumentTransferType()
         {
             // Arrange
             IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
             integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = true;
+            integrationPoint.DestinationConfiguration.ArtifactTypeId = 1000064;
             SetupNewCustomProviderToggle(true);
 
             // Act
