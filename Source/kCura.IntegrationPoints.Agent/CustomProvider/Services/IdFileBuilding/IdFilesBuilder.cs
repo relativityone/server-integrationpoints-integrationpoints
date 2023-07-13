@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
                         read = reader.Read();
                     }
 
-                    CustomProviderBatch batch = new CustomProviderBatch()
+                    CustomProviderBatch batch = new CustomProviderBatch
                     {
                         BatchGuid = Guid.NewGuid(),
                         BatchID = batchIndex,
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrive record IDs from custom provider");
+                _logger.LogError(ex, "Failed to retrieve record IDs from custom provider");
                 throw;
             }
         }

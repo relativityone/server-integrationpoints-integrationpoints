@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Storage;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
@@ -43,11 +44,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-
                     await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
-
                     _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
-
                     return settings;
                 }
             }
@@ -60,6 +58,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 
         private static async Task WriteFileAsync(IDataReader sourceProviderDataReader, List<IndexedFieldMap> orderedFieldMap, DataSourceSettings settings, TextWriter dataFileWriter)
         {
+            int firstNameSourceFieldId = orderedFieldMap.First(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.FirstName).ColumnIndex;
+            int lastNameSourceFieldId = orderedFieldMap.First(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.LastName).ColumnIndex;
+
             while (sourceProviderDataReader.Read())
             {
                 List<string> rowValues = new List<string>();
@@ -68,6 +69,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 {
                     string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
                     rowValues.Add(value);
+                }
+
+                bool isFullNameMapped = orderedFieldMap.Select(x => x.DestinationFieldName).Contains(EntityFieldNames.FullName);
+
+                if (!isFullNameMapped)
+                {
+                    string firstName = sourceProviderDataReader[orderedFieldMap[firstNameSourceFieldId].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                    string lastName = sourceProviderDataReader[orderedFieldMap[lastNameSourceFieldId].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+
+                    string fullName = GenerateFullName(lastName, firstName);
+                    rowValues.Add(fullName);
                 }
 
                 string line = FormatLine(settings, rowValues);
@@ -118,6 +130,24 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             string batchDataFileName = $"{batch.BatchID.ToString().PadLeft(7, '0')}.data";
             string batchDataFilePath = Path.Combine(directoryPath, batchDataFileName);
             batch.DataFilePath = batchDataFilePath;
+        }
+
+        private static string GenerateFullName(string lastName, string firstName)
+        {
+            string fullName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                fullName = lastName;
+            }
+            if (!string.IsNullOrWhiteSpace(firstName))
+            {
+                if (!string.IsNullOrWhiteSpace(fullName))
+                {
+                    fullName += ", ";
+                }
+                fullName += firstName;
+            }
+            return fullName;
         }
     }
 }

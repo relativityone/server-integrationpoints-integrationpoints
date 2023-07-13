@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,7 +81,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
-                IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider);
+                IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider).ConfigureAwait(false);
 
                 CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);
 
@@ -116,6 +115,29 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
+        private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
+        {
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
+
+            _agentValidator.Validate(integrationPoint, job.SubmittedBy);
+        }
+
+        private async Task ConfigureBatchesAsync(Job job, IntegrationPointDto integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
+        {
+            if (!jobDetails.Batches.Any())
+            {
+                DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
+
+                jobDetails.Batches = await _idFilesBuilder.BuildIdFilesAsync(sourceProvider, integrationPoint, importDirectory.FullName).ConfigureAwait(false);
+                await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
+            }
+
+            int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
+            await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
+
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
+        }
+
         private async Task ReportJobEndAsync(Job job, ImportJobResult endResult, CustomProviderJobDetails details)
         {
             Guid jobHistoryStatus;
@@ -140,29 +162,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
 
             await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, details.JobHistoryID, jobHistoryStatus).ConfigureAwait(false);
-        }
-
-        private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
-        {
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
-
-            _agentValidator.Validate(integrationPoint, job.SubmittedBy);
-        }
-
-        private async Task ConfigureBatchesAsync(Job job, IntegrationPointDto integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
-        {
-            if (!jobDetails.Batches.Any())
-            {
-                DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
-
-                jobDetails.Batches = await _idFilesBuilder.BuildIdFilesAsync(sourceProvider, integrationPoint, importDirectory.FullName).ConfigureAwait(false);
-                await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-            }
-
-            int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
-            await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
-
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
         }
 
         private async Task HandleExceptionAsync(int workspaceId, int jobHistoryId, Guid status, Exception e)
