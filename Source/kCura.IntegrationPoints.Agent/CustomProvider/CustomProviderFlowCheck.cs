@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
+using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
@@ -23,13 +24,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 bool isToggleEnabled = _toggleProvider.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>();
                 bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
+                bool isDocumentFlow = integrationPoint.DestinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
 
-                bool result = isToggleEnabled && !isManagersLinkingEnabled;
+                bool result;
+                if (isDocumentFlow)
+                {
+                    result = isToggleEnabled;
+                }
+                else
+                {
+                    result = isToggleEnabled && !isManagersLinkingEnabled;
+                }
 
                 _log.LogInformation(
-                    "Using IAPI 2.0 in Custom Providers flow: {result} because is toggle enabled: {isToggleEnabled}, is managers linking enabled: {isManagersLinkingEnabled}",
+                    "Using IAPI 2.0 in Custom Providers flow: {result} because is toggle enabled: {isToggleEnabled}, is document transfer: {documentFlow}, is managers linking enabled: {isManagersLinkingEnabled}",
                     result,
                     isToggleEnabled,
+                    isDocumentFlow,
                     isManagersLinkingEnabled);
 
                 return result;
