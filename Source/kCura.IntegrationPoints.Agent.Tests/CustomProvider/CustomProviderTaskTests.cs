@@ -214,6 +214,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     It.IsAny<Job>(),
                     It.IsAny<CustomProviderJobDetails>(),
                     It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<ImportJobContext>(),
                     It.IsAny<IDataSourceProvider>(),
                     It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(result);

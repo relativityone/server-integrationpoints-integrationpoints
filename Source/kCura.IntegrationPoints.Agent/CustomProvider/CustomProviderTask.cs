@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private async Task ExecuteAsync(Job job)
         {
             CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
+            ImportJobContext importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
             IntegrationPointDto integrationPointDto = null;
             try
             {
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 await ConfigureBatchesAsync(job, integrationPointDto, jobDetails, sourceProvider).ConfigureAwait(false);
 
                 ImportJobResult endResult = await _importJobRunner
-                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, token)
+                    .RunJobAsync(job, jobDetails, integrationPointDto, importJobContext, sourceProvider, token)
                     .ConfigureAwait(false);
 
                 await ReportJobEndAsync(job, endResult, jobDetails).ConfigureAwait(false);
@@ -106,7 +107,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 if (integrationPointDto != null)
                 {
-                    var importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
                     await _notificationService.PrepareAndSendEmailNotificationAsync(importJobContext, integrationPointDto.EmailNotificationRecipients).ConfigureAwait(false);
                 }
                 else
