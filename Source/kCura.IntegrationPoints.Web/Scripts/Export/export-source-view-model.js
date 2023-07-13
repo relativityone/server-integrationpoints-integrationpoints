@@ -281,7 +281,7 @@ var ExportSourceViewModel = function (state, savedSearchService) {
 			});
 
 			var viewPromiseDone = function(result) {
-				self.Cache.ViewsResult = result;
+				self.Cache.ViewsResult = result[0];
 				self.UpdateViews(currentViewId);
 				self.InitializeLocationSelector();
 			};
