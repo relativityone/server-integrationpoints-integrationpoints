@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -21,6 +24,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private RdoImportConfiguration _importConfiguration;
 
         private Mock<IRdoImportSettingsBuilder> _settingsBuilderMock;
+        private Mock<IRelativityObjectManager> _objectManagerMock;
         private Mock<IImportApiService> _importApiServiceMock;
         private RdoImportApiRunner _sut;
 
@@ -37,9 +41,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.Build(It.IsAny<DestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
                 .Returns(_importConfiguration);
 
+            _objectManagerMock = new Mock<IRelativityObjectManager>();
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser))
+                .ReturnsAsync(new List<RelativityObjectSlim>
+                {
+                    new RelativityObjectSlim
+                    {
+                        Values = new List<object>
+                        {
+                            new Random().Next()
+                        }
+                    }
+                });
+
             _sut = new RdoImportApiRunner(
                 _settingsBuilderMock.Object,
                 _importApiServiceMock.Object,
+                _objectManagerMock.Object,
                 new Mock<IAPILog>().Object);
         }
 

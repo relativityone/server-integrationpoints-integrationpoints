@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using Moq;
@@ -27,11 +29,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     {
         private Mock<IRelativityStorageService> _storageService;
         private LoadFileBuilder _sut;
+        private FakeStorageStream _fakeStorageSteam;
+
+        private int _numberOfRecords = 5;
 
         [SetUp]
         public void SetUp()
         {
             _storageService = new Mock<IRelativityStorageService>();
+
+            _storageService
+                .Setup(x => x.CreateFileOrTruncateExistingAsync(It.IsAny<string>()))
+                .Returns((string path) =>
+                {
+                    _fakeStorageSteam = new FakeStorageStream(path);
+                    return Task.FromResult(_fakeStorageSteam as StorageStream);
+                });
+
+            _storageService
+                .Setup(x => x.ReadAllLinesAsync(It.IsAny<string>()))
+                .ReturnsAsync(new string[_numberOfRecords]);
+
             _sut = new LoadFileBuilder(_storageService.Object, Mock.Of<IAPILog>());
         }
 
@@ -39,41 +57,47 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public async Task CreateDataFileAsync_ShouldBuildDataFile()
         {
             // Arrange
-            int numberOfRecords = 5;
-            int numberOfFields = 3;
-
-            _storageService
-                .Setup(x => x.CreateFileOrTruncateExistingAsync(It.IsAny<string>()))
-                .Returns((string path) => Task.FromResult(new FakeStorageStream(path) as StorageStream));
-
-            _storageService
-                .Setup(x => x.ReadAllLinesAsync(It.IsAny<string>()))
-                .ReturnsAsync(new string[numberOfRecords]);
-
-            List<IndexedFieldMap> fieldMap = Enumerable
-                .Range(0, numberOfFields)
-                .Select(x => new IndexedFieldMap(new FieldMap()
-                {
-                    SourceField = new FieldEntry()
+            List<IndexedFieldMap> fieldMap = new List<IndexedFieldMap>
+            {
+                new IndexedFieldMap(
+                    new FieldMap
                     {
-                        DisplayName = $"Source Field {x}",
-                    }
-                }, x))
-                .ToList();
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = "Source Field"
+                        }
+                    }, 0),
+                new IndexedFieldMap(
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.FirstName
+                        }
+                    }, 1),
+                new IndexedFieldMap(
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.LastName
+                        }
+                    }, 2)
+            };
 
-            IntegrationPointDto integrationPointDto = new IntegrationPointDto()
+            IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
             };
 
-            CustomProviderBatch batch = new CustomProviderBatch()
+            CustomProviderBatch batch = new CustomProviderBatch
             {
                 BatchID = 5
             };
 
             string importDirectory = "/import/";
 
-            IDataSourceProvider provider = new FakeSourceProvider(numberOfRecords);
+            IDataSourceProvider provider = new FakeSourceProvider(_numberOfRecords);
 
             // Act
             DataSourceSettings settings = await _sut.CreateDataFileAsync(
@@ -84,6 +108,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             // Assert
             settings.Path.Should().Be($"{importDirectory}000000{batch.BatchID}.data");
+
+            string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split(new[] { '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string line in allLines)
+            {
+                string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
+                columns.Length.ShouldBeEquivalentTo(fieldMap.Count + 1);
+                columns[fieldMap.Count].ShouldBeEquivalentTo($"Value of {EntityFieldNames.LastName}, Value of {EntityFieldNames.FirstName}");
+            }
+
+            allLines.Length.ShouldBeEquivalentTo(_numberOfRecords);
         }
 
         private class FakeSourceProvider : IDataSourceProvider
@@ -269,6 +303,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private class FakeStorageStream : StorageStream
         {
+            public string LastWrittenData { get; set; }
+
             public FakeStorageStream(string storagePath)
             {
                 StoragePath = storagePath;
@@ -295,6 +331,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             public override void Write(byte[] buffer, int offset, int count)
             {
+                LastWrittenData = Encoding.ASCII.GetString(buffer, offset, count);
             }
 
             public override bool CanRead { get; }

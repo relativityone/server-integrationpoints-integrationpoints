@@ -38,4 +38,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Entity
 
         public static readonly Guid ManagerGuid = new Guid(Manager);
     }
+
+    public static class ObjectTypeIds
+    {
+        public static int Entity = 1000059;
+    }
 }
