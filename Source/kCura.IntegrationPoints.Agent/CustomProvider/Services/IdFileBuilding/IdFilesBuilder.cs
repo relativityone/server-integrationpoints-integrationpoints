@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
 
                         if (string.IsNullOrWhiteSpace(recordId))
                         {
-                            _logger.LogWarning("Id value not found - record will be skipped", numberOfRecordsInBatch, batchIndex);
+                            _logger.LogWarning("Id value not found - record will be skipped");
                         }
                         else
                         {
