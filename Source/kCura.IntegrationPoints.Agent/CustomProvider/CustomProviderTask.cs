@@ -98,11 +98,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
             catch (IntegrationPointValidationException e)
             {
-                await HandleExceptionAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryValidationFailedGuid, e).ConfigureAwait(false);
+                await HandleExceptionAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryValidationFailedGuid, e).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                await HandleExceptionAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid, e).ConfigureAwait(false);
+                await HandleExceptionAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid, e).ConfigureAwait(false);
             }
             finally
             {
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     _logger.LogWarning("Integration Point object is null. Email notification will not be send.");
                 }
 
-                await _jobHistoryService.TryUpdateEndTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
+                await _jobHistoryService.TryUpdateEndTimeAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID).ConfigureAwait(false);
             }
         }
 
@@ -143,12 +143,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     throw new NotSupportedException($"Unknown Import Job State - {endResult.Status}");
             }
 
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, details.JobHistoryID, jobHistoryStatus).ConfigureAwait(false);
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, job.RelatedObjectArtifactID, details.JobHistoryID, jobHistoryStatus).ConfigureAwait(false);
         }
 
         private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
         {
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
 
             _agentValidator.Validate(integrationPoint, job.SubmittedBy);
         }
@@ -166,14 +166,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
             await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
 
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
         }
 
-        private async Task HandleExceptionAsync(int workspaceId, int jobHistoryId, Guid status, Exception e)
+        private async Task HandleExceptionAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid status, Exception e)
         {
             _logger.LogError(e, "Failed to execute Custom Provider job.");
 
-            await _jobHistoryService.UpdateStatusAsync(workspaceId, jobHistoryId, status).ConfigureAwait(false);
+            await _jobHistoryService.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, status).ConfigureAwait(false);
 
             await _jobHistoryErrorService.AddJobErrorAsync(workspaceId, jobHistoryId, e).ConfigureAwait(false);
         }
