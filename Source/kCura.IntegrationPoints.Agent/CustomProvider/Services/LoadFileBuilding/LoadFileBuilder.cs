@@ -64,18 +64,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             TextWriter dataFileWriter,
             int artifactTypeId)
         {
-            int firstNameSourceFieldId;
-            int lastNameSourceFieldId;
+            int firstNameSourceFieldId = -1;
+            int lastNameSourceFieldId = -1;
 
-            try
+            if (artifactTypeId == ObjectTypeIds.Entity)
             {
-                firstNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.FirstName).ColumnIndex;
-                lastNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.LastName).ColumnIndex;
-
-            }
-            catch
-            {
-                throw new NotFoundException($"{EntityFieldNames.FirstName} or/and {EntityFieldNames.LastName} not found in fields mapping.");
+                try
+                {
+                    firstNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.FirstName).ColumnIndex;
+                    lastNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.LastName).ColumnIndex;
+                }
+                catch
+                {
+                    throw new NotFoundException($"{EntityFieldNames.FirstName} or/and {EntityFieldNames.LastName} not found in fields mapping.");
+                }
             }
 
             while (sourceProviderDataReader.Read())

@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -65,12 +66,20 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                         SourceField = new FieldEntry
                         {
                             DisplayName = "Source Field"
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = "Source Field"
                         }
                     }, 0),
                 new IndexedFieldMap(
                     new FieldMap
                     {
                         SourceField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.FirstName
+                        },
+                        DestinationField = new FieldEntry
                         {
                             DisplayName = EntityFieldNames.FirstName
                         }
@@ -81,13 +90,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                         SourceField = new FieldEntry
                         {
                             DisplayName = EntityFieldNames.LastName
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.LastName
                         }
                     }, 2)
             };
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
-                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
+                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ArtifactTypeId = ObjectTypeIds.Entity
+                }
             };
 
             CustomProviderBatch batch = new CustomProviderBatch
