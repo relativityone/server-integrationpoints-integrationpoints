@@ -202,7 +202,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false'">
+                        <div class="field-row" data-bind="visible: !IsRelativityProvider() && isDocument() == 'true' && ImageImport() == 'false' && IsNotImportFromCustomProviders()">
                             <div class="field-label required ">Use Folder Path Information:</div>
                             <div class="field-value">
                                 <ul>
