@@ -59,7 +59,7 @@
     <RelativitySDKCustomPagesOnly>13.3.0</RelativitySDKCustomPagesOnly>
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
-    <RelativitySync>0.12.0-pre.152</RelativitySync>
+    <RelativitySync>0.12.0-pre.153</RelativitySync>
     <TelemetryAPM>2019.1.1</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
