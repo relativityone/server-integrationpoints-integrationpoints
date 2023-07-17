@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Google.Protobuf.WellKnownTypes;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
@@ -28,6 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private Mock<IInstanceSettings> _instanceSettings;
         private Mock<IRelativityStorageService> _storageService;
+        private Mock<IAPILog> _loggerMock;
         private FakeStream _stream;
 
         [SetUp]
@@ -42,6 +45,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _storageService
                 .Setup(x => x.CreateFileOrTruncateExistingAsync(It.IsAny<string>()))
                 .ReturnsAsync(_stream);
+
+            _loggerMock = new Mock<IAPILog>();
         }
 
         [TestCase(0, 0)]
@@ -64,14 +69,36 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             batches.Count.Should().Be(expectedNumberOfBatches);
         }
 
-        private IDataSourceProvider PrepareSourceProvider(int numberOfRecords)
+        [Test]
+        public async Task BuildIdFiles_ShouldSkipRecordsWithoutId()
         {
-            return new FakeDataSourceProvider(numberOfRecords);
+            // Arrange
+            List<int?> ids = new List<int?> { 5, 8, null, null, 4, null, 45, 22, 12 };
+            const int maxIndex = 9;
+            const int expectedNumberOfBatches = 1;
+            const int expectedNumberOfRecordsInBatch = 6;
+            const int expectedNumberOfWarnings = 3;
+
+            IDataSourceProvider sourceProvider = PrepareSourceProvider(maxIndex, ids);
+            IdFilesBuilder sut = PrepareSut();
+
+            // Act
+            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointDto(), "//fake/path");
+
+            // Assert
+            batches.Count.Should().Be(expectedNumberOfBatches);
+            batches.FirstOrDefault().NumberOfRecords.Should().Be(expectedNumberOfRecordsInBatch);
+            _loggerMock.Verify(x => x.LogWarning("Id value not found - record will be skipped"), Times.Exactly(expectedNumberOfWarnings));
+        }
+
+        private IDataSourceProvider PrepareSourceProvider(int numberOfRecords, List<int?> idList = null)
+        {
+            return new FakeDataSourceProvider(numberOfRecords, idList);
         }
 
         private IdFilesBuilder PrepareSut()
         {
-            return new IdFilesBuilder(_instanceSettings.Object, _storageService.Object, Mock.Of<IAPILog>());
+            return new IdFilesBuilder(_instanceSettings.Object, _storageService.Object, _loggerMock.Object);
         }
 
         private IntegrationPointDto PrepareIntegrationPointDto()
@@ -93,10 +120,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private class FakeDataSourceProvider : IDataSourceProvider
         {
             private readonly int _numberOfRecords;
+            private readonly List<int?> _ids;
 
-            public FakeDataSourceProvider(int numberOfRecords)
+            public FakeDataSourceProvider(int numberOfRecords, List<int?> idList = null)
             {
                 _numberOfRecords = numberOfRecords;
+                _ids = idList;
             }
 
             public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
@@ -111,7 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
             {
-                return new FakeDataReader(_numberOfRecords);
+                return new FakeDataReader(_numberOfRecords, _ids);
             }
         }
 
@@ -120,10 +149,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             private int _current = 0;
 
             private readonly int _numberOfRecords;
+            private readonly List<int?> _recordIds;
 
-            public FakeDataReader(int numberOfRecords)
+            public FakeDataReader(int numberOfRecords, List<int?> recordIds = null)
             {
                 _numberOfRecords = numberOfRecords;
+                _recordIds = recordIds;
             }
 
             public bool Read()
@@ -139,6 +170,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             public string GetString(int i)
             {
+                if (_recordIds != null)
+                {
+                    return _recordIds[_current - 1].HasValue ? _recordIds[_current - 1].ToString() : null;
+                }
                 return _current.ToString();
             }
 
@@ -157,7 +192,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 throw new NotImplementedException();
             }
 
-            public Type GetFieldType(int i)
+            public System.Type GetFieldType(int i)
             {
                 throw new NotImplementedException();
             }

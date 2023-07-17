@@ -54,8 +54,16 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
                     while (read && numberOfRecordsInBatch < batchSize)
                     {
                         string recordId = reader.GetString(0);
-                        await textWriter.WriteLineAsync(recordId).ConfigureAwait(false);
-                        numberOfRecordsInBatch++;
+
+                        if (string.IsNullOrWhiteSpace(recordId))
+                        {
+                            _logger.LogWarning("Id value not found - record will be skipped");
+                        }
+                        else
+                        {
+                            await textWriter.WriteLineAsync(recordId).ConfigureAwait(false);
+                            numberOfRecordsInBatch++;
+                        }
 
                         read = reader.Read();
                     }
