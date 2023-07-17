@@ -57,6 +57,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Grpc.Core" Version="2.46.5" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" Version="14.1.2" />
   </ItemGroup>
   <ItemGroup>

@@ -6,12 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
@@ -98,11 +100,23 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
 
         private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint)
         {
-            FieldEntry idField = integrationPoint.FieldMappings.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
+            FieldMap idField = integrationPoint.FieldMappings.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier);
+            FieldMap firstName = integrationPoint.FieldMappings.FirstOrDefault(x => x.DestinationField.DisplayName == EntityFieldNames.FirstName);
+            FieldMap lastName = integrationPoint.FieldMappings.FirstOrDefault(x => x.DestinationField.DisplayName == EntityFieldNames.LastName);
+
+            if (idField == null && firstName != null && lastName != null)
+            {
+                idField = lastName;
+                idField.SourceField.IsIdentifier = true;
+                idField.DestinationField.IsIdentifier = true;
+                idField.FieldMapType = FieldMapTypeEnum.Identifier;
+
+                _logger.LogInformation("GetIdsReaderAsync idField - {@idField}", idField);
+            }
             try
             {
                 _logger.LogInformation("Retrieving record IDs from custom provider");
-                IDataReader reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
+                IDataReader reader = provider.GetBatchableIds(idField.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
                 return Task.FromResult(reader);
             }
             catch (Exception ex)

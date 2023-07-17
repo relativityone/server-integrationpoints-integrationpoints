@@ -101,10 +101,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
-                DestinationConfiguration = new DestinationConfiguration
-                {
-                    ArtifactTypeId = ObjectTypeIds.Entity
-                }
+                //DestinationConfiguration = new DestinationConfiguration
+                //{
+                //    ArtifactTypeId = ObjectTypeIds.Entity
+                //}
             };
 
             CustomProviderBatch batch = new CustomProviderBatch

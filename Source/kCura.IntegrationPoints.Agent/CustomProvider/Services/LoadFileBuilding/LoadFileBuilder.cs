@@ -12,7 +12,6 @@ using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.Services.Exceptions;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter, integrationPointInfo.ArtifactTypeId).ConfigureAwait(false);
+                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
                     _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
                     return settings;
                 }
@@ -61,24 +60,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             IDataReader sourceProviderDataReader,
             List<IndexedFieldMap> orderedFieldMap,
             DataSourceSettings settings,
-            TextWriter dataFileWriter,
-            int artifactTypeId)
+            TextWriter dataFileWriter)
         {
-            int firstNameSourceFieldId = -1;
-            int lastNameSourceFieldId = -1;
+            int? firstNameSourceFieldId = orderedFieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.FirstName)?.ColumnIndex;
+            int? lastNameSourceFieldId = orderedFieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.LastName)?.ColumnIndex;
 
-            if (artifactTypeId == ObjectTypeIds.Entity)
-            {
-                try
-                {
-                    firstNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.FirstName).ColumnIndex;
-                    lastNameSourceFieldId = orderedFieldMap.Single(x => x.FieldMap.SourceField.DisplayName == EntityFieldNames.LastName).ColumnIndex;
-                }
-                catch
-                {
-                    throw new NotFoundException($"{EntityFieldNames.FirstName} or/and {EntityFieldNames.LastName} not found in fields mapping.");
-                }
-            }
+            bool isFullNameMapped = orderedFieldMap.Select(x => x.FieldMap.DestinationField.DisplayName).Contains(EntityFieldNames.FullName);
+            bool shouldAddFullName = firstNameSourceFieldId != null & lastNameSourceFieldId != null && !isFullNameMapped;
 
             while (sourceProviderDataReader.Read())
             {
@@ -90,12 +78,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     rowValues.Add(value);
                 }
 
-                bool isFullNameMapped = orderedFieldMap.Select(x => x.FieldMap.DestinationField.DisplayName).Contains(EntityFieldNames.FullName);
-
-                if (artifactTypeId == ObjectTypeIds.Entity && !isFullNameMapped)
+                if (shouldAddFullName)
                 {
-                    string firstName = sourceProviderDataReader[orderedFieldMap[firstNameSourceFieldId].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                    string lastName = sourceProviderDataReader[orderedFieldMap[lastNameSourceFieldId].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                    string firstName = sourceProviderDataReader[orderedFieldMap[firstNameSourceFieldId.Value].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                    string lastName = sourceProviderDataReader[orderedFieldMap[lastNameSourceFieldId.Value].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
 
                     string fullName = GenerateFullName(lastName, firstName);
                     rowValues.Add(fullName);
