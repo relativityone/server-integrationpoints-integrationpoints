@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -153,6 +154,34 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         public CalculationState GetCalculationState(int artifactId)
         {
             return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
+        }
+
+        public async Task<bool> IsIntegrationPointTransferredObjectEntityType(IntegrationPointDto integrationPointDto)
+        {
+            List<RelativityObjectSlim> result = await _objectManager.QuerySlimAsync(new QueryRequest
+            {
+                Fields = new[]
+                {
+                    new FieldRef
+                    {
+                        Name = "DescriptorArtifactTypeID"
+                    }
+                },
+                ObjectType = new ObjectTypeRef
+                {
+                    Name = "Object Type"
+                },
+                Condition = "'Name' == 'Entity'"
+            }).ConfigureAwait(false);
+
+            if (result == null || result.Count < 1)
+            {
+                throw new NotFoundException("Entity not DescriptorArtifactTypeID not found.");
+            }
+
+            var entityArtifactTypeId = (int)result.Single().Values.Single();
+
+            return integrationPointDto.DestinationConfiguration.ArtifactTypeId == entityArtifactTypeId;
         }
 
         private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)

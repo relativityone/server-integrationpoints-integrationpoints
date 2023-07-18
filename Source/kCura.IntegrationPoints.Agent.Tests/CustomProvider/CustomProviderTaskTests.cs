@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             Job job = PrepareBasicJob();
 
-            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(), It.IsAny<string>()))
+            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(_fxt.CreateMany<CustomProviderBatch>().ToList());
 
             SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
@@ -163,7 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             Job job = PrepareBasicJob();
 
             _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(
-                    It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointDto>(), It.IsAny<string>()))
+                    It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(batches);
 
             SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importJobRunner.Setup(x => x.RunJobAsync(
                     It.IsAny<Job>(),
                     It.IsAny<CustomProviderJobDetails>(),
-                    It.IsAny<IntegrationPointDto>(),
+                    It.IsAny<IntegrationPointInfo>(),
                     It.IsAny<IDataSourceProvider>(),
                     It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(result);

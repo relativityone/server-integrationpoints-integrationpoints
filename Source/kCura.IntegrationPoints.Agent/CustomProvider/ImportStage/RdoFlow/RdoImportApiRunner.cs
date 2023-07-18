@@ -44,13 +44,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint)
         {
             _logger.LogInformation("ImportApiRunner for rdo flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
-            RdoImportConfiguration configuration = await CreateConfiguration(destinationConfiguration, fieldMappings).ConfigureAwait(false);
-
-            _logger.LogInformation("RunImportJobAsync configuration - {@configuration}", configuration);
+            RdoImportConfiguration configuration = await CreateConfiguration(integrationPoint).ConfigureAwait(false);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 
@@ -59,19 +57,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
         }
 
-        private async Task<RdoImportConfiguration> CreateConfiguration(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        private async Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
         {
             RdoImportConfiguration configuration;
 
-            IndexedFieldMap firstName = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == EntityFieldNames.FirstName);
-            IndexedFieldMap lastName = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == EntityFieldNames.LastName);
-            bool isFullNameMapped = fieldMappings.Select(x => x.DestinationFieldName).Contains(EntityFieldNames.FullName);
+            // DEBUG
+            _logger.LogInformation("CreateConfiguration integrationPoint - {@integrationPoint}", integrationPoint);
 
-            bool shouldAddFullName = firstName != null & lastName != null && !isFullNameMapped && lastName.FieldMap.FieldMapType == FieldMapTypeEnum.Identifier;
-
-            _logger.LogInformation("CreateConfiguration shouldAddFullName - {shouldAddFullName}, fieldMappings - {@fieldMappings}", shouldAddFullName, fieldMappings);
-
-            if (shouldAddFullName)
+            if (integrationPoint.ShouldGenerateFullNameIdentifierField)
             {
                 string fullNameArtifactId = await GetFullNameArtifactId();
 
@@ -85,31 +78,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
                 var clonedFieldMappings = new List<IndexedFieldMap>();
 
-                foreach (var fieldMapping in fieldMappings)
+                foreach (var fieldMapping in integrationPoint.FieldMap)
                 {
-                    var clonedFieldMap = new FieldMap
-                    {
-                        SourceField = new FieldEntry
-                        {
-                            DisplayName = fieldMapping.FieldMap.SourceField.DisplayName,
-                            IsIdentifier = fieldMapping.FieldMap.SourceField.IsIdentifier,
-                            IsRequired = fieldMapping.FieldMap.SourceField.IsRequired,
-                            FieldIdentifier = fieldMapping.FieldMap.SourceField.FieldIdentifier,
-                            Type = fieldMapping.FieldMap.SourceField.Type,
-                            FieldType = fieldMapping.FieldMap.SourceField.FieldType,
-                        },
-                        DestinationField = new FieldEntry
-                        {
-                            DisplayName = fieldMapping.FieldMap.DestinationField.DisplayName,
-                            IsIdentifier = fieldMapping.FieldMap.DestinationField.IsIdentifier,
-                            IsRequired = fieldMapping.FieldMap.DestinationField.IsRequired,
-                            FieldIdentifier = fieldMapping.FieldMap.DestinationField.FieldIdentifier,
-                            Type = fieldMapping.FieldMap.DestinationField.Type,
-                            FieldType = fieldMapping.FieldMap.DestinationField.FieldType,
-                        },
-                        FieldMapType = fieldMapping.FieldMap.FieldMapType
-                    };
-                    var clonedFieldMapping = new IndexedFieldMap(clonedFieldMap, fieldMapping.ColumnIndex);
+                    IndexedFieldMap clonedFieldMapping = fieldMapping.Clone();
                     clonedFieldMappings.Add(clonedFieldMapping);
                 }
 
@@ -126,13 +97,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                         FieldMapType = FieldMapTypeEnum.Identifier,
                         SourceField = fullNameField
                     },
-                    fieldMappings.Count));
+                    integrationPoint.FieldMap.Count));
 
-                configuration = _importSettingsBuilder.Build(destinationConfiguration, clonedFieldMappings);
+                configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, clonedFieldMappings);
             }
             else
             {
-                configuration = _importSettingsBuilder.Build(destinationConfiguration, fieldMappings);
+                configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap);
             }
 
             return configuration;
@@ -154,14 +125,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     Name = "Field"
                 },
                 Condition = $"'DisplayName' == '{EntityFieldNames.FullName}'"
-            });
+            }).ConfigureAwait(false);
 
             if (result == null || result.Count < 1)
             {
                 throw new NotFoundException($"{EntityFieldNames.FullName} not found in Destination Workspace");
             }
 
-            var fullNameArtifactId = result.Single().Values.Single().ToString();
+            string fullNameArtifactId = result.Single().Values.Single().ToString();
 
             _logger.LogInformation(
                 "{FullName} field retrieved with Object Manager, ArtifactID = {artifactId}",

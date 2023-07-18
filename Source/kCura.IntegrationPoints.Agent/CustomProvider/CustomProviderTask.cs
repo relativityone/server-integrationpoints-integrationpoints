@@ -82,16 +82,19 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
+                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
+                integrationPointInfo.IsEntityType = await _integrationPointService.IsIntegrationPointTransferredObjectEntityType(integrationPointDto).ConfigureAwait(false);
+
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider).ConfigureAwait(false);
 
                 CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);
 
-                await ConfigureBatchesAsync(job, integrationPointDto, jobDetails, sourceProvider).ConfigureAwait(false);
+                await ConfigureBatchesAsync(job, integrationPointInfo, jobDetails, sourceProvider).ConfigureAwait(false);
 
                 ImportJobResult endResult = await _importJobRunner
-                    .RunJobAsync(job, jobDetails, integrationPointDto, sourceProvider, token)
+                    .RunJobAsync(job, jobDetails, integrationPointInfo, sourceProvider, token)
                     .ConfigureAwait(false);
 
                 await ReportJobEndAsync(job, endResult, jobDetails).ConfigureAwait(false);
@@ -127,7 +130,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _agentValidator.Validate(integrationPoint, job.SubmittedBy);
         }
 
-        private async Task ConfigureBatchesAsync(Job job, IntegrationPointDto integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
+        private async Task ConfigureBatchesAsync(Job job, IntegrationPointInfo integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
         {
             if (!jobDetails.Batches.Any())
             {

@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
@@ -34,12 +32,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPointInfo)
         {
             _logger.LogInformation("ImportApiRunner for document flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
             DocumentImportConfiguration configuration = await _importSettingsBuilder
-                .BuildAsync(destinationConfiguration, fieldMappings).ConfigureAwait(false);
+                .BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap).ConfigureAwait(false);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 

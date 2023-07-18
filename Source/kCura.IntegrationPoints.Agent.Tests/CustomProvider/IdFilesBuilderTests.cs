@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             IdFilesBuilder sut = PrepareSut();
 
             // Act
-            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointDto(), "//fake/path");
+            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointInfo(), "//fake/path");
 
             // Assert
             batches.Count.Should().Be(expectedNumberOfBatches);
@@ -74,13 +75,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             return new IdFilesBuilder(_instanceSettings.Object, _storageService.Object, Mock.Of<IAPILog>());
         }
 
-        private IntegrationPointDto PrepareIntegrationPointDto()
+        private IntegrationPointInfo PrepareIntegrationPointInfo()
         {
-            return new IntegrationPointDto()
+            var integrationPointDto = new IntegrationPointDto
             {
-                FieldMappings = new List<FieldMap>()
+                FieldMappings = new List<FieldMap>
                 {
-                    new FieldMap()
+                    new FieldMap
                     {
                         SourceField = new FieldEntry(),
                         DestinationField = new FieldEntry(),
@@ -88,6 +89,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     }
                 }
             };
+
+            return new IntegrationPointInfo(integrationPointDto);
         }
 
         private class FakeDataSourceProvider : IDataSourceProvider

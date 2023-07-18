@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             _logger = logger;
         }
 
-        public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint, string directoryPath)
+        public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint, string directoryPath)
         {
             IDataReader reader = await GetIdsReaderAsync(provider, integrationPoint).ConfigureAwait(false);
             int batchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
@@ -98,25 +96,25 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             }
         }
 
-        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint)
+        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
         {
-            FieldMap idField = integrationPoint.FieldMappings.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier);
-            FieldMap firstName = integrationPoint.FieldMappings.FirstOrDefault(x => x.DestinationField.DisplayName == EntityFieldNames.FirstName);
-            FieldMap lastName = integrationPoint.FieldMappings.FirstOrDefault(x => x.DestinationField.DisplayName == EntityFieldNames.LastName);
-
-            if (idField == null && firstName != null && lastName != null)
+            IndexedFieldMap idField = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.FieldMapType == FieldMapTypeEnum.Identifier);
+            integrationPoint.HasFieldsMappingIdentifier = idField != null;
+            if (integrationPoint.ShouldGenerateFullNameIdentifierField)
             {
+                IndexedFieldMap lastName = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.LastName);
                 idField = lastName;
-                idField.SourceField.IsIdentifier = true;
-                idField.DestinationField.IsIdentifier = true;
-                idField.FieldMapType = FieldMapTypeEnum.Identifier;
+                idField.FieldMap.SourceField.IsIdentifier = true;
+                idField.FieldMap.DestinationField.IsIdentifier = true;
+                idField.FieldMap.FieldMapType = FieldMapTypeEnum.Identifier;
 
+                // DEBUG
                 _logger.LogInformation("GetIdsReaderAsync idField - {@idField}", idField);
             }
             try
             {
                 _logger.LogInformation("Retrieving record IDs from custom provider");
-                IDataReader reader = provider.GetBatchableIds(idField.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
+                IDataReader reader = provider.GetBatchableIds(idField.FieldMap.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
                 return Task.FromResult(reader);
             }
             catch (Exception ex)

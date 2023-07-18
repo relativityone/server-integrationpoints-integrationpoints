@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IRelativityStorageService> _storageService;
         private LoadFileBuilder _sut;
         private FakeStorageStream _fakeStorageSteam;
+        private CustomProviderBatch _batch;
 
         private int _numberOfRecords = 5;
 
@@ -51,6 +52,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.ReadAllLinesAsync(It.IsAny<string>()))
                 .ReturnsAsync(new string[_numberOfRecords]);
 
+            _batch = new CustomProviderBatch
+            {
+                BatchID = 5
+            };
+
             _sut = new LoadFileBuilder(_storageService.Object, Mock.Of<IAPILog>());
         }
 
@@ -58,6 +64,63 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public async Task CreateDataFileAsync_ShouldBuildDataFile()
         {
             // Arrange
+            var fieldName = "Source Field";
+            List<IndexedFieldMap> fieldMap = new List<IndexedFieldMap>
+            {
+                new IndexedFieldMap(
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = fieldName
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = fieldName
+                        }
+                    }, 0)
+            };
+
+            IntegrationPointDto integrationPointDto = new IntegrationPointDto
+            {
+                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
+            };
+
+            string importDirectory = "/import/";
+
+            IDataSourceProvider provider = new FakeSourceProvider(_numberOfRecords);
+
+            // Act
+            DataSourceSettings settings = await _sut.CreateDataFileAsync(
+                _batch,
+                provider,
+                new IntegrationPointInfo(integrationPointDto),
+                importDirectory);
+
+            // Assert
+            settings.Path.Should().Be($"{importDirectory}000000{_batch.BatchID}.data");
+
+            string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split('\r').Select(x => x.Trim()).ToArray();
+            foreach (string line in allLines)
+            {
+                string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
+                columns.Length.ShouldBeEquivalentTo(fieldMap.Count);
+                columns[0].ShouldBeEquivalentTo($"Value of {fieldName}");
+            }
+
+            allLines.Length.ShouldBeEquivalentTo(_numberOfRecords);
+        }
+
+        [Test] 
+        public async Task CreateDataFileAsync_ShouldBuildDataFileWhenArtifactTypeIsEntity()
+        {
+            // Arrange
+
+            //List<string> fieldsNames = new List<string>
+            //{
+            //    "Source Field",
+
+            //}
             List<IndexedFieldMap> fieldMap = new List<IndexedFieldMap>
             {
                 new IndexedFieldMap(
@@ -100,33 +163,26 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
-                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
-                //DestinationConfiguration = new DestinationConfiguration
-                //{
-                //    ArtifactTypeId = ObjectTypeIds.Entity
-                //}
+                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
             };
-
-            CustomProviderBatch batch = new CustomProviderBatch
-            {
-                BatchID = 5
-            };
-
             string importDirectory = "/import/";
 
             IDataSourceProvider provider = new FakeSourceProvider(_numberOfRecords);
 
+            var integrationPointsInfo = new IntegrationPointInfo(integrationPointDto);
+            integrationPointsInfo.IsEntityType = true;
+
             // Act
             DataSourceSettings settings = await _sut.CreateDataFileAsync(
-                batch,
+                _batch,
                 provider,
-                new IntegrationPointInfo(integrationPointDto),
+                integrationPointsInfo,
                 importDirectory);
 
             // Assert
-            settings.Path.Should().Be($"{importDirectory}000000{batch.BatchID}.data");
+            settings.Path.Should().Be($"{importDirectory}000000{_batch.BatchID}.data");
 
-            string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split(new[] { '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split('\r').Select(x => x.Trim()).ToArray();
             foreach (string line in allLines)
             {
                 string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
@@ -314,8 +370,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             }
 
             public int Depth { get; }
+
             public bool IsClosed { get; }
+
             public int RecordsAffected { get; }
+
         }
 
         private class FakeStorageStream : StorageStream

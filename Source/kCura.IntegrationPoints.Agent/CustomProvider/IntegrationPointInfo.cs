@@ -1,24 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
-    internal class IntegrationPointInfo
+    public class IntegrationPointInfo
     {
         public IntegrationPointInfo(IntegrationPointDto integrationPoint)
         {
             SourceConfiguration = integrationPoint.SourceConfiguration;
+            DestinationConfiguration = integrationPoint.DestinationConfiguration;
             SecuredConfiguration = integrationPoint.SecuredConfiguration;
             FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }
 
-        public string SourceConfiguration { get; set; }
+        public string SourceConfiguration { get; }
 
-        public string SecuredConfiguration { get; set; }
+        public DestinationConfiguration DestinationConfiguration { get; set; }
 
-        public List<IndexedFieldMap> FieldMap { get; set; }
+        public string SecuredConfiguration { get; }
 
-        public int ArtifactTypeId { get; set; }
+        public List<IndexedFieldMap> FieldMap { get; }
+
+        public bool IsEntityType { get; set; }
+
+        public bool HasFieldsMappingIdentifier { get; set;  }
+
+        public bool ShouldGenerateFullNameIdentifierField => IsEntityType && !HasFieldsMappingIdentifier;
     }
 }
