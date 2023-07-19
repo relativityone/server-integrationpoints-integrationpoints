@@ -41,7 +41,7 @@
     <Polly>5.9.0</Polly>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
-    <RelativityDataExchangeClientSDK>2.6.0-pre.4</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>2.6.0</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsContracts>1.1.0</RelativityIntegrationPointsContracts>
@@ -59,7 +59,7 @@
     <RelativitySDKCustomPagesOnly>13.3.0</RelativitySDKCustomPagesOnly>
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
-    <RelativitySync>0.12.0-pre.153</RelativitySync>
+    <RelativitySync>0.12.0-pre.154</RelativitySync>
     <TelemetryAPM>2019.1.1</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
