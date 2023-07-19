@@ -89,7 +89,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
             Context.ToggleValues.SetValue<EnableSyncAppScheduleToggle>(true);
-            Context.ToggleValues.SetValue<EnableRelativitySyncApplicationToggle>(true);
 
             // Act
             sut.Execute();

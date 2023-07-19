@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.RelativitySync
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IExtendedJob>().ImplementedBy<ExtendedJob>());
-            container.Register(Component.For<RelativitySyncAdapter>().ImplementedBy<RelativitySyncAdapter>());
             container.Register(Component.For<IWindsorContainer>().Instance(container));
             container.Register(Component.For<ICancellationAdapter>().ImplementedBy<CancellationAdapter>());
             container.Register(Component.For<IIntegrationPointToSyncConverter, IIntegrationPointToSyncAppConverter>().ImplementedBy<IntegrationPointToSyncConverter>().LifestyleTransient());
