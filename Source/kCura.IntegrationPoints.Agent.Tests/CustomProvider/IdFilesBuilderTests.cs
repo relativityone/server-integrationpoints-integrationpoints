@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
@@ -65,6 +66,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             batches.Count.Should().Be(expectedNumberOfBatches);
         }
 
+        [Test]
+        public async Task BuildIdFiles_ShouldSetLastNameFieldAsIdentifierIfShouldGenerateFullNameIdentifierIsTrue()
+        {
+            // Arrange
+            FakeDataSourceProvider sourceProvider = (FakeDataSourceProvider)PrepareSourceProvider(10);
+            IdFilesBuilder sut = PrepareSut();
+
+            // Act
+            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointInfoWithLastName(), "//fake/path");
+
+            // Assert
+            batches.Count.Should().Be(1);
+            sourceProvider.FieldIdentifier.DisplayName.ShouldBeEquivalentTo(EntityFieldNames.LastName);
+            sourceProvider.FieldIdentifier.IsIdentifier.ShouldBeEquivalentTo(true);
+        }
+
         private IDataSourceProvider PrepareSourceProvider(int numberOfRecords)
         {
             return new FakeDataSourceProvider(numberOfRecords);
@@ -93,9 +110,41 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             return new IntegrationPointInfo(integrationPointDto);
         }
 
+        private IntegrationPointInfo PrepareIntegrationPointInfoWithLastName()
+        {
+            var integrationPointDto = new IntegrationPointDto
+            {
+                FieldMappings = new List<FieldMap>
+                {
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.LastName
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = EntityFieldNames.LastName
+                        },
+                        FieldMapType = FieldMapTypeEnum.None
+                    }
+                }
+            };
+
+            var integrationPointInfo = new IntegrationPointInfo(integrationPointDto)
+            {
+                HasFieldsMappingIdentifier = false,
+                IsEntityType = true
+            };
+
+            return integrationPointInfo;
+        }
+
         private class FakeDataSourceProvider : IDataSourceProvider
         {
             private readonly int _numberOfRecords;
+
+            public FieldEntry FieldIdentifier { get; set; }
 
             public FakeDataSourceProvider(int numberOfRecords)
             {
@@ -114,6 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
             {
+                FieldIdentifier = identifier;
                 return new FakeDataReader(_numberOfRecords);
             }
         }
@@ -277,7 +327,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             }
 
             public int Depth { get; }
+
             public bool IsClosed { get; }
+
             public int RecordsAffected { get; }
         }
 
@@ -308,10 +360,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             public override bool CanWrite => true;
 
             public override bool CanRead { get; }
+
             public override bool CanSeek { get; }
+
             public override long Length { get; }
+
             public override long Position { get; set; }
+
             public override string StoragePath { get; }
+
             public override StorageInterface StorageInterface { get; }
         }
     }

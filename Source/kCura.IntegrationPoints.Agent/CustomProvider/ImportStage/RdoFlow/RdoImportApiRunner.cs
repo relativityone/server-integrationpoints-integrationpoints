@@ -62,18 +62,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             RdoImportConfiguration configuration;
             if (integrationPoint.ShouldGenerateFullNameIdentifierField)
             {
-                string fullNameArtifactId = await GetFullNameArtifactId();
-
-                var fullNameField = new FieldEntry
-                {
-                    DisplayName = EntityFieldNames.FullName,
-                    IsIdentifier = true,
-                    IsRequired = false,
-                    FieldIdentifier = fullNameArtifactId
-                };
-
                 var clonedFieldMappings = new List<IndexedFieldMap>();
-
                 foreach (var fieldMapping in integrationPoint.FieldMap)
                 {
                     IndexedFieldMap clonedFieldMapping = fieldMapping.Clone();
@@ -85,6 +74,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                 clonedLastName.FieldMap.FieldMapType = FieldMapTypeEnum.None;
                 clonedLastName.FieldMap.SourceField.IsIdentifier = false;
                 clonedLastName.FieldMap.DestinationField.IsIdentifier = false;
+                string fullNameArtifactId = await GetFullNameArtifactId();
+                var fullNameField = new FieldEntry
+                {
+                    DisplayName = EntityFieldNames.FullName,
+                    IsIdentifier = true,
+                    IsRequired = false,
+                    FieldIdentifier = fullNameArtifactId
+                };
 
                 clonedFieldMappings.Add(new IndexedFieldMap(
                     new FieldMap

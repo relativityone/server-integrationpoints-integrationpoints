@@ -1,4 +1,3 @@
-using System;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
