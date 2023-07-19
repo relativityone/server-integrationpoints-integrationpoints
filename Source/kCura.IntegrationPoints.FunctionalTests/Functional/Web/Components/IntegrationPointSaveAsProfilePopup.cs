@@ -7,7 +7,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     using _ = IntegrationPointSaveAsProfilePopup;
 
     [PageObjectDefinition("rwc-modal-layout", ComponentTypeName = "dialog", IgnoreNameEndings = "PopupWindow,Window,Popup,Modal,Dialog")]
-    internal class IntegrationPointSaveAsProfilePopup : RwcCustomModalLayout<IntegrationPointViewPage, _>
+    internal class IntegrationPointSaveAsProfilePopup : RwcModalLayout<_>
     {
         [Term("Integration Point Profile Name")]
         public RwcTextInputField<string, _> IntegrationPointProfileName { get; private set; }
