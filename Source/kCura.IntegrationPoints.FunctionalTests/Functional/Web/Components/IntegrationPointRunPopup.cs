@@ -5,11 +5,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
     using _ = IntegrationPointRunPopup;
 
-    [FindByXPath("rwc-confirmation-modal-layout", As = FindAs.ShadowHost, TargetNames = new[] { nameof(Ok), nameof(Cancel) })]
-    internal class IntegrationPointRunPopup : RwcConfirmationModalLayout<IntegrationPointViewPage, _>
+    [PageObjectDefinition("rwc-modal-layout", ComponentTypeName = "dialog", IgnoreNameEndings = "PopupWindow,Window,Popup,Modal,Dialog")]
+    internal class IntegrationPointRunPopup : RwcModalLayout<_>
     {
+        [Term("Ok")]
         public Button<IntegrationPointViewPage, _> Ok { get; private set; }
 
+        [Term("Cancel")]
         public Button<IntegrationPointViewPage, _> Cancel { get; private set; }
 
         protected override void OnInit()
