@@ -86,6 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             sourceProvider.FieldIdentifier.IsIdentifier.ShouldBeEquivalentTo(true);
         }
 
+        [Test]
         public async Task BuildIdFiles_ShouldSkipRecordsWithoutId()
         {
             // Arrange
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             IdFilesBuilder sut = PrepareSut();
 
             // Act
-            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointDto(), "//fake/path");
+            List<CustomProviderBatch> batches = await sut.BuildIdFilesAsync(sourceProvider, PrepareIntegrationPointInfo(), "//fake/path");
 
             // Assert
             batches.Count.Should().Be(expectedNumberOfBatches);

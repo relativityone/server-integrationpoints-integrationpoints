@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _agentValidator.Validate(integrationPoint, job.SubmittedBy);
         }
 
-        private async Task ConfigureBatchesAsync(Job job, IntegrationPointDto integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
+        private async Task ConfigureBatchesAsync(Job job, IntegrationPointInfo integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
         {
             if (!jobDetails.Batches.Any())
             {

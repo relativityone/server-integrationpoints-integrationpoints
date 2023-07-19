@@ -9,11 +9,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
     {
         public IntegrationPointInfo(IntegrationPointDto integrationPoint)
         {
+            ArtifactId = integrationPoint.ArtifactId;
             SourceConfiguration = integrationPoint.SourceConfiguration;
             DestinationConfiguration = integrationPoint.DestinationConfiguration;
             SecuredConfiguration = integrationPoint.SecuredConfiguration;
             FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
         }
+
+        public int ArtifactId { get; }
 
         public string SourceConfiguration { get; }
 
