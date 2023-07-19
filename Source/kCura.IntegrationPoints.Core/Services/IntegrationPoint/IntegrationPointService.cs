@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Exceptions;
@@ -169,17 +170,17 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 },
                 ObjectType = new ObjectTypeRef
                 {
-                    Name = "Object Type"
+                    ArtifactTypeID = (int)ArtifactType.ObjectType
                 },
                 Condition = "'Name' == 'Entity'"
             }).ConfigureAwait(false);
 
             if (result == null || result.Count < 1)
             {
-                throw new NotFoundException("Entity not DescriptorArtifactTypeID not found.");
+                throw new NotFoundException("Entity Object Type DescriptorArtifactTypeID not found.");
             }
 
-            var entityArtifactTypeId = (int)result.Single().Values.Single();
+            int entityArtifactTypeId = (int)result.Single().Values.Single();
 
             return integrationPointDto.DestinationConfiguration.ArtifactTypeId == entityArtifactTypeId;
         }

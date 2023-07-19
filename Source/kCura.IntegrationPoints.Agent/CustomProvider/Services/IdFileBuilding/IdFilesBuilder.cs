@@ -107,9 +107,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
                 idField.FieldMap.SourceField.IsIdentifier = true;
                 idField.FieldMap.DestinationField.IsIdentifier = true;
                 idField.FieldMap.FieldMapType = FieldMapTypeEnum.Identifier;
-
-                // DEBUG
-                _logger.LogInformation("GetIdsReaderAsync idField - {@idField}", idField);
             }
             try
             {

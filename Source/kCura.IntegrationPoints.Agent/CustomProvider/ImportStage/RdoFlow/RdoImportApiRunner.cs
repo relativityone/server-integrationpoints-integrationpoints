@@ -60,10 +60,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private async Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
         {
             RdoImportConfiguration configuration;
-
-            // DEBUG
-            _logger.LogInformation("CreateConfiguration integrationPoint - {@integrationPoint}", integrationPoint);
-
             if (integrationPoint.ShouldGenerateFullNameIdentifierField)
             {
                 string fullNameArtifactId = await GetFullNameArtifactId();

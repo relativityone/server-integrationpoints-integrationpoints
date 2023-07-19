@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -28,10 +27,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     [Category("Unit")]
     public class LoadFileBuilderTests
     {
+        private const string _IMPORT_DIRECTORY = "/import/";
+
         private Mock<IRelativityStorageService> _storageService;
         private LoadFileBuilder _sut;
         private FakeStorageStream _fakeStorageSteam;
         private CustomProviderBatch _batch;
+        private IDataSourceProvider _provider;
 
         private int _numberOfRecords = 5;
 
@@ -57,6 +59,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 BatchID = 5
             };
 
+            _provider = new FakeSourceProvider(_numberOfRecords);
+
             _sut = new LoadFileBuilder(_storageService.Object, Mock.Of<IAPILog>());
         }
 
@@ -65,131 +69,96 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var fieldName = "Source Field";
-            List<IndexedFieldMap> fieldMap = new List<IndexedFieldMap>
-            {
-                new IndexedFieldMap(
-                    new FieldMap
-                    {
-                        SourceField = new FieldEntry
-                        {
-                            DisplayName = fieldName
-                        },
-                        DestinationField = new FieldEntry
-                        {
-                            DisplayName = fieldName
-                        }
-                    }, 0)
-            };
-
+            List<IndexedFieldMap> fieldMap = CreateIndexedFieldMaps(new[] { fieldName });
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
             };
 
-            string importDirectory = "/import/";
-
-            IDataSourceProvider provider = new FakeSourceProvider(_numberOfRecords);
-
             // Act
             DataSourceSettings settings = await _sut.CreateDataFileAsync(
                 _batch,
-                provider,
+                _provider,
                 new IntegrationPointInfo(integrationPointDto),
-                importDirectory);
+                _IMPORT_DIRECTORY);
 
             // Assert
-            settings.Path.Should().Be($"{importDirectory}000000{_batch.BatchID}.data");
-
-            string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split('\r').Select(x => x.Trim()).ToArray();
-            foreach (string line in allLines)
-            {
-                string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
-                columns.Length.ShouldBeEquivalentTo(fieldMap.Count);
-                columns[0].ShouldBeEquivalentTo($"Value of {fieldName}");
-            }
-
-            allLines.Length.ShouldBeEquivalentTo(_numberOfRecords);
+            Assert(
+                settings,
+                fieldMap.Count,
+                0,
+                $"Value of {fieldName}");
         }
 
         [Test] 
         public async Task CreateDataFileAsync_ShouldBuildDataFileWhenArtifactTypeIsEntity()
         {
             // Arrange
-
-            //List<string> fieldsNames = new List<string>
-            //{
-            //    "Source Field",
-
-            //}
-            List<IndexedFieldMap> fieldMap = new List<IndexedFieldMap>
+            List<IndexedFieldMap> fieldMap = CreateIndexedFieldMaps(new[]
             {
-                new IndexedFieldMap(
-                    new FieldMap
-                    {
-                        SourceField = new FieldEntry
-                        {
-                            DisplayName = "Source Field"
-                        },
-                        DestinationField = new FieldEntry
-                        {
-                            DisplayName = "Source Field"
-                        }
-                    }, 0),
-                new IndexedFieldMap(
-                    new FieldMap
-                    {
-                        SourceField = new FieldEntry
-                        {
-                            DisplayName = EntityFieldNames.FirstName
-                        },
-                        DestinationField = new FieldEntry
-                        {
-                            DisplayName = EntityFieldNames.FirstName
-                        }
-                    }, 1),
-                new IndexedFieldMap(
-                    new FieldMap
-                    {
-                        SourceField = new FieldEntry
-                        {
-                            DisplayName = EntityFieldNames.LastName
-                        },
-                        DestinationField = new FieldEntry
-                        {
-                            DisplayName = EntityFieldNames.LastName
-                        }
-                    }, 2)
-            };
+                "Source Field",
+                EntityFieldNames.FirstName,
+                EntityFieldNames.LastName
+            });
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
             };
-            string importDirectory = "/import/";
 
-            IDataSourceProvider provider = new FakeSourceProvider(_numberOfRecords);
-
-            var integrationPointsInfo = new IntegrationPointInfo(integrationPointDto);
-            integrationPointsInfo.IsEntityType = true;
+            var integrationPointsInfo = new IntegrationPointInfo(integrationPointDto)
+            {
+                IsEntityType = true
+            };
 
             // Act
             DataSourceSettings settings = await _sut.CreateDataFileAsync(
                 _batch,
-                provider,
+                _provider,
                 integrationPointsInfo,
-                importDirectory);
+                _IMPORT_DIRECTORY);
 
             // Assert
-            settings.Path.Should().Be($"{importDirectory}000000{_batch.BatchID}.data");
+            Assert(
+                settings,
+                fieldMap.Count + 1,
+                fieldMap.Count,
+                $"Value of {EntityFieldNames.LastName}, Value of {EntityFieldNames.FirstName}");
+        }
 
+        private static List<IndexedFieldMap> CreateIndexedFieldMaps(string[] fieldsNames)
+        {
+            var fieldMap = new List<IndexedFieldMap>();
+
+            for (int i = 0; i < fieldsNames.Length; i++)
+            {
+                fieldMap.Add(new IndexedFieldMap(
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = fieldsNames[i]
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = fieldsNames[i]
+                        }
+                    }, i));
+            }
+
+            return fieldMap;
+        }
+
+        private void Assert(DataSourceSettings settings, int columnsCount, int expectedColumnIdx, string expectedValue)
+        {
+            settings.Path.Should().Be($"{_IMPORT_DIRECTORY}000000{_batch.BatchID}.data");
             string[] allLines = _fakeStorageSteam.LastWrittenData.Trim().Split('\r').Select(x => x.Trim()).ToArray();
             foreach (string line in allLines)
             {
                 string[] columns = line.Split(LoadFileOptions._DEFAULT_COLUMN_DELIMITER_ASCII);
-                columns.Length.ShouldBeEquivalentTo(fieldMap.Count + 1);
-                columns[fieldMap.Count].ShouldBeEquivalentTo($"Value of {EntityFieldNames.LastName}, Value of {EntityFieldNames.FirstName}");
+                columns.Length.ShouldBeEquivalentTo(columnsCount);
+                columns[expectedColumnIdx].ShouldBeEquivalentTo(expectedValue);
             }
-
             allLines.Length.ShouldBeEquivalentTo(_numberOfRecords);
         }
 
@@ -411,11 +380,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             }
 
             public override bool CanRead { get; }
+
             public override bool CanSeek { get; }
+
             public override bool CanWrite => true;
+
             public override long Length { get; }
+
             public override long Position { get; set; }
+
             public override string StoragePath { get; }
+
             public override StorageInterface StorageInterface { get; }
         }
     }

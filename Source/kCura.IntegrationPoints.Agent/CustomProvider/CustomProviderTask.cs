@@ -82,8 +82,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
-                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
-                integrationPointInfo.IsEntityType = await _integrationPointService.IsIntegrationPointTransferredObjectEntityType(integrationPointDto).ConfigureAwait(false);
+                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto)
+                 {
+                     IsEntityType = await _integrationPointService.IsIntegrationPointTransferredObjectEntityType(integrationPointDto).ConfigureAwait(false)
+                 };
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
