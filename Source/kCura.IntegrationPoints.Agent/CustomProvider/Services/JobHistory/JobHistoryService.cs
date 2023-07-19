@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Data;
@@ -15,17 +16,21 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
     {
         private readonly IKeplerServiceFactory _keplerServiceFactory;
         private readonly IDateTime _dateTime;
+        private readonly IIntegrationPointRdoService _integrationPointRdoService;
         private readonly IAPILog _logger;
 
-        public JobHistoryService(IKeplerServiceFactory keplerServiceFactory, IDateTime dateTime, IAPILog logger)
+        public JobHistoryService(IKeplerServiceFactory keplerServiceFactory, IDateTime dateTime, IIntegrationPointRdoService integrationPointRdoService, IAPILog logger)
         {
             _keplerServiceFactory = keplerServiceFactory;
             _dateTime = dateTime;
+            _integrationPointRdoService = integrationPointRdoService;
             _logger = logger.ForContext<JobHistoryService>();
         }
 
-        public async Task UpdateStatusAsync(int workspaceId, int jobHistoryId, Guid statusGuid)
+        public async Task UpdateStatusAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid statusGuid)
         {
+            await TryUpdateIntegrationPointHasErrorsAsync(workspaceId, integrationPointId, statusGuid).ConfigureAwait(false);
+
             try
             {
                 FieldRefValuePair[] fieldsToUpdate = new[]
@@ -75,9 +80,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
         }
 
-        public async Task TryUpdateEndTimeAsync(int workspaceId, int jobHistoryId)
+        public async Task TryUpdateEndTimeAsync(int workspaceId, int integrationPointId, int jobHistoryId)
         {
             DateTime endTime = _dateTime.UtcNow;
+
+            await _integrationPointRdoService.TryUpdateLastRuntimeAsync(workspaceId, integrationPointId, endTime).ConfigureAwait(false);
 
             try
             {
@@ -244,6 +251,22 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
                         "Failed to update Job History. Update request: {@request} Event handler statuses: {@eventHandlerStatuses}",
                         updateRequest, updateResult.EventHandlerStatuses);
                 }
+            }
+        }
+
+        private async Task TryUpdateIntegrationPointHasErrorsAsync(int workspaceId, int integrationPointId, Guid statusGuid)
+        {
+            if (statusGuid == JobStatusChoices.JobHistoryValidationFailedGuid ||
+                statusGuid == JobStatusChoices.JobHistoryCompletedWithErrorsGuid ||
+                statusGuid == JobStatusChoices.JobHistoryErrorJobFailedGuid)
+            {
+                await _integrationPointRdoService.TryUpdateHasErrorsAsync(workspaceId, integrationPointId, true)
+                    .ConfigureAwait(false);
+            }
+            else if (statusGuid == JobStatusChoices.JobHistoryCompletedGuid)
+            {
+                await _integrationPointRdoService.TryUpdateHasErrorsAsync(workspaceId, integrationPointId, false)
+                    .ConfigureAwait(false);
             }
         }
     }

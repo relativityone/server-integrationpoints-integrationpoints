@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
@@ -154,10 +153,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiService.Setup(x => x.GetDataSourceDetailsAsync(It.IsAny<ImportJobContext>(), It.IsAny<Guid>()))
                 .ReturnsAsync(new DataSourceDetails() { State = DataSourceState.Completed });
 
+            ImportJobContext jobContext = new ImportJobContext(WorkspaceId, job.JobId, Guid.NewGuid(), jobHistoryId);
+
             ImportJobRunner sut = PrepareSut();
 
             // Act
-            await sut.RunJobAsync(job, jobDetails, _integrationPointInfo, _sourceProvider.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            await sut.RunJobAsync(job, jobDetails, _integrationPointInfo, jobContext, _sourceProvider.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
             _relativityStorageService
@@ -202,10 +203,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             Job job = PrepareJob(WorkspaceId, Guid.NewGuid());
 
+            ImportJobContext jobContext = new ImportJobContext(WorkspaceId, job.JobId, Guid.NewGuid(), jobHistoryId);
+
             ImportJobRunner sut = PrepareSut();
 
             // Act
-            Func<Task> action = async () => await sut.RunJobAsync(job, jobDetails, new IntegrationPointInfo(new IntegrationPointDto()), Mock.Of<IDataSourceProvider>(), CompositeCancellationToken.None);
+            Func<Task> action = async () => await sut.RunJobAsync(job, jobDetails, new IntegrationPointInfo(new IntegrationPointDto()), jobContext, Mock.Of<IDataSourceProvider>(), CompositeCancellationToken.None);
 
             // Assert
             action.ShouldThrow<Exception>();
@@ -251,11 +254,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             Job job = PrepareJob(WorkspaceId, Guid.NewGuid());
 
+            ImportJobContext jobContext = new ImportJobContext(WorkspaceId, job.JobId, Guid.NewGuid(), jobHistoryId);
+
             ImportJobRunner sut = PrepareSut();
 
             // Act
             drainStopToken.Cancel();
-            await sut.RunJobAsync(job, jobDetails, _integrationPointInfo, Mock.Of<IDataSourceProvider>(), token);
+            await sut.RunJobAsync(job, jobDetails, _integrationPointInfo, jobContext, Mock.Of<IDataSourceProvider>(), token);
 
             // Assert
             _relativityStorageService

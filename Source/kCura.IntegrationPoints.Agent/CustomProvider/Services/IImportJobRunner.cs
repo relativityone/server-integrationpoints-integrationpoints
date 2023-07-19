@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     internal interface IImportJobRunner
     {
-        Task<ImportJobResult> RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointInfo integrationPointDto, IDataSourceProvider sourceProvider, CompositeCancellationToken token);
+        Task<ImportJobResult> RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointInfo integrationPointInfo, ImportJobContext importJobContext, IDataSourceProvider sourceProvider, CompositeCancellationToken token);
     }
 }

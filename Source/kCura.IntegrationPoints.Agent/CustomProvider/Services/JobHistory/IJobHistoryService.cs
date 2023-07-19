@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 
         Task TryUpdateStartTimeAsync(int workspaceId, int jobHistoryId);
 
-        Task TryUpdateEndTimeAsync(int workspaceId, int jobHistoryId);
+        Task TryUpdateEndTimeAsync(int workspaceId, int integrationPointId, int jobHistoryId);
 
-        Task UpdateStatusAsync(int workspaceId, int jobHistoryId, Guid statusGuid);
+        Task UpdateStatusAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid statusGuid);
 
         Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount);
 

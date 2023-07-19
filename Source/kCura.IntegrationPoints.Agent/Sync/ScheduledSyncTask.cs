@@ -66,9 +66,9 @@ namespace kCura.IntegrationPoints.Agent.Sync
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "Exception ocurred during Sync Job submit.");
+                _log.LogError(ex, "Exception occurred during Sync Job submit.");
                 await _jobHistoryService.UpdateStatusAsync(
-                        job.WorkspaceID, jobHistoryId, JobStatusChoices.JobHistoryErrorJobFailedGuid)
+                        job.WorkspaceID, job.RelatedObjectArtifactID, jobHistoryId, JobStatusChoices.JobHistoryErrorJobFailedGuid)
                     .ConfigureAwait(false);
 
                 await _jobHistoryErrorService.AddJobErrorAsync(job.WorkspaceID, jobHistoryId, ex).ConfigureAwait(false);
