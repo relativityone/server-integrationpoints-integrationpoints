@@ -17,6 +17,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 			throw new System.NotImplementedException();
 		}
 
+		public bool IsEnabledByGuid(System.Guid componentGuid)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public Task<bool> IsEnabledByGuidAsync(System.Guid componentGuid)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public bool IsEnabledByName(string toggleName)
 		{
 			throw new System.NotImplementedException();

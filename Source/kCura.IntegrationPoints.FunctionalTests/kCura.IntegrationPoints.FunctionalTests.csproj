@@ -3,24 +3,24 @@
   <PropertyGroup>
     <ProjectGuid>{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}</ProjectGuid>
     <TargetFramework>net462</TargetFramework>
-    <DependsOnNETStandard>false</DependsOnNETStandard>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IsTestProject>true</IsTestProject>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RootNamespace>Relativity.IntegrationPoints.Tests</RootNamespace>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
+    <WarningsAsErrors />
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net462|AnyCPU'">
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
+    <WarningsAsErrors />
+    <DefineConstants>TRACE</DefineConstants>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -126,9 +126,11 @@
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Agent" />
     <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="netDumbster" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.API" VersionOverride="17.4.2" >
       <NoWarn>NU1605</NoWarn>
@@ -139,11 +141,14 @@
     <PackageReference Include="Relativity.Kepler.Client" VersionOverride="2.17.0" >
       <NoWarn>NU1605</NoWarn>
     </PackageReference>
+    <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <!-- <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />  -->
+    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private">
+      <NoWarn>NU1605</NoWarn>
+    </PackageReference>
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />

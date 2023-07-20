@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+﻿#if INCLUDE_HARD_CODED_ARTIFACTID_TESTS
+
+// "REL-841500: Resolve RIP functional tests that depend on hard-coded ArtifactID values"
+using System.Collections.Generic;
+
 using NUnit.Framework;
 
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Base
@@ -38,3 +42,4 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.TestCases.Bas
 		}
 	}
 }
+#endif

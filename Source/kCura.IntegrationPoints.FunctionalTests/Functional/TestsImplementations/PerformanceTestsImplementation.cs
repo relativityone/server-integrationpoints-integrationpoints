@@ -313,7 +313,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             using (IFolderManager folderManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory
                 .GetServiceProxy<IFolderManager>())
             {
-                Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceId).ConfigureAwait(false);
+	            Relativity.Services.Folder.Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceId).ConfigureAwait(false);
                 return rootFolder.ArtifactID;
             }
         }
