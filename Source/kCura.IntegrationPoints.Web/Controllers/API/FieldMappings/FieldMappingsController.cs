@@ -44,6 +44,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
         {
             IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace(artifactTypeId);
 
+            _logger.LogInformation("GetMappableFieldsFromSourceWorkspace workspaceID - {workspaceID}, artifactTypeId - {artifactTypeId}", workspaceID, artifactTypeId);
+
             IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, artifactTypeId).ConfigureAwait(false))
                 .Select(x => new ClassifiedFieldDTO(x));
 

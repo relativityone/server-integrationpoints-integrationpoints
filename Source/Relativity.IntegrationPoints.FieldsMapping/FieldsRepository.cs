@@ -11,10 +11,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping
     public class FieldsRepository : IFieldsRepository
     {
         private readonly IServicesMgr _servicesMgr;
+        private readonly IAPILog _logger;
 
-        public FieldsRepository(IServicesMgr servicesMgr)
+        public FieldsRepository(IServicesMgr servicesMgr, IAPILog logger)
         {
             _servicesMgr = servicesMgr;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<FieldInfo>> GetAllFieldsAsync(int workspaceId, int artifactTypeId)
@@ -34,6 +36,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
             }
 
             QueryRequest queryRequest = PrepareFieldsQueryRequest($"'ArtifactID' IN [{string.Join(",", artifactIds)}]");
+
+            _logger.LogInformation("GetFieldsByArtifactsIdAsync queryRequest - {@queryRequest}, workspaceId - {workspaceId}", queryRequest, workspaceId);
             IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
             return fieldObjects.Select(FieldConvert.ToDocumentFieldInfo);

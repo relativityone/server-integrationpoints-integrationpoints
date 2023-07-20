@@ -7,8 +7,8 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
@@ -16,6 +16,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
@@ -29,7 +30,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private RdoImportConfiguration _importConfiguration;
 
         private Mock<IRdoImportSettingsBuilder> _settingsBuilderMock;
-        private Mock<IRelativityObjectManager> _objectManagerMock;
+        private Mock<IObjectManager> _objectManagerMock;
+        private Mock<IKeplerServiceFactory> _keplerFactoryMock;
         private Mock<IImportApiService> _importApiServiceMock;
         private RdoImportApiRunner _sut;
 
@@ -46,23 +48,33 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.Build(It.IsAny<DestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
                 .Returns(_importConfiguration);
 
-            _objectManagerMock = new Mock<IRelativityObjectManager>();
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser))
-                .ReturnsAsync(new List<RelativityObjectSlim>
+            _objectManagerMock = new Mock<IObjectManager>();
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
+                .ReturnsAsync(new QueryResultSlim
                 {
-                    new RelativityObjectSlim
+                    Objects = new List<RelativityObjectSlim>
                     {
-                        Values = new List<object>
+                        new RelativityObjectSlim
                         {
-                            new Random().Next()
+                            Values = new List<object>
+                            {
+                                new Random().Next()
+                            }
                         }
-                    }
+                    },
+                    ResultCount = 1,
+                    TotalCount = 1
                 });
+
+            _keplerFactoryMock = new Mock<IKeplerServiceFactory>();
+            _keplerFactoryMock
+                .Setup(x => x.CreateProxyAsync<IObjectManager>())
+                .ReturnsAsync(_objectManagerMock.Object);
 
             _sut = new RdoImportApiRunner(
                 _settingsBuilderMock.Object,
                 _importApiServiceMock.Object,
-                _objectManagerMock.Object,
+                _keplerFactoryMock.Object,
                 new Mock<IAPILog>().Object);
         }
 

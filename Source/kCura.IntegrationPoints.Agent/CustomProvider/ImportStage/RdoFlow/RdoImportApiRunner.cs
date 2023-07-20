@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Exceptions;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
@@ -19,7 +18,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
     {
         private readonly IRdoImportSettingsBuilder _importSettingsBuilder;
         private readonly IImportApiService _importApiService;
-        private readonly IRelativityObjectManager _objectManager;
+        private readonly IKeplerServiceFactory _keplerServiceFactory;
         private readonly IAPILog _logger;
 
         /// <summary>
@@ -35,11 +34,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// <param name="importSettingsBuilder">The builder able to create desired ImportAPI configuration.></param>
         /// <param name="importApiService">The service responsible for ImportAPI calls.</param>
         /// <param name="logger">The logger.</param>
-        public RdoImportApiRunner(IRdoImportSettingsBuilder importSettingsBuilder, IImportApiService importApiService, IRelativityObjectManager objectManager, IAPILog logger)
+        public RdoImportApiRunner(IRdoImportSettingsBuilder importSettingsBuilder, IImportApiService importApiService, IKeplerServiceFactory keplerServiceFactory, IAPILog logger)
         {
             _importSettingsBuilder = importSettingsBuilder;
             _importApiService = importApiService;
-            _objectManager = objectManager;
+            _keplerServiceFactory = keplerServiceFactory;
             _logger = logger;
         }
 
@@ -62,19 +61,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             RdoImportConfiguration configuration;
             if (integrationPoint.ShouldGenerateFullNameIdentifierField)
             {
-                var clonedFieldMappings = new List<IndexedFieldMap>();
-                foreach (var fieldMapping in integrationPoint.FieldMap)
-                {
-                    IndexedFieldMap clonedFieldMapping = fieldMapping.Clone();
-                    clonedFieldMappings.Add(clonedFieldMapping);
-                }
+                var clonedFieldMappings = integrationPoint.FieldMap.Select(fieldMapping => fieldMapping.Clone()).ToList();
 
                 IndexedFieldMap clonedLastName = clonedFieldMappings.First(x => x.DestinationFieldName == EntityFieldNames.LastName);
 
                 clonedLastName.FieldMap.FieldMapType = FieldMapTypeEnum.None;
                 clonedLastName.FieldMap.SourceField.IsIdentifier = false;
                 clonedLastName.FieldMap.DestinationField.IsIdentifier = false;
-                string fullNameArtifactId = await GetFullNameArtifactId();
+                string fullNameArtifactId = await GetFullNameArtifactId(integrationPoint.DestinationConfiguration.CaseArtifactId);
                 var fullNameField = new FieldEntry
                 {
                     DisplayName = EntityFieldNames.FullName,
@@ -102,36 +96,43 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             return configuration;
         }
 
-        private async Task<string> GetFullNameArtifactId()
+        private async Task<string> GetFullNameArtifactId(int workspaceId)
         {
-            List<RelativityObjectSlim> result = await _objectManager.QuerySlimAsync(new QueryRequest
+            using (IObjectManager objectManager = await _keplerServiceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
-                Fields = new[]
-                {
-                    new FieldRef
+                QueryResultSlim result = await objectManager.QuerySlimAsync(
+                    workspaceId,
+                    new QueryRequest
                     {
-                        Name = "ArtifactID"
-                    }
-                },
-                ObjectType = new ObjectTypeRef
+                        Fields = new[]
+                        {
+                            new FieldRef
+                            {
+                                Name = "ArtifactID"
+                            }
+                        },
+                        ObjectType = new ObjectTypeRef
+                        {
+                            Name = "Field"
+                        },
+                        Condition = $"'DisplayName' == '{EntityFieldNames.FullName}'"
+                    },
+                    0,
+                    1).ConfigureAwait(false);
+
+                if (result == null || result.ResultCount < 1)
                 {
-                    Name = "Field"
-                },
-                Condition = $"'DisplayName' == '{EntityFieldNames.FullName}'"
-            }).ConfigureAwait(false);
+                    throw new NotFoundException($"{EntityFieldNames.FullName} field not found in Destination Workspace");
+                }
 
-            if (result == null || result.Count < 1)
-            {
-                throw new NotFoundException($"{EntityFieldNames.FullName} not found in Destination Workspace");
+                string fullNameArtifactId = result.Objects.Single().Values.Single().ToString();
+
+                _logger.LogInformation(
+                    "{FullName} field retrieved with Object Manager, ArtifactID = {artifactId}",
+                    EntityFieldNames.FullName,
+                    fullNameArtifactId);
+                return fullNameArtifactId;
             }
-
-            string fullNameArtifactId = result.Single().Values.Single().ToString();
-
-            _logger.LogInformation(
-                "{FullName} field retrieved with Object Manager, ArtifactID = {artifactId}",
-                EntityFieldNames.FullName,
-                fullNameArtifactId);
-            return fullNameArtifactId;
         }
     }
 }
