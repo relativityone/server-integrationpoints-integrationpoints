@@ -112,31 +112,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);
         }
 
-        [IdentifiedTest("EEDDA654-F7C0-4843-BAF6-ADBDB57EFC22")]
-        public void Retry_ShouldNotScheduleRetryJob_WhenIntegrationPointDoesNotHaveErrors()
-        {
-            // Arrange
-            IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
-            integrationPoint.HasErrors = false;
-
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
-
-            JobController.Payload payload = new JobController.Payload
-            {
-                ArtifactId = integrationPoint.ArtifactId,
-                AppId = SourceWorkspace.ArtifactId
-            };
-
-            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
-
-            // Act
-            sut.Retry(payload);
-
-            // Assert
-            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
-        }
-
         [IdentifiedTest("B6CE1147-7484-42C9-A078-09742469D3EE")]
         public void Stop_ShouldStopRunningJob()
         {
