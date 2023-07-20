@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Agent.Toggles;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Managers;
