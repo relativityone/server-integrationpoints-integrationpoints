@@ -24,7 +24,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        [Ignore("REL-753202")]
         public void LoadFromLDAP_GoldFlow()
         {
             _testsImplementation.ImportFromLDAPGoldFlow();
