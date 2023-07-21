@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file.
 
 - [REL-848356](https://jira.kcura.com/browse/REL-848356) - Revved IAPI Latest Package - Backported [REL-712106](https://jira.kcura.com/browse/REL-712106) ticket from Server 2022 release.
 
+## [12.9.0] - 07-19-2023
+
+### Fixed
+
+- Resolved RIP provider errors
+- Updated Relativity.IntegrationPoints.Contracts/Relativity.IntegrationPoints.SDK to 1.2.0
+
 ## [12.8.0] - 07-04-2023
 
 ### Changed

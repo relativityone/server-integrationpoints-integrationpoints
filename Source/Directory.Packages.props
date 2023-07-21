@@ -44,7 +44,7 @@
     <RelativityDataExchangeClientSDK>2.6.0</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsContracts>1.2.0-pre.15</RelativityIntegrationPointsContracts>
+    <RelativityIntegrationPointsSDK>1.2.0</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.3.0</RelativityIntegrationPointsServicesInterfacesPrivate>
     <KeplerVersion>2.15.5</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
@@ -132,8 +132,8 @@
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsContracts)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsContracts)" />
+    <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
+    <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
     <PackageVersion Include="Relativity.Kepler" Version="$(KeplerVersion)" />
