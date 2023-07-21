@@ -52,12 +52,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 integrationPointName, destinationWorkspace, _savedSearch, RelativityProviderCopyNativeFiles.No);
 
             // Act
-            integrationPointViewPage
-                .SaveAsProfile.ClickAndGo()
-                .ApplyModel(new IntegrationPointSaveAsProfile
-                {
-                    ProfileName = profileName
-                }).SaveAsProfile.ClickAndGo();
+            IntegrationPointSaveAsProfilePopup saveAsProfilePopup = integrationPointViewPage
+                .SaveAsProfile.WaitTo.Within(120).BeVisible().SaveAsProfile.ClickAndGo();
+
+            saveAsProfilePopup.ApplyModel(new IntegrationPointSaveAsProfile
+            {
+                IntegrationPointProfileName = profileName
+            });
+
+            saveAsProfilePopup.Ok.ClickAndGo();
 
             // Assert
             AssertXss();
