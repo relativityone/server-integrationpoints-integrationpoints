@@ -199,12 +199,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             };
 
             await _relativityObjectManager.UpdateAsync(job.IntegrationPointId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
-        }
-
-        private bool SyncUpdatesJobHistory()
-        {
-            return _toggles.IsEnabledByName("Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle");
-        }
+        }       
 
         private static FieldRef JobIdRef()
         {
