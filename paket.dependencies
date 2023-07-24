@@ -1,6 +1,6 @@
 framework: net472
 strategy: min
-source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
@@ -106,7 +106,7 @@ nuget ARMTestServices 1.1.1
 group Tests
 framework: auto-detect
 strategy: min
-source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
 
 nuget kCura 14.2.7
 nuget kCura.Agent ~> 17.4.2
@@ -157,7 +157,7 @@ nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 group Sync
 framework: auto-detect
 strategy: min
-source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
 
 nuget Relativity.Sync 0.11.0
 nuget SSH.NET 2020.0.1

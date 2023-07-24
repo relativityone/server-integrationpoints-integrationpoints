@@ -1,7 +1,7 @@
 STRATEGY: MIN
 RESTRICTION: == net472
 NUGET
-  remote: https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+  remote: https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
     Antlr (3.5.0.2)
     ARMTestServices (1.1.1)
     AutoFixture (4.17.0)
@@ -424,7 +424,7 @@ GROUP Sync
 STRATEGY: MIN
 RESTRICTION: == net472
 NUGET
-  remote: https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+  remote: https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
     Autofac (4.9.4)
     Azure.Core (1.25.0)
       Microsoft.Bcl.AsyncInterfaces (>= 1.1.1)
@@ -662,7 +662,7 @@ GROUP Tests
 STRATEGY: MIN
 RESTRICTION: == net472
 NUGET
-  remote: https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
+  remote: https://relativityone.jfrog.io/artifactory/api/nuget/v3/server-nuget-anthology
     Antlr (3.5.0.2)
     Atata (1.6.0)
       Atata.WebDriverExtras (>= 1.3)
