@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Identification;
