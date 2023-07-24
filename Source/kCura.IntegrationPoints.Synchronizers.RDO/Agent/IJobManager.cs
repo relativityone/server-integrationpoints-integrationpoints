@@ -8,16 +8,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public interface IJobManager
     {
-        Job CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null) where T : class;
+        Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null);
 
         void CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
+
         Job CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId,
             long? rootJobId = null, long? parentJobId = null);
+
         Job CreateJob(Job parentJob, TaskParameters jobDetails, TaskType task);
 
         void DeleteJob(long jobID);
+
         Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
+
         Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T : class;
+
         bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true);
 
         BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId);

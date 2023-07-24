@@ -83,8 +83,8 @@ namespace kCura.IntegrationPoints.Core.Services
             return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
         }
 
-        public Job CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
-            long? parentJobId = null) where T: class
+        public Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
+            long? parentJobId = null)
         {
             return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
         }

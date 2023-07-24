@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJobOnBehalfOfAUser_GoldFlow()
         {
-            object jobDetail = null;
+            TaskParameters jobDetail = null;
 
             _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId);
 
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJobOnBehalfOfAUser_Error()
         {
-            object jobDetail = null;
+            TaskParameters jobDetail = null;
 
             _jobService.CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null)
                 .Throws(new AgentNotFoundException());
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJobOnBehalfOfAUser_GoldFlow_WithSerializeData()
         {
-            string jobDetail = "some details";
+            TaskParameters jobDetail = new TaskParameters();
 
             _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId);
 
