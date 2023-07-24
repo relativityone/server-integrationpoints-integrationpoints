@@ -39,7 +39,7 @@ Task BuildLiquidFormsJS {
     } -workingDirectory $liquidFormsJSDir
 
     Invoke-NpmCommand {
-        npx @('npm', 'install', '--registry', 'https://relativityone.jfrog.io/artifactory/api/nuget/server-npm-anthology/')
+        npx @('npm', 'install', '--registry', 'https://relativityone.jfrog.io/artifactory/api/npm/server-npm-anthology/')
     } -workingDirectory $liquidFormsJSDir
    
     Invoke-NpmCommand {
