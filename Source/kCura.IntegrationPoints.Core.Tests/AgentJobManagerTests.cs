@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJob_GoldFlow()
         {
-            object jobDetail = null;
+            TaskParameters jobDetail = null;
 
             _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId);
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJob_Error()
         {
-            object jobDetail = null;
+            TaskParameters jobDetail = null;
 
             _jobService.CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null)
                 .Throws(new AgentNotFoundException());
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [Test]
         public void CreateJob_GoldFlow_WithSerializeData()
         {
-            string jobDetail = "some details";
+            TaskParameters jobDetail = new TaskParameters();
 
             _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId);
 

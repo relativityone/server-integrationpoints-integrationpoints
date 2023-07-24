@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
         }
 
-        public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null) where T : class
+        public void CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
         }
 
-        public Job CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class
+        public Job CreateJob(Job parentJob, TaskParameters jobDetails, TaskType task)
         {
             return CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
         }
@@ -77,7 +77,8 @@ namespace kCura.IntegrationPoints.Core.Services
             return _tracker.GetBatchesStatuses(job, batchId);
         }
 
-        public Job CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
+        public Job CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId,
+            long? rootJobId = null, long? parentJobId = null)
         {
             return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
         }
