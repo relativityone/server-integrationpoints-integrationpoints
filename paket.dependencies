@@ -1,6 +1,6 @@
 framework: net472
 strategy: min
-source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
@@ -9,18 +9,18 @@ nuget Relativity.IntegrationPoints.SDK 1.0.9
 
 //Main Relativity packages
 nuget kCura 14.2.7
-nuget kCura.Agent ~> 17.9.0
-nuget kCura.EventHandler ~> 17.9.0
-nuget Relativity.CustomPages ~> 17.9.0
-nuget Relativity.Data ~> 52.3.29
+nuget kCura.Agent ~> 17.4.2
+nuget kCura.EventHandler ~> 17.4.2
+nuget Relativity.CustomPages ~> 17.4.2
+nuget Relativity.Data ~> 48.2.25
 nuget Relativity.Telemetry.DataContracts.Shared 3003.1.0
-nuget Relativity.API 17.9.0
-nuget Relativity 52.3.29
+nuget Relativity.API 17.4.2
+nuget Relativity 48.2.25
 
 //Relativity Services packages
 nuget Relativity.Services.DataContracts 13.5.0
 nuget Relativity.Services.Interfaces 13.5.0
-nuget Relativity.Services.Interfaces.Private 14.1.2
+nuget Relativity.Services.Interfaces.Private 14.0.2
 
 //Other Relativity packages
 nuget kCura.Apps.Common.Config 2.1.9
@@ -50,7 +50,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.19.4
+nuget Relativity.DataExchange.Client.SDK 2.2.0
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
 nuget Relativity.Transfer.Client 7.4.10
 
@@ -106,16 +106,16 @@ nuget ARMTestServices 1.1.1
 group Tests
 framework: auto-detect
 strategy: min
-source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 nuget kCura 14.2.7
-nuget kCura.Agent ~> 17.9.0
+nuget kCura.Agent ~> 17.4.2
 nuget kCura.Apps.Common.Config 2.1.9
-nuget kCura.EventHandler ~> 17.9.0
-nuget Relativity.API 17.9.0
-nuget Relativity 52.3.29
+nuget kCura.EventHandler ~> 17.4.2
+nuget Relativity.API 17.4.2
+nuget Relativity 48.2.25
 nuget Relativity.Toggles 1.0.1
-nuget Relativity.Services.Interfaces.Private ~> 14.1.2
+nuget Relativity.Services.Interfaces.Private ~> 14.0.2
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.OutsideIn 2022.7.0 content: none             //Relativity.DataExchange.Client.SDK
 nuget FluentAssertions 4.19.4
@@ -146,7 +146,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.16
+nuget Relativity.Sync 0.11.0
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -157,9 +157,9 @@ nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 group Sync
 framework: auto-detect
 strategy: min
-source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+source https://relativityone.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.16
+nuget Relativity.Sync 0.11.0
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4

@@ -57,7 +57,7 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Relativity.Services.Interfaces.Private" Version="14.1.2" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" Version="14.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CustomProvider\DTO\" />
