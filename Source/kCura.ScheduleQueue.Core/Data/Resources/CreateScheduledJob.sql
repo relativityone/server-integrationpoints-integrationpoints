@@ -7,6 +7,7 @@
 		[LockedByAgentID] [int] NULL,
 		[WorkspaceID] [int] NOT NULL,
 		[RelatedObjectArtifactID] [int] NOT NULL,
+        [CorrelationID] [nvarchar](max) NULL,
 		[TaskType] [nvarchar](255) NOT NULL,
 		[NextRunTime] [datetime] NOT NULL,
 		[LastRunTime] [datetime] NULL,
@@ -35,6 +36,7 @@ OUTPUT
 		,Inserted.[LockedByAgentID]
 		,Inserted.[WorkspaceID]
 		,Inserted.[RelatedObjectArtifactID]
+        ,Inserted.[CorrelationID]
 		,Inserted.[TaskType]
 		,Inserted.[NextRunTime]
 		,Inserted.[LastRunTime]
@@ -89,6 +91,7 @@ BEGIN
 			,[LockedByAgentID]
 			,[WorkspaceID]
 			,[RelatedObjectArtifactID]
+            ,[CorrelationID]
 			,[TaskType]
 			,[NextRunTime]
 			,[LastRunTime]
@@ -109,6 +112,7 @@ BEGIN
 			,Inserted.[LockedByAgentID]
 			,Inserted.[WorkspaceID]
 			,Inserted.[RelatedObjectArtifactID]
+            ,Inserted.[CorrelationID]
 			,Inserted.[TaskType]
 			,Inserted.[NextRunTime]
 			,Inserted.[LastRunTime]
@@ -130,6 +134,7 @@ BEGIN
 			,NULL
 			,@WorkspaceID
 			,@RelatedObjectArtifactID
+		    ,@CorrelationID
 			,@TaskType
 			,@NextRunTime
 			,NULL
@@ -152,6 +157,7 @@ SELECT
 		,[LockedByAgentID]
 		,[WorkspaceID]
 		,[RelatedObjectArtifactID]
+        ,[CorrelationID]
 		,[TaskType]
 		,[NextRunTime]
 		,[LastRunTime]

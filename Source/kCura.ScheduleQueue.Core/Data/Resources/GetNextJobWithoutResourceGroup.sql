@@ -12,6 +12,7 @@
 			INSERTED.[LockedByAgentID],
 			INSERTED.[WorkspaceID],
 			INSERTED.[RelatedObjectArtifactID],
+            INSERTED.[CorrelationID],
 			INSERTED.[TaskType],
 			INSERTED.[NextRunTime],
 			INSERTED.[LastRunTime],

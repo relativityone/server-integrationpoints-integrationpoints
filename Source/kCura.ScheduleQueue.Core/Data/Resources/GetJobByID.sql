@@ -6,6 +6,7 @@
 			,[LockedByAgentID]
 			,[WorkspaceID]
 			,[RelatedObjectArtifactID]
+            ,[CorrelationID]
 			,[TaskType]
 			,[NextRunTime]
 			,[LastRunTime]
