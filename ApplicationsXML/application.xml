@@ -1403,82 +1403,82 @@
     </ArtifactViewField>
   </ArtifactViewFields>
   <Assemblies>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Castle.Windsor.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Newtonsoft.Json.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Parser.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Helpers.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.Connection.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.FtpProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Renci.SshNet.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Agent.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Config.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Core.Contracts.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Data.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Email.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.EventHandlers.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Name>
       <Notes />
@@ -1488,132 +1488,132 @@
       <Name>kCura.IntegrationPoints.DocumentTransferProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.LDAPProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Synchronizers.RDO.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.ScheduleQueue.AgentBase.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.ScheduleQueue.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>SystemInterface.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.Apps.Common.Utils.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.LongPath.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.ImportProvider.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.ImportProvider.Parser.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.Apps.Common.Data.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.Apps.Common.Config.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>ZetaLongPaths.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Polly.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>FaspManager.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Transfer.Client.Aspera.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Transfer.Client.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Transfer.Client.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Transfer.Client.FileShare.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Transfer.Client.Http.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Castle.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.DataTransfer.MessageService.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Productions.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.Common.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>LanguageExt.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.ValueTuple.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
       <Notes />
@@ -1628,248 +1628,248 @@
       <Name>Relativity.Sync.Services.Interfaces.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Autofac.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Banzai.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Banzai.Autofac.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Telemetry.Services.Interface.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.DataExchange.Client.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>itextsharp.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Reactive.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Contracts.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>WorkloadDiscovery.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.DataTransfer.Legacy.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Threading.Tasks.Extensions.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Storage.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>DnsClient.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Text.Json.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Memory.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Runtime.CompilerServices.Unsafe.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Text.Encodings.Web.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Numerics.Vectors.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.AntiMalware.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Environment.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Storage.Extensions.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Microsoft.Bcl.AsyncInterfaces.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Azure.Core.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>System.Diagnostics.DiagnosticSource.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Azure.Storage.Files.DataLake.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Azure.Identity.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Azure.Storage.Blobs.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Azure.Storage.Common.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Dapper.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Dapper.Contrib.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Import.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Import.Private.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.Import.Models.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Relativity.HostingBridge.SDK.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Polly.Contrib.WaitAndRetry.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Serilog.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Serilog.Sinks.OpenTelemetry.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Serilog.Sinks.PeriodicBatching.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Grpc.Core.Api.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>      
+    <Assembly>
       <Keywords />
       <Name>Google.Protobuf.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
   <ResourceFiles>
-    <ResourceFile>      
+    <ResourceFile>
       <Name>integration-point-event-handler.js</Name>
       <FileType>1</FileType>
     </ResourceFile>
-    <ResourceFile>      
+    <ResourceFile>
       <Name>integration-point-profile-event-handler.js</Name>
       <FileType>1</FileType>
     </ResourceFile>
-    <ResourceFile>      
+    <ResourceFile>
       <Name>deploy.yaml</Name>
       <FileType>1</FileType>
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2023-06-19T07:29:48.7950569Z</ExtractionDate>
+  <ExtractionDate>2023-07-25T13:46:29.5930049Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -12080,8 +12080,8 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>13.0.413.3</Version>
-  <SchemaVersion>11.3.10.29</SchemaVersion>
+  <Version>13.0.414.4</Version>
+  <SchemaVersion>11.3.10.30</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />
@@ -12093,8 +12093,8 @@
       <ReadinessUrl>/readiness/check</ReadinessUrl>
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
-      <Size>59581588</Size>
-      <Hash>91-B7-85-6F-88-1B-24-EA-44-97-E2-C4-21-94-92-0F-14-3C-C4-AE</Hash>
+      <Size>59999751</Size>
+      <Hash>36-76-03-90-FD-27-D3-9E-DC-B0-AF-02-20-69-37-20-DC-38-E0-DE</Hash>
     </CustomPage>
   </CustomPages>
   <AgentTypes>
@@ -12116,30 +12116,6 @@
   <IsRelativityApplication>true</IsRelativityApplication>
   <InstallEventHandlers>
     <InstallEventHandler>
-      <ArtifactId>1038967</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointDataTransferLocationMigrationEventHandler</Name>
-      <Guid>a48963ea-ab72-4b98-a634-7721b6d2bb9e</Guid>
-      <Guids>475d5c65-60c0-4ad2-8c71-646a478ffdba</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>90</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038969</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RestoreJobHistoryDestinationWorkspaceEventHandler</Name>
-      <Guid>b7ee6a17-7b0e-4391-9014-99618f7c72f9</Guid>
-      <Guids>7cae83f2-21be-4dc3-8fd7-9cb64098ca34</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>130</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
       <ArtifactId>1038973</ArtifactId>
       <AssemblyArtifactId>1016759</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.SecretStorePreWorkspaceDeleteEventHandler</Name>
@@ -12148,7 +12124,7 @@
       <ExecutionType>18</ExecutionType>
       <Order>25</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12160,7 +12136,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12172,7 +12148,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>70</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12184,7 +12160,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12196,7 +12172,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12208,7 +12184,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>4</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12220,7 +12196,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>6</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12232,7 +12208,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12244,7 +12220,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>3</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12256,31 +12232,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038988</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveAgentJobLogTableEventHandler</Name>
-      <Guid>be794c48-fb6e-4279-9483-d4d602278153</Guid>
-      <Guids>d15b8874-b918-4610-b4d9-ba88e2716687</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>150</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038989</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetImportNativeFileCopyMode</Name>
-      <Guid>8da02f00-480c-437b-bacf-9839ce83042d</Guid>
-      <Guids>fda3ba47-abd2-4ebd-913b-265691e566eb</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>160</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12292,7 +12244,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>26</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12302,33 +12254,9 @@
       <Guid>55b133df-a0b6-4755-aa05-11aa2a982b46</Guid>
       <Guids>617e1be4-d8d8-47bc-94e9-4855d9a9a24f</Guids>
       <ExecutionType>12</ExecutionType>
-      <Order>20</Order>
+      <Order>22</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1040304</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateRelativitySecuredConfiguration</Name>
-      <Guid>2dad0486-e3e1-4a3c-956d-fa45ab5e4717</Guid>
-      <Guids>9cbb0aa2-5a02-4c65-814a-4b5d3c81a0d3</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>180</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1041330</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RenameCustodianToEntityInIntegrationPointConfigurationEventHandler</Name>
-      <Guid>f21845a5-f061-4bea-b653-85bca1f33286</Guid>
-      <Guids>18f3de14-9bf4-4dcd-97d6-bdb37431f2f0</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>200</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12340,7 +12268,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>15</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12352,19 +12280,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>65</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1042009</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.MigrateSecretCatalogPathToSecretStorePathInstaller</Name>
-      <Guid>5fc77ecf-f263-4a0a-b3b8-82e0eb18be57</Guid>
-      <Guids>85f42fa5-63f9-42a6-addf-6181a471f642</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>210</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12376,7 +12292,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>200</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12388,7 +12304,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>400</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12400,31 +12316,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>410</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1042628</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RunPostInstallMigrationScriptsInstaller</Name>
-      <Guid>f8fcd986-d363-4e31-9016-0fd103230625</Guid>
-      <Guids>34eb6b35-4623-4c07-9e9a-27d43c4cb8ff</Guids>
-      <ExecutionType>8</ExecutionType>
-      <Order>10</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
-      <RunTarget>0</RunTarget>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1042657</ArtifactId>
-      <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.SyncRdoDeleteEventHandler</Name>
-      <Guid>8ec8a9f4-55e6-4c16-be56-2c03a129f3c9</Guid>
-      <Guids>65668e87-798b-44d2-afad-a9943e8c508a</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>420</Order>
-      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -12436,19 +12328,127 @@
       <ExecutionType>10</ExecutionType>
       <Order>12</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1042863</ArtifactId>
+      <ArtifactId>1042864</ArtifactId>
       <AssemblyArtifactId>1016759</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateTaggingInDestinationConfiguration</Name>
-      <Guid>8763db48-7b5e-4d2c-9a17-532a03a88c8c</Guid>
-      <Guids>4e1b9398-10ec-4971-985b-c01d1d51bf46</Guids>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.IntegrationPointDataTransferLocationMigrationEventHandler</Name>
+      <Guid>a48963ea-ab72-4b98-a634-7721b6d2bb9e</Guid>
+      <Guids>475d5c65-60c0-4ad2-8c71-646a478ffdba</Guids>
       <ExecutionType>10</ExecutionType>
-      <Order>13</Order>
+      <Order>90</Order>
       <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
-      <ApplicationVersion>11.3.10.29</ApplicationVersion>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042865</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RestoreJobHistoryDestinationWorkspaceEventHandler</Name>
+      <Guid>b7ee6a17-7b0e-4391-9014-99618f7c72f9</Guid>
+      <Guids>7cae83f2-21be-4dc3-8fd7-9cb64098ca34</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>130</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042866</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveAgentJobLogTableEventHandler</Name>
+      <Guid>be794c48-fb6e-4279-9483-d4d602278153</Guid>
+      <Guids>d15b8874-b918-4610-b4d9-ba88e2716687</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>150</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042867</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.SetImportNativeFileCopyMode</Name>
+      <Guid>8da02f00-480c-437b-bacf-9839ce83042d</Guid>
+      <Guids>fda3ba47-abd2-4ebd-913b-265691e566eb</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>160</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042868</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateRelativitySecuredConfiguration</Name>
+      <Guid>2dad0486-e3e1-4a3c-956d-fa45ab5e4717</Guid>
+      <Guids>9cbb0aa2-5a02-4c65-814a-4b5d3c81a0d3</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>180</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042869</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RenameCustodianToEntityInIntegrationPointConfigurationEventHandler</Name>
+      <Guid>f21845a5-f061-4bea-b653-85bca1f33286</Guid>
+      <Guids>18f3de14-9bf4-4dcd-97d6-bdb37431f2f0</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>201</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042870</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.MigrateSecretCatalogPathToSecretStorePathInstaller</Name>
+      <Guid>5fc77ecf-f263-4a0a-b3b8-82e0eb18be57</Guid>
+      <Guids>85f42fa5-63f9-42a6-addf-6181a471f642</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>210</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042871</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RunPostInstallMigrationScriptsInstaller</Name>
+      <Guid>f8fcd986-d363-4e31-9016-0fd103230625</Guid>
+      <Guids>34eb6b35-4623-4c07-9e9a-27d43c4cb8ff</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>10</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042872</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.SyncRdoDeleteEventHandler</Name>
+      <Guid>8ec8a9f4-55e6-4c16-be56-2c03a129f3c9</Guid>
+      <Guids>65668e87-798b-44d2-afad-a9943e8c508a</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>420</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
+      <RunTarget>0</RunTarget>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1042873</ArtifactId>
+      <AssemblyArtifactId>1016759</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.UpdateTaggingSettingsInDestinationConfiguration</Name>
+      <Guid>5e0e6953-42af-41a5-b6e5-222643541f1e</Guid>
+      <Guids>c1479c73-1cb5-4b02-91d5-f40aabfd4b48</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>69</Order>
+      <AssemblyName>kCura.IntegrationPoints.EventHandlers.dll</AssemblyName>
+      <ApplicationVersion>11.3.10.30</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
