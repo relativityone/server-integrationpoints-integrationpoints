@@ -140,3 +140,9 @@ Relativity Sync also has other pipelines, in particular a nightly one for execut
 ## Miscellaneous
 
 You can find more information about this project including troubleshooting steps and limitations on [Einstein](https://einstein.kcura.com/x/TSO3C).
+
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 0.9.182                                        
+Branch: server-main

@@ -44,10 +44,10 @@
       <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.11.3\lib\net462\FreeImageNET.dll</HintPath>
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\FreeImageNET.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp, Version=5.5.13.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.11.3\lib\net462\itextsharp.dll</HintPath>
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -62,7 +62,7 @@
       <HintPath>..\packages\Relativity.11.2.4.1\lib\net462\Relativity.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.11.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.11.3\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataTransfer.Nodes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.7.1.40\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
@@ -264,8 +264,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\kCura.OutsideIn.FI.Win32.2020.3.0\build\kCura.OutsideIn.FI.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\kCura.OutsideIn.FI.Win32.2020.3.0\build\kCura.OutsideIn.FI.Win32.targets'))" />
-    <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.11.3\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.11.3\build\Relativity.DataExchange.Client.SDK.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.2.7.0\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.2.7.0\build\Relativity.DataExchange.Client.SDK.targets'))" />
   </Target>
   <Import Project="..\packages\kCura.OutsideIn.FI.Win32.2020.3.0\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\packages\kCura.OutsideIn.FI.Win32.2020.3.0\build\kCura.OutsideIn.FI.Win32.targets')" />
-  <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.11.3\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.11.3\build\Relativity.DataExchange.Client.SDK.targets')" />
+  <Import Project="..\packages\Relativity.DataExchange.Client.SDK.2.7.0\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.2.7.0\build\Relativity.DataExchange.Client.SDK.targets')" />
 </Project>

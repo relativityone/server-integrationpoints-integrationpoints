@@ -22,11 +22,9 @@
         <ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-    <ItemGroup>
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.7.0" />
         <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
     </ItemGroup>
     <ItemGroup>

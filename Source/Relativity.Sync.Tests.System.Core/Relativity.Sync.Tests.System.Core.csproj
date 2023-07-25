@@ -31,12 +31,10 @@
         <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-    <ItemGroup>
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    </ItemGroup>
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="3.3.0" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.7.0" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>

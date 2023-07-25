@@ -27,13 +27,16 @@
     <ItemGroup>
         <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
         <PackageReference Include="Relativity" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.7.0" />
+        <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.4.0" />
         <PackageReference Include="Relativity.Services.Interfaces" />
+        <PackageReference Include="Relativity.Services.Interfaces.Helpers" Version="13.5.1" />
         <PackageReference Include="Relativity.Services.Interfaces.Private" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
         <PackageReference Include="Relativity.API" Version="17.9.0" />
-        <PackageReference Include="Relativity.Kepler.Client" Version="2.18" />
+        <PackageReference Include="Relativity.Kepler.Client" Version="2.15.6" />
         <PackageReference Include="Relativity.OAuth2Client" Version="1.5.3" />
         <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.3" />
         <PackageReference Include="Relativity.Storage" Version="1.6.0" />
@@ -46,10 +49,6 @@
         <PackageReference Include="Relativity.Environment.SDK" Version="2.0.4" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-    <ItemGroup>
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-        <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" />
-    </ItemGroup>
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Autofac" Version="[4.9.4,5.0.0)" />
