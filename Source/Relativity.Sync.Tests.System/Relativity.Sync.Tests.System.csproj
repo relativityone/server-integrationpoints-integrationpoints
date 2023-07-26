@@ -24,7 +24,7 @@
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.7.0" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
         <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
     </ItemGroup>
     <ItemGroup>
