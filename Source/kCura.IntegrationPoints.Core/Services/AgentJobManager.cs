@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _jobService.UpdateStopState(jobIds, StopState.Stopping);
         }
 
-        private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null) where T : class
+        private Job CreateJobInternal(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
         {
             try
             {
