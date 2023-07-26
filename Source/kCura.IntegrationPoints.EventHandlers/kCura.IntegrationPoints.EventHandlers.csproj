@@ -46,10 +46,5 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Commands\EventHandlerCommandExecutor.cs" />
-    <Compile Remove="JobHistory\JobHistoryPreDelete.cs" />
-    <Compile Remove="Commands\Factories\UpdateDestinationWorkspaceEntriesFactory.cs" />
-  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

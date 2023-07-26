@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly IRelativityFieldQuery _fieldQuery;
-        private readonly IConfig _config;
         private bool _isJobComplete;
         private bool? _disableNativeLocationValidation;
         private bool? _disableNativeValidation;
@@ -44,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         protected IImportService ImportService { get; private set; }
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, IConfig config, ISerializer serializer)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, ISerializer serializer)
         {
             _fieldQuery = fieldQuery;
             _factory = factory;
@@ -52,7 +50,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _helper = helper;
             _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
-            _config = config;
             Serializer = serializer;
         }
 
@@ -282,7 +279,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             try
             {
                 List<RelativityObject> fields = _fieldQuery.GetFieldsForRdo(destinationConfiguration.ArtifactTypeId);
-                HashSet<int> mappableArtifactIds = new HashSet<int>(_factory.GetImportApiFacade(_config.WebApiPath)
+                HashSet<int> mappableArtifactIds = new HashSet<int>(_factory.GetImportApiFacade()
                     .GetWorkspaceFieldsNames(destinationConfiguration.CaseArtifactId, destinationConfiguration.ArtifactTypeId)
                     .Keys);
                 List<RelativityObject> mappableFields = fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
@@ -340,7 +337,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 _jobFactory,
                 _helper,
                 jobStopManager,
-                _config,
                 diagnosticLog);
 
             importService.OnBatchComplete += Finish;
@@ -456,7 +452,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             try
             {
                 WorkspaceRef workspaceRef = null;
-                Dictionary<int, string> workspaces = _factory.GetImportApiFacade(_config.WebApiPath).GetWorkspaceNames();
+                Dictionary<int, string> workspaces = _factory.GetImportApiFacade().GetWorkspaceNames();
                 if (workspaces.ContainsKey(destinationConfiguration.CaseArtifactId))
                 {
                     LogNullWorkspaceReturnedByIAPI();

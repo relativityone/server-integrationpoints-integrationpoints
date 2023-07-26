@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
     {
         private IFieldService _fieldService;
         private IImportApiFactory _importApiFactory;
-        private IConfig _config;
         private IChoiceService _choiceService;
         private IWorkspaceContext _workspaceIdProvider;
         private IImportApiFacade _importApiFacade;
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         {
             _fieldService = Substitute.For<IFieldService>();
             _importApiFactory = Substitute.For<IImportApiFactory>();
-            _config = Substitute.For<IConfig>();
             _choiceService = Substitute.For<IChoiceService>();
             _workspaceIdProvider = Substitute.For<IWorkspaceContext>();
             _importApiFacade = Substitute.For<IImportApiFacade>();
@@ -95,7 +93,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         private void GetFieldsSharedSetup()
         {
-            var webServiceUrl = @"http://localhost/";
             var workspaceId = 123;
             var documentArtifactTypeId = 10;
 
@@ -104,9 +101,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             IImportAPI importApi = Substitute.For<IImportAPI>();
 
-            _config.WebApiPath.Returns(webServiceUrl);
-
-            _importApiFactory.GetImportAPI(webServiceUrl).Returns(importApi);
+            _importApiFactory.GetImportAPI().Returns(importApi);
 
             importApi.GetWorkspaceFields(workspaceId, documentArtifactTypeId).Returns(new List<Field> { new Field() });
 

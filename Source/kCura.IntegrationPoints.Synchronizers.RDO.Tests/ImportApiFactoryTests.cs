@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Logger;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -20,6 +21,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private const string _LOCAL_INSTANCE_ADDRESS = "http://instance-address.relativity.com/Relativity";
         private const string _LOCAL_INVALID_INSTANCE_ADDRESS = "http://fake-invalid-address.com/Relativity";
 
+        private readonly Mock<IWebApiConfig> _webApiConfigMock;
+
         private ImportApiFactory _sut;
 
         public ImportApiFactoryTests()
@@ -34,14 +37,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             importApiBuilderMock.Setup(x => x.CreateImportAPI(_LOCAL_INVALID_INSTANCE_ADDRESS, It.IsAny<int>()))
                 .Throws(new InvalidLoginException());
 
-            _sut = new ImportApiFactory(new Mock<IInstanceSettingsManager>().Object, importApiBuilderMock.Object, retryHandlerFactoryMock.Object, PrepareLoggerStub());
+            _webApiConfigMock = new Mock<IWebApiConfig>();
+            _webApiConfigMock.Setup(x => x.WebApiUrl).Returns(_LOCAL_INSTANCE_ADDRESS);
+
+            _sut = new ImportApiFactory(_webApiConfigMock.Object, new Mock<IInstanceSettingsManager>().Object, importApiBuilderMock.Object, retryHandlerFactoryMock.Object, new Mock<ILogger<ImportApiFactory>>().Object);
         }
 
         [Test]
         public void GetImportAPI_GoldFlow()
         {
             // act
-            var importApi = _sut.GetImportAPI(_LOCAL_INSTANCE_ADDRESS);
+            var importApi = _sut.GetImportAPI();
 
             // assert
             importApi.Should().NotBeNull();
@@ -50,19 +56,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         [Test]
         public void GetImportAPI_ShouldThrowIntegrationPointsException_WhenIAPICannotLogIn()
         {
-            // act & assert
-            Assert.Throws<IntegrationPointsException>(() => _sut.GetImportAPI(_LOCAL_INVALID_INSTANCE_ADDRESS));
-        }
+            _webApiConfigMock.Setup(x => x.WebApiUrl).Returns(_LOCAL_INVALID_INSTANCE_ADDRESS);
 
-        private static ILogger<ImportApiFactory> PrepareLoggerStub()
-        {
-            Mock<IAPILog> loggerStub = new Mock<IAPILog>();
-            Mock<ISerilogLoggerInstrumentationService> serilogLoggerInstrumentationStub =
-                new Mock<ISerilogLoggerInstrumentationService>();
-            Mock<ILogger> serilogLoggerMock = new Mock<ILogger>();
-            serilogLoggerInstrumentationStub.Setup(s => s.GetLogger()).Returns(serilogLoggerMock.Object);
-            loggerStub.Setup(m => m.ForContext<ImportApiFactory>()).Returns(loggerStub.Object);
-            return new Logger<ImportApiFactory>(loggerStub.Object, serilogLoggerInstrumentationStub.Object);
+            // act & assert
+            Assert.Throws<IntegrationPointsException>(() => _sut.GetImportAPI());
         }
     }
 }
