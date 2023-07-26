@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
         }
 
-        public void CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
+        public void CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
         {
             try
             {
@@ -40,11 +40,11 @@ namespace kCura.IntegrationPoints.Core.Services
                 }
                 if (rule != null)
                 {
-                    _jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), rule, serializedDetails, _context.UserID, rootJobID, parentJobID);
+                    _jobService.CreateJob(workspaceId, integrationPointId, correlationId, task.ToString(), rule, serializedDetails, _context.UserID, rootJobID, parentJobID);
                 }
                 else
                 {
-                    _jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobID, parentJobID);
+                    _jobService.CreateJob(workspaceId, integrationPointId, correlationId, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobID, parentJobID);
                 }
             }
             catch (AgentNotFoundException anfe)
@@ -56,12 +56,12 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public Job CreateJob(Job parentJob, TaskParameters jobDetails, TaskType task)
         {
-            return CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
+            return CreateJob(jobDetails, task, parentJob.CorrelationID, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
         }
 
-        public Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T: class
+        public Job CreateJobWithTracker(Job parentJob, TaskParameters jobDetails, TaskType type, string batchId)
         {
-            Job job = CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
+            Job job = CreateJobInternal(jobDetails, type, parentJob.CorrelationID, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
             _tracker.CreateTrackingEntry(job, batchId);
 
             return job;
@@ -77,16 +77,16 @@ namespace kCura.IntegrationPoints.Core.Services
             return _tracker.GetBatchesStatuses(job, batchId);
         }
 
-        public Job CreateJob(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId,
+        public Job CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId,
             long? rootJobId = null, long? parentJobId = null)
         {
-            return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
+            return CreateJobInternal(jobDetails, task, correlationId, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
         }
 
-        public Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
+        public Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
             long? parentJobId = null)
         {
-            return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
+            return CreateJobInternal(jobDetails, task, correlationId, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
         }
 
         public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Services
                 {
                     serializedDetails = _serializer.Serialize(jobDetails);
                 }
-                return _jobService.CreateJob(workspaceId, integrationPointId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
+                return _jobService.CreateJob(workspaceId, integrationPointId, correlationId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
             }
             catch (AgentNotFoundException anfe)
             {
@@ -174,11 +174,11 @@ namespace kCura.IntegrationPoints.Core.Services
             }
         }
 
-        public void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
+        public void CreateJob(int workspaceID, int integrationPointID, Guid correlationId, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
         {
             try
             {
-                _jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobId, parentJobId);
+                _jobService.CreateJob(workspaceID, integrationPointID, correlationId, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobId, parentJobId);
             }
             catch (AgentNotFoundException anfe)
             {

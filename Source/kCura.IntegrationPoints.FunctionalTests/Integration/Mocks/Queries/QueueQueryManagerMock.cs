@@ -118,8 +118,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             });
         }
 
-        public IQuery<DataTable> CreateScheduledJob(int workspaceId, int relatedObjectArtifactId, string taskType, DateTime nextRunTime,
-            int agentTypeId, string scheduleRuleType, string serializedScheduleRule, string jobDetails, int jobFlags,
+        public IQuery<DataTable> CreateScheduledJob(int workspaceId, int relatedObjectArtifactId, Guid correlationID,
+            string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags,
             int submittedBy, long? rootJobId, long? parentJobId = null)
         {
             long newJobId = JobId.Next;

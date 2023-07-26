@@ -48,6 +48,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 lockedByAgentId: 5,
                 workspaceId: 6,
                 relatedObjectArtifactId: _INTEGRATION_POINT_ID,
+                correlationId: Guid.Empty,
                 taskType: TaskType.ExportWorker,
                 nextRunTime: DateTime.MinValue,
                 lastRunTime: DateTime.MinValue,

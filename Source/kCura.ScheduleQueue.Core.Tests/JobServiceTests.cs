@@ -13,6 +13,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
+using Constants = kCura.IntegrationPoints.ImportProvider.Constants;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
@@ -31,6 +32,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         private const long _PARENT_JOB_ID = 756;
         private const long _ROOT_JOB_ID = 287;
         private const string _MOCK_JOB_DETAILS = "There should be details";
+        private static readonly Guid _CORRELATION_ID = new Guid("DCE6A005-7C6D-4D85-A383-A422D20BCF04");
         private const TaskType _TASK_TYPE = TaskType.ImportService;
         private readonly DateTime _mockScheduleRuleReturnDate = new DateTime(2020, 12, 31);
         private readonly Guid _goldFlowAgentGuid = Guid.NewGuid();
@@ -284,14 +286,14 @@ namespace kCura.ScheduleQueue.Core.Tests
         public void CreateJob_ScheduleRuleReturnsDate_ReturnsValidJob()
         {
             string taskTypeString = _TASK_TYPE.ToString();
-            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, _nextRunTime,
                     _AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
                     _PARENT_JOB_ID)
                 .ReturnsForAnyArgs(GetMockJobDataRow());
             IScheduleRule scheduleRule = CreateScheduleRuleReturning(_mockScheduleRuleReturnDate);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
+            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             Assert.AreEqual(job.JobDetails, _MOCK_JOB_DETAILS);
@@ -302,7 +304,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             string taskTypeString = _TASK_TYPE.ToString();
             DataTable dataTable = GetDataTableWithRow();
-            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, _nextRunTime,
                     _AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
                     _PARENT_JOB_ID)
                 .ReturnsForAnyArgs(GetMockJobDataRow());
@@ -311,7 +313,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             IScheduleRule scheduleRule = CreateScheduleRuleReturning(null);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
+            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             _dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
@@ -328,7 +330,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 .ReturnsForAnyArgs(dataTable);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, scheduleRule,
+            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, scheduleRule,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             _dataProviderMock.DidNotReceive().DeleteJob(Arg.Any<long>());
@@ -340,7 +342,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             string taskTypeString = _TASK_TYPE.ToString();
             DataTable dataTable = GetDataTableWithRow();
-            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+            _dataProviderMock.CreateScheduledJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, _nextRunTime,
                     _AGENT_TYPE_ID, null, null, _MOCK_JOB_DETAILS, _JOB_FLAGS, _SUBMITTED_BY, _ROOT_JOB_ID,
                     _PARENT_JOB_ID)
                 .ReturnsForAnyArgs(GetMockJobDataRow());
@@ -348,7 +350,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 .ReturnsForAnyArgs(dataTable);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, _nextRunTime,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             Assert.AreEqual(job.JobId, _MOCK_JOB_ID);
@@ -363,7 +365,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 .ReturnsForAnyArgs(dataTable);
             JobService service = new JobService(_agentService, _dataProviderMock, _kubernetesModeMock, _mockEmptyDbHelper);
 
-            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, taskTypeString, _nextRunTime,
+            Job job = service.CreateJob(_WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, taskTypeString, _nextRunTime,
                 _MOCK_JOB_DETAILS, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             Assert.IsNull(job);
@@ -504,7 +506,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
 
             return JobHelper.CreateJobDataRow(_MOCK_JOB_ID, _ROOT_JOB_ID, _PARENT_JOB_ID, _AGENT_TYPE_ID, 1,
-                _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _TASK_TYPE, _nextRunTime, _lastRunTime, _MOCK_JOB_DETAILS,
+                _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, _TASK_TYPE, _nextRunTime, _lastRunTime, _MOCK_JOB_DETAILS,
                 _JOB_FLAGS, _submittedDate, _SUBMITTED_BY, string.Empty, string.Empty, StopState.None, dataTable);
         }
 

@@ -12,6 +12,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         private readonly IQueueDBContext _dbContext;
         private readonly int _workspaceId;
         private readonly int _relatedObjectArtifactId;
+        private readonly Guid _correlationId;
         private readonly string _taskType;
         private readonly DateTime _nextRunTime;
         private readonly int _agentTypeId;
@@ -26,6 +27,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         public CreateScheduledJob(IQueueDBContext dbContext,
             int workspaceID,
             int relatedObjectArtifactID,
+            Guid correlationID,
             string taskType,
             DateTime nextRunTime,
             int AgentTypeID,
@@ -41,6 +43,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
             _workspaceId = workspaceID;
             _relatedObjectArtifactId = relatedObjectArtifactID;
+            _correlationId = correlationID;
             _taskType = taskType;
             _nextRunTime = nextRunTime;
             _agentTypeId = AgentTypeID;
@@ -60,6 +63,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             List<SqlParameter> sqlParams = new List<SqlParameter>();
             sqlParams.Add(new SqlParameter("@WorkspaceID", _workspaceId));
             sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", _relatedObjectArtifactId));
+            sqlParams.Add(new SqlParameter("@CorrelationID", _correlationId));
             sqlParams.Add(new SqlParameter("@TaskType", _taskType));
             sqlParams.Add(new SqlParameter("@NextRunTime", _nextRunTime));
             sqlParams.Add(new SqlParameter("@AgentTypeID", _agentTypeId));

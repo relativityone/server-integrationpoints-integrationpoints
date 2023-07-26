@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Data
             LockedByAgentID = row.Field<int?>("LockedByAgentID");
             WorkspaceID = row.Field<int>("WorkspaceID");
             RelatedObjectArtifactID = row.Field<int>("RelatedObjectArtifactID");
+            CorrelationID = row.Field<Guid>("CorrelationID");
             TaskType = row.Field<string>("TaskType");
             NextRunTime = row.Field<DateTime>("NextRunTime");
             LastRunTime = row.Field<DateTime?>("LastRunTime");
@@ -48,6 +49,8 @@ namespace kCura.IntegrationPoints.Data
         public int WorkspaceID { get; set; }
 
         public int RelatedObjectArtifactID { get; set; }
+
+        public Guid CorrelationID { get; set; }
 
         public string TaskType { get; set; }
 

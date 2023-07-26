@@ -115,23 +115,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _integrationPointService,
                 null);
 
-            _job = JobHelper.GetJob(
-                1,
-                null,
-                null,
-                1,
-                1,
-                workspaceArtifactId,
-                222,
-                TaskType.SyncEntityManagerWorker,
-                new DateTime(),
-                null,
-                "detail",
-                0,
-                new DateTime(),
-                1,
-                null,
-                null);
+            _job = JobHelper.GetFakeJobOfTaskType(TaskType.SyncEntityManagerWorker);
             _integrationPoint = new IntegrationPointDto
             {
                 SourceProvider = 654,
@@ -423,8 +407,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
         private Job GetJob(string jobDetails)
         {
-            return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, jobDetails,
-                0, new DateTime(), 1, null, null);
+            return JobHelper.GetJob(1, null, null, 1, 1, 111,
+                222, Guid.NewGuid(),TaskType.SyncEntityManagerWorker,
+                new DateTime(), null, jobDetails,0, new DateTime(),
+                1, null, null);
         }
 
         private void EnsureToSetJobHistoryErrorServiceProperties()

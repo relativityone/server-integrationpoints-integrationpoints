@@ -170,7 +170,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 
         private Job PrepareNonScheduledJob()
         {
-            Job job = JobHelper.GetJob(0, 0, null, 0, 0, 0, 0, TaskType.None, DateTime.MinValue,
+            Job job = JobHelper.GetJob(0, 0, null, 0, 0, 0,
+                0,Guid.Empty,  TaskType.None, DateTime.MinValue,
                 null, null, 0, DateTime.MinValue, 0, null, null);
 
             _scheduleRuleFactoryFake.Setup(x => x.Deserialize(It.IsAny<Job>()))
@@ -181,7 +182,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 
         private Job PrepareScheduleJob(int jobId, DateTime scheduleDateTime = default(DateTime))
         {
-            Job job = JobHelper.GetJob(jobId, 0, null, 0, 0, 0, 0, TaskType.None, DateTime.MinValue,
+            Job job = JobHelper.GetJob(jobId, 0, null, 0, 0, 0,
+                0, Guid.Empty, TaskType.None, DateTime.MinValue,
                 null, null, 0, DateTime.MinValue, 0, null, null);
 
             _scheduleRuleFactoryFake.Setup(x => x.Deserialize(It.IsAny<Job>()))

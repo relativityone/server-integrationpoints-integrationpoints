@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _LOCKED_BY_AGENT_ID = "LockedByAgentID";
         private const string _WORKSPACE_ID = "WorkspaceID";
         private const string _RELATED_OBJECT_ARTIFACT_ID = "RelatedObjectArtifactID";
+        private const string _CORRELATION_ID = "CorrelationID";
         private const string _TASK_TYPE = "TaskType";
         private const string _NEXT_RUN_TIME = "NextRunTime";
         private const string _LAST_RUN_TIME = "LastRunTime";
@@ -101,6 +102,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             return this;
         }
 
+        public JobBuilder WithCorrelationId(Guid correlationID)
+        {
+            _jobData[_CORRELATION_ID] = correlationID;
+            return this;
+        }
+
         public JobBuilder WithSubmittedBy(int submittedByArtifactId)
         {
             _jobData[_SUBMITTED_BY] = submittedByArtifactId;
@@ -148,6 +155,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             table.Columns.Add(new DataColumn(_LOCKED_BY_AGENT_ID, typeof(int)));
             table.Columns.Add(new DataColumn(_WORKSPACE_ID, typeof(int)));
             table.Columns.Add(new DataColumn(_RELATED_OBJECT_ARTIFACT_ID, typeof(int)));
+            table.Columns.Add(new DataColumn(_CORRELATION_ID, typeof(Guid)));
             table.Columns.Add(new DataColumn(_TASK_TYPE, typeof(string)));
             table.Columns.Add(new DataColumn(_NEXT_RUN_TIME, typeof(DateTime)));
             table.Columns.Add(new DataColumn(_LAST_RUN_TIME, typeof(DateTime)));
@@ -168,6 +176,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             _jobData[_LOCKED_BY_AGENT_ID] = default(int);
             _jobData[_WORKSPACE_ID] = default(int);
             _jobData[_RELATED_OBJECT_ARTIFACT_ID] = default(int);
+            _jobData[_CORRELATION_ID] = default(Guid);
             _jobData[_TASK_TYPE] = TaskType.ExportService.ToString();
             _jobData[_NEXT_RUN_TIME] = default(DateTime);
             _jobData[_LAST_RUN_TIME] = default(DateTime);
@@ -190,6 +199,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             _jobData[_LOCKED_BY_AGENT_ID] = job.LockedByAgentID;
             _jobData[_WORKSPACE_ID] = job.WorkspaceID;
             _jobData[_RELATED_OBJECT_ARTIFACT_ID] = job.RelatedObjectArtifactID;
+            _jobData[_CORRELATION_ID] = job.CorrelationID;
             _jobData[_TASK_TYPE] = job.TaskType;
             _jobData[_NEXT_RUN_TIME] = job.NextRunTime;
             _jobData[_LAST_RUN_TIME] = (object)job.LastRunTime ?? DBNull.Value;

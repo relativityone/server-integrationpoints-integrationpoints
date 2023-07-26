@@ -231,14 +231,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 integrationPoint.ArtifactId = _integrationPointRepository.CreateOrUpdate(integrationPoint);
 
                 TaskType task = GetJobTaskType(sourceProvider, destinationProvider);
+                Guid correlationId = Guid.NewGuid();
 
                 if (integrationPoint.EnableScheduler.GetValueOrDefault(false))
                 {
                     var taskParameters = new TaskParameters()
                     {
-                        BatchInstance = Guid.NewGuid()
+                        BatchInstance = correlationId
                     };
-                    _jobManager.CreateJob(taskParameters, task, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
+                    _jobManager.CreateJob(taskParameters, task, correlationId, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
                 }
                 else
                 {
@@ -603,7 +604,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, batchInstance, integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
-                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, batchInstance, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
 
             _logger.LogInformation("Job was successfully created.");

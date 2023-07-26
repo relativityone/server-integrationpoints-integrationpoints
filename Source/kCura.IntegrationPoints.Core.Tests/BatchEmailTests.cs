@@ -209,7 +209,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
         private Job GetTestJob()
         {
-            return JobHelper.GetJob(1337, null, null, 1, 1, 111, _INTEGRATION_POINT_ID, TaskType.ExportManager, new DateTime(), null, "", 0, new DateTime(), 1, null, null);
+            return JobHelper.GetJob(1337, null, null, 1, 1, 111, _INTEGRATION_POINT_ID, Guid.NewGuid(), TaskType.ExportManager, new DateTime(), null, "", 0, new DateTime(), 1, null, null);
         }
     }
 }

@@ -56,6 +56,7 @@ namespace kCura.ScheduleQueue.Core.Data
         public IQuery<DataTable> CreateScheduledJob(
             int workspaceID,
             int relatedObjectArtifactID,
+            Guid correlationID,
             string taskType,
             DateTime nextRunTime,
             int AgentTypeID,
@@ -71,6 +72,7 @@ namespace kCura.ScheduleQueue.Core.Data
                 _queueDbContext,
                 workspaceID,
                 relatedObjectArtifactID,
+                correlationID,
                 taskType,
                 nextRunTime,
                 AgentTypeID,

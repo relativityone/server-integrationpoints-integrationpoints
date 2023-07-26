@@ -156,10 +156,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-            IScheduleRule scheduleRule, string jobDetails, int submittedBy, long? rootJobID, long? parentJobID)
+        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
+            string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy, long? rootJobID, long? parentJobID)
         {
-            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, submittedBy);
+            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
 
             DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
             if (nextRunTime.HasValue)
@@ -188,10 +188,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid correlationID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
-            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
+            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
             AgentService.CreateQueueTableOnce();
 
             Job job;
@@ -204,6 +204,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 DataRow row = DataProvider.CreateScheduledJob(
                     workspaceID,
                     relatedObjectArtifactID,
+                    correlationID,
                     taskType,
                     nextRunTime.Value,
                     AgentTypeInformation.AgentTypeID,
@@ -230,16 +231,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return job;
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid correlationId, string taskType,
             DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
-            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, jobDetails, SubmittedBy);
+            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
 
             AgentService.CreateQueueTableOnce();
 
             DataRow row = DataProvider.CreateScheduledJob(
                 workspaceID,
                 relatedObjectArtifactID,
+                correlationId,
                 taskType,
                 nextRunTime,
                 AgentTypeInformation.AgentTypeID,
@@ -369,7 +371,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _log.LogInformation("Attempting to unlock scheduled jobs for Agent with ID: ({agentId} in {TypeName})", agentId, nameof(JobService));
         }
 
-        public void LogOnCreateJob(int workspaceId, int relatedObjectArtifactId, string taskType, string jobDetails, int submittedBy)
+        public void LogOnCreateJob(int workspaceId, int relatedObjectArtifactId, string taskType, int submittedBy)
         {
             _log.LogInformation("Attempting to create Job in {service} " +
                                 "WorkspaceID: {workspaceId} " +

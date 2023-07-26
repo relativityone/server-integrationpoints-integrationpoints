@@ -19,10 +19,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         private Job _job;
         private const string _JOB_DETAILS = "{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\"}";
 
+        // TODO: logic of this test vs correlationID
         [SetUp]
         public override void SetUp()
         {
-            _job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, _JOB_DETAILS, 0, new DateTime(), 1, null, null);
+            _job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, Guid.NewGuid(), TaskType.SyncEntityManagerWorker, new DateTime(), null, _JOB_DETAILS, 0, new DateTime(), 1, null, null);
             IHelper helper = Substitute.For<IHelper>();
             _instance = new BatchManagerTest(helper, new EmptyDiagnosticLog());
         }
