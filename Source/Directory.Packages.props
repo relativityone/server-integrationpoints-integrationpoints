@@ -36,6 +36,8 @@
     <MicrosoftWebInfrastructure>1.0.0.0</MicrosoftWebInfrastructure>
     <MonoTextTransform>1.0.0</MonoTextTransform>
     <Moq>4.5.3</Moq>
+    <MSTestTestAdapter>1.4.0</MSTestTestAdapter>
+    <MSTestTestFramework>1.4.0</MSTestTestFramework>
     <netDumbster>2.0.0.4</netDumbster>
     <NewtonsoftJson>6.0.8</NewtonsoftJson>
     <NSubstitute>1.10.0.0</NSubstitute>
@@ -137,6 +139,8 @@
     <PackageVersion Include="Microsoft.Web.Infrastructure" Version="$(MicrosoftWebInfrastructure)" />
     <PackageVersion Include="Mono.TextTransform" Version="$(MonoTextTransform)" />
     <PackageVersion Include="Moq" Version="$(Moq)" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="$(MSTestTestAdapter)" />
+    <PackageVersion Include="MSTest.TestFramework" Version="$(MSTestTestFramework)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
     <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
     <PackageVersion Include="NSubstitute" Version="$(NSubstitute)" />

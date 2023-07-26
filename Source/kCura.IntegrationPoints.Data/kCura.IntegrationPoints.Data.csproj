@@ -365,7 +365,7 @@
       <Name>Relativity.IntegrationPoints.FieldsMapping</Name>
     </ProjectReference>
   </ItemGroup>
-  <!-- <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" /> -->
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <PackageReference Include="System.ValueTuple" />
     <PackageReference Include="Castle.Windsor" />
