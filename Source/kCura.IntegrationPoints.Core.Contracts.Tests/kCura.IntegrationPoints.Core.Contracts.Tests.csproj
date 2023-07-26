@@ -19,9 +19,9 @@
     <PostBuildEvent />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,5 +44,16 @@
   <ItemGroup>
     <Compile Remove="Unit\Helpers\TaskTypeHelperTests.cs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Utils" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
+  </ItemGroup>
 </Project>

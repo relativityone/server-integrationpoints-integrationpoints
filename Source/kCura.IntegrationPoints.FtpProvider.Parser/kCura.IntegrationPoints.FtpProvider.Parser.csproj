@@ -26,8 +26,4 @@
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="paket.references" />
-  </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

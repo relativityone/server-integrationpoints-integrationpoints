@@ -7,7 +7,6 @@ properties {
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
-    $PaketExe = Join-Path $PSScriptRoot ".paket\paket.exe"
 }
 
 Task default -Depends Analyze, Compile, Test, Package -Description "Build and run unit tests. All the steps for a local build.";
@@ -17,8 +16,7 @@ Task Analyze -Description "Run build analysis" {
 }
 
 Task NugetRestore -Description "Restore the packages needed for this build" {
-    exec { & $PaketExe restore }
-    exec { dotnet restore $Solution }
+   exec { & $NugetExe @('restore', $Solution) }
 }
 
 Task BuildNodePackagesJS{

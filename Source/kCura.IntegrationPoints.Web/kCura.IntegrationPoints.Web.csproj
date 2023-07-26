@@ -498,7 +498,6 @@
     <Content Include="Views\Modals\CreatingProductionSetModalView.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="paket.references" />
     <Folder Include="Scripts\RelativityForms\IntegrationPoint\" />
   </ItemGroup>
   <ItemGroup>
@@ -522,5 +521,31 @@
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Antlr" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.Core" />
+    <PackageReference Include="Microsoft.AspNet.Web.Optimization" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.WebHost" />
+    <PackageReference Include="Microsoft.Owin" />
+    <PackageReference Include="Microsoft.Owin.Host.SystemWeb" />
+    <PackageReference Include="Microsoft.Owin.Security" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.CustomPages" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="SystemWrapper.Interfaces" />
+    <PackageReference Include="WebGrease"/>
+  </ItemGroup>
 </Project>

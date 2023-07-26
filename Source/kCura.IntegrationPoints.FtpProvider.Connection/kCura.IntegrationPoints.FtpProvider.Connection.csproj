@@ -28,7 +28,8 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="SSH.NET" />
+    <PackageReference Include="Relativity.API" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

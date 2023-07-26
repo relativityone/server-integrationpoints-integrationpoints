@@ -62,9 +62,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj" />
@@ -90,5 +87,29 @@
     <Compile Remove="Helpers\Implementations\TreeByParentIdCreator.cs" />
     <Compile Remove="Validation\RelativityProviderValidator\Parts\RelativityProviderWorkspaceValidator.cs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Agent" />
+    <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="kCura.LongPath" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Mono.TextTransform" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.OAuth2Client" />
+    <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
+    <PackageReference Include="System.Reactive" />
+    <PackageReference Include="SystemWrapper.Wrappers" />
+    <PackageReference Include="Relativity.HostingBridge.SDK" />
+  </ItemGroup>
 </Project>

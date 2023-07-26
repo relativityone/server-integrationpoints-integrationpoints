@@ -21,9 +21,9 @@
     <PostBuildEvent />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
@@ -38,9 +38,6 @@
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Version\AssemblyInfo.Custom.cs" Link="Properties\AssemblyInfo.Custom.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
@@ -64,5 +61,28 @@
   <ItemGroup>
     <Compile Remove="SetupAndTeardown.cs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="kCura.Agent" />
+    <PackageReference Include="kCura.Apps.Common.Data" />
+    <PackageReference Include="kCura.Apps.Common.Utils" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" VersionOverride="17.7.0" />
+    <PackageReference Include="Relativity.Kepler" />
+    <PackageReference Include="Relativity.Data" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
 </Project>

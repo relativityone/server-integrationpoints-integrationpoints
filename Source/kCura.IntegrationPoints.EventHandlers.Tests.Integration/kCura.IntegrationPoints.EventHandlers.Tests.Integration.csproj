@@ -22,9 +22,9 @@
     <PostBuildEvent />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.IdentityModel" />
@@ -48,7 +48,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" Link="app.config" />
-    <None Include="paket.references" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Data" />
+    <PackageReference Include="kCura.Apps.Common.Utils" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Data" />
+    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
+    <PackageReference Include="Relativity.OAuth2Client" />
+    <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.Kepler.Client" />
+    <PackageReference Include="Relativity.Logging.Interfaces" />
+    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Selenium.WebDriver" />
+    <PackageReference Include="relativity.testing.identification" />
+  </ItemGroup>
 </Project>

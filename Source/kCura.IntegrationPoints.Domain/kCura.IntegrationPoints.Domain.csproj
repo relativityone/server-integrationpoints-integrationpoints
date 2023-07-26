@@ -31,11 +31,20 @@
     <Compile Update="Readers\DataColumnWithValue.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="Relativity.DataGrid" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="Relativity.Transfer.Client" />
+    <PackageReference Include="Polly" />
+  </ItemGroup>
 </Project>

@@ -15,9 +15,9 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Data.DataSetExtensions" />
@@ -32,10 +32,17 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.Telemetry.APM" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Kepler\" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

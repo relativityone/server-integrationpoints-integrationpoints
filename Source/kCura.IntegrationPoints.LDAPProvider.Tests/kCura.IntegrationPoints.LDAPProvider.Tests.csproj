@@ -19,9 +19,9 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.DirectoryServices" />
@@ -31,12 +31,20 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs" Link="Properties\AssemblyInfo.Custom.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Utils" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
 </Project>

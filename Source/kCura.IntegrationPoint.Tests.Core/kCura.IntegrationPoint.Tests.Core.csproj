@@ -49,7 +49,6 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
     <Content Include="TestDataExtended\IMAGES\IMG001\AZIPPER_0007291.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -7465,5 +7464,37 @@
   <ItemGroup>
     <Compile Remove="Models\ImportFromFTPModel.cs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Config" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
+    <PackageReference Include="Relativity.Data" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.Logging" />
+    <PackageReference Include="kCura.FreeImage" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="Relativity.Transfer.Client" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AutoFixture.AutoMoq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="ARMTestServices" />
+    <PackageReference Include="Polly" />
+  </ItemGroup>
 </Project>

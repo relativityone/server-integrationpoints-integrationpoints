@@ -23,9 +23,9 @@
     <PostBuildEvent />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" VersionOverride="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" VersionOverride="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" VersionOverride="1.4.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
@@ -55,10 +55,34 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Remove="Services\IntegrationPointProfileServiceTests.cs" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="kCura" />
+    <PackageReference Include="kCura.Apps.Common.Utils" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" />
+    <PackageReference Include="Relativity.DataTransfer.MessageService" />
+    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
+    <PackageReference Include="Relativity.Productions.Services.Interfaces" />
+    <PackageReference Include="Relativity.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.DataGrid" />
+    <PackageReference Include="Relativity.OAuth2Client" />
+    <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="SystemWrapper.Interfaces" />
+    <PackageReference Include="iTextSharp" />
+    <PackageReference Include="Relativity.Transfer.Client" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+    <PackageReference Include="NSubstitute" />
+  </ItemGroup>
 </Project>
