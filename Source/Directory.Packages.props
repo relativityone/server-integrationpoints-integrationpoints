@@ -47,7 +47,7 @@
     <Polly>5.9.0</Polly>
     <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
-    <RelativityCore>48.2.25</RelativityCore>
+    <RelativityCore>48.2.26</RelativityCore>
     <RelativityDataExchangeClientSDK>2.7.0</RelativityDataExchangeClientSDK>
     <RelativityHostingBridgeSDK>0.2.0</RelativityHostingBridgeSDK>
     <RelativityImportModelsSDK>1.0.14</RelativityImportModelsSDK>
@@ -63,7 +63,7 @@
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.4.0</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
-    <TelemetryMetricsCollectionClient>3003.1.0</TelemetryMetricsCollectionClient>
+    <TelemetryMetricsCollectionClient>3003.1.1</TelemetryMetricsCollectionClient>
     <RelativityOAuth2Client>1.5.2</RelativityOAuth2Client>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
@@ -73,8 +73,8 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesInterfacesPrivate>14.0.2</RelativityServicesInterfacesPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.11.0</RelativitySync>
-    <TelemetryAPM>2019.1.1</TelemetryAPM>
+    <RelativitySync>0.12.0-pre.159</RelativitySync>
+    <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
     <RelativityTestingFramework>10.3.0</RelativityTestingFramework>
