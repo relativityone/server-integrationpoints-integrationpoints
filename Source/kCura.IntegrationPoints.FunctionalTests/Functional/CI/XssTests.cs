@@ -46,7 +46,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testsImplementation.IntegrationPointProfileEmailNotificationRecipientsPreventXssInjection(emailRecipients);
         }
 
-        [Ignore("REL-693098")]
         [IdentifiedTestCase("558CFF97-8D2D-42F1-8C63-1C9876B1CF81", Const.XSS.XSS_JS)]
         public void IntegrationPoint_SaveAsProfile_PreventXssInjection(string profileName)
         {
