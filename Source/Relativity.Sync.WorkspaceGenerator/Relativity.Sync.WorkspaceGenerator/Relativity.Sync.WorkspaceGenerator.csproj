@@ -43,10 +43,10 @@
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
-    <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.13.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp, Version=2.7.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -58,14 +58,14 @@
     <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity, Version=11.2.4.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.11.2.4.1\lib\net462\Relativity.dll</HintPath>
+    <Reference Include="Relativity, Version=48.2.26.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.48.2.26.0\lib\net462\Relativity.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataExchange.Client.SDK, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.7.0\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataTransfer.Nodes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\relativity.transfer.client.7.1.40\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+      <HintPath>..\packages\relativity.transfer.client.7.4.9\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.2.6.2\lib\net462\Relativity.Kepler.dll</HintPath>
@@ -100,11 +100,11 @@
     <Reference Include="Relativity.Services.DataContracts, Version=11.2.151.22, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.DataContracts.11.2.151.22\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=11.2.151.22, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.11.2.151.22\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=13.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.13.5.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces.Private, Version=13.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.Private.13.0.2\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=14.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.Private.14.0.2\lib\net462\Relativity.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.Layout.DataContracts, Version=1.1.46.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.Layout.Interfaces.1.1.46\lib\Relativity.Services.Layout.DataContracts.dll</HintPath>
