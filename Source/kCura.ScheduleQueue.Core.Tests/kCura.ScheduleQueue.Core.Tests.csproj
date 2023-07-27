@@ -64,7 +64,6 @@
   <ItemGroup>
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
-    <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
     <PackageReference Include="Relativity.Kepler" />

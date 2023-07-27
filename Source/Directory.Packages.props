@@ -58,6 +58,7 @@
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsSDK>1.2.0</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.1</RelativityIntegrationPointsServicesInterfacesPrivate>
+    <RelativityStorage>1.6.0</RelativityStorage>
     <KeplerVersion>2.15.6</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.4.0</RelativityLogging>
@@ -178,6 +179,8 @@
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesInterfacesPrivate)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Helpers" Version="$(RelativityServicesInterfacesHelpers)" />
+    <PackageVersion Include="Relativity.Storage" Version="$(RelativityStorage)" />
+    <PackageVersion Include="Relativity.Storage.Extensions" Version="$(RelativityStorage)" />
     <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(TelemetryMetricsCollectionClient)" />
