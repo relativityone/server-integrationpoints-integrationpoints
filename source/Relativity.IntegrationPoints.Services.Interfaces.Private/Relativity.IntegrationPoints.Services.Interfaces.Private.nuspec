@@ -13,9 +13,9 @@
     <copyright>(c) Relativity</copyright>
     <dependencies>
       <group targetFramework=".NETFramework4.6.2">
-        <dependency id="Relativity.API" version="12.0.0" exclude="Build,Analyzers" />
-        <dependency id="Relativity.Kepler" version="2.0.7" exclude="Build,Analyzers" />
-        <dependency id="Relativity.Telemetry.APM" version="2019.1.1" exclude="Build,Analyzers" />
+        <dependency id="Relativity.API" version="17.4.2" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Kepler" version="2.15.6" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Telemetry.APM" version="2019.10.9" exclude="Build,Analyzers" />
       </group>
     </dependencies>
     <frameworkAssemblies>
