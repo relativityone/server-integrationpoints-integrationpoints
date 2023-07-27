@@ -119,11 +119,5 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
         /// <param name="integrationPointArtifactId">Integration point artifact id.</param>
         void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId);
-
-        /// <summary>
-        /// Checks if Integration Point transferred object is entity type.
-        /// </summary>
-        /// <param name="integrationPointDto">Integration point.</param>
-        Task<bool> IsIntegrationPointTransferredObjectEntityType(IntegrationPointDto integrationPointDto);
     }
 }

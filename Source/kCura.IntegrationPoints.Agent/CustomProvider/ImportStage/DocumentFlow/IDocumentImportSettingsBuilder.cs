@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
 {
     /// <summary>
     /// The interface describing the ImportAPI settings builder for document flow.

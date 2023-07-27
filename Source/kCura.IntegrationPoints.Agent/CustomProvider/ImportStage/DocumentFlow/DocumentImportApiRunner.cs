@@ -2,7 +2,7 @@
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
 {
     /// <inheritdoc/>
     internal class DocumentImportApiRunner : IImportApiRunner

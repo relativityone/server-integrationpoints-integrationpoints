@@ -23,10 +23,8 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -156,35 +154,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         {
             return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
         }
-
-        public async Task<bool> IsIntegrationPointTransferredObjectEntityType(IntegrationPointDto integrationPointDto)
-        {
-            List<RelativityObjectSlim> result = await _objectManager.QuerySlimAsync(new QueryRequest
-            {
-                Fields = new[]
-                {
-                    new FieldRef
-                    {
-                        Name = "DescriptorArtifactTypeID"
-                    }
-                },
-                ObjectType = new ObjectTypeRef
-                {
-                    ArtifactTypeID = (int)ArtifactType.ObjectType
-                },
-                Condition = "'Name' == 'Entity'"
-            }).ConfigureAwait(false);
-
-            if (result == null || result.Count < 1)
-            {
-                throw new NotFoundException("Entity Object Type DescriptorArtifactTypeID not found.");
-            }
-
-            int entityArtifactTypeId = (int)result.Single().Values.Single();
-
-            return integrationPointDto.DestinationConfiguration.ArtifactTypeId == entityArtifactTypeId;
-        }
-
+        
         private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
         {
             return _retryHandler.Execute<T, RipSerializationException>(

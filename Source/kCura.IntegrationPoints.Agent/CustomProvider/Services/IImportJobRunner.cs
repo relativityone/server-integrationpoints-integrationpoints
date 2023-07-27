@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.Sync;

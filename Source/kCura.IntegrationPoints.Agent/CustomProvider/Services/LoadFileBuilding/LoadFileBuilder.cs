@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Core.Storage;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
@@ -19,11 +19,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
     internal class LoadFileBuilder : ILoadFileBuilder
     {
         private readonly IRelativityStorageService _relativityStorageService;
+        private readonly IEntityFullNameService _entityFullNameService;
         private readonly IAPILog _logger;
 
-        public LoadFileBuilder(IRelativityStorageService relativityStorageService, IAPILog logger)
+        public LoadFileBuilder(IRelativityStorageService relativityStorageService, IEntityFullNameService entityFullNameService, IAPILog logger)
         {
             _relativityStorageService = relativityStorageService;
+            _entityFullNameService = entityFullNameService;
             _logger = logger;
         }
 
@@ -31,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
         {
             try
             {
-                _logger.LogInformation("Creating data file for batch index: {batchIndex}", batch.BatchID);
+                _logger.LogInformation("Creating data file for batch index: {batchIndex}, GUID: {batchGuid}", batch.BatchID, batch.BatchGuid);
 
                 List<IndexedFieldMap> orderedFieldMap = integrationPointInfo.FieldMap.OrderBy(x => x.ColumnIndex).ToList();
 
@@ -44,27 +46,26 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter, integrationPointInfo.ShouldGenerateFullNameIdentifierField).ConfigureAwait(false);
-                    _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
+                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
+                    _logger.LogInformation("Successfully created data file for batch index: {batchIndex} GUID: {batchGuid} path: {path}", batch.BatchID, batch.BatchGuid, dataFileStream.StoragePath);
                     return settings;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}", batch.BatchID);
+                _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}, GUID: {batchGuid}", batch.BatchID, batch.BatchGuid);
                 throw;
             }
         }
 
-        private static async Task WriteFileAsync(
+        private async Task WriteFileAsync(
             IDataReader sourceProviderDataReader,
             List<IndexedFieldMap> orderedFieldMap,
             DataSourceSettings settings,
-            TextWriter dataFileWriter,
-            bool shouldGenerateFullNameIdentifierField)
+            TextWriter dataFileWriter)
         {
-            int? firstNameSourceFieldId = orderedFieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.FirstName)?.ColumnIndex;
-            int? lastNameSourceFieldId = orderedFieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.LastName)?.ColumnIndex;
+            _logger.LogInformation("Writing data file with fields map: {@fieldsMap}", orderedFieldMap);
+            Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary = orderedFieldMap.ToDictionary(x => x.DestinationFieldName);
 
             while (sourceProviderDataReader.Read())
             {
@@ -72,17 +73,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 
                 foreach (IndexedFieldMap field in orderedFieldMap)
                 {
-                    string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                    rowValues.Add(value);
-                }
-
-                if (shouldGenerateFullNameIdentifierField)
-                {
-                    string firstName = sourceProviderDataReader[orderedFieldMap[firstNameSourceFieldId.Value].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                    string lastName = sourceProviderDataReader[orderedFieldMap[lastNameSourceFieldId.Value].FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-
-                    string fullName = GenerateFullName(lastName, firstName);
-                    rowValues.Add(fullName);
+                    switch (field.FieldMapType)
+                    {
+                        case FieldMapType.Normal:
+                            string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                            rowValues.Add(value);
+                            break;
+                        case FieldMapType.EntityFullName:
+                            string fullName = _entityFullNameService.FormatFullName(destinationFieldNameToFieldMapDictionary, sourceProviderDataReader);
+                            rowValues.Add(fullName);
+                            break;
+                    }
                 }
 
                 string line = FormatLine(settings, rowValues);
@@ -133,24 +134,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             string batchDataFileName = $"{batch.BatchID.ToString().PadLeft(7, '0')}.data";
             string batchDataFilePath = Path.Combine(directoryPath, batchDataFileName);
             batch.DataFilePath = batchDataFilePath;
-        }
-
-        private static string GenerateFullName(string lastName, string firstName)
-        {
-            string fullName = string.Empty;
-            if (!string.IsNullOrWhiteSpace(lastName))
-            {
-                fullName = lastName;
-            }
-            if (!string.IsNullOrWhiteSpace(firstName))
-            {
-                if (!string.IsNullOrWhiteSpace(fullName))
-                {
-                    fullName += ", ";
-                }
-                fullName += firstName;
-            }
-            return fullName;
         }
     }
 }

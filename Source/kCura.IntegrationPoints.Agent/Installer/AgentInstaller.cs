@@ -7,8 +7,12 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
@@ -228,6 +232,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IItemLevelErrorHandler>().ImplementedBy<ItemLevelErrorHandler>().LifestyleTransient());
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
+            container.Register(Component.For<IEntityFullNameService>().ImplementedBy<EntityFullNameService>().LifestyleTransient());
             container.Register(Component.For<INotificationService>().ImplementedBy<NotificationService>().LifestyleTransient());
         }
 

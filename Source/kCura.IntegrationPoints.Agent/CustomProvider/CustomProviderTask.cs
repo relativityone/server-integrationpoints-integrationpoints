@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
@@ -29,6 +31,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         private readonly IAgentValidator _agentValidator;
         private readonly IJobDetailsService _jobDetailsService;
         private readonly IIntegrationPointService _integrationPointService;
+        private readonly IEntityFullNameService _entityFullNameService;
         private readonly ISourceProviderService _sourceProviderService;
         private readonly IImportJobRunner _importJobRunner;
         private readonly IJobHistoryService _jobHistoryService;
@@ -43,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             IAgentValidator agentValidator,
             IJobDetailsService jobDetailsService,
             IIntegrationPointService integrationPointService,
+            IEntityFullNameService entityFullNameService,
             ISourceProviderService sourceProviderService,
             IImportJobRunner importJobRunner,
             IJobHistoryService jobHistoryService,
@@ -56,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             _agentValidator = agentValidator;
             _jobDetailsService = jobDetailsService;
             _integrationPointService = integrationPointService;
+            _entityFullNameService = entityFullNameService;
             _sourceProviderService = sourceProviderService;
             _importJobRunner = importJobRunner;
             _jobHistoryService = jobHistoryService;
@@ -83,12 +88,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
-                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto)
-                 {
-                     IsEntityType = await _integrationPointService.IsIntegrationPointTransferredObjectEntityType(integrationPointDto).ConfigureAwait(false)
-                 };
+                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto, job.WorkspaceID);
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
+
+                await _entityFullNameService.HandleFullNameMappingIfNeededAsync(integrationPointInfo).ConfigureAwait(false);
 
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider).ConfigureAwait(false);
 
@@ -105,10 +109,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             catch (IntegrationPointValidationException e)
             {
                 await HandleExceptionAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryValidationFailedGuid, e).ConfigureAwait(false);
+                throw;
             }
             catch (Exception e)
             {
                 await HandleExceptionAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryErrorJobFailedGuid, e).ConfigureAwait(false);
+                throw;
             }
             finally
             {
@@ -123,6 +129,29 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 await _jobHistoryService.TryUpdateEndTimeAsync(job.WorkspaceID, job.RelatedObjectArtifactID, jobDetails.JobHistoryID).ConfigureAwait(false);
             }
+        }
+
+        private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
+        {
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
+
+            _agentValidator.Validate(integrationPoint, job.SubmittedBy);
+        }
+
+        private async Task ConfigureBatchesAsync(Job job, IntegrationPointInfo integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
+        {
+            if (!jobDetails.Batches.Any())
+            {
+                DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
+
+                jobDetails.Batches = await _idFilesBuilder.BuildIdFilesAsync(sourceProvider, integrationPoint, importDirectory.FullName).ConfigureAwait(false);
+                await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
+            }
+
+            int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
+            await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
+
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
         }
 
         private async Task ReportJobEndAsync(Job job, ImportJobResult endResult, CustomProviderJobDetails details)
@@ -149,29 +178,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
 
             await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, job.RelatedObjectArtifactID, details.JobHistoryID, jobHistoryStatus).ConfigureAwait(false);
-        }
-
-        private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
-        {
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobHistoryId, JobStatusChoices.JobHistoryValidatingGuid).ConfigureAwait(false);
-
-            _agentValidator.Validate(integrationPoint, job.SubmittedBy);
-        }
-
-        private async Task ConfigureBatchesAsync(Job job, IntegrationPointInfo integrationPoint, CustomProviderJobDetails jobDetails, IDataSourceProvider sourceProvider)
-        {
-            if (!jobDetails.Batches.Any())
-            {
-                DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
-
-                jobDetails.Batches = await _idFilesBuilder.BuildIdFilesAsync(sourceProvider, integrationPoint, importDirectory.FullName).ConfigureAwait(false);
-                await _jobDetailsService.UpdateJobDetailsAsync(job, jobDetails).ConfigureAwait(false);
-            }
-
-            int totalItemsCount = jobDetails.Batches.Sum(x => x.NumberOfRecords);
-            await _jobHistoryService.SetTotalItemsAsync(job.WorkspaceID, jobDetails.JobHistoryID, totalItemsCount).ConfigureAwait(false);
-
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, integrationPoint.ArtifactId, jobDetails.JobHistoryID, JobStatusChoices.JobHistoryProcessingGuid).ConfigureAwait(false);
         }
 
         private async Task HandleExceptionAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid status, Exception e)

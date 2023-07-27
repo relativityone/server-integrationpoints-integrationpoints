@@ -4,6 +4,7 @@ kCura.Apps.Common.Config
 Relativity
 Relativity.Toggles
 Relativity.DataExchange.Client.SDK
+Relativity.Import.SDK
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.Telemetry.APM

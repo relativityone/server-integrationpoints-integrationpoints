@@ -1,5 +1,8 @@
 ﻿using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;

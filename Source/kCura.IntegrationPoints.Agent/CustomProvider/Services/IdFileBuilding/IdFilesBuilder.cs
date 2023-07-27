@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Storage;
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
@@ -20,12 +22,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
     {
         private readonly IInstanceSettings _instanceSettings;
         private readonly IRelativityStorageService _storageService;
+        private readonly IEntityFullNameService _entityFullNameService;
         private readonly IAPILog _logger;
 
-        public IdFilesBuilder(IInstanceSettings instanceSettings, IRelativityStorageService storageService, IAPILog logger)
+        public IdFilesBuilder(IInstanceSettings instanceSettings, IRelativityStorageService storageService, IEntityFullNameService entityFullNameService, IAPILog logger)
         {
             _instanceSettings = instanceSettings;
             _storageService = storageService;
+            _entityFullNameService = entityFullNameService;
             _logger = logger;
         }
 
@@ -104,23 +108,20 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             }
         }
 
-        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
+        private async Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
         {
             IndexedFieldMap idField = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.FieldMapType == FieldMapTypeEnum.Identifier);
-            integrationPoint.HasFieldsMappingIdentifier = idField != null;
-            if (integrationPoint.ShouldGenerateFullNameIdentifierField)
+
+            if (idField == null)
             {
-                IndexedFieldMap lastName = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.DestinationField.DisplayName == EntityFieldNames.LastName);
-                idField = lastName;
-                idField.FieldMap.SourceField.IsIdentifier = true;
-                idField.FieldMap.DestinationField.IsIdentifier = true;
-                idField.FieldMap.FieldMapType = FieldMapTypeEnum.Identifier;
+                throw new InvalidOperationException("Identifier field has not been found in Integration Point fields mapping.");
             }
+
             try
             {
                 _logger.LogInformation("Retrieving record IDs from custom provider");
                 IDataReader reader = provider.GetBatchableIds(idField.FieldMap.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
-                return Task.FromResult(reader);
+                return reader;
             }
             catch (Exception ex)
             {

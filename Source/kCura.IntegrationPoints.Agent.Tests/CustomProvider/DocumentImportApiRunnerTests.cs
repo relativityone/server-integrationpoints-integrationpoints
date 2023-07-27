@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Synchronizers.RDO;

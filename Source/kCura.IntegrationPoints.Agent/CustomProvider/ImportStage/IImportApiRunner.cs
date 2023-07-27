@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
 {
     /// <summary>
     /// An interface for create, configure and start ImportAPI v2.0 jobs.
