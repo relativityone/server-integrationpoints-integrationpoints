@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Services.Helpers;
 
 namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
@@ -17,6 +18,8 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             Context = context;
         }
 
+        public abstract IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
+
         protected int SaveIntegrationPoint(CreateIntegrationPointRequest request)
         {
             var overwriteFieldsName = GetOverwriteFieldsName(request.IntegrationPoint.OverwriteFieldsChoiceId);
@@ -32,6 +35,13 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             return GetOverwriteFieldChoices().First(x => x.ArtifactId == overwriteFieldsId).Name;
         }
 
-        public abstract IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
+        protected void UpdateOverwriteFieldsChoiceId(IntegrationPointModel model)
+        {
+            IList<OverwriteFieldsModel> fieldsChoices = GetOverwriteFieldChoices();
+            model.OverwriteFieldsChoiceId = fieldsChoices
+                .First(x =>
+                    x.Name == ((DestinationConfiguration)model.DestinationConfiguration).ImportOverwriteMode.ToString())
+                .ArtifactId;
+        }
     }
 }
