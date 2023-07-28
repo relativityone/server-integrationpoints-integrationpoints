@@ -35,7 +35,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             {
                 _logger.LogInformation("Creating data file for batch index: {batchIndex}, GUID: {batchGuid}", batch.BatchID, batch.BatchGuid);
 
-                List<IndexedFieldMap> orderedFieldMap = integrationPointInfo.FieldMap.OrderBy(x => x.ColumnIndex).ToList();
+                Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary = integrationPointInfo
+                    .FieldMap
+                    .OrderBy(x => x.ColumnIndex)
+                    .ToDictionary(x => x.DestinationFieldName);
 
                 IEnumerable<FieldEntry> fields = integrationPointInfo.FieldMap.Select(x => x.FieldMap.SourceField);
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointInfo.SourceConfiguration, integrationPointInfo.SecuredConfiguration);
@@ -46,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
+                    await WriteFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
                     _logger.LogInformation("Successfully created data file for batch index: {batchIndex} GUID: {batchGuid} path: {path}", batch.BatchID, batch.BatchGuid, dataFileStream.StoragePath);
                     return settings;
                 }
@@ -60,18 +63,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 
         private async Task WriteFileAsync(
             IDataReader sourceProviderDataReader,
-            List<IndexedFieldMap> orderedFieldMap,
+            Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary,
             DataSourceSettings settings,
             TextWriter dataFileWriter)
         {
-            _logger.LogInformation("Writing data file with fields map: {@fieldsMap}", orderedFieldMap);
-            Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary = orderedFieldMap.ToDictionary(x => x.DestinationFieldName);
-
             while (sourceProviderDataReader.Read())
             {
                 List<string> rowValues = new List<string>();
 
-                foreach (IndexedFieldMap field in orderedFieldMap)
+                foreach (IndexedFieldMap field in destinationFieldNameToFieldMapDictionary.Values)
                 {
                     switch (field.FieldMapType)
                     {

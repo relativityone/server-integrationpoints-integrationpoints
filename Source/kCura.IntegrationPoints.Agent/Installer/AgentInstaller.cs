@@ -233,6 +233,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<IEntityFullNameService>().ImplementedBy<EntityFullNameService>().LifestyleTransient());
+            container.Register(Component.For<IEntityFullNameObjectManagerService>().ImplementedBy<EntityFullNameObjectManagerService>().LifestyleTransient());
             container.Register(Component.For<INotificationService>().ImplementedBy<NotificationService>().LifestyleTransient());
         }
 

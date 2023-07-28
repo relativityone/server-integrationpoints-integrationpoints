@@ -5,15 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
-using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Storage;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
@@ -22,14 +19,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
     {
         private readonly IInstanceSettings _instanceSettings;
         private readonly IRelativityStorageService _storageService;
-        private readonly IEntityFullNameService _entityFullNameService;
         private readonly IAPILog _logger;
 
-        public IdFilesBuilder(IInstanceSettings instanceSettings, IRelativityStorageService storageService, IEntityFullNameService entityFullNameService, IAPILog logger)
+        public IdFilesBuilder(IInstanceSettings instanceSettings, IRelativityStorageService storageService, IAPILog logger)
         {
             _instanceSettings = instanceSettings;
             _storageService = storageService;
-            _entityFullNameService = entityFullNameService;
             _logger = logger;
         }
 

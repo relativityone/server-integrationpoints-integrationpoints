@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Services.Exceptions;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
 {
     public class EntityFullNameService : IEntityFullNameService
     {
-        private readonly IKeplerServiceFactory _serviceFactory;
+        private readonly IEntityFullNameObjectManagerService _entityFullNameObjectManagerService;
         private readonly IAPILog _logger;
 
-        public EntityFullNameService(IKeplerServiceFactory serviceFactory, IAPILog logger)
+        public EntityFullNameService(IEntityFullNameObjectManagerService entityFullNameObjectManagerService, IAPILog logger)
         {
-            _serviceFactory = serviceFactory;
+            _entityFullNameObjectManagerService = entityFullNameObjectManagerService;
             _logger = logger;
         }
 
@@ -51,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
         private async Task<bool> ShouldHandleFullNameAsync(int workspaceId, int artifactTypeId, List<IndexedFieldMap> fieldsMap)
         {
             bool isFullNameMapped = fieldsMap.Exists(x => x.DestinationFieldName == EntityFieldNames.FullName);
-            bool isEntity = await IsEntityAsync(workspaceId, artifactTypeId).ConfigureAwait(false);
+            bool isEntity = await _entityFullNameObjectManagerService.IsEntityAsync(workspaceId, artifactTypeId).ConfigureAwait(false);
 
             bool shouldHandleFullName = isEntity && !isFullNameMapped;
 
@@ -62,7 +55,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
 
         private async Task EnrichFieldMapWithFullNameAsync(IntegrationPointInfo integrationPoint)
         {
-            int fullNameArtifactId = await GetFullNameArtifactId(integrationPoint.DestinationConfiguration.CaseArtifactId).ConfigureAwait(false);
+            int fullNameArtifactId = await _entityFullNameObjectManagerService.GetFullNameArtifactId(integrationPoint.DestinationConfiguration.CaseArtifactId).ConfigureAwait(false);
 
             var fullNameField = new FieldEntry
             {
@@ -99,86 +92,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             }
 
             return fullName;
-        }
-
-        private async Task<int> GetFullNameArtifactId(int workspaceId)
-        {
-            using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            {
-                QueryResultSlim result = await objectManager.QuerySlimAsync(
-                    workspaceId,
-                    new QueryRequest
-                    {
-                        Fields = new[]
-                        {
-                            new FieldRef
-                            {
-                                Name = "ArtifactID"
-                            }
-                        },
-                        ObjectType = new ObjectTypeRef
-                        {
-                            Name = "Field"
-                        },
-                        Condition = $"'DisplayName' == '{EntityFieldNames.FullName}'"
-                    },
-                    0,
-                    1).ConfigureAwait(false);
-
-                if (result == null || result.ResultCount < 1)
-                {
-                    throw new NotFoundException($"{EntityFieldNames.FullName} field not found in Destination Workspace");
-                }
-
-                int fullNameArtifactId = (int)result.Objects.Single().Values.Single();
-
-                _logger.LogInformation(
-                    "{FullName} field retrieved with Object Manager, ArtifactID = {artifactId}",
-                    EntityFieldNames.FullName,
-                    fullNameArtifactId);
-                return fullNameArtifactId;
-            }
-        }
-
-        private async Task<bool> IsEntityAsync(int workspaceId, int artifactTypeId)
-        {
-            try
-            {
-                using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>())
-                {
-                    QueryRequest queryRequest = new QueryRequest()
-                    {
-                        ObjectType = new ObjectTypeRef
-                        {
-                            ArtifactTypeID = (int)ArtifactType.ObjectType
-                        },
-                        Condition = "'Name' == 'Entity'",
-                        Fields = new[]
-                        {
-                            new FieldRef
-                            {
-                                Name = "DescriptorArtifactTypeID"
-                            }
-                        }
-                    };
-
-                    QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, queryRequest, 0, 1).ConfigureAwait(false);
-
-                    if (result == null || result.Objects.Count < 1)
-                    {
-                        throw new NotFoundException("Entity Object Type DescriptorArtifactTypeID not found.");
-                    }
-
-                    int entityArtifactTypeId = (int)result.Objects.Single().Values.Single();
-
-                    return artifactTypeId == entityArtifactTypeId;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to check whether Artifact Type ID: {artifactTypeId} is of type Entity", artifactTypeId);
-                throw;
-            }
         }
     }
 }
