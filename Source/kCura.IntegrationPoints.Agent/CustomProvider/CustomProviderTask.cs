@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
 
-                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto, job.WorkspaceID);
+                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 

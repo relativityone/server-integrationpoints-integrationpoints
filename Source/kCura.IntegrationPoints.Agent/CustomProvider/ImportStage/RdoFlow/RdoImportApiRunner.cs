@@ -13,6 +13,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         private readonly IAPILog _logger;
 
         /// <summary>
+        /// Parameterless constructor for tests purposes only.
+        /// </summary>
+        public RdoImportApiRunner()
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DocumentImportApiRunner"/> class.
         /// </summary>
         /// <param name="importSettingsBuilder">The builder able to create desired ImportAPI configuration.></param>

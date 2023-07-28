@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IAgentValidator> _agentValidator;
         private Mock<IJobDetailsService> _jobDetailsService;
         private Mock<IIntegrationPointService> _integrationPointService;
+        private Mock<IEntityFullNameService> _entityFullNameService;
         private Mock<ISourceProviderService> _sourceProviderService;
         private Mock<IImportJobRunner> _importJobRunner;
         private Mock<IJobHistoryService> _jobHistoryService;
@@ -65,6 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _agentValidator = new Mock<IAgentValidator>();
             _jobDetailsService = new Mock<IJobDetailsService>();
             _integrationPointService = new Mock<IIntegrationPointService>();
+            _entityFullNameService = new Mock<IEntityFullNameService>();
             _sourceProviderService = new Mock<ISourceProviderService>();
             _importJobRunner = new Mock<IImportJobRunner>();
             _jobHistoryService = new Mock<IJobHistoryService>();
@@ -87,6 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _agentValidator.Object,
                 _jobDetailsService.Object,
                 _integrationPointService.Object,
+                _entityFullNameService.Object,
                 _sourceProviderService.Object,
                 _importJobRunner.Object,
                 _jobHistoryService.Object,
@@ -107,9 +111,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Throws(new IntegrationPointValidationException(new ValidationResult(false)));
 
             // Act
-            _sut.Execute(job);
+            Action action = () => _sut.Execute(job);
 
             // Assert
+            action.ShouldThrow<IntegrationPointValidationException>();
+
             _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryValidationFailedGuid));
 
             _jobHistoryErrorService.Verify(
@@ -173,6 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _sut.Execute(job);
 
             // Assert
+            _entityFullNameService.Verify(x => x.HandleFullNameMappingIfNeededAsync(It.IsAny<IntegrationPointInfo>()), Times.Once);
             _jobHistoryService.Verify(x => x.TryUpdateStartTimeAsync(job.WorkspaceID, _jobDetails.JobHistoryID));
             _jobHistoryService.Verify(x => x.TryUpdateEndTimeAsync(job.WorkspaceID, job.RelatedObjectArtifactID, _jobDetails.JobHistoryID));
             _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));

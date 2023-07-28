@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
 
         public async Task HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint)
         {
-            if (await ShouldHandleFullNameAsync(integrationPoint.SourceWorkspaceArtifactId, integrationPoint.DestinationConfiguration.ArtifactTypeId, integrationPoint.FieldMap).ConfigureAwait(false))
+            if (await ShouldHandleFullNameAsync(integrationPoint.DestinationConfiguration.CaseArtifactId, integrationPoint.DestinationConfiguration.ArtifactTypeId, integrationPoint.FieldMap).ConfigureAwait(false))
             {
                 await EnrichFieldMapWithFullNameAsync(integrationPoint).ConfigureAwait(false);
             }
