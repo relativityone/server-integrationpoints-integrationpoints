@@ -70,8 +70,6 @@
     <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="iTextSharp" />
-    <PackageReference Include="Relativity.Storage" />
-    <PackageReference Include="Relativity.Storage.Extensions" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
   </ItemGroup>
   <ItemGroup>

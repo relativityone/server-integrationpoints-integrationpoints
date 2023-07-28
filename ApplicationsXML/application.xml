@@ -1764,12 +1764,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5537554</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Storage.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5537555</ArtifactId>
       <Keywords />
       <Name>DnsClient.dll</Name>
@@ -1815,12 +1809,6 @@
       <ArtifactId>5537603</ArtifactId>
       <Keywords />
       <Name>Relativity.Environment.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537630</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Storage.Extensions.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1881,30 +1869,6 @@
       <ArtifactId>5537802</ArtifactId>
       <Keywords />
       <Name>Dapper.Contrib.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539018</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539236</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Private.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539439</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Models.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539467</ArtifactId>
-      <Keywords />
-      <Name>Relativity.HostingBridge.SDK.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

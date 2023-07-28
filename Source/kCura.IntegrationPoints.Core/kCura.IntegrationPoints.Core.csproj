@@ -110,6 +110,5 @@
     <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
     <PackageReference Include="System.Reactive" />
     <PackageReference Include="SystemWrapper.Wrappers" />
-    <PackageReference Include="Relativity.HostingBridge.SDK" />
   </ItemGroup>
 </Project>
