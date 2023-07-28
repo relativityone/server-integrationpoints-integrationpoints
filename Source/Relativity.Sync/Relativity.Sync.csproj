@@ -37,8 +37,8 @@
     <ItemGroup>
         <PackageReference Include="Relativity.API" Version="17.4.2" />
         <PackageReference Include="Relativity.Kepler.Client" Version="2.15.5" />
-        <PackageReference Include="Relativity.OAuth2Client" Version="1.5.3" />
-        <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.3" />
+        <PackageReference Include="Relativity.OAuth2Client" Version="1.5.5" />
+        <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.5" />
         <PackageReference Include="Relativity.Telemetry.APM" Version="2019.1.1" />
         <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
         <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="3003.0.2" />
