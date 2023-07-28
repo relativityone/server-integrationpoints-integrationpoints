@@ -24,7 +24,7 @@
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Microsoft.Reactive.Testing" Version="4.4.1" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="6.0.8" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Runtime.Caching" />

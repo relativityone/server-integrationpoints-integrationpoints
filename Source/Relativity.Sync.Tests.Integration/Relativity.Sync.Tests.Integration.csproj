@@ -22,7 +22,7 @@
         <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="6.0.8" />
     </ItemGroup>
     <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>
