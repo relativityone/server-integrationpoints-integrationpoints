@@ -39,13 +39,10 @@
         <PackageReference Include="Relativity.Kepler.Client" Version="2.15.5" />
         <PackageReference Include="Relativity.OAuth2Client" Version="1.5.3" />
         <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.3" />
-        <PackageReference Include="Relativity.Storage" Version="1.6.0" />
-        <PackageReference Include="Relativity.Storage.Extensions" Version="1.6.0" />
         <PackageReference Include="Relativity.Telemetry.APM" Version="2019.1.1" />
         <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
         <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="3003.0.2" />
         <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="1.0.8" />
-        <PackageReference Include="Relativity.AntiMalware.SDK" Version="1.1.48" />
         <PackageReference Include="Relativity.Environment.SDK" Version="2.0.4" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->

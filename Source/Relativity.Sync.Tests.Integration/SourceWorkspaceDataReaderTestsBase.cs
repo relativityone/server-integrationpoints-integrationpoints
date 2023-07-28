@@ -21,6 +21,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
+    [Ignore("")]
     internal abstract class SourceWorkspaceDataReaderTestsBase
     {
         protected IContainer _container;

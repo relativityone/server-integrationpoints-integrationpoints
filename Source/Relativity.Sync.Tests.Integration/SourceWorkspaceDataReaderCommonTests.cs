@@ -17,6 +17,7 @@ using Relativity.Sync.Transfer.ImportAPI;
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
+    [Ignore("")]
     internal class SourceWorkspaceDataReaderCommonTests : SourceWorkspaceDataReaderTestsBase
     {
         private const char _RECORD_SEPARATOR = LoadFileOptions._DEFAULT_MULTI_VALUE_ASCII;

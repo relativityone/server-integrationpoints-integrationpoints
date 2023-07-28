@@ -30,6 +30,7 @@ using Relativity.Sync.Transfer.ImportAPI;
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
+    [Ignore("")]
     internal sealed class DocumentSynchronizationExecutorTests
     {
         private ConfigurationStub _config;

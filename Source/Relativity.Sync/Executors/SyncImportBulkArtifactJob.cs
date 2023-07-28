@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
-using Relativity.AntiMalware.SDK;
+//using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
         private const string _IAPI_MESSAGE_COLUMN = "Message";
         private const string _IAPI_MALWARE_COLUMN = "Malware";
 
-        private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
+        //private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly IImportBulkArtifactJob _importBulkArtifactJob;
         private readonly int _workspaceId;
         private readonly IAPILog _logger;
@@ -27,12 +27,13 @@ namespace Relativity.Sync.Executors
         public SyncImportBulkArtifactJob(
             ImportBulkArtifactJob importBulkArtifactJob,
             ISourceWorkspaceDataReader sourceWorkspaceDataReader,
-            IAntiMalwareEventHelper antiMalwareEventHelper,
+            //IAntiMalwareEventHelper antiMalwareEventHelper,
             int workspaceId,
             IAPILog logger)
             : this(
+
                 sourceWorkspaceDataReader,
-                antiMalwareEventHelper,
+                //antiMalwareEventHelper,
                 workspaceId,
                 logger)
         {
@@ -48,12 +49,10 @@ namespace Relativity.Sync.Executors
         public SyncImportBulkArtifactJob(
             ImageImportBulkArtifactJob imageImportBulkArtifactJob,
             ISourceWorkspaceDataReader sourceWorkspaceDataReader,
-            IAntiMalwareEventHelper antiMalwareEventHelper,
             int workspaceId,
             IAPILog logger)
             : this(
-                sourceWorkspaceDataReader,
-                antiMalwareEventHelper,
+                sourceWorkspaceDataReader,                
                 workspaceId,
                 logger)
         {
@@ -66,9 +65,9 @@ namespace Relativity.Sync.Executors
             _importBulkArtifactJob = imageImportBulkArtifactJob;
         }
 
-        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
+        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader, int workspaceId, IAPILog logger)
         {
-            _antiMalwareEventHelper = antiMalwareEventHelper;
+            
             _workspaceId = workspaceId;
             _logger = logger.ForContext<SyncImportBulkArtifactJob>();
             ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
@@ -126,14 +125,14 @@ namespace Relativity.Sync.Executors
 
                     _logger.LogWarning("Malware detected in document: {documentIdentifier}", documentIdentifier);
 
-                    AntiMalwareEvent antiMalwareEvent = new AntiMalwareEvent
-                    {
-                        WorkspaceID = _workspaceId,
-                        UncOrUri = infectedFilePath,
-                        Exception = new Exception($"Malware detected in document: {documentIdentifier}")
-                    };
+                    //AntiMalwareEvent antiMalwareEvent = new AntiMalwareEvent
+                    //{
+                    //    WorkspaceID = _workspaceId,
+                    //    UncOrUri = infectedFilePath,
+                    //    Exception = new Exception($"Malware detected in document: {documentIdentifier}")
+                    //};
 
-                    _antiMalwareEventHelper.ReportAntiMalwareEventAsync(antiMalwareEvent).GetAwaiter().GetResult();
+                    //_antiMalwareEventHelper.ReportAntiMalwareEventAsync(antiMalwareEvent).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {

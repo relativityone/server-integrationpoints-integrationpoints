@@ -10,7 +10,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
-using Relativity.AntiMalware.SDK;
+//using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
         private Mock<IFieldMappings> _fieldMappingsMock;
-        private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
+        //private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
         private Mock<ISyncToggles> _syncTogglesMock;
         private SyncJobParameters _syncJobParameters;
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _instanceSettings = new Mock<IInstanceSettings>();
             _instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
-            _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
+            //_antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
             _syncTogglesMock = new Mock<ISyncToggles>();
             _logger = new EmptyLogger();
 
@@ -506,7 +506,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
                 _jobHistoryErrorRepository.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _antiMalwareEventHelperMock.Object,
+                _fieldMappingsMock.Object, //_antiMalwareEventHelperMock.Object,
                 _syncTogglesMock.Object, _logger);
             return instance;
         }

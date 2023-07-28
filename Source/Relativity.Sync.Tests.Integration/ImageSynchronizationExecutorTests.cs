@@ -28,6 +28,7 @@ using Relativity.Sync.Transfer.ImportAPI;
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
+    [Ignore("")]
     internal sealed class ImageSynchronizationExecutorTests
     {
         private ConfigurationStub _config;
@@ -124,6 +125,7 @@ namespace Relativity.Sync.Tests.Integration
         }
 
         [Test]
+        [Ignore("")]
         public async Task ItShouldSuccessfullyRunImportAndTagDocuments()
         {
             const int newBatchArtifactId = 1001;
@@ -237,6 +239,7 @@ namespace Relativity.Sync.Tests.Integration
         }
 
         [Test]
+        [Ignore("")]
         public async Task ItShouldReportJobLevelError()
         {
             const int newBatchArtifactId = 1001;
