@@ -59,7 +59,7 @@
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
     <TelemetryMetricsCollectionClient>3003.1.0</TelemetryMetricsCollectionClient>
-    <RelativityOAuth2Client>1.5.2</RelativityOAuth2Client>
+    <RelativityOAuth2Client>1.5.5</RelativityOAuth2Client>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativitySDK>17.4.2</RelativitySDK>
@@ -84,7 +84,7 @@
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
 	<StyleCopAnalyzers>1.1.118</StyleCopAnalyzers>
-    <SystemReactive>4.0.0</SystemReactive>
+    <SystemReactive>4.4.1</SystemReactive>
     <SystemValueTuple>4.5.0</SystemValueTuple>
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
     <SSHNET>2016.0.0</SSHNET>
