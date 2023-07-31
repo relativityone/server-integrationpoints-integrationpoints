@@ -46,11 +46,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
             await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
         }
 
-        private async Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
+        private Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
         {
             RdoImportConfiguration configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap);
 
-            return configuration;
+            return Task.FromResult(configuration);
         }
     }
 }

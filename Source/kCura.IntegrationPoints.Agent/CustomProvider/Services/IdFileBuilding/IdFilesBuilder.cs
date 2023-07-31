@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             }
         }
 
-        private async Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
+        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
         {
             IndexedFieldMap idField = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.FieldMapType == FieldMapTypeEnum.Identifier);
 
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             {
                 _logger.LogInformation("Retrieving record IDs from custom provider");
                 IDataReader reader = provider.GetBatchableIds(idField.FieldMap.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
-                return reader;
+                return Task.FromResult(reader);
             }
             catch (Exception ex)
             {
