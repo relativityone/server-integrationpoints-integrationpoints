@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.Models.Validation;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
@@ -34,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("A1CDEE5D-5292-4B0C-9982-EE3679F757F8")]
-        public void Run_ShouldScheduleJob()
+        public void Run_ShouldNotScheduleSyncJobInRipQueue()
         {
             // Arrange
             IntegrationPointTest integrationPoint =
@@ -53,38 +52,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
-            FakeRelativityInstance.JobsInQueue.Single().RelatedObjectArtifactID.Should()
-                .Be(integrationPoint.ArtifactId);
-        }
-
-        [IdentifiedTest("CCAFB6E8-9D1C-424F-BBBF-AE8A83F4A7AB")]
-        public void Run_ShouldNotScheduleJobTwice()
-        {
-            // Arrange
-            IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
-
-            JobController.Payload payload = new JobController.Payload
-            {
-                ArtifactId = integrationPoint.ArtifactId,
-                AppId = SourceWorkspace.ArtifactId
-            };
-
-            JobController sut = PrepareSut(HttpMethod.Post, "/run");
-
-            // Act
-            var response = sut.Run(payload);
-
-            sut.Run(payload);
-
-            // Assert
-            response.IsSuccessStatusCode.Should().BeTrue();
-            FakeRelativityInstance.JobsInQueue.Single().RelatedObjectArtifactID.Should()
-                .Be(integrationPoint.ArtifactId);
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
         [IdentifiedTest("2C155261-868D-4723-A7D5-4A9DC17C309A")]
-        public void Retry_ShouldScheduleRetryJob()
+        public void Retry_ShouldNotScheduleSyncRetryJobInRipQueue()
         {
             // Arrange
             IntegrationPointTest integrationPoint =
@@ -106,7 +78,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
-            FakeRelativityInstance.JobsInQueue.First().RelatedObjectArtifactID.Should().Be(integrationPoint.ArtifactId);
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
         [IdentifiedTest("B7782A2E-2FA6-4CE8-AB8C-D3FB1115765E")]
@@ -138,31 +110,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             JobHistoryTest addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
             addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);
-        }
-
-        [IdentifiedTest("EEDDA654-F7C0-4843-BAF6-ADBDB57EFC22")]
-        public void Retry_ShouldNotScheduleRetryJob_WhenIntegrationPointDoesNotHaveErrors()
-        {
-            // Arrange
-            IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
-            integrationPoint.HasErrors = false;
-
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
-
-            JobController.Payload payload = new JobController.Payload
-            {
-                ArtifactId = integrationPoint.ArtifactId,
-                AppId = SourceWorkspace.ArtifactId
-            };
-
-            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
-
-            // Act
-            sut.Retry(payload);
-
-            // Assert
-            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
         [IdentifiedTest("B6CE1147-7484-42C9-A078-09742469D3EE")]

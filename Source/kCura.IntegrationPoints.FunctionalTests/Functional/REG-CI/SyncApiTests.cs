@@ -27,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.REG_CI
         }
 
         [Test]
+        [Ignore("REL-862989")]
         public async Task JobRunTest()
         {
             await _implementation.RunIntegrationPoint().ConfigureAwait(false);

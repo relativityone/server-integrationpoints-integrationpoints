@@ -1,8 +1,8 @@
-﻿using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests
 {
