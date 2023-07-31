@@ -72,8 +72,4 @@
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CustomProvider\DTO\" />
-    <Folder Include="CustomProvider\Services\FileShare\" />
-  </ItemGroup>
 </Project>
