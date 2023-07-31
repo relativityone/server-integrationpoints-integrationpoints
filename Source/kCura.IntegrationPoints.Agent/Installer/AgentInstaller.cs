@@ -135,10 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
 
-            container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
-            container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
-            container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
-            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
             container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>().LifestyleSingleton());
             container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 
@@ -163,8 +159,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .LifestyleTransient());
 
             container.AddEmailSender();
-
-            ConfigureOtherProviderFlow(container);
         }
 
         private static void ConfigureContainer(IWindsorContainer container)
