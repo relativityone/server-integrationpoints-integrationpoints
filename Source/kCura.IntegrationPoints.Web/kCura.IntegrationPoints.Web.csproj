@@ -40,20 +40,20 @@
     <None Remove="oi\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="jQuery" Version="3.6.1" />
-    <PackageReference Include="jquery.jstree" Version="3.3.7" />
-    <PackageReference Include="jQuery.UI.Combined" Version="1.13.2" />
-    <PackageReference Include="jQuery.Validation" Version="1.19.3" />
-    <PackageReference Include="Knockout.Validation" Version="1.0.1" />
-    <PackageReference Include="knockoutjs" Version="3.5.1" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.JS" Version="2.3.0" />
-    <PackageReference Include="Modernizr" Version="2.6.2" />
-    <PackageReference Include="Moment.js" Version="2.29.4" />
-    <PackageReference Include="Moment.Timezone.js" Version="0.5.5" />
-    <PackageReference Include="normalize.css" Version="3.0.1" />
-    <PackageReference Include="Q" Version="1.4.1" />
-    <PackageReference Include="Select2.js" Version="3.5.1" />
-    <PackageReference Include="Trirand.jqGrid" Version="4.5.4" />
+    <PackageReference Include="jQuery"/>
+    <PackageReference Include="jquery.jstree"/>
+    <PackageReference Include="jQuery.UI.Combined"/>
+    <PackageReference Include="jQuery.Validation"/>
+    <PackageReference Include="Knockout.Validation"/>
+    <PackageReference Include="knockoutjs"/>
+    <PackageReference Include="Microsoft.AspNet.SignalR.JS"/>
+    <PackageReference Include="Modernizr"/>
+    <PackageReference Include="Moment.js"/>
+    <PackageReference Include="Moment.Timezone.js"/>
+    <PackageReference Include="normalize.css"/>
+    <PackageReference Include="Q"/>
+    <PackageReference Include="Select2.js"/>
+    <PackageReference Include="Trirand.jqGrid"/>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="kCura.Method.Web.Controls, Culture=neutral, processorArchitecture=AMD64">
