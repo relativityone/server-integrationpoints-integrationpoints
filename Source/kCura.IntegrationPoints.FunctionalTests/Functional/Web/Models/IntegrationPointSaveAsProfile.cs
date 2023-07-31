@@ -2,6 +2,6 @@
 {
     internal class IntegrationPointSaveAsProfile
     {
-        public string ProfileName { get; set; }
+        public string IntegrationPointProfileName { get; set; }
     }
 }

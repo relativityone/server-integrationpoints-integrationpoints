@@ -8,7 +8,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
     [TestType.UI]
     [TestType.MainFlow]
-    [Ignore("REL-753202")]
     public class SyncTests : TestsBase
     {
         private readonly SyncTestsImplementation _testsImplementation;

@@ -14,6 +14,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
         public Button<IntegrationPointRunPopup, _> Run { get; private set; }
 
+        [WaitUntilEnabled]
+        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
         [FindByContent("Save as Profile")]
         public Button<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
 

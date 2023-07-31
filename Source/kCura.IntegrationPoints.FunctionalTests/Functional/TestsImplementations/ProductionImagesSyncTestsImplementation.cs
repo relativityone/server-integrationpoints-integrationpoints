@@ -108,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                     IntegrationPointName,
                     DestinationWorkspace,
                     _production,
-                    YesNo.Yes);
+                    _copyFilesToRepository);
 
             return integrationPointViewPage;
         }
