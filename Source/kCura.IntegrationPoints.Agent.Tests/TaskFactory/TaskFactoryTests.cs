@@ -59,7 +59,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
-            _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
+			_containerFake = new Mock<IWindsorContainer>();
+
+			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
                 taskExceptionMediator,
                 _jobSynchronizationChecker,
