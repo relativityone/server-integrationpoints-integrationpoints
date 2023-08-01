@@ -1,6 +1,6 @@
- @Library('ProjectMayhem@v1')_
+ @Library('ProjectMayhem@vServer')_
 rapCD {
-    slackChannel = "cd_rip_myfirstprovider"
-    sutTemplate = "aio-osier-2"
-    relativityBranch = develop
+    slackChannel = "ci-server-delta"
+    sutTemplate = "aio-server2022-rabbitmq"
+    relativityBranch = server-main
 }

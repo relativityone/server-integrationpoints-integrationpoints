@@ -1,3 +1,9 @@
+## [12.4.0] - 08-01-2023
+
+### Changed
+
+- Code isolation changes
+
 ### 11.1.0
 
 - Upgraded Relativity.IntegrationPoints.Services.Interfaces.Private dependency version to 11.1.0

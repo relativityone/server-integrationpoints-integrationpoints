@@ -19,10 +19,10 @@
     <dependency id="Newtonsoft.Json" version="6.0.1"/>
     <dependency id="Relativity.API" version="17.4.2"/>
     <dependency id="Relativity.DataTransfer.MessageService" version="10.2.0"/>
-    <dependency id="Relativity.IntegrationPoints.SDK" version="1.0.9"/>
-    <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.3.1"/>
-    <dependency id="Relativity.Kepler" version="2.17"/>
-    <dependency id="Relativity.Kepler.Client" version="2.17"/>
+    <dependency id="Relativity.IntegrationPoints.SDK" version="1.3.0-pre.21"/>
+    <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.4.0-pre.13"/>
+    <dependency id="Relativity.Kepler" version="2.15.6"/>
+    <dependency id="Relativity.Kepler.Client" version="2.15.6"/>
     <dependency id="Relativity.Telemetry.APM" version="2019.1.1"/>
     <dependency id="Relativity.Telemetry.DataContracts.Shared" version="9.4.159"/>
     <dependency id="Relativity.Telemetry.Services.Interface" version="9.6.88.61"/>
