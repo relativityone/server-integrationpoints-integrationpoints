@@ -58,7 +58,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
-    <ProjectReference Include="..\kCura.IntegrationPoints.FunctionalTests\kCura.IntegrationPoints.FunctionalTests.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

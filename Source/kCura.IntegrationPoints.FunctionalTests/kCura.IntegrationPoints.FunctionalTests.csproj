@@ -158,9 +158,9 @@
     <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
-    <PackageReference Include="IntegrationPoints.MyFirstProvider" >
+    <!-- <PackageReference Include="IntegrationPoints.MyFirstProvider" >
       <NoWarn>NU1603</NoWarn>
-    </PackageReference>
+    </PackageReference> -->
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
