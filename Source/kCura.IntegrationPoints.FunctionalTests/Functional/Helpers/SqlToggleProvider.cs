@@ -69,7 +69,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             throw new NotImplementedException();
         }
 
-        public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
+		public Task<bool> IsEnabledByGuidAsync(Guid componentGuid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsEnabledByGuid(Guid componentGuid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
 
         public bool CacheEnabled { get; set; }
 
