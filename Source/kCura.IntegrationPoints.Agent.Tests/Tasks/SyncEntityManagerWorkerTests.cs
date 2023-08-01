@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
-            int workspaceArtifactId = 12345;
+            int workspaceArtifactId = 6;
 
             _instance = new SyncEntityManagerWorker(caseServiceContext,
                 dataProviderFactory,
@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(taskParams);
             jobHistoryService.GetRdoWithoutDocuments(taskParams.BatchInstance).Returns(_jobHistory);
-            queueQueryManager.CheckAllSyncWorkerBatchesAreFinished(_job.JobId).Returns(new ValueReturnQuery<bool>(true));
+            queueQueryManager.CheckAllSyncWorkerBatchesAreFinished(_job.RootJobId ?? _job.JobId).Returns(new ValueReturnQuery<bool>(true));
             managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true, Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
 
