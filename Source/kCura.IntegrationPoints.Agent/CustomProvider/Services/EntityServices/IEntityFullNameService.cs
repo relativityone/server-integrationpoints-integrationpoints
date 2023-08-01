@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
 {
     public interface IEntityFullNameService
     {
-        Task HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint);
+        Task<IntegrationPointInfo> HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint);
 
         string FormatFullName(Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary, IDataReader reader);
     }

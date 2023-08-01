@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
-                await _entityFullNameService.HandleFullNameMappingIfNeededAsync(integrationPointInfo).ConfigureAwait(false);
+                integrationPointInfo = await _entityFullNameService.HandleFullNameMappingIfNeededAsync(integrationPointInfo).ConfigureAwait(false);
 
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider).ConfigureAwait(false);
 

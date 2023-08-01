@@ -20,12 +20,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             _logger = logger;
         }
 
-        public async Task HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint)
+        public async Task<IntegrationPointInfo> HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint)
         {
             if (await ShouldHandleFullNameAsync(integrationPoint.DestinationConfiguration.CaseArtifactId, integrationPoint.DestinationConfiguration.ArtifactTypeId, integrationPoint.FieldMap).ConfigureAwait(false))
             {
                 await EnrichFieldMapWithFullNameAsync(integrationPoint).ConfigureAwait(false);
             }
+
+            return integrationPoint;
         }
 
         public string FormatFullName(Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary, IDataReader reader)
