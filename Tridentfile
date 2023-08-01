@@ -2,5 +2,5 @@
 rapCD {
     slackChannel = "ci-server-delta"
     sutTemplate = "aio-server2023-latest"
-    relativityBranch = release-12.3-2023
+    relativityBranch = "release-12.3-2023"
 }
