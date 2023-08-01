@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
@@ -14,12 +13,9 @@ using kCura.IntegrationPoints.Agent.Logging;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -31,9 +27,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
@@ -170,48 +163,9 @@ namespace kCura.IntegrationPoints.Agent
                     using (StartMemoryUsageMetricReporting(Container, job))
                     using (StartHeartbeatReporting(Container, job))
                     {
-                        if (ShouldUseRelativitySyncDLL(Container, job))
-                        {
-                            try
-                            {
-                                ConfigureAgentThreadsForSync();
-
-                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
-
-                                RelativitySyncAdapter syncAdapter = Container.Resolve<RelativitySyncAdapter>();
-                                IAPILog logger = Container.Resolve<IAPILog>();
-                                AgentCorrelationContext correlationContext = GetCorrelationContext(Container, job);
-                                using (logger.LogContextPushProperties(correlationContext))
-                                {
-                                    return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                // Not much we can do here. If container failed we're unable to do anything.
-                                // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-                                Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
-
-                                MarkJobAsFailedAsync(Container, job, ex).GetAwaiter().GetResult();
-
-                                return new TaskResult
-                                {
-                                    Status = TaskStatusEnum.Fail,
-                                    Exceptions = new[] { ex }
-                                };
-                            }
-                            finally
-                            {
-                                IJobStopManager jobStopManager = Container.Resolve<IJobStopManager>();
-                                jobStopManager.Dispose();
-                            }
-                        }
-                        else
-                        {
-                            SendJobStartedMessage(Container, job);
-                            TaskResult result = JobExecutor.ProcessJob(job);
-                            return result;
-                        }
+                        SendJobStartedMessage(Container, job);
+                        TaskResult result = JobExecutor.ProcessJob(job);
+                        return result;
                     }
                 }
             }
@@ -232,22 +186,6 @@ namespace kCura.IntegrationPoints.Agent
         {
             return container.Resolve<IHeartbeatReporter>()
                 .ActivateHeartbeat(job.JobId);
-        }
-
-
-        private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
-        {
-            var correlationContext = new AgentCorrelationContext
-            {
-                JobId = job.JobId,
-                RootJobId = job.RootJobId,
-                WorkspaceId = job.WorkspaceID,
-                UserId = job.SubmittedBy,
-                IntegrationPointId = job.RelatedObjectArtifactID,
-                ActionName = _RELATIVITY_SYNC_JOB_TYPE,
-                WorkflowId = GetBatchInstanceId(container, job).ToString()
-            };
-            return correlationContext;
         }
 
         private Guid GetBatchInstanceId(IWindsorContainer container, Job job)
@@ -294,25 +232,6 @@ namespace kCura.IntegrationPoints.Agent
             }
 
             return jobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
-        }
-
-        private bool ShouldUseRelativitySyncDLL(IWindsorContainer container, Job job)
-        {
-            IRelativitySyncConstrainsChecker syncCheck = container.Resolve<IRelativitySyncConstrainsChecker>();
-
-            bool shouldUseRelativitySync = syncCheck.ShouldUseRelativitySync(job.RelatedObjectArtifactID);
-
-            bool isRelativitySyncAppEnabled = syncCheck.IsRelativitySyncAppEnabled();
-
-            bool syncAppIsEnabledForScheduledSync = container.Resolve<IRipToggleProvider>().IsEnabled<EnableSyncAppScheduleToggle>();
-
-            Logger.LogInformation(
-                "Checking if Sync App should be used for Scheduled Sync Job - ShouldUseRelativitySync: {useRelativitySync}, IsSyncAppEnabled: {isSyncAppEnabled}, SyncAppIsEnabledForScheduledJobs: {syncAppForScheduledJobs}",
-                shouldUseRelativitySync,
-                isRelativitySyncAppEnabled,
-                syncAppIsEnabledForScheduledSync);
-
-            return shouldUseRelativitySync && (!isRelativitySyncAppEnabled || !syncAppIsEnabledForScheduledSync);
         }
 
         private async Task MarkJobAsFailedAsync(IWindsorContainer container, Job job, Exception ex)
@@ -393,31 +312,6 @@ namespace kCura.IntegrationPoints.Agent
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.LogFatal(e.ExceptionObject as Exception, "Unhandled exception occurred!");
-        }
-
-        private void ConfigureAgentThreadsForSync()
-        {
-            ThreadPool.GetMaxThreads(out int workerThreads, out int completionPortThreads);
-
-            ThreadPool.GetAvailableThreads(out int availableWorkerThreads, out int availableCompletionPortThreads);
-
-            Logger.LogInformation(
-                "Agent current threads status - WorkerThreads: {availableWorkerThreads}/{maxWorkerThreads}, CompletionPortThreads: {availableCompletionPortThreads}/{maxCompletionPortThreads}.",
-                availableWorkerThreads,
-                workerThreads,
-                availableCompletionPortThreads,
-                completionPortThreads);
-
-            IInstanceSettingsBundle instanceSettings = Helper.GetInstanceSettingBundle();
-
-            int maxCompletionPortThreads = instanceSettings.GetInt("Relativity.Sync", "MaxCompletionPortThreads") ?? _MAX_COMPLETION_PORT_THREADS;
-
-            Logger.LogInformation(
-                "Setting agent threads - MaxWorkerThreads: {workerThreads}, MaxCompletionPortThreads: {maxCompletionPortThreads}.",
-                workerThreads,
-                maxCompletionPortThreads);
-
-            ThreadPool.SetMaxThreads(workerThreads, maxCompletionPortThreads);
         }
     }
 }

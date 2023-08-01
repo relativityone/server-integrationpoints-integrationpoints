@@ -43,7 +43,7 @@ nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
-nuget Relativity.AutomatedWorkflows.SDK 1.0.8
+nuget Relativity.AutomatedWorkflows.SDK 1.2.1
 nuget Relativity.HostingBridge.SDK 0.2.0
 
 // Import API packages
@@ -101,7 +101,7 @@ nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
 // Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 1.0.56
+nuget Relativity.Sync.Services.Interfaces 1.1.3
 
 group Tests
 framework: auto-detect
@@ -140,13 +140,13 @@ nuget Relativity.Testing.Framework.Web 1.2.0
 nuget Relativity.Testing.Framework.RingSetup 0.19.1
 nuget Selenium.Support 4.0.0-beta4
 nuget SystemWrapper.Interfaces 0.25.0.186
-nuget Relativity.AutomatedWorkflows.SDK 1.0.8
+nuget Relativity.AutomatedWorkflows.SDK 1.2.1
 nuget Relativity.HostingBridge.SDK 0.2.0
 
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.0.56
+nuget Relativity.Sync 1.1.3
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -159,7 +159,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.0.56
+nuget Relativity.Sync 1.1.3
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
