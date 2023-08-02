@@ -36,22 +36,8 @@
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\DnsClient.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Memory.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Text.Json.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Runtime.CompilerServices.Unsafe.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Text.Encodings.Web.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Bcl.AsyncInterfaces.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Core.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Storage.Common.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Storage.Files.DataLake.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Storage.Blobs.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Security.KeyVault.Secrets.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Identity.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Diagnostics.DiagnosticSource.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.AntiMalware.SDK.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Environment.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Numerics.Vectors.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
