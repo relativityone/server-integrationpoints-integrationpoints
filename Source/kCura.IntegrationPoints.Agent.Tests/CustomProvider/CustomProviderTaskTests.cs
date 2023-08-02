@@ -138,6 +138,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<string>()))
                 .ReturnsAsync(_fxt.CreateMany<CustomProviderBatch>().ToList());
 
+            _entityFullNameService
+                .Setup(x => x.HandleFullNameMappingIfNeededAsync(It.IsAny<IntegrationPointInfo>()))
+                .ReturnsAsync(new IntegrationPointInfo(SetupIntegrationPoint()));
+
             SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
 
             // Act
@@ -166,6 +170,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobDetails = _fxt.Build<CustomProviderJobDetails>()
                 .With(x => x.Batches, new List<CustomProviderBatch>())
                 .Create();
+
+            _entityFullNameService
+                .Setup(x => x.HandleFullNameMappingIfNeededAsync(It.IsAny<IntegrationPointInfo>()))
+                .ReturnsAsync(new IntegrationPointInfo(SetupIntegrationPoint()));
 
             Job job = PrepareBasicJob();
 
