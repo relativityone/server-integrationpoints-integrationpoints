@@ -53,7 +53,10 @@ namespace Relativity.IntegrationPoints.MyFirstProvider.Provider.FunctionalTests
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			Relativity.Resolve<IWorkspaceService>().Delete(Workspace.ArtifactID);
+			if(Workspace != null)
+			{
+				Relativity.Resolve<IWorkspaceService>().Delete(Workspace.ArtifactID);
+			}
 		}
 	}
 }
