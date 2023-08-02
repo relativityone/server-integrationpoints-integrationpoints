@@ -11,7 +11,6 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Integration
 {
     [TestFixture]
-    [Ignore("")]
     internal class SourceWorkspaceDataReaderNativesTests : SourceWorkspaceDataReaderTestsBase
     {
         [Test]
