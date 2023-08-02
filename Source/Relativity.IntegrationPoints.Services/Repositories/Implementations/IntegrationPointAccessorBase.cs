@@ -2,6 +2,7 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 
 namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
@@ -9,12 +10,14 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
     public abstract class IntegrationPointAccessorBase
     {
         private readonly IBackwardCompatibility _backwardCompatibility;
+        protected readonly IAPILog Logger;
 
         protected ICaseServiceContext Context { get; }
 
-        protected IntegrationPointAccessorBase(IBackwardCompatibility backwardCompatibility, ICaseServiceContext context)
+        protected IntegrationPointAccessorBase(IBackwardCompatibility backwardCompatibility, ICaseServiceContext context, IAPILog logger)
         {
             _backwardCompatibility = backwardCompatibility;
+            Logger = logger;
             Context = context;
         }
 
@@ -38,9 +41,24 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         protected void UpdateOverwriteFieldsChoiceId(IntegrationPointModel model)
         {
             IList<OverwriteFieldsModel> fieldsChoices = GetOverwriteFieldChoices();
+
+            Logger.LogInformation("UpdateOverwriteFieldsChoiceId fieldsChoices - {@fieldsChoices}", fieldsChoices);
+
+            var importOverwrite = ((DestinationConfiguration)model.DestinationConfiguration)
+                .ImportOverwriteMode.ToString();
+
+            Logger.LogInformation("UpdateOverwriteFieldsChoiceId importOverwrite - {importOverwrite}", importOverwrite);
+
             model.OverwriteFieldsChoiceId = fieldsChoices
                 .First(x =>
-                    x.Name == ((DestinationConfiguration)model.DestinationConfiguration).ImportOverwriteMode.ToString())
+                    {
+                        var name = x.Name.Replace("/", string.Empty);
+                        name = name.Replace("/", string.Empty).Replace(" ", string.Empty);
+
+                        Logger.LogInformation("UpdateOverwriteFieldsChoiceId replace- {name}", name);
+
+                        return name == importOverwrite;
+                    })
                 .ArtifactId;
         }
     }

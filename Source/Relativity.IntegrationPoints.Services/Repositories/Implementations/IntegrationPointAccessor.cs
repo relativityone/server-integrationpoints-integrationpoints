@@ -28,8 +28,9 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             IBackwardCompatibility backwardCompatibility,
             IIntegrationPointService integrationPointService,
             IIntegrationPointProfileService integrationPointProfileService,
-            ICaseServiceContext caseServiceContext)
-            : base(backwardCompatibility, caseServiceContext)
+            ICaseServiceContext caseServiceContext,
+            IAPILog logger)
+            : base(backwardCompatibility, caseServiceContext, logger)
         {
             _objectTypeRepository = objectTypeRepository;
             _userInfo = userInfo;
@@ -81,7 +82,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             IList<IntegrationPointDto> integrationPoints = _integrationPointService.ReadAll();
             return integrationPoints.Select(x =>
             {
-                IntegrationPointModel model = _integrationPointService.Read(x.ArtifactId).ToIntegrationPointModel();
+                IntegrationPointModel model = x.ToIntegrationPointModel();
                 UpdateOverwriteFieldsChoiceId(model);
                 return model;
             }).ToList();

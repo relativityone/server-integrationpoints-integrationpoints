@@ -17,6 +17,8 @@ using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Relativity.API;
+using Relativity.IntegrationPoints.Services;
+using Relativity.Logging;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -183,6 +185,45 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 }
 
                 throw;
+            }
+        }
+
+        [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to create RIP with Integration Point Profile Manager")]
+        public HttpResponseMessage ProfileFromProfile(int artifactId, string name)
+        {
+            _logger.LogInformation("ProfileFromProfile artifactId - {artifactId}, name - {name}", artifactId, name);
+            using (var _integrationPointProfileManager = _cpHelper.GetServicesManager()
+                       .CreateProxy<IIntegrationPointProfileManager>(ExecutionIdentity.System))
+            {
+
+                IntegrationPointModel model = _integrationPointProfileManager.GetIntegrationPointProfileAsync(
+                        _cpHelper.GetActiveCaseID(),
+                        artifactId)
+                    .GetAwaiter()
+                    .GetResult();
+
+                _logger.LogInformation("ProfileFromProfile returned Model - {@model}", model);
+
+                model.Name = name;
+
+                _logger.LogInformation("ProfileFromProfile new Model - {@model}", model);
+
+                CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
+                {
+                    IntegrationPoint = model,
+                    WorkspaceArtifactId = _cpHelper.GetActiveCaseID()
+                };
+
+                _logger.LogInformation("ProfileFromProfile request - {@request}", request);
+
+                var result = _integrationPointProfileManager.CreateIntegrationPointProfileAsync(request)
+                    .GetAwaiter()
+                    .GetResult();
+
+                _logger.LogInformation("ProfileFromProfile result - {@result}", result);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
         }
 

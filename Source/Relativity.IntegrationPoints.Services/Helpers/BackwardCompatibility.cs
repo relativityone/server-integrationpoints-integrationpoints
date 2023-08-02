@@ -34,13 +34,21 @@ namespace Relativity.IntegrationPoints.Services.Helpers
             RelativityProviderDestinationConfiguration destinationConfiguration;
             try
             {
-                sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
+                if (integrationPointModel.SourceConfiguration.GetType() == typeof(string))
+                {
+                    sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>((string)integrationPointModel.SourceConfiguration);
+                }
+                else
+                {
+                    sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
+
+                }
                 destinationConfiguration =
                     JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
             }
             catch (Exception e)
             {
-                _apiLog.LogError(e, "Error occured during Relativity Provider configuration deserialization.");
+                _apiLog.LogError(e, "Error occurred during Relativity Provider configuration deserialization.");
                 throw new ArgumentException("Invalid configuration for Relativity Provider specified.", e);
             }
 

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using Relativity.API;
 using Relativity.IntegrationPoints.Services.Extensions;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Services.Choice;
@@ -22,8 +23,9 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             IIntegrationPointProfileService integrationPointProfileService,
             IChoiceQuery choiceQuery,
             IIntegrationPointService integrationPointService,
-            ICaseServiceContext caseServiceContext)
-            : base(backwardCompatibility, caseServiceContext)
+            ICaseServiceContext caseServiceContext,
+            IAPILog logger)
+            : base(backwardCompatibility, caseServiceContext, logger)
         {
             _integrationPointProfileService = integrationPointProfileService;
             _choiceQuery = choiceQuery;
@@ -46,13 +48,20 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         public IntegrationPointModel GetIntegrationPointProfile(int integrationPointProfileArtifactId)
         {
             IntegrationPointProfileDto integrationPointProfile = _integrationPointProfileService.Read(integrationPointProfileArtifactId);
-            return integrationPointProfile.ToIntegrationPointModel();
+            IntegrationPointModel model = integrationPointProfile.ToIntegrationPointModel();
+            UpdateOverwriteFieldsChoiceId(model);
+            return model;
         }
 
         public IList<IntegrationPointModel> GetAllIntegrationPointProfiles()
         {
             IList<IntegrationPointProfileDto> profiles = _integrationPointProfileService.ReadAll();
-            return profiles.Select(x => x.ToIntegrationPointModel()).ToList();
+            return profiles.Select(x =>
+            {
+                IntegrationPointModel model = x.ToIntegrationPointModel();
+                UpdateOverwriteFieldsChoiceId(model);
+                return model;
+            }).ToList();
         }
 
         public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
