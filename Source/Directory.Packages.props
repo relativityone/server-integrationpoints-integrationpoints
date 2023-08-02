@@ -52,7 +52,7 @@
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
 	<RelativityDataTransferLegacySDK>0.4.0</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsSDK>1.3.0-pre.21.nupkg</RelativityIntegrationPointsSDK>
+    <RelativityIntegrationPointsSDK>1.3.0-pre.21</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0-pre.13</RelativityIntegrationPointsServicesInterfacesPrivate>
     <KeplerVersion>2.15.5</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
