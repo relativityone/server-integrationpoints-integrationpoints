@@ -188,11 +188,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
         }
 
-        [HttpGet]
-        [LogApiExceptionFilter(Message = "Unable to create RIP with Integration Point Profile Manager")]
-        public HttpResponseMessage ProfileFromProfile(int artifactId, string name)
+        [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to create Integration Point Profile from profile")]
+        public HttpResponseMessage CreateProfileFromProfile(int artifactId, string name)
         {
-            _logger.LogInformation("ProfileFromProfile artifactId - {artifactId}, name - {name}", artifactId, name);
             using (var _integrationPointProfileManager = _cpHelper.GetServicesManager()
                        .CreateProxy<IIntegrationPointProfileManager>(ExecutionIdentity.System))
             {
@@ -202,27 +201,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                         artifactId)
                     .GetAwaiter()
                     .GetResult();
-
-                _logger.LogInformation("ProfileFromProfile returned Model - {@model}", model);
-
                 model.Name = name;
-
-                _logger.LogInformation("ProfileFromProfile new Model - {@model}", model);
-
                 CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
                 {
                     IntegrationPoint = model,
                     WorkspaceArtifactId = _cpHelper.GetActiveCaseID()
                 };
 
-                _logger.LogInformation("ProfileFromProfile request - {@request}", request);
-
                 var result = _integrationPointProfileManager.CreateIntegrationPointProfileAsync(request)
                     .GetAwaiter()
                     .GetResult();
-
-                _logger.LogInformation("ProfileFromProfile result - {@result}", result);
-
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
         }

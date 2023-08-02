@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using Relativity.API;
 using Relativity.IntegrationPoints.Services.Extensions;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Services.Choice;
@@ -23,9 +22,8 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             IIntegrationPointProfileService integrationPointProfileService,
             IChoiceQuery choiceQuery,
             IIntegrationPointService integrationPointService,
-            ICaseServiceContext caseServiceContext,
-            IAPILog logger)
-            : base(backwardCompatibility, caseServiceContext, logger)
+            ICaseServiceContext caseServiceContext)
+            : base(backwardCompatibility, caseServiceContext)
         {
             _integrationPointProfileService = integrationPointProfileService;
             _choiceQuery = choiceQuery;

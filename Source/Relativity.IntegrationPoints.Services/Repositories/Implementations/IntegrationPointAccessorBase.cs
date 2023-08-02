@@ -2,7 +2,6 @@
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 
 namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
@@ -10,14 +9,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
     public abstract class IntegrationPointAccessorBase
     {
         private readonly IBackwardCompatibility _backwardCompatibility;
-        protected readonly IAPILog Logger;
 
         protected ICaseServiceContext Context { get; }
 
-        protected IntegrationPointAccessorBase(IBackwardCompatibility backwardCompatibility, ICaseServiceContext context, IAPILog logger)
+        protected IntegrationPointAccessorBase(IBackwardCompatibility backwardCompatibility, ICaseServiceContext context)
         {
             _backwardCompatibility = backwardCompatibility;
-            Logger = logger;
             Context = context;
         }
 
@@ -42,23 +39,13 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         {
             IList<OverwriteFieldsModel> fieldsChoices = GetOverwriteFieldChoices();
 
-            Logger.LogInformation("UpdateOverwriteFieldsChoiceId fieldsChoices - {@fieldsChoices}", fieldsChoices);
-
-            var importOverwrite = ((DestinationConfiguration)model.DestinationConfiguration)
-                .ImportOverwriteMode.ToString();
-
-            Logger.LogInformation("UpdateOverwriteFieldsChoiceId importOverwrite - {importOverwrite}", importOverwrite);
+            string importOverwrite = ((DestinationConfiguration)model.DestinationConfiguration).ImportOverwriteMode.ToString();
 
             model.OverwriteFieldsChoiceId = fieldsChoices
                 .First(x =>
-                    {
-                        var name = x.Name.Replace("/", string.Empty);
-                        name = name.Replace("/", string.Empty).Replace(" ", string.Empty);
-
-                        Logger.LogInformation("UpdateOverwriteFieldsChoiceId replace- {name}", name);
-
-                        return name == importOverwrite;
-                    })
+                    x.Name
+                        .Replace("/", string.Empty)
+                        .Replace(" ", string.Empty) == importOverwrite)
                 .ArtifactId;
         }
     }

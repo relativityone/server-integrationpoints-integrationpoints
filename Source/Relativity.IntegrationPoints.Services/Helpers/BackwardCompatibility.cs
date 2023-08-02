@@ -34,17 +34,8 @@ namespace Relativity.IntegrationPoints.Services.Helpers
             RelativityProviderDestinationConfiguration destinationConfiguration;
             try
             {
-                if (integrationPointModel.SourceConfiguration.GetType() == typeof(string))
-                {
-                    sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>((string)integrationPointModel.SourceConfiguration);
-                }
-                else
-                {
-                    sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
-
-                }
-                destinationConfiguration =
-                    JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
+                sourceConfiguration = integrationPointModel.SourceConfiguration.GetType() == typeof(string) ? JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>((string)integrationPointModel.SourceConfiguration) : JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
+                destinationConfiguration = integrationPointModel.DestinationConfiguration.GetType() == typeof(string) ? JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>((string)integrationPointModel.DestinationConfiguration) : JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
             }
             catch (Exception e)
             {

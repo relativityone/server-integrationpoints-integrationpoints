@@ -28,9 +28,8 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             IBackwardCompatibility backwardCompatibility,
             IIntegrationPointService integrationPointService,
             IIntegrationPointProfileService integrationPointProfileService,
-            ICaseServiceContext caseServiceContext,
-            IAPILog logger)
-            : base(backwardCompatibility, caseServiceContext, logger)
+            ICaseServiceContext caseServiceContext)
+            : base(backwardCompatibility, caseServiceContext)
         {
             _objectTypeRepository = objectTypeRepository;
             _userInfo = userInfo;
