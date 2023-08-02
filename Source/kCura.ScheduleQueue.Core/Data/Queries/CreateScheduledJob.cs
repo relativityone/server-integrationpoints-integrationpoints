@@ -60,6 +60,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             List<SqlParameter> sqlParams = new List<SqlParameter>();
             sqlParams.Add(new SqlParameter("@WorkspaceID", _workspaceId));
             sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", _relatedObjectArtifactId));
+            sqlParams.Add(new SqlParameter("@CorrelationID", DBNull.Value));
             sqlParams.Add(new SqlParameter("@TaskType", _taskType));
             sqlParams.Add(new SqlParameter("@NextRunTime", _nextRunTime));
             sqlParams.Add(new SqlParameter("@AgentTypeID", _agentTypeId));
