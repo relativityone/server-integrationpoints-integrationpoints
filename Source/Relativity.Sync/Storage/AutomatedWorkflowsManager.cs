@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
+using Relativity.Sync.Storage.V2.Models.Triggers;
 
-namespace Relativity.AutomatedWorkflows.SDK
+namespace Relativity.Sync.Storage
 {
 	public class AutomatedWorkflowsManager : IAutomatedWorkflowsManager
 	{

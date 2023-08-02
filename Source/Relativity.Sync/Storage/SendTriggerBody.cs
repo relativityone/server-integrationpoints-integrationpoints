@@ -1,5 +1,5 @@
 ﻿
-namespace Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers
+namespace Relativity.Sync.Storage.V2.Models.Triggers
 {
 	public class SendTriggerBody
 	{

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.AutomatedWorkflows.SDK;
-using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Storage.V2.Models.Triggers;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors

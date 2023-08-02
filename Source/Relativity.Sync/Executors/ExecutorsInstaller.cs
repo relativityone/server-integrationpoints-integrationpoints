@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Relativity.AutomatedWorkflows.SDK;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.ExecutionConstrains.SumReporting;
