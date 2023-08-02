@@ -188,33 +188,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
         }
 
-        [HttpPost]
-        [LogApiExceptionFilter(Message = "Unable to create Integration Point Profile from profile")]
-        public HttpResponseMessage CreateProfileFromProfile(int artifactId, string name)
-        {
-            using (var _integrationPointProfileManager = _cpHelper.GetServicesManager()
-                       .CreateProxy<IIntegrationPointProfileManager>(ExecutionIdentity.System))
-            {
-
-                IntegrationPointModel model = _integrationPointProfileManager.GetIntegrationPointProfileAsync(
-                        _cpHelper.GetActiveCaseID(),
-                        artifactId)
-                    .GetAwaiter()
-                    .GetResult();
-                model.Name = name;
-                CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
-                {
-                    IntegrationPoint = model,
-                    WorkspaceArtifactId = _cpHelper.GetActiveCaseID()
-                };
-
-                var result = _integrationPointProfileManager.CreateIntegrationPointProfileAsync(request)
-                    .GetAwaiter()
-                    .GetResult();
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-        }
-
         private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileDto profileDto)
         {
             int createdID;
