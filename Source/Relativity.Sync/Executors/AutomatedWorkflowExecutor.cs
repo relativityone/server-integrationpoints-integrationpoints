@@ -29,18 +29,8 @@ namespace Relativity.Sync.Executors
 
                 _logger.LogInformation("For workspace artifact ID : {0} {1} trigger called with status {2}.", configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, state);
 
-                SendTriggerBody body = new SendTriggerBody
-                {
-                    Inputs = new List<TriggerInput>
-                    {
-                        new TriggerInput
-                        {
-                            ID = configuration.TriggerId,
-                            Value = configuration.TriggerValue
-                        }
-                    },
-                    State = state
-                };
+                SendTriggerBody body = new SendTriggerBody();
+
 
                 await _automatedWorkflowsManager.SendTriggerAsync(configuration.DestinationWorkspaceArtifactId, configuration.TriggerName, body).ConfigureAwait(false);
             }
