@@ -17,8 +17,6 @@ using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Relativity.API;
-using Relativity.IntegrationPoints.Services;
-using Relativity.Logging;
 using Relativity.Telemetry.Services.Interface;
 using Relativity.Telemetry.Services.Metrics;
 
