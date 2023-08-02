@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
         }
 
-        public void CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
+        public void CreateJob(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
         {
             try
             {
@@ -77,13 +77,13 @@ namespace kCura.IntegrationPoints.Core.Services
             return _tracker.GetBatchesStatuses(job, batchId);
         }
 
-        public Job CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId,
+        public Job CreateJob(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId,
             long? rootJobId = null, long? parentJobId = null)
         {
             return CreateJobInternal(jobDetails, task, correlationId, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
         }
 
-        public Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
+        public Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
             long? parentJobId = null)
         {
             return CreateJobInternal(jobDetails, task, correlationId, workspaceId, integrationPointId, userId, rootJobId, parentJobId);
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _jobService.UpdateStopState(jobIds, StopState.Stopping);
         }
 
-        private Job CreateJobInternal(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
+        private Job CreateJobInternal(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
         }
 
-        public void CreateJob(int workspaceID, int integrationPointID, Guid correlationId, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
+        public void CreateJob(int workspaceID, int integrationPointID, Guid? correlationId, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
         {
             try
             {

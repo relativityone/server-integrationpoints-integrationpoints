@@ -50,7 +50,7 @@ namespace kCura.ScheduleQueue.Core.Data
         }
 
         public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
-            Guid correlationID, string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
+            Guid? correlationID, string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
             _queueManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID,
@@ -59,7 +59,7 @@ namespace kCura.ScheduleQueue.Core.Data
                 .Execute();
         }
 
-        public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, Guid correlationID, string taskType,
+        public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationID, string taskType,
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {

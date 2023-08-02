@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int RelatedObjectArtifactID { get; set; }
 
-        public Guid CorrelationID { get; set; }
+        public Guid? CorrelationID { get; set; }
 
         public string TaskType { get; set; }
 
@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             AgentTypeID = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID;
             JobDetailsHelper = new TaskParameters()
             {
-                BatchInstance = CorrelationID
+                BatchInstance = Guid.NewGuid()
             };
         }
 

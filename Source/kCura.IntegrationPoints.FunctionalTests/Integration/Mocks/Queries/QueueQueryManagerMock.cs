@@ -118,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             });
         }
 
-        public IQuery<DataTable> CreateScheduledJob(int workspaceId, int relatedObjectArtifactId, Guid correlationID,
+        public IQuery<DataTable> CreateScheduledJob(int workspaceId, int relatedObjectArtifactId, Guid? correlationID,
             string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags,
             int submittedBy, long? rootJobId, long? parentJobId = null)
@@ -135,7 +135,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         }
 
         public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
-            Guid correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            Guid? correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
         {
             return new ActionCommand(() =>
@@ -278,7 +278,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         #endregion
 
         #region Implementation Details
-        private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, Guid correlationID,
+        private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, Guid? correlationID,
             string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)
         {

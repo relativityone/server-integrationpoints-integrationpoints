@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            Guid correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
+            Guid? correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
             long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
@@ -193,7 +193,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid correlationID, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return job;
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid correlationId, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationId, string taskType,
             DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);

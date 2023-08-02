@@ -8,11 +8,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public interface IJobManager
     {
-        Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null);
+        Job CreateJobOnBehalfOfAUser(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null);
 
-        void CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
+        void CreateJob(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
 
-        Job CreateJob(TaskParameters jobDetails, TaskType task, Guid correlationId, int workspaceId, int integrationPointId,
+        Job CreateJob(TaskParameters jobDetails, TaskType task, Guid? correlationId, int workspaceId, int integrationPointId,
             long? rootJobId = null, long? parentJobId = null);
 
         Job CreateJob(Job parentJob, TaskParameters jobDetails, TaskType task);
