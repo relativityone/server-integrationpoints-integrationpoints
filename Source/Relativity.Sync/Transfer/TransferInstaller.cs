@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using Relativity.AntiMalware.SDK;
+using Relativity.Sync.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;

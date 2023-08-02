@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
-using Relativity.AntiMalware.SDK;
+using Relativity.Sync.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
