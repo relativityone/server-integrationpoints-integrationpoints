@@ -125,7 +125,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             long newJobId = JobId.Next;
 
-            JobTest newJob = CreateJob(newJobId, workspaceId, relatedObjectArtifactId, taskType,
+            JobTest newJob = CreateJob(newJobId, workspaceId, relatedObjectArtifactId, correlationID, taskType,
                 nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
                 jobDetails, jobFlags, submittedBy, rootJobId, parentJobId);
 
@@ -135,8 +135,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         }
 
         public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
-            string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
-            string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
+            Guid correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
         {
             return new ActionCommand(() =>
             {
@@ -144,8 +144,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
                 long newJobId = JobId.Next;
 
-                JobTest newJob = CreateJob(newJobId, workspaceID, relatedObjectArtifactID, taskType,
-                    nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
+                JobTest newJob = CreateJob(newJobId, workspaceID, relatedObjectArtifactID,correlationID,
+                    taskType, nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
                     jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
 
                 _db.JobsInQueue.Add(newJob);
@@ -278,9 +278,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         #endregion
 
         #region Implementation Details
-        private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, string taskType,
-            DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-            string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)
+        private JobTest CreateJob(long jobId, int workspaceId, int relatedObjectArtifactId, Guid correlationID,
+            string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int submittedBy, long? rootJobId, long? parentJobId)
         {
             JobTest jobTest = new JobTest
             {
@@ -291,6 +291,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
                 LockedByAgentID = null,
                 WorkspaceID = workspaceId,
                 RelatedObjectArtifactID = relatedObjectArtifactId,
+                CorrelationID = correlationID,
                 TaskType = taskType,
                 NextRunTime = nextRunTime,
                 LastRunTime = null,

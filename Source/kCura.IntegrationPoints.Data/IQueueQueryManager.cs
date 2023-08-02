@@ -24,9 +24,9 @@ namespace kCura.IntegrationPoints.Data
             Guid correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
-        ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-            DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
-            string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
+        ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+            Guid correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
         IQuery<DataTable> GetAllJobs();
 

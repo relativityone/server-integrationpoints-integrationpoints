@@ -177,7 +177,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, new TaskResult());
 
-            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _TASK_TYPE.ToString(),
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, _TASK_TYPE.ToString(),
                 _nextRunTime, _agentService.AgentTypeInformation.AgentTypeID, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), 0, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             Assert.AreEqual(result.JobState, JobLogState.Deleted);
@@ -220,6 +220,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 _MOCK_JOB_ID,
                 _WORKSPACE_ID,
                 _RELATED_OBJECT_ARTIFACT_ID,
+                _CORRELATION_ID,
                 _TASK_TYPE.ToString(),
                 _nextRunTime,
                 _agentService.AgentTypeInformation.AgentTypeID,
@@ -251,6 +252,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 _MOCK_JOB_ID,
                 _WORKSPACE_ID,
                 _RELATED_OBJECT_ARTIFACT_ID,
+                _CORRELATION_ID,
                 _TASK_TYPE.ToString(),
                 _nextRunTime,
                 _agentService.AgentTypeInformation.AgentTypeID,

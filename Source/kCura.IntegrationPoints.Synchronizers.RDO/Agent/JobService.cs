@@ -97,21 +97,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 {
                     scheduleRule.ResetConsecutiveFailedScheduledJobsCount();
                 }
+                Guid newJobCorrelationID = Guid.NewGuid();
 
                 _log.LogInformation(
                     "Job {jobId} was scheduled with following details: " +
                     "NextRunTime - {nextRunTime} " +
-                    "ScheduleRule - {scheduleRule}",
+                    "ScheduleRule - {scheduleRule}" +
+                    "CorrelationID - {correlationID}",
                     job.JobId,
                     nextUtcRunDateTime,
-                    job.ScheduleRule);
+                    job.ScheduleRule,
+                    newJobCorrelationID);
 
                 TaskParameters taskParameters = new TaskParameters()
                 {
-                    BatchInstance = Guid.NewGuid()
+                    BatchInstance = newJobCorrelationID
                 };
                 string jobDetails = _serializer.Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, newJobCorrelationID, job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
             {
@@ -157,7 +160,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy, long? rootJobID, long? parentJobID)
+            Guid correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
+            long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
 
@@ -168,6 +172,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     oldJobId,
                     workspaceID,
                     relatedObjectArtifactID,
+                    correlationID,
                     taskType,
                     nextRunTime.Value,
                     AgentTypeInformation.AgentTypeID,
