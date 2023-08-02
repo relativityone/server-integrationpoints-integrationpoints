@@ -54,7 +54,7 @@
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsSDK>1.3.0-pre.21</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0-pre.13</RelativityIntegrationPointsServicesInterfacesPrivate>
-    <KeplerVersion>2.15.5</KeplerVersion>
+    <KeplerVersion>2.15.6</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
@@ -69,7 +69,7 @@
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
 	<RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
     <RelativitySync>0.12.0-pre.169</RelativitySync>
-    <TelemetryAPM>2019.1.1</TelemetryAPM>
+    <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
     <RelativityTestingFramework>10.3.0</RelativityTestingFramework>
