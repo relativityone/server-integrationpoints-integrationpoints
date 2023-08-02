@@ -1,22 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider
 {
-    internal class IntegrationPointInfo
+    public class IntegrationPointInfo
     {
         public IntegrationPointInfo(IntegrationPointDto integrationPoint)
         {
+            ArtifactId = integrationPoint.ArtifactId;
             SourceConfiguration = integrationPoint.SourceConfiguration;
+            DestinationConfiguration = integrationPoint.DestinationConfiguration;
             SecuredConfiguration = integrationPoint.SecuredConfiguration;
-            FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, i)).ToList();
+            FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, FieldMapType.Normal, i)).ToList();
         }
 
-        public string SourceConfiguration { get; set; }
+        public int ArtifactId { get; }
 
-        public string SecuredConfiguration { get; set; }
+        public string SourceConfiguration { get; }
 
-        public List<IndexedFieldMap> FieldMap { get; set; }
+        public DestinationConfiguration DestinationConfiguration { get; set; }
+
+        public string SecuredConfiguration { get; }
+
+        public List<IndexedFieldMap> FieldMap { get; }
     }
 }

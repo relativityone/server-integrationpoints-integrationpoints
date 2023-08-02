@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         {
             return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
         }
-
+        
         private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
         {
             return _retryHandler.Execute<T, RipSerializationException>(

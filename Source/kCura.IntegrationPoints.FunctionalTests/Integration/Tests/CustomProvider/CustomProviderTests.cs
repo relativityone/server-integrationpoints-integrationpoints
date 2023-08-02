@@ -9,6 +9,7 @@ using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Data;
@@ -89,6 +90,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
             jobProgressHandler.GetType().GetField("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(jobProgressHandler, TimeSpan.FromMilliseconds(200));
             Container.Register(Component.For<IJobProgressHandler>().UsingFactoryMethod(() => jobProgressHandler)
+                .LifestyleTransient().IsDefault());
+
+            IImportJobRunner importJobRunner = Container.Resolve<IImportJobRunner>();
+            importJobRunner.GetType().GetField("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(importJobRunner, TimeSpan.FromMilliseconds(200));
+            Container.Register(Component.For<IImportJobRunner>().UsingFactoryMethod(() => importJobRunner)
                 .LifestyleTransient().IsDefault());
 
             int callIdx = 0;

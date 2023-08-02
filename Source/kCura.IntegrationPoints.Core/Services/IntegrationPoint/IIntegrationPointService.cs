@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Synchronizers.RDO;

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
 {
     /// <inheritdoc/>
     internal class RdoImportApiRunner : IImportApiRunner
@@ -34,17 +33,24 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint)
         {
-            _logger.LogInformation("ImportApiRunner for rdo flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
+            _logger.LogInformation("ImportApiRunner for RDO flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
-            RdoImportConfiguration configuration = _importSettingsBuilder.Build(destinationConfiguration, fieldMappings);
+            RdoImportConfiguration configuration = await CreateConfiguration(integrationPoint).ConfigureAwait(false);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 
             await _importApiService.ConfigureRdoImportApiJobAsync(importJobContext, configuration).ConfigureAwait(false);
 
             await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
+        }
+
+        private Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
+        {
+            RdoImportConfiguration configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap);
+
+            return Task.FromResult(configuration);
         }
     }
 }

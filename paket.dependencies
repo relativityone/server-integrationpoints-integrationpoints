@@ -49,7 +49,8 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.20.25
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
-nuget Relativity.Transfer.Client 8.0.0-pre.66
+nuget Relativity.Import.SDK
+nuget Relativity.Transfer.Client 8.0.0-pre.70
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
