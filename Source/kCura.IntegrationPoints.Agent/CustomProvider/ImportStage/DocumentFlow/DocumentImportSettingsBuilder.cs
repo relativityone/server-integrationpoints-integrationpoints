@@ -9,7 +9,7 @@ using Relativity.API;
 using Relativity.Import.V1.Builders.Documents;
 using Relativity.Import.V1.Models.Settings;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
 {
     /// <inheritdoc />
     internal class DocumentImportSettingsBuilder : IDocumentImportSettingsBuilder
@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
             ImportDocumentSettings importDocumentSettings = ConfigureDestinationFolderStructure(
                 withFolders,
-                fieldMappings,
                 destinationConfiguration.DestinationFolderArtifactId,
                 destinationConfiguration.UseFolderPathInformation,
                 destinationConfiguration.FolderPathSourceField);
@@ -141,7 +140,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     switch (map.FieldMap.DestinationField.Type)
                     {
                         case FieldTypes.LongText:
-                            x = x.WithLongTextFieldContainingFilePath(map.ColumnIndex, map.DestinationFieldName);
+                            x = x.WithLongTextFieldContainingFilePath(map.ColumnIndex, map.DestinationFieldName, encoding => encoding
+                                .WithEncodingAutoDetection()
+                                .WithoutFileSize());
                             break;
                         default:
                             x = x.WithField(map.ColumnIndex, map.DestinationFieldName);
@@ -153,7 +154,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 
         private ImportDocumentSettings ConfigureDestinationFolderStructure(
             IWithFolders withFolders,
-            List<IndexedFieldMap> fieldMappings,
             int destinationFolderArtifactId,
             bool useFolderPathInformation,
             int folderPathFieldIndex)
@@ -170,12 +170,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
                     f.WithRootFolderID(destinationFolderArtifactId, r =>
                         r.WithAllDocumentsInRootFolder()));
             }
-        }
-
-        private static int GetFieldIndex(List<IndexedFieldMap> fieldMappings, string fieldName)
-        {
-            IndexedFieldMap indexedField = fieldMappings.FirstOrDefault(x => x.DestinationFieldName == fieldName);
-            return indexedField?.ColumnIndex ?? -1;
         }
 
         private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)

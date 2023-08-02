@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
 {
     internal class ImportJobContext
     {

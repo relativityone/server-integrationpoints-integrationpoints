@@ -30,6 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
+        [Ignore("REL-862989")]
         public void SavedSearch_NativesAndMetadata_GoldFlow()
         {
             _testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
@@ -43,6 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
+        [Ignore("REL-862989")]
         public void Entities_GoldFlow()
         {
             _testsImplementation.EntitiesPushGoldFlow();

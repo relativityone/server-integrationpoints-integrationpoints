@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             _logger = logger;
         }
 
-        public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint, string directoryPath)
+        public async Task<List<CustomProviderBatch>> BuildIdFilesAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint, string directoryPath)
         {
             IDataReader reader = await GetIdsReaderAsync(provider, integrationPoint).ConfigureAwait(false);
             int batchSize = await _instanceSettings.GetCustomProviderBatchSizeAsync().ConfigureAwait(false);
@@ -68,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
                         read = reader.Read();
                     }
 
-                    CustomProviderBatch batch = new CustomProviderBatch()
+                    CustomProviderBatch batch = new CustomProviderBatch
                     {
                         BatchGuid = Guid.NewGuid(),
                         BatchID = batchIndex,
@@ -104,18 +103,24 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
             }
         }
 
-        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointDto integrationPoint)
+        private Task<IDataReader> GetIdsReaderAsync(IDataSourceProvider provider, IntegrationPointInfo integrationPoint)
         {
-            FieldEntry idField = integrationPoint.FieldMappings.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
+            IndexedFieldMap idField = integrationPoint.FieldMap.FirstOrDefault(x => x.FieldMap.FieldMapType == FieldMapTypeEnum.Identifier);
+
+            if (idField == null)
+            {
+                throw new InvalidOperationException("Identifier field has not been found in Integration Point fields mapping.");
+            }
+
             try
             {
                 _logger.LogInformation("Retrieving record IDs from custom provider");
-                IDataReader reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
+                IDataReader reader = provider.GetBatchableIds(idField.FieldMap.SourceField, new DataSourceProviderConfiguration(integrationPoint.SourceConfiguration, integrationPoint.SecuredConfiguration));
                 return Task.FromResult(reader);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to retrive record IDs from custom provider");
+                _logger.LogError(ex, "Failed to retrieve record IDs from custom provider");
                 throw;
             }
         }

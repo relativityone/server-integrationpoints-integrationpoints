@@ -102,8 +102,6 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 });
 
             _toggleProvider = new Mock<IRipToggleProvider>();
-            _toggleProvider.Setup(x => x.IsEnabled<EnableRelativitySyncApplicationToggle>())
-                .Returns(false);
 
             _providerTypeService = new Mock<IProviderTypeService>();
             _providerTypeService.Setup(s => s.GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID))
@@ -121,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         public void ShouldUseRelativitySync_ShouldAllowUsingSyncWorkflow()
         {
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeTrue();
@@ -145,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _importSettings.ProductionImport = productionImport;
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             return result;
@@ -163,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 .Returns(providerType);
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeFalse();
@@ -180,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 .Throws<Exception>();
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeFalse();
@@ -194,7 +192,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 .Throws<Exception>();
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeFalse();
@@ -207,7 +205,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _configurationDeserializer.Setup(s => s.Deserialize<SourceConfiguration>(_SOURCE_CONFIGURATION)).Throws<Exception>();
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeFalse();
@@ -220,7 +218,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _configurationDeserializer.Setup(s => s.Deserialize<DestinationConfiguration>(_DESTINATION_CONFIGURATION)).Throws<Exception>();
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             result.Should().BeFalse();
@@ -233,25 +231,10 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _job.ScheduleRuleType = "scheduled rule";
 
             // Act
-            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [TestCase(false, ExpectedResult = false)]
-        [TestCase(true, ExpectedResult = true)]
-        public bool ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
-        {
-            // Arrange
-            _toggleProvider.Setup(x => x.IsEnabled<EnableRelativitySyncApplicationToggle>())
-                .Returns(toggleValue);
-
-            // Act
             bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
-            return result;
+            result.Should().BeTrue();
         }
     }
 }

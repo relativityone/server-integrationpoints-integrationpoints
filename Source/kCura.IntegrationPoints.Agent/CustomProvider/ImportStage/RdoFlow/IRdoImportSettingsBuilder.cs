@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
 {
     /// <summary>
     /// The interface describing the ImportAPI settings builder for rdo flow.

@@ -36,31 +36,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             _logger = logger;
         }
 
-        public bool IsRelativitySyncAppEnabled()
-        {
-            bool isToggleEnabled = _toggleProvider.IsEnabled<EnableRelativitySyncApplicationToggle>();
-
-            if (!isToggleEnabled)
-            {
-                _logger.LogInformation("Toggle {toggleName} is disabled - Relativity Sync application will not be used", typeof(EnableRelativitySyncApplicationToggle).FullName);
-                return false;
-            }
-
-            return true;
-        }
-
         public bool ShouldUseRelativitySyncApp(int integrationPointId)
-        {
-            _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
-
-            bool isRelatvitySyncAppEnabled = IsRelativitySyncAppEnabled();
-
-            bool configurationAllowsUsingSync = ShouldUseRelativitySync(integrationPointId);
-
-            return configurationAllowsUsingSync && isRelatvitySyncAppEnabled;
-        }
-
-        public bool ShouldUseRelativitySync(int integrationPointId)
         {
             _logger.LogInformation("Checking if Relativity Sync flow should be used for IntegrationPoint ID: {integrationPointId}", integrationPointId);
 

@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
             _objectManagerMock = new Mock<IObjectManager>();
             Mock<IServicesMgr> servicesMgrFake = new Mock<IServicesMgr>();
             servicesMgrFake.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>())).Returns(_objectManagerMock.Object);
-            _sut = new FieldsRepository(servicesMgrFake.Object);
+            _sut = new FieldsRepository(servicesMgrFake.Object, new Mock<IAPILog>().Object);
         }
 
         [Test]

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
 using kCura.IntegrationPoints.Core.Storage;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
@@ -18,11 +19,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
     internal class LoadFileBuilder : ILoadFileBuilder
     {
         private readonly IRelativityStorageService _relativityStorageService;
+        private readonly IEntityFullNameService _entityFullNameService;
         private readonly IAPILog _logger;
 
-        public LoadFileBuilder(IRelativityStorageService relativityStorageService, IAPILog logger)
+        public LoadFileBuilder(IRelativityStorageService relativityStorageService, IEntityFullNameService entityFullNameService, IAPILog logger)
         {
             _relativityStorageService = relativityStorageService;
+            _entityFullNameService = entityFullNameService;
             _logger = logger;
         }
 
@@ -30,9 +33,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
         {
             try
             {
-                _logger.LogInformation("Creating data file for batch index: {batchIndex}", batch.BatchID);
+                _logger.LogInformation("Creating data file for batch index: {batchIndex}, GUID: {batchGuid}", batch.BatchID, batch.BatchGuid);
 
-                List<IndexedFieldMap> orderedFieldMap = integrationPointInfo.FieldMap.OrderBy(x => x.ColumnIndex).ToList();
+                Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary = integrationPointInfo
+                    .FieldMap
+                    .OrderBy(x => x.ColumnIndex)
+                    .ToDictionary(x => x.DestinationFieldName);
 
                 IEnumerable<FieldEntry> fields = integrationPointInfo.FieldMap.Select(x => x.FieldMap.SourceField);
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointInfo.SourceConfiguration, integrationPointInfo.SecuredConfiguration);
@@ -43,31 +49,41 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-
-                    await WriteFileAsync(sourceProviderDataReader, orderedFieldMap, settings, dataFileWriter).ConfigureAwait(false);
-
-                    _logger.LogInformation("Successfully created data file for batch index: {batchIndex} path: {path}", batch.BatchID, dataFileStream.StoragePath);
-
+                    await WriteFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
+                    _logger.LogInformation("Successfully created data file for batch index: {batchIndex} GUID: {batchGuid} path: {path}", batch.BatchID, batch.BatchGuid, dataFileStream.StoragePath);
                     return settings;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}", batch.BatchID);
+                _logger.LogError(ex, "Failed to create data file for batch index: {batchIndex}, GUID: {batchGuid}", batch.BatchID, batch.BatchGuid);
                 throw;
             }
         }
 
-        private static async Task WriteFileAsync(IDataReader sourceProviderDataReader, List<IndexedFieldMap> orderedFieldMap, DataSourceSettings settings, TextWriter dataFileWriter)
+        private async Task WriteFileAsync(
+            IDataReader sourceProviderDataReader,
+            Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary,
+            DataSourceSettings settings,
+            TextWriter dataFileWriter)
         {
             while (sourceProviderDataReader.Read())
             {
                 List<string> rowValues = new List<string>();
 
-                foreach (IndexedFieldMap field in orderedFieldMap)
+                foreach (IndexedFieldMap field in destinationFieldNameToFieldMapDictionary.Values)
                 {
-                    string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                    rowValues.Add(value);
+                    switch (field.FieldMapType)
+                    {
+                        case FieldMapType.Normal:
+                            string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
+                            rowValues.Add(value);
+                            break;
+                        case FieldMapType.EntityFullName:
+                            string fullName = _entityFullNameService.FormatFullName(destinationFieldNameToFieldMapDictionary, sourceProviderDataReader);
+                            rowValues.Add(fullName);
+                            break;
+                    }
                 }
 
                 string line = FormatLine(settings, rowValues);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;

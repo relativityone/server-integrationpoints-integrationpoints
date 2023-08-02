@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Common.Kepler;
