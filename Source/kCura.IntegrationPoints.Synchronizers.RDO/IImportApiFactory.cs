@@ -5,8 +5,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public interface IImportApiFactory
     {
-        IImportAPI GetImportAPI(string webServiceUrl);
+        IImportAPI GetImportAPI();
 
-        IImportApiFacade GetImportApiFacade(string webServiceUrl);
+        IImportApiFacade GetImportApiFacade();
     }
 }

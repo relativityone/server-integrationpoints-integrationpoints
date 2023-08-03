@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -33,7 +32,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly IImportJobFactory _jobFactory;
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
         private readonly NativeFileImportService _nativeFileImportService;
-        private readonly IConfig _config;
         private Dictionary<int, string> _idToFieldNameDictionary;
         private IImportAPI _importApi;
         private int _lastJobStatusUpdate;
@@ -49,7 +47,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             IImportJobFactory jobFactory,
             IHelper helper,
             IJobStopManager jobStopManager,
-            IConfig config,
             IDiagnosticLog diagnosticLog)
         {
             _helper = helper;
@@ -61,7 +58,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _nativeFileImportService = nativeFileImportService;
             _factory = factory;
             _jobFactory = jobFactory;
-            _config = config;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
 
             if (_batchManager != null)
@@ -200,14 +196,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         private void Connect()
         {
-            _importApi = _factory.GetImportAPI(_config.WebApiPath);
+            _importApi = _factory.GetImportAPI();
         }
 
         internal void SetupFieldDictionary()
         {
             try
             {
-                IImportApiFacade facade = _factory.GetImportApiFacade(_config.WebApiPath);
+                IImportApiFacade facade = _factory.GetImportApiFacade();
                 _idToFieldNameDictionary = facade.GetWorkspaceFieldsNames(Settings.DestinationConfiguration.CaseArtifactId, Settings.DestinationConfiguration.ArtifactTypeId);
             }
             catch (Exception e)

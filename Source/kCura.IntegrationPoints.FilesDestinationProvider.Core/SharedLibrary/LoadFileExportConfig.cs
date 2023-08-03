@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
         public int HttpErrorWaitTimeInSeconds { get; } = 10;
 
-        public string WebApiServiceUrl => _webApiConfig.GetWebApiUrl;
-
+        public string WebApiServiceUrl => _webApiConfig.WebApiUrl;
     }
 }

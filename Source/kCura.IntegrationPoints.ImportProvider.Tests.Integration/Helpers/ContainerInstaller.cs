@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private static void RegisterConfig(WindsorContainer windsorContainer)
         {
             IWebApiConfig webApiConfig = Substitute.For<IWebApiConfig>();
-            webApiConfig.GetWebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
+            webApiConfig.WebApiUrl.Returns(SharedVariables.RelativityWebApiUrl);
             windsorContainer.Register(Component.For<IWebApiConfig>().Instance(webApiConfig));
         }
 

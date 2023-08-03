@@ -5,11 +5,6 @@ namespace kCura.IntegrationPoints.Config
     public interface IConfig
     {
         /// <summary>
-        /// The web api path to be used by the import api.
-        /// </summary>
-        string WebApiPath { get; }
-
-        /// <summary>
         /// Disables the validation of the native file locations.
         /// </summary>
         bool DisableNativeLocationValidation { get; }

@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using System.IO;
+using kCura.IntegrationPoints.Config;
 using kCura.WinEDDS;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public LoadFile GetLoadFile(ImportSettingsBase settings)
         {
-            WinEDDS.Config.WebServiceURL = _webApiConfig.GetWebApiUrl;
+            WinEDDS.Config.WebServiceURL = _webApiConfig.WebApiUrl;
 
             IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
             LoadFile loadFile = _basicLoadFileFactory.GetLoadFile(settings.WorkspaceId);
@@ -51,7 +51,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IDataTransferLocationService locationService = _locationServiceFactory.CreateService(settings.WorkspaceId);
 
             string loadFilePath = Path.Combine(locationService.GetWorkspaceFileLocationRootPath(settings.WorkspaceId), settings.LoadFile);
-            return new ImageLoadFile {
+            return new ImageLoadFile
+            {
                 FileName = loadFilePath,
                 StartLineNumber = long.Parse(settings.LineNumber)
             };

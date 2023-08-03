@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -26,7 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private IWorkspaceManager _workspaceManager;
         private IAPILog _logger;
         private JobHistoryService _instance;
-        private ISerializer _serializer;
         private IntegrationPointDto _integrationPoint;
         private DestinationConfiguration _destinationConfiguration;
         private WorkspaceDTO _workspace;
@@ -39,7 +37,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _workspaceManager = Substitute.For<IWorkspaceManager>();
             _logger = Substitute.For<IAPILog>();
-            _serializer = Substitute.For<ISerializer>();
 
             _integrationPoint = new IntegrationPointDto
             {
@@ -64,8 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance = new JobHistoryService(
                 _relativityObjectManager,
                 _workspaceManager,
-                _logger,
-                _serializer);
+                _logger);
         }
 
         [Test]
@@ -156,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 .Query<Data.JobHistory>(Arg.Is<QueryRequest>(x =>
                     x.Condition.Contains(artifactId.ToString())));
         }
-        
+
         [Test]
         public void UpdateRdoWithoutDocuments_Succeeds_Test()
         {

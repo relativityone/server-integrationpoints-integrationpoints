@@ -21,12 +21,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
             _facade = facade;
         }
 
-        public IImportAPI GetImportAPI(string webServiceUrl)
+        public IImportAPI GetImportAPI()
         {
             return _importApi;
         }
 
-        public IImportApiFacade GetImportApiFacade(string webServiceUrl)
+        public IImportApiFacade GetImportApiFacade()
         {
             return _facade;
         }

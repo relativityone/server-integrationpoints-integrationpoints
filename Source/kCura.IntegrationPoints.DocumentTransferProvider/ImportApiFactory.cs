@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
     {
         private readonly IWebApiConfig _webApiConfig;
         private readonly IAuthTokenGenerator _authTokenGenerator;
+
         private class RelativityTokenProvider : IRelativityTokenProvider
         {
             private readonly IAuthTokenGenerator _authTokenGenerator;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
         {
             IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_authTokenGenerator);
 
-            return ExtendedImportAPI.CreateByTokenProvider(_webApiConfig.GetWebApiUrl, relativityTokenProvider);
+            return ExtendedImportAPI.CreateByTokenProvider(_webApiConfig.WebApiUrl, relativityTokenProvider);
         }
     }
 }

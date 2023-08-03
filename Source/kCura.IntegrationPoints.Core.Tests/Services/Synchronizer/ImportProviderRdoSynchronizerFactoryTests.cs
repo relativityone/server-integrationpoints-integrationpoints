@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
             var helper = new Mock<IHelper>();
             helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null, null, null);
+            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null, null);
             _kernel.Setup(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName)).Returns(dataSynchronizer);
 
             return dataSynchronizer;

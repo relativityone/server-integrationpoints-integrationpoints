@@ -2,6 +2,6 @@
 {
     public interface IWebApiConfig
     {
-        string GetWebApiUrl { get; }
+        string WebApiUrl { get; }
     }
 }

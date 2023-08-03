@@ -47,10 +47,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             import.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(list);
 
             Mock<IImportApiFactory> mock = new Mock<IImportApiFactory>();
-            mock.Setup(x => x.GetImportAPI(It.IsAny<string>())).Returns(import.Object);
+            mock.Setup(x => x.GetImportAPI()).Returns(import.Object);
 
-            mock.Setup(x => x.GetImportApiFacade(It.IsAny<string>()))
-                .Returns(new ImportApiFacade(mock.Object, string.Empty, new Mock<ILogger<ImportApiFacade>>().Object));
+            mock.Setup(x => x.GetImportApiFacade())
+                .Returns(new ImportApiFacade(mock.Object, new Mock<ILogger<ImportApiFacade>>().Object));
 
             return mock.Object;
         }
@@ -163,7 +163,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                 _helper.Object,
                 entityManagerLinksSanitizer.Object,
                 _diagnosticLogMock.Object,
-                new Mock<IConfig>().Object,
                 Serializer);
         }
     }

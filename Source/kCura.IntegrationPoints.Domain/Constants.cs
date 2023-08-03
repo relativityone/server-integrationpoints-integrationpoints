@@ -44,10 +44,8 @@
         public const string SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION = "kCura.ScheduleQueue.Core";
         public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
         public const string REMOVE_ERROR_BATCH_SIZE_INSTANCE_SETTING_NAME = "RemoveErrorsFromScratchTableBatchSize";
-        public const string WEB_API_PATH = "WebAPIPath";
         public const string SOURCEPROVIDER_ARTIFACTID_FIELD_NAME = "Artifact ID";
         public const string DESTINATION_PROVIDER_ARTIFACTID_FIELD_NAME = "Artifact ID";
-        public const string REPLACE_WEB_API_WITH_EXPORT_CORE = "ReplaceWebAPIWithExportCore";
         public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
         public const string RELATIVITY_CORE_SECTION = "Relativity.Core";
         public const string CLOUD_INSTANCE_NAME = "CloudInstance";
