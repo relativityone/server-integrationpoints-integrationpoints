@@ -17,8 +17,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
         private readonly IChoiceQuery _choiceQuery;
 
-        public IntegrationPointProfileAccessor(IBackwardCompatibility backwardCompatibility, IIntegrationPointProfileService integrationPointProfileService,
-            IChoiceQuery choiceQuery, IIntegrationPointService integrationPointService, ICaseServiceContext caseServiceContext)
+        public IntegrationPointProfileAccessor(
+            IBackwardCompatibility backwardCompatibility,
+            IIntegrationPointProfileService integrationPointProfileService,
+            IChoiceQuery choiceQuery,
+            IIntegrationPointService integrationPointService,
+            ICaseServiceContext caseServiceContext)
             : base(backwardCompatibility, caseServiceContext)
         {
             _integrationPointProfileService = integrationPointProfileService;
@@ -39,22 +43,23 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             return GetIntegrationPointProfile(artifactId);
         }
 
-        protected override int Save(IntegrationPointModel model, string overwriteFieldsName)
-        {
-            var integrationPointProfileModel = model.ToCoreProfileModel(overwriteFieldsName);
-            return _integrationPointProfileService.SaveProfile(integrationPointProfileModel);
-        }
-
         public IntegrationPointModel GetIntegrationPointProfile(int integrationPointProfileArtifactId)
         {
-            IntegrationPointProfileSlimDto integrationPointProfile = _integrationPointProfileService.ReadSlim(integrationPointProfileArtifactId);
-            return integrationPointProfile.ToIntegrationPointModel();
+            IntegrationPointProfileDto integrationPointProfile = _integrationPointProfileService.Read(integrationPointProfileArtifactId);
+            IntegrationPointModel model = integrationPointProfile.ToIntegrationPointModel();
+            UpdateOverwriteFieldsChoiceId(model);
+            return model;
         }
 
         public IList<IntegrationPointModel> GetAllIntegrationPointProfiles()
         {
-            IList<IntegrationPointProfileSlimDto> profiles = _integrationPointProfileService.ReadAllSlim();
-            return profiles.Select(x => x.ToIntegrationPointModel()).ToList();
+            IList<IntegrationPointProfileDto> profiles = _integrationPointProfileService.ReadAll();
+            return profiles.Select(x =>
+            {
+                IntegrationPointModel model = x.ToIntegrationPointModel();
+                UpdateOverwriteFieldsChoiceId(model);
+                return model;
+            }).ToList();
         }
 
         public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
@@ -70,6 +75,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
             int artifactId = _integrationPointProfileService.SaveProfile(integrationPointProfileDto);
             return GetIntegrationPointProfile(artifactId);
+        }
+
+        protected override int Save(IntegrationPointModel model, string overwriteFieldsName)
+        {
+            var integrationPointProfileModel = model.ToCoreProfileModel(overwriteFieldsName);
+            return _integrationPointProfileService.SaveProfile(integrationPointProfileModel);
         }
     }
 }
