@@ -54,6 +54,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 }
 
                 row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
+                _log.LogInformation("Retrieved following row: {@row}", row);
             }
 
             Job job = CreateJob(row);
@@ -114,7 +115,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     BatchInstance = newJobCorrelationID
                 };
                 string jobDetails = _serializer.Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, newJobCorrelationID, job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, newJobCorrelationID.ToString(), job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
             {
@@ -159,8 +160,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            Guid? correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
+        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, 
+            string correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
             long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
@@ -193,7 +194,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationID, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
@@ -236,7 +237,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return job;
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationId, string taskType,
+        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationId, string taskType,
             DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);

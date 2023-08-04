@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int RelatedObjectArtifactID { get; set; }
 
-        public Guid? CorrelationID { get; set; }
+        public string CorrelationID { get; set; }
 
         public string TaskType { get; set; }
 

@@ -16,10 +16,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 
-        Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationID, string taskType,
+        Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
             IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID);
 
-        Job CreateJob(int workspaceID, int relatedObjectArtifactID, Guid? correlationID, string taskType,
+        Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
             DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID);
 
         void DeleteJob(long jobID);

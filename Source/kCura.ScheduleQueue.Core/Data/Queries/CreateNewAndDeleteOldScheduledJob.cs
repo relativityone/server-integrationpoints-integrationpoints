@@ -14,7 +14,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         private readonly long _oldScheduledJobId;
         private readonly int _workspaceId;
         private readonly int _relatedObjectArtifactId;
-        private readonly Guid? _correlationId;
+        private readonly string _correlationId;
         private readonly string _taskType;
         private readonly DateTime _nextRunTime;
         private readonly int _agentTypeId;
@@ -31,7 +31,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             long oldScheduledJobId,
             int workspaceID,
             int relatedObjectArtifactID,
-            Guid? correlationID,
+            string correlationID,
             string taskType,
             DateTime nextRunTime,
             int AgentTypeID,
@@ -97,7 +97,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             List<SqlParameter> sqlParams = new List<SqlParameter>();
             sqlParams.Add(new SqlParameter("@WorkspaceID", _workspaceId));
             sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", _relatedObjectArtifactId));
-            sqlParams.Add(_correlationId == Guid.Empty
+            sqlParams.Add(string.IsNullOrEmpty(_correlationId)
                 ? new SqlParameter("@CorrelationID", DBNull.Value)
                 : new SqlParameter("@CorrelationID", _correlationId));
             sqlParams.Add(new SqlParameter("@TaskType", _taskType));

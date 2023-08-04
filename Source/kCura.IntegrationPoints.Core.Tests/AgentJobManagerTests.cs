@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private int _workspaceId;
         private int _integrationPointId;
         private int _userId;
-        private Guid _correlationIdFake;
+        private string _correlationIdFake;
         private TaskType _task;
         private IAPILog _logger;
 
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _task = TaskType.ExportService;
             _context = Substitute.For<IEddsServiceContext>();
             _context.UserID = 55555;
-            _correlationIdFake = Guid.NewGuid();
+            _correlationIdFake = Guid.NewGuid().ToString();
 
             _helper = Substitute.For<IHelper>();
             _jobService = Substitute.For<IJobService>();
@@ -289,7 +289,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Job GetJob(long jobID, long? rootJobID)
         {
             return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111,
-                222, Guid.NewGuid(),TaskType.SyncEntityManagerWorker,
+                222, Guid.NewGuid().ToString(),TaskType.SyncEntityManagerWorker,
                 new DateTime(), null, "", 0, new DateTime(), 1,
                 null, null);
         }

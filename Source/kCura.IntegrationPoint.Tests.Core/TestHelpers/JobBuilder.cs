@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             table.Columns.Add(new DataColumn(_LOCKED_BY_AGENT_ID, typeof(int)));
             table.Columns.Add(new DataColumn(_WORKSPACE_ID, typeof(int)));
             table.Columns.Add(new DataColumn(_RELATED_OBJECT_ARTIFACT_ID, typeof(int)));
-            table.Columns.Add(new DataColumn(_CORRELATION_ID, typeof(Guid)));
+            table.Columns.Add(new DataColumn(_CORRELATION_ID, typeof(string)));
             table.Columns.Add(new DataColumn(_TASK_TYPE, typeof(string)));
             table.Columns.Add(new DataColumn(_NEXT_RUN_TIME, typeof(DateTime)));
             table.Columns.Add(new DataColumn(_LAST_RUN_TIME, typeof(DateTime)));

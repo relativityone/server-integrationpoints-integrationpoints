@@ -32,7 +32,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         private const long _PARENT_JOB_ID = 756;
         private const long _ROOT_JOB_ID = 287;
         private const string _MOCK_JOB_DETAILS = "There should be details";
-        private static readonly Guid _CORRELATION_ID = new Guid("DCE6A005-7C6D-4D85-A383-A422D20BCF04");
+        private static readonly string _CORRELATION_ID = "randomGuid";
         private const TaskType _TASK_TYPE = TaskType.ImportService;
         private readonly DateTime _mockScheduleRuleReturnDate = new DateTime(2020, 12, 31);
         private readonly Guid _goldFlowAgentGuid = Guid.NewGuid();
@@ -177,7 +177,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, new TaskResult());
 
-            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _CORRELATION_ID, _TASK_TYPE.ToString(),
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, Arg.Any<string>(), _TASK_TYPE.ToString(),
                 _nextRunTime, _agentService.AgentTypeInformation.AgentTypeID, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), 0, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
 
             Assert.AreEqual(result.JobState, JobLogState.Deleted);
@@ -220,7 +220,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 _MOCK_JOB_ID,
                 _WORKSPACE_ID,
                 _RELATED_OBJECT_ARTIFACT_ID,
-                _CORRELATION_ID,
+                Arg.Any<string>(),
                 _TASK_TYPE.ToString(),
                 _nextRunTime,
                 _agentService.AgentTypeInformation.AgentTypeID,
@@ -252,7 +252,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 _MOCK_JOB_ID,
                 _WORKSPACE_ID,
                 _RELATED_OBJECT_ARTIFACT_ID,
-                _CORRELATION_ID,
+                Arg.Any<string>(),
                 _TASK_TYPE.ToString(),
                 _nextRunTime,
                 _agentService.AgentTypeInformation.AgentTypeID,

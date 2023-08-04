@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Job GetJob(int jobId, int workspaceID, long? rootJobId = null)
         {
             return JobHelper.GetJob(jobId, rootJobId, null, 0, 0, workspaceID,
-                0, Guid.Empty, TaskType.None, DateTime.MinValue,
+                0, string.Empty, TaskType.None, DateTime.MinValue,
                 null, null, 0, DateTime.MinValue, 0, null, null);
         }
     }

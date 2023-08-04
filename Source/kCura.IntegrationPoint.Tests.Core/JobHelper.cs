@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             int lockedByAgentId,
             int workspaceId,
             int relatedObjectArtifactId,
-            Guid correlationId,
+            string correlationId,
             TaskType taskType,
             DateTime nextRunTime,
             DateTime? lastRunTime,
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         }
 
         public static DataRow CreateJobDataRow(long jobId, long? rootJobId, long? parentJobId, int agentTypeId,
-            int? lockedByAgentId, int workspaceId, int relatedObjectArtifactId, Guid correlationId, TaskType taskType, DateTime nextRunTime,
+            int? lockedByAgentId, int workspaceId, int relatedObjectArtifactId, string correlationId, TaskType taskType, DateTime nextRunTime,
             DateTime? lastRunTime, string jobDetails, int jobFlags, DateTime submittedDate, int submittedBy,
             string scheduleRuleType, string serializedScheduleRule, StopState stopState, DataTable dt = null)
         {
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoint.Tests.Core
                 new DataColumn() {ColumnName = "LockedByAgentID", DataType = typeof(int) },
                 new DataColumn() {ColumnName = "WorkspaceID", DataType = typeof(int) },
                 new DataColumn() {ColumnName = "RelatedObjectArtifactID", DataType = typeof(int) },
-                new DataColumn() {ColumnName = "CorrelationID", DataType = typeof(Guid) },
+                new DataColumn() {ColumnName = "CorrelationID", DataType = typeof(string) },
                 new DataColumn() {ColumnName = "TaskType", DataType = typeof(string) },
                 new DataColumn() {ColumnName = "NextRunTime", DataType = typeof(DateTime) },
                 new DataColumn() {ColumnName = "LastRunTime", DataType = typeof(DateTime), AllowDBNull = true },
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             int lockedByAgentId,
             int workspaceId,
             int relatedObjectArtifactId,
-            Guid correlationId,
+            string correlationId,
             TaskType taskType,
             DateTime nextRunTime,
             DateTime? lastRunTime,
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         public static Job GetFakeJobOfTaskType(TaskType taskType)
         {
             return CreateJob(1, 2, 3, 4, 5, 6,
-                7, Guid.NewGuid(), taskType, DateTime.MinValue,
+                7, Guid.NewGuid().ToString(), taskType, DateTime.MinValue,
                 DateTime.MinValue, null, 1, DateTime.MinValue, 2,
                 "", null, StopState.None);
         }
