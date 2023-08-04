@@ -6,14 +6,12 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
-using Constants = kCura.IntegrationPoints.ImportProvider.Constants;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {

@@ -19,7 +19,6 @@ namespace kCura.ScheduleQueue.Core.Tests
         private Job _job;
         private const string _JOB_DETAILS = "{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\"}";
 
-        // TODO: logic of this test vs correlationID
         [SetUp]
         public override void SetUp()
         {
