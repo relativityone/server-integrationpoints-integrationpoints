@@ -163,14 +163,23 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
             if (i >= _columnCount)
             {
-                return TryGetSpecialFieldValue(i);
+                var specialFieldValue = TryGetSpecialFieldValue(i);
+
+                // In case of invalid native file path this condition converts Job to Item level error in IAPI.
+                if (specialFieldValue == null)
+                {
+                    return "null Value";
+                }
+
+                return specialFieldValue;
             }
 
             // if it failed to read native file metadata from FileIdentificationService (_currentNativeFile == null),
-            // return null file-path to IAPI - it will result with item-level-error
+            // return meaningless file-path to IAPI - it will result with item-level-error
             if (i == _nativeFilePathIndex && HasExtraNativeColumns && _currentNativeFile == null)
             {
-                return null;
+                _diagnosticLogger.LogDiagnostic("currentNativeFile is null");
+                return "null Value";
             }
 
             return _currentLine[i];
