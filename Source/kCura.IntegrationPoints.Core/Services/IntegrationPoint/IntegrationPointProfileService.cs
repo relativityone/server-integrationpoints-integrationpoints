@@ -95,6 +95,32 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return profiles.Select(ToSlim).ToList();
         }
 
+        public IList<IntegrationPointProfileDto> ReadAll()
+        {
+            IEnumerable<FieldRef> fields = BaseRdo
+                .GetFieldMetadata(typeof(IntegrationPointProfile))
+                .Values
+                .ToList()
+                .Select(field => new FieldRef { Guid = field.FieldGuid });
+
+            var query = new QueryRequest
+            {
+                Fields = fields
+            };
+
+            List<IntegrationPointProfile> profiles = ObjectManager.Query<IntegrationPointProfile>(query);
+            List<IntegrationPointProfileDto> dtoList = profiles.Select(ToDto).ToList();
+
+            foreach (var dto in dtoList)
+            {
+                dto.FieldMappings = GetFieldMappings(dto.ArtifactId);
+                dto.SourceConfiguration = GetSourceConfiguration(dto.ArtifactId);
+                dto.DestinationConfiguration = GetDestinationConfiguration(dto.ArtifactId);
+            }
+
+            return dtoList;
+        }
+
         public int SaveProfile(IntegrationPointProfileDto dto)
         {
             IntegrationPointProfile profile;

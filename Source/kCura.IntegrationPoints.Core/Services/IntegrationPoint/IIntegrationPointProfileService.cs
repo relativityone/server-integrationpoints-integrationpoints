@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         IList<IntegrationPointProfileSlimDto> ReadAllSlim();
 
+        IList<IntegrationPointProfileDto> ReadAll();
+
         int SaveProfile(IntegrationPointProfileDto dto);
     }
 }
