@@ -176,14 +176,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return profile.ArtifactId;
         }
 
-        public void UpdateConfiguration(int profileArtifactId, string sourceConfiguration, string destinationConfiguration)
-        {
-            IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(profileArtifactId);
-            profile.SourceConfiguration = sourceConfiguration;
-            profile.DestinationConfiguration = destinationConfiguration;
-            ObjectManager.Update(profile);
-        }
-
         private string GetSourceConfiguration(int integrationPointProfileArtifactId)
         {
             return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
@@ -252,6 +244,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
+                DestinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(profile.DestinationConfiguration),
+                FieldMappings = Serializer.Deserialize<List<FieldMap>>(profile.FieldMappings),
+                NextRun = profile.NextScheduledRuntimeUTC,
+                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false),
+                SourceConfiguration = profile.SourceConfiguration
             };
         }
 

@@ -1,23 +1,26 @@
 ﻿using System;
-using System.Collections;
-using System.Configuration;
-using kCura.Config;
+using kCura.IntegrationPoints.Domain;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Config
 {
     public class WebApiConfig : IWebApiConfig
     {
-        public string GetWebApiUrl
+        private readonly IHelper _helper;
+
+        public WebApiConfig(IHelper helper)
+        {
+            _helper = helper;
+        }
+
+        public string WebApiUrl
         {
             get
             {
-                IDictionary config = Manager.GetConfig(Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION);
-                if (config.Contains(Domain.Constants.WEB_API_PATH))
-                {
-                    return config[Domain.Constants.WEB_API_PATH] as string;
-                }
-                throw new ConfigurationErrorsException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.",
-                    Domain.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, Domain.Constants.WEB_API_PATH));
+                Guid ripAppGuid = new Guid(Constants.IntegrationPoints.APPLICATION_GUID_STRING);
+                Uri relativityUri = _helper.GetUrlHelper().GetApplicationURL(ripAppGuid);
+                Uri webServiceUrl = new Uri($"{relativityUri.Scheme}://{relativityUri.Host}/Relativity.Rest/API/");
+                return webServiceUrl.AbsoluteUri;
             }
         }
     }

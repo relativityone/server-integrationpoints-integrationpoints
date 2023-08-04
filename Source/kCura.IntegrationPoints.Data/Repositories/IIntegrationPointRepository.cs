@@ -30,10 +30,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         void UpdateJobHistory(int artifactId, List<int> jobHistory);
 
-        void UpdateSourceConfiguration(int artifactId, string sourceConfiguration);
-
-        void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration);
-
         void Delete(int integrationPointID);
 
         Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(

@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Factories;
+﻿using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -29,7 +27,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
     public class ExportProcessBuilder : IExportProcessBuilder
     {
-        private readonly IConfigFactory _configFactory;
         private readonly IWebApiLoginService _credentialProvider;
         private readonly IExtendedExporterFactory _extendedExporterFactory;
         private readonly IExportFileBuilder _exportFileBuilder;
@@ -45,7 +42,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private readonly IExportFieldsService _exportFieldsService;
 
         public ExportProcessBuilder(
-            IConfigFactory configFactory,
             ICompositeLoggingMediator loggingMediator,
             IUserMessageNotification userMessageNotification,
             IUserNotification userNotification,
@@ -60,7 +56,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             IRepositoryFactory repositoryFactory,
             IExportFieldsService exportFieldsService)
         {
-            _configFactory = configFactory;
             _loggingMediator = loggingMediator;
             _userMessageNotification = userMessageNotification;
             _userNotification = userNotification;
@@ -108,7 +103,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
         private void SetRuntimeSettings(ExportFile exportFile, ExportSettings settings, Job job)
         {
-            // TODO: move this to WinEDDS
             IJobInfo jobInfo = _jobHistoryFactory.Create(job);
             IDestinationFolderHelper destinationFolderHelper = new DestinationFolderHelper(jobInfo, _directory);
 
@@ -118,11 +112,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
         private void PerformLogin(ExportFile exportFile)
         {
-            IConfig config = _configFactory.Create();
-            WinEDDS.Config.ProgrammaticServiceURL = config.WebApiPath;
-
-            LogPerformingLogging(config);
-
             var cookieContainer = new CookieContainer();
 
             exportFile.CookieContainer = cookieContainer;
@@ -217,7 +206,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
                 exportFile.FileField = new DocumentField(fileTypeField.DisplayName, fileTypeField.FieldArtifactId, (int)fileTypeField.FieldType,
                     (int)fileTypeField.Category, fileTypeField.FieldCodeTypeID, 0, fileTypeField.AssociativeArtifactTypeID, fileTypeField.IsUnicodeEnabled, null, fileTypeField.EnableDataGrid);
             }
-
         }
 
         private static void PopulateTextPrecedenceFields(ExportFile exportFile, List<int> selectedTextPrecedence)
@@ -265,11 +253,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private void LogCreatingExporter(ExportSettings settings)
         {
             _logger.LogInformation("Attempting to create SharedLibrary.IExporter for exporting {ExportType}.", settings.TypeOfExport);
-        }
-
-        private void LogPerformingLogging(IConfig config)
-        {
-            _logger.LogInformation("Connecting to WebAPI in IExporter using WebAPIPath: {WebAPIPath}.", config.WebApiPath);
         }
 
         private void LogPopulatingFields()

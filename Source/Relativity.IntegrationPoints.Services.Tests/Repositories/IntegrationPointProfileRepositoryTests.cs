@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
@@ -37,6 +38,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             _integrationPointProfileAccessor = new IntegrationPointProfileAccessor(_backwardCompatibility, _integrationPointProfileService, _choiceQuery,
                 _integrationPointService, _caseContext);
+
+            _choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointProfileFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>
+            {
+                new ChoiceRef(588)
+                {
+                    Name = "Append/Overlay"
+                }
+            });
         }
 
         [Test]
@@ -53,7 +62,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointProfileAccessor.CreateIntegrationPointProfile(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointProfileService.Received(1).ReadSlim(integrationPointProfileArtifactId);
+            _integrationPointProfileService.Received(1).Read(integrationPointProfileArtifactId);
         }
 
         [Test]
@@ -71,7 +80,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointProfileAccessor.CreateIntegrationPointProfile(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointProfileService.Received(1).ReadSlim(integrationPointProfileArtifactId);
+            _integrationPointProfileService.Received(1).Read(integrationPointProfileArtifactId);
         }
 
         private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointProfileArtifactId)
@@ -86,6 +95,31 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                     ScheduleRule = new ScheduleModel
                     {
                         EnableScheduler = false
+                    },
+                    FieldMappings = new List<FieldMap>
+                    {
+                        new FieldMap
+                        {
+                            DestinationField = new FieldEntry
+                            {
+                                Type = "type",
+                                DisplayName = "Name",
+                                FieldType = FieldType.String,
+                                FieldIdentifier = "identifier",
+                                IsIdentifier = true,
+                                IsRequired = true
+                            },
+                            SourceField = new FieldEntry
+                            {
+                                Type = "type",
+                                DisplayName = "Name",
+                                FieldType = FieldType.String,
+                                FieldIdentifier = "identifier",
+                                IsIdentifier = true,
+                                IsRequired = true
+                            },
+                            FieldMapType = FieldMapType.Identifier
+                        }
                     }
                 }
             };
@@ -97,12 +131,42 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                     Name = overwriteFieldsChoiceName
                 }
             });
-            _integrationPointProfileService.ReadSlim(integrationPointProfileArtifactId).Returns(new IntegrationPointProfileSlimDto
+            _integrationPointProfileService.Read(integrationPointProfileArtifactId).Returns(new IntegrationPointProfileDto
             {
                 ArtifactId = integrationPointProfileArtifactId,
                 Name = "name_982",
                 SourceProvider = 268,
-                DestinationProvider = 288
+                DestinationProvider = 288,
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                Scheduler = new Scheduler()
             });
             return createRequest;
         }
@@ -111,19 +175,60 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         public void ItShouldGetIntegrationPoint()
         {
             int artifactId = 924;
-            var integrationPointProfile = new IntegrationPointProfileSlimDto
+            var integrationPointProfile = new IntegrationPointProfileDto
             {
                 ArtifactId = 235,
                 Name = "ip_name_350",
                 SourceProvider = 471,
-                DestinationProvider = 817
+                DestinationProvider = 817,
+                SecuredConfiguration = string.Empty,
+                Type = 3,
+                PromoteEligible = false,
+                EmailNotificationRecipients = string.Empty,
+                LogErrors = true,
+                Scheduler = new Scheduler
+                {
+                    EnableScheduler = false
+                },
+                NextRun = DateTime.Now,
+                SelectedOverwrite = string.Empty,
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                SourceConfiguration = string.Empty
             };
 
-            _integrationPointProfileService.ReadSlim(artifactId).Returns(integrationPointProfile);
+            _integrationPointProfileService.Read(artifactId).Returns(integrationPointProfile);
 
             var result = _integrationPointProfileAccessor.GetIntegrationPointProfile(artifactId);
 
-            _integrationPointProfileService.Received(1).ReadSlim(artifactId);
+            _integrationPointProfileService.Received(1).Read(artifactId);
 
             Assert.That(result.SourceProvider, Is.EqualTo(integrationPointProfile.SourceProvider));
             Assert.That(result.DestinationProvider, Is.EqualTo(integrationPointProfile.DestinationProvider));
@@ -134,32 +239,103 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         [Test]
         public void ItShouldGetAllIntegrationPoints()
         {
-            var integrationPointProfile1 = new IntegrationPointProfileSlimDto
+            var integrationPointProfile1 = new IntegrationPointProfileDto
             {
                 ArtifactId = 844,
                 Name = "ip_name_234",
                 SourceProvider = 871,
-                DestinationProvider = 143
+                DestinationProvider = 143,
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                SourceConfiguration = string.Empty,
+                Scheduler = new Scheduler
+                {
+                    EnableScheduler = false
+                },
             };
-            var integrationPointProfile2 = new IntegrationPointProfileSlimDto
+            var integrationPointProfile2 = new IntegrationPointProfileDto
             {
                 ArtifactId = 526,
                 Name = "ip_name_617",
                 SourceProvider = 723,
-                DestinationProvider = 158
+                DestinationProvider = 158,
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                SourceConfiguration = string.Empty,
+                Scheduler = new Scheduler
+                {
+                    EnableScheduler = false
+                },
             };
 
-            var expectedResult = new List<IntegrationPointProfileSlimDto> { integrationPointProfile1, integrationPointProfile2 };
-            _integrationPointProfileService.ReadAllSlim().Returns(expectedResult);
+            var expectedResult = new List<IntegrationPointProfileDto> { integrationPointProfile1, integrationPointProfile2 };
+            _integrationPointProfileService.ReadAll().Returns(expectedResult);
 
             var result = _integrationPointProfileAccessor.GetAllIntegrationPointProfiles();
 
-            _integrationPointProfileService.Received(1).ReadAllSlim();
+            _integrationPointProfileService.Received(1).ReadAll();
 
-            Assert.That(result, Is.EquivalentTo(expectedResult).
-                Using(new Func<IntegrationPointModel, IntegrationPointProfileSlimDto, bool>(
-                    (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider) && (actual.ArtifactId == expected.ArtifactId)
-                                        && (actual.DestinationProvider == expected.DestinationProvider))));
+            for (int i = 0; i < expectedResult.Count; i++)
+            {
+                Assert.AreEqual(result[i].Name, expectedResult[i].Name);
+                Assert.AreEqual(result[i].ArtifactId, expectedResult[i].ArtifactId);
+                Assert.AreEqual(result[i].SourceProvider, expectedResult[i].SourceProvider);
+                Assert.AreEqual(result[i].DestinationProvider, expectedResult[i].DestinationProvider);
+            }
         }
 
         [Test]
@@ -196,33 +372,91 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             {
                 SelectedOverwrite = "123",
                 SourceProvider = 284,
-                DestinationConfiguration = new DestinationConfiguration(),
                 SourceConfiguration = "559417",
                 DestinationProvider = 346,
                 Type = 190,
-                Scheduler = null,
                 EmailNotificationRecipients = "432824",
                 LogErrors = false,
                 NextRun = DateTime.MaxValue,
                 Name = "ip_346",
-                SecuredConfiguration = "{}"
+                SecuredConfiguration = "{}",
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                Scheduler = new Scheduler()
             };
-            var integrationPointProfile = new IntegrationPointProfileSlimDto
+            var integrationPointProfile = new IntegrationPointProfileDto
             {
                 Name = "profile_990",
                 SourceProvider = 451,
-                DestinationProvider = 443
+                DestinationProvider = 443,
+                FieldMappings = new List<FieldsMapping.Models.FieldMap>
+                {
+                    new FieldsMapping.Models.FieldMap
+                    {
+                        DestinationField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        SourceField = new Contracts.Models.FieldEntry()
+                        {
+                            Type = "type",
+                            DisplayName = "Name",
+                            FieldType = Contracts.Models.FieldType.String,
+                            FieldIdentifier = "identifier",
+                            IsIdentifier = true,
+                            IsRequired = true
+                        },
+                        FieldMapType = FieldMapTypeEnum.Identifier
+                    }
+                },
+                DestinationConfiguration = new DestinationConfiguration
+                {
+                    ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay
+                },
+                Scheduler = new Scheduler()
             };
 
             _integrationPointService.Read(integrationPointArtifactId).Returns(integrationPoint);
             _integrationPointProfileService.SaveProfile(Arg.Any<IntegrationPointProfileDto>()).Returns(artifactId);
-            _integrationPointProfileService.ReadSlim(artifactId).Returns(integrationPointProfile);
+            _integrationPointProfileService.Read(artifactId).Returns(integrationPointProfile);
 
             _integrationPointProfileAccessor.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName);
 
             _integrationPointService.Received(1).Read(integrationPointArtifactId);
             _integrationPointProfileService.Received(1).SaveProfile(Arg.Is<IntegrationPointProfileDto>(x => x.Name == profileName && x.ArtifactId == 0));
-            _integrationPointProfileService.Received(1).ReadSlim(artifactId);
+            _integrationPointProfileService.Received(1).Read(artifactId);
         }
     }
 }

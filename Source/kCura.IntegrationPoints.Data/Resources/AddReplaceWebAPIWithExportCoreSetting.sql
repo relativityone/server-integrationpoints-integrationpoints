@@ -1,2 +1,0 @@
-﻿IF (NOT EXISTS(SELECT 1 FROM [EDDS].[eddsdbo].[InstanceSetting] WHERE [Section] = N'kCura.IntegrationPoints' AND [Name] = N'ReplaceWebAPIWithExportCore' AND [MachineName] = ''))
-    EXEC [eddsdbo].CreateInstanceSetting @section = 'kCura.IntegrationPoints', @name = 'ReplaceWebAPIWithExportCore', @machineName = '', @value = 'true', @description = 'Determines if Integration Points should use Export Core instead of older WebAPI Export.', @valueType = 'bit', @initialValue = 'true', @createAsSystemArtifact = 1

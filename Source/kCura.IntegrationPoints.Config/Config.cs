@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Config
 {
@@ -28,8 +27,6 @@ namespace kCura.IntegrationPoints.Config
         }
 
         public static Config Instance => _instance.Value;
-
-        public string WebApiPath => GetValue(Constants.WEB_API_PATH, string.Empty);
 
         public bool DisableNativeLocationValidation => GetValue(_DISABLE_NATIVE_LOCATION_VALIDATION, false);
 

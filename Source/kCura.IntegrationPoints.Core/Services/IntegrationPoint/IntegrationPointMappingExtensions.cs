@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 LogErrors = profile.LogErrors,
                 NextRun = profile.NextRun,
                 FieldMappings = CloneFieldMappings(profile.FieldMappings),
+                PromoteEligible = profile.PromoteEligible,
+                SecuredConfiguration = profile.SecuredConfiguration
             };
         }
 
@@ -43,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 NextRun = ip.NextRun,
                 FieldMappings = CloneFieldMappings(ip.FieldMappings),
                 SecuredConfiguration = ip.SecuredConfiguration,
+                PromoteEligible = ip.PromoteEligible
             };
         }
 

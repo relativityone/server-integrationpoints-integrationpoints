@@ -126,6 +126,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     .Select(i => SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace))
                     .ToList();
 
+            SourceWorkspace.Fields.Add(new FieldTest
+            {
+                Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
+                IsIdentifier = false,
+                Name = "Overwrite",
+                Artifact = { ArtifactId = Const.OVERWRITE_FIELD_ARTIFACT_ID }
+            });
+
             // Act
             IList<IntegrationPointModel> integrationPoints = await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 

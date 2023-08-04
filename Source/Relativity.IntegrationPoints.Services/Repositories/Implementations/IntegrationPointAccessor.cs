@@ -6,8 +6,8 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.IntegrationPoints.Services.Extensions;
 using Relativity.API;
+using Relativity.IntegrationPoints.Services.Extensions;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Services.Choice;
 
@@ -59,7 +59,9 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
         {
-            return _integrationPointService.ReadSlim(integrationPointArtifactId).ToIntegrationPointModel();
+            IntegrationPointModel model = _integrationPointService.Read(integrationPointArtifactId).ToIntegrationPointModel();
+            UpdateOverwriteFieldsChoiceId(model);
+            return model;
         }
 
         public object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
@@ -76,8 +78,13 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IList<IntegrationPointModel> GetAllIntegrationPoints()
         {
-            IList<IntegrationPointSlimDto> integrationPoints = _integrationPointService.ReadAllSlim();
-            return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
+            IList<IntegrationPointDto> integrationPoints = _integrationPointService.ReadAll();
+            return integrationPoints.Select(x =>
+            {
+                IntegrationPointModel model = x.ToIntegrationPointModel();
+                UpdateOverwriteFieldsChoiceId(model);
+                return model;
+            }).ToList();
         }
 
         public int GetIntegrationPointArtifactTypeId()

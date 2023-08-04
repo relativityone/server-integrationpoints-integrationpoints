@@ -1,4 +1,9 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
@@ -7,6 +12,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Moq;
@@ -14,13 +20,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using kCura.IntegrationPoints.Web.Extensions;
-using NSubstitute;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {

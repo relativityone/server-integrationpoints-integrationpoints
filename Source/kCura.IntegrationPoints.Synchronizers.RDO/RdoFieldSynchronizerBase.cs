@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
     {
         private HashSet<string> _ignoredList;
         private IImportAPI _api;
-        private string _webApiPath;
         private readonly IAPILog _logger;
         private readonly IImportApiFactory _factory;
         protected readonly IRelativityFieldQuery FieldQuery;
@@ -45,20 +44,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 }
                 return _ignoredList;
             }
-        }
-
-        public string WebAPIPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_webApiPath))
-                {
-                    _webApiPath = Config.Config.Instance.WebApiPath;
-                }
-                return _webApiPath;
-            }
-
-            protected set { _webApiPath = value; }
         }
 
         public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
@@ -122,7 +107,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         protected IImportAPI GetImportApi()
         {
-            return _api ?? (_api = _factory.GetImportAPI(WebAPIPath));
+            return _api ?? (_api = _factory.GetImportAPI());
         }
 
         #region Logging

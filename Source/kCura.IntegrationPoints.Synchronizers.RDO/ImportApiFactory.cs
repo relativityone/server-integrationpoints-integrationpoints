@@ -2,6 +2,7 @@
 using System.Security.Authentication;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -14,27 +15,32 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public sealed class ImportApiFactory : IImportApiFactory
     {
+        private readonly IWebApiConfig _webApiConfig;
         private readonly IInstanceSettingsManager _instanceSettingsManager;
         private readonly IImportApiBuilder _importApiBuilder;
         private readonly IRetryHandler _retryHandler;
         private readonly ILogger<ImportApiFactory> _logger;
 
         public ImportApiFactory(
+            IWebApiConfig webApiConfig,
             IInstanceSettingsManager instanceSettingsManager,
             IImportApiBuilder importApiBuilder,
             IRetryHandlerFactory retryHandlerFactory,
             ILogger<ImportApiFactory> logger)
         {
+            _webApiConfig = webApiConfig;
             _instanceSettingsManager = instanceSettingsManager;
             _importApiBuilder = importApiBuilder;
             _retryHandler = retryHandlerFactory.Create(7, 2);
             _logger = logger;
         }
 
-        public IImportAPI GetImportAPI(string webServiceUrl)
+        public IImportAPI GetImportAPI()
         {
+            string webServiceUrl = null;
             try
             {
+                webServiceUrl = _webApiConfig.WebApiUrl;
                 return _retryHandler.Execute<IImportAPI, Exception>(
                     () => CreateImportAPI(webServiceUrl),
                     exception =>
@@ -62,9 +68,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        public IImportApiFacade GetImportApiFacade(string webServiceUrl)
+        public IImportApiFacade GetImportApiFacade()
         {
-            return new ImportApiFacade(this, webServiceUrl, _logger.ForContext<ImportApiFacade>());
+            return new ImportApiFacade(this, _logger.ForContext<ImportApiFacade>());
         }
 
         private IImportAPI CreateImportAPI(string webServiceUrl)

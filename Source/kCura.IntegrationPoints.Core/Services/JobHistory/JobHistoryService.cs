@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -23,18 +22,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IAPILog _logger;
-        private readonly ISerializer _serializer;
 
         public JobHistoryService(
             IRelativityObjectManager relativityObjectManager,
             IWorkspaceManager workspaceManager,
-            IAPILog logger,
-            ISerializer serializer)
+            IAPILog logger)
         {
             _relativityObjectManager = relativityObjectManager;
             _workspaceManager = workspaceManager;
             _logger = logger.ForContext<JobHistoryService>();
-            _serializer = serializer;
         }
 
         public Data.JobHistory GetRdoWithoutDocuments(Guid batchInstance)
@@ -130,14 +126,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         public void DeleteRdo(int jobHistoryId)
         {
             _relativityObjectManager.Delete(jobHistoryId);
-        }
-
-        public IList<Data.JobHistory> GetAll()
-        {
-            return _relativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
-            {
-                Fields = RDOConverter.GetFieldList<Data.JobHistory>()
-            });
         }
 
         private void UpdateRdo(
