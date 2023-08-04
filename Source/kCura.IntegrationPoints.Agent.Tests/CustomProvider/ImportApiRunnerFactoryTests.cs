@@ -1,5 +1,8 @@
-﻿using System;
+using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
@@ -20,14 +23,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void SetUp()
         {
             _windsorContainerMock = new Mock<IWindsorContainer>();
-            _windsorContainerMock.Setup(x => x.Resolve<DocumentImportApiRunner>())
+
+            _windsorContainerMock
+                .Setup(x => x.Resolve<DocumentImportApiRunner>())
                 .Returns(new Mock<DocumentImportApiRunner>().Object);
-            _windsorContainerMock.Setup(x => x.Resolve<RdoImportApiRunner>())
+
+            _windsorContainerMock
+                .Setup(x => x.Resolve<RdoImportApiRunner>())
                 .Returns(new Mock<RdoImportApiRunner>().Object);
 
-            _sut = new ImportApiRunnerFactory(
-                _windsorContainerMock.Object,
-                new Mock<IAPILog>().Object);
+            _sut = new ImportApiRunnerFactory(_windsorContainerMock.Object, new Mock<IAPILog>().Object);
         }
 
         [TestCase(true, typeof(DocumentImportApiRunner))]

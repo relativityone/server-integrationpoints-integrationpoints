@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;

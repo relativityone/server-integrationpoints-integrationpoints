@@ -6,7 +6,7 @@ using Relativity.API;
 using Relativity.Import.V1.Builders.Rdos;
 using Relativity.Import.V1.Models.Settings;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
 {
     /// <inheritdoc />
     internal class RdoImportSettingsBuilder : IRdoImportSettingsBuilder

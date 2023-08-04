@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Text;
 using Dapper.Contrib.Extensions;
 
 namespace kCura.IntegrationPoints.Data

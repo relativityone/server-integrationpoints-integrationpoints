@@ -51,7 +51,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
         private IImportFileLocationService _importFileLocationService;
         private ImportServiceManager _instanceUnderTest;
         private ISerializer _serializer;
-        private IConfig _config;
         private string _testDataDirectory;
         private static WindsorContainer _windsorContainer;
         private const string _INPUT_FOLDER_KEY = "InputFolder";
@@ -84,8 +83,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
             IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
             IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
-            _config = Substitute.For<IConfig>();
-            _config.WebApiPath.Returns(SharedVariables.RelativityWebApiUrl);
 
             // Data Transfer Location
             IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
@@ -107,7 +104,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 _windsorContainer.Resolve<IImportJobFactory>(),
                 helper,
                 diagnosticLog,
-                _config,
                 _serializer,
                 true,
                 true);

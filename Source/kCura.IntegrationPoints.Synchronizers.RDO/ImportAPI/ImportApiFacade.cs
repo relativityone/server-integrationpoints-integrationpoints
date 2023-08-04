@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Common;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -20,15 +19,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly Lazy<IImportAPI> _importApi;
         private readonly ILogger<ImportApiFacade> _logger;
 
-        public ImportApiFacade(IImportApiFactory importApiFactory, IConfig config, ILogger<ImportApiFacade> logger)
+        public ImportApiFacade(IImportApiFactory importApiFactory, ILogger<ImportApiFacade> logger)
         {
-            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(config.WebApiPath));
-            _logger = logger;
-        }
-
-        public ImportApiFacade(IImportApiFactory importApiFactory, string webServiceUrl, ILogger<ImportApiFacade> logger)
-        {
-            _importApi = new Lazy<IImportAPI>(() => importApiFactory.GetImportAPI(webServiceUrl));
+            _importApi = new Lazy<IImportAPI>(importApiFactory.GetImportAPI);
             _logger = logger;
         }
 

@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
 
         public class Guids
         {
-            public static readonly Guid RelativityInterationPoints_Relativity_Application = new Guid("DCF6E9D1-22B6-4DA3-98F6-41381E93C30C");
             public const string FtpProviderEventHandler = "85120BC8-B2B9-4F05-99E9-DE37BB6C0E15";
         }
     }

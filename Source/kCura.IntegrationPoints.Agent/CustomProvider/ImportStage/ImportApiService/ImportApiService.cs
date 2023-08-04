@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Common.Kepler;
+using kCura.Utility.Extensions;
 using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
@@ -85,6 +88,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiServ
             Guid sourceId,
             DataSourceSettings dataSourceSettings)
         {
+            _logger.LogInformation("Adding data source ID: {dataSourceId}", sourceId);
+
             using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
             {
                 (await importSource.AddSourceAsync(

@@ -1,6 +1,6 @@
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
 {
     /// <summary>
     /// The interface for the factory creating ImportAPI runners.

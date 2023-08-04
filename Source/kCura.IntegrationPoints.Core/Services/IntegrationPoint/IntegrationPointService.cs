@@ -114,23 +114,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 .ToList();
         }
 
-        public List<IntegrationPointDto> ReadAll()
-        {
-            List<IntegrationPointDto> dtoList = _integrationPointRepository
-                .ReadAll()
-                .Select(ToDto)
-                .ToList();
-
-            foreach (var dto in dtoList)
-            {
-                dto.FieldMappings = GetFieldMap(dto.ArtifactId);
-                dto.SourceConfiguration = GetSourceConfiguration(dto.ArtifactId);
-                dto.DestinationConfiguration = GetDestinationConfiguration(dto.ArtifactId);
-            }
-
-            return dtoList;
-        }
-
         public List<FieldMap> GetFieldMap(int artifactId)
         {
             var fieldMap = ReadLongTextWithRetries<List<FieldMap>>(_integrationPointRepository.GetFieldMappingAsync, artifactId);
@@ -154,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         {
             return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
         }
-
+        
         private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
         {
             return _retryHandler.Execute<T, RipSerializationException>(
@@ -291,16 +274,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         public void UpdateJobHistory(int artifactId, List<int> jobHistory)
         {
             _integrationPointRepository.UpdateJobHistory(artifactId, jobHistory);
-        }
-
-        public void UpdateSourceConfiguration(int artifactId, string sourceConfiguration)
-        {
-            _integrationPointRepository.UpdateSourceConfiguration(artifactId, sourceConfiguration);
-        }
-
-        public void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration)
-        {
-            _integrationPointRepository.UpdateDestinationConfiguration(artifactId, destinationConfiguration);
         }
 
         public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)

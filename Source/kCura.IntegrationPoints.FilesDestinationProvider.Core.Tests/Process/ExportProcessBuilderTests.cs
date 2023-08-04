@@ -92,7 +92,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             _loggingMediator = Substitute.For<ICompositeLoggingMediator>();
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
             _userNotification = Substitute.For<IUserNotification>();
-            IConfigFactory configFactory = Substitute.For<IConfigFactory>();
 
             _jobStatisticsService = Substitute.For<IJobStatisticsService>();
 
@@ -120,7 +119,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             MockSearchServiceReturnValue(ViewFieldInfoMockFactory.CreateMockedViewFieldInfoArray(AllExportableAvfIds.Keys.ToList(), addFileField: true));
 
             _sut = new ExportProcessBuilder(
-                configFactory,
                 _loggingMediator,
                 _userMessageNotification,
                 _userNotification,

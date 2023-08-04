@@ -96,10 +96,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
-            if (!_toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle"))
-            {
-                destinationConfiguration.TaggingOption = TaggingOptionEnum.Enabled;
-            }
+            EnsureTaggingSettingsConsistency(destinationConfiguration);
 
             if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
             {
@@ -117,6 +114,21 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return destinationConfiguration.ImageImport ?
                     await CreateImageSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, destinationConfiguration).ConfigureAwait(false)
                     : await CreateDocumentSyncConfigurationAsync(builder, job, jobHistory, sourceConfiguration, destinationConfiguration).ConfigureAwait(false);
+            }
+        }
+
+        private void EnsureTaggingSettingsConsistency(DestinationConfiguration destinationConfiguration)
+        {
+            if (destinationConfiguration.TaggingOption != TaggingOptionEnum.Enabled && _toggleProvider.IsEnabledByName("kCura.IntegrationPoints.Common.Toggles.EnableTaggingToggle") == false)
+            {
+                destinationConfiguration.TaggingOption = TaggingOptionEnum.Enabled;
+                _logger.LogWarning(@"Force setting TaggingOption to Enabled during SyncConfiguration preparation due to disabled EnableTaggingToggle");
+            }
+
+            if (destinationConfiguration.TaggingOption == TaggingOptionEnum.Disabled && destinationConfiguration.CreateSavedSearchForTagging)
+            {
+                destinationConfiguration.TaggingOption = TaggingOptionEnum.Enabled;
+                _logger.LogWarning(@"Force setting TaggingOption to Enabled during SyncConfiguration preparation due to CreateSavedSearchForTagging option selected");
             }
         }
 

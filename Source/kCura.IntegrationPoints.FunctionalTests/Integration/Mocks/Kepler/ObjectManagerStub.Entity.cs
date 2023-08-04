@@ -1,11 +1,11 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Entity;
-using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Objects.DataContracts;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
+using Moq;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -17,15 +17,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 q => q.ObjectType.Guid == ObjectTypeGuids.Entity), It.IsAny<int>(), It.IsAny<int>()))
             .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
-                QueryResult result = GetRelativityObjectsForRequest(x => x.Entities,
-                    EntitiesFilter, workspaceId, request, length);
+                QueryResult result = GetRelativityObjectsForRequest(
+                    x => x.Entities,
+                    EntitiesFilter,
+                    workspaceId,
+                    request,
+                    length);
                 return Task.FromResult(result);
             });
         }
 
         private bool GetEntitiesByUid(string condition, out List<string> entitiesUids)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
+            System.Text.RegularExpressions.Match match = Regex.Match(
+                condition,
                 $@"'{EntityFieldNames.UniqueId}' IN \[(.*)\]");
 
             if (match.Success)

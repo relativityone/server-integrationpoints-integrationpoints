@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -14,12 +15,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// </summary>
         /// <returns>A list of integration point objects.</returns>
         List<IntegrationPointSlimDto> ReadAllSlim();
-
-        /// <summary>
-        /// Retrieves all the integration points in the workspace.
-        /// </summary>
-        /// <returns>A list of integration point objects.</returns>
-        List<IntegrationPointDto> ReadAll();
 
         /// <summary>
         /// Retrieves an integration point with all fields including long text fields (fields mapping, source configuration, destination configuration)
@@ -85,16 +80,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// Updates job history.
         /// </summary>
         void UpdateJobHistory(int artifactId, List<int> jobHistory);
-
-        /// <summary>
-        /// Updates source configuration
-        /// </summary>
-        void UpdateSourceConfiguration(int artifactId, string sourceConfiguration);
-
-        /// <summary>
-        /// Updates destination configuration
-        /// </summary>
-        void UpdateDestinationConfiguration(int artifactId, string destinationConfiguration);
 
         /// <summary>
         /// Run integration point as a new job.

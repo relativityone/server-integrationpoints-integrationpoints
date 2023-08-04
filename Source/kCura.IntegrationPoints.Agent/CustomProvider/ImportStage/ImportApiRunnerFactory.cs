@@ -1,9 +1,11 @@
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
 {
     /// <inheritdoc />
     internal class ImportApiRunnerFactory : IImportApiRunnerFactory

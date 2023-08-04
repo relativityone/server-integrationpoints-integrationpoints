@@ -251,7 +251,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Mock<IRipMetrics> ripMetrics = new Mock<IRipMetrics>();
 
             Mock<IRelativitySyncConstrainsChecker> relativitySyncConstrainsChecker = new Mock<IRelativitySyncConstrainsChecker>();
-            relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<int>())).Returns(false);
 
             Mock<ITaskParameterHelper> taskParameterHelper = new Mock<ITaskParameterHelper>();
             taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_batchInstanceGuid);

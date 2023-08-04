@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
@@ -73,6 +74,14 @@ namespace kCura.IntegrationPoints.Core.Validation
                 }
             }
 
+            if (IsCustomProviderWithEntitiesFlow(sourceProvider, destinationProvider, validationModel))
+            {
+                foreach (IValidator validator in _validatorsMap[ObjectTypeGuids.Entity.ToString()])
+                {
+                    result.Add(validator.Validate(validationModel));
+                }
+            }
+
             return result;
         }
 
@@ -100,6 +109,13 @@ namespace kCura.IntegrationPoints.Core.Validation
         {
             return sourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase) &&
                    destinationProvider.Identifier.Equals(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static bool IsCustomProviderWithEntitiesFlow(SourceProvider sourceProvider, DestinationProvider destinationProvider, IntegrationPointProviderValidationModel validationModel)
+        {
+            return !sourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase) &&
+                   destinationProvider.Identifier.Equals(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase) &&
+                   validationModel.ObjectTypeGuid.Equals(ObjectTypeGuids.Entity);
         }
     }
 }

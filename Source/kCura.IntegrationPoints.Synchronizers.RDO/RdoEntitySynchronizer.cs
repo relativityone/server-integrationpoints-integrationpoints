@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -35,9 +34,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IHelper helper,
             IEntityManagerLinksSanitizer entityManagerLinksSanitizer,
             IDiagnosticLog diagnosticLog,
-            IConfig config,
             ISerializer serializer)
-            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, config, serializer)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, serializer)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;
@@ -74,7 +72,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
                 RelativityObject artifact = fieldLookup[fieldEntry.FieldIdentifier];
                 fieldEntry.IsIdentifier = IsField(artifact, Guid.Parse(EntityFieldGuids.UniqueID));
-                
+
                 bool isRequired = IsField(artifact, Guid.Parse(EntityFieldGuids.FirstName)) ||
                                 IsField(artifact, Guid.Parse(EntityFieldGuids.LastName));
 

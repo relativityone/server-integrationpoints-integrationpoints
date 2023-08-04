@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private Mock<IImportApiFactory> _importApiFactoryMock;
         private Mock<IImportAPI> _importApiMock;
         private Mock<IImportApiFacade> _importApiFacadeMock;
-        private Mock<IConfig> _configMock;
 
         public static Mock<IHelper> MockHelper(Mock<IAPILog> logger = null)
         {
@@ -79,10 +78,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _importApiFactoryMock = new Mock<IImportApiFactory>();
             _importApiMock = new Mock<IImportAPI>();
             _importApiFacadeMock = new Mock<IImportApiFacade>();
-            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<string>())).Returns(_importApiMock.Object);
-            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<string>())).Returns(_importApiFacadeMock.Object);
-            _configMock = new Mock<IConfig>();
-            _configMock.Setup(x => x.WebApiPath).Returns("fake-api-path");
+            _importApiFactoryMock.Setup(x => x.GetImportAPI()).Returns(_importApiMock.Object);
+            _importApiFactoryMock.Setup(x => x.GetImportApiFacade()).Returns(_importApiFacadeMock.Object);
         }
 
         [Test]
@@ -596,19 +593,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 
             _relativityFieldQuery.Setup(x => x.GetFieldsForRdo(artifactTypeId)).Returns(new List<RelativityObject>());
             _importApiMock.Setup(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId)).Returns(new List<kCura.Relativity.ImportAPI.Data.Field>());
-            _importApiFactoryMock.Setup(x => x.GetImportAPI(It.IsAny<string>())).Returns(_importApiMock.Object);
+            _importApiFactoryMock.Setup(x => x.GetImportAPI()).Returns(_importApiMock.Object);
 
-            _importApiFactoryMock.Setup(x => x.GetImportApiFacade(It.IsAny<string>()))
-                .Returns(new ImportApiFacade(_importApiFactoryMock.Object, string.Empty, new Mock<ILogger<ImportApiFacade>>().Object));
+            _importApiFactoryMock.Setup(x => x.GetImportApiFacade())
+                .Returns(new ImportApiFacade(_importApiFactoryMock.Object, new Mock<ILogger<ImportApiFacade>>().Object));
 
-            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object, _configMock.Object, Serializer);
+            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object, Serializer);
 
             // Act
             IEnumerable<FieldEntry> results = sut.GetFields(new DataSourceProviderConfiguration(options));
 
             // Assert
             _relativityFieldQuery.Verify(x => x.GetFieldsForRdo(artifactTypeId), Times.Once);
-            _importApiFactoryMock.Verify(x => x.GetImportAPI(It.IsAny<string>()), Times.Once);
+            _importApiFactoryMock.Verify(x => x.GetImportAPI(), Times.Once);
             _importApiMock.Verify(x => x.GetWorkspaceFields(caseArtifactId, artifactTypeId), Times.Once);
         }
 
@@ -655,7 +652,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                     _importJobFactory.Object,
                     _helper.Object,
                     _diagnosticLogMock.Object,
-                    _configMock.Object,
                     Serializer);
         }
 
@@ -781,14 +777,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     public class TestRdoSynchronizer : RdoSynchronizer
     {
         public TestRdoSynchronizer()
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new Mock<IConfig>().Object, new JSONSerializer())
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
         }
 
         public TestRdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory importApiFactory, IImportJobFactory importJobFactory, IHelper helper, IDiagnosticLog logger)
-            : base(fieldQuery, importApiFactory, importJobFactory, helper, logger, new Mock<IConfig>().Object, new JSONSerializer())
+            : base(fieldQuery, importApiFactory, importJobFactory, helper, logger, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
@@ -810,7 +806,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private readonly WorkspaceRef _workspaceRef;
 
         public MockSynchronizer(WorkspaceRef workspaceRef)
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new Mock<IConfig>().Object, new JSONSerializer())
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;

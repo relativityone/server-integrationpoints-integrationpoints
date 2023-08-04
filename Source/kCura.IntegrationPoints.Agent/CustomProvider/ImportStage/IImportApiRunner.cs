@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
+namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
 {
     /// <summary>
     /// An interface for create, configure and start ImportAPI v2.0 jobs.
@@ -14,9 +12,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         /// Creates, configurates and starts the ImportAPI v2.0 jobs.
         /// </summary>
         /// <param name="importJobContext">The job context containing the job-id and correlation-id.</param>
-        /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
-        /// <param name="fieldMappings">List of fields mappings to transfer.</param>
+        /// <param name="integrationPoint">integration Point object.</param>
         /// <exception cref="ImportApiResponseException"></exception>
-        Task RunImportJobAsync(ImportJobContext importJobContext, DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
+        Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint);
     }
 }

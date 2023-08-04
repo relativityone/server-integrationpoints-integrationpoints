@@ -3,13 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
@@ -55,19 +55,16 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _logger = logger;
         }
 
-        public async Task<ImportJobResult> RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointDto integrationPointDto, ImportJobContext importJobContext, IDataSourceProvider sourceProvider, CompositeCancellationToken token)
+        public async Task<ImportJobResult> RunJobAsync(Job job, CustomProviderJobDetails jobDetails, IntegrationPointInfo integrationPointInfo, ImportJobContext importJobContext, IDataSourceProvider sourceProvider, CompositeCancellationToken token)
         {
             DirectoryInfo importDirectory = await _relativityStorageService.PrepareImportDirectoryAsync(job.WorkspaceID, jobDetails.JobHistoryGuid);
             try
             {
-                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(integrationPointDto.DestinationConfiguration);
-
-                IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
+                IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(integrationPointInfo.DestinationConfiguration);
 
                 await importApiRunner.RunImportJobAsync(
                         importJobContext,
-                        integrationPointDto.DestinationConfiguration,
-                        integrationPointInfo.FieldMap)
+                        integrationPointInfo)
                     .ConfigureAwait(false);
 
                 using (await _jobProgressHandler.BeginUpdateAsync(importJobContext).ConfigureAwait(false))

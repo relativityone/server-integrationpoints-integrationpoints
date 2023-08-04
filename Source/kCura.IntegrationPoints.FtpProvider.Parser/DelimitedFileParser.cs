@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
-using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.FileIO;
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.FtpProvider.Parser.Tests")]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using Relativity.Import.V1.Models.Errors;
 
@@ -24,14 +25,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError
 
         public async Task HandleItemErrorsAsync(ImportJobContext importJobContext, CustomProviderBatch batch)
         {
-            await HandleDataSourceErrorsAsync(importJobContext, batch.BatchGuid, batch.NumberOfRecords).ConfigureAwait(false);
+            if (batch.NumberOfRecords > 0)
+            {
+                await HandleDataSourceErrorsAsync(importJobContext, batch.BatchGuid, batch.NumberOfRecords).ConfigureAwait(false);
+            }
         }
 
         private async Task HandleDataSourceErrorsAsync(ImportJobContext importJobContext, Guid dataSourceId, int recordsCount)
         {
             ImportErrors errors = await _importApiService.GetDataSourceErrorsAsync(importJobContext, dataSourceId, recordsCount).ConfigureAwait(false);
 
-            List<ItemLevelError> itemLevelErrors = errors.Errors.SelectMany(x => x.ErrorDetails).Select(x => ToItemLevelError(x)).ToList();
+            List<ItemLevelError> itemLevelErrors = errors.Errors.SelectMany(x => x.ErrorDetails).Select(ToItemLevelError).ToList();
 
             await _jobHistoryErrorService.CreateItemLevelErrorsAsync(importJobContext.WorkspaceId, importJobContext.JobHistoryId, itemLevelErrors);
         }

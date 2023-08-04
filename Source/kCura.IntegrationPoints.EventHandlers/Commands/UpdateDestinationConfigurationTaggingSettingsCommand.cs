@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                 SourceProvider sourceProvider = GetSourceProvider();
                 if (sourceProvider == null)
                 {
-                    _log.LogInformation("SourceProvider for Guid {providerGuid} does not exist. No RDOs have been updated", _sourceProviderGuid);
+                    _log.LogWarning("SourceProvider for Guid {providerGuid} does not exist. No RDOs have been updated", _sourceProviderGuid);
                     return;
                 }
 
@@ -56,76 +56,79 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "Error occurred during execution of {type}", this.GetType().Name);
+                _log.LogError(ex, "Error occurred during execution command of type {type}", this.GetType().Name);
             }
-        }
-
-        private RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
-        {
-            const string enableTaggingPropertyName = "EnableTagging";
-            const string taggingOptionPropertyName = "TaggingOption";
-
-            string destinationConfigurationFieldContent = value.FieldValues[_destinationConfigurationFieldName] as string;
-            IDictionary<string, object> valuePairs = JsonConvert.DeserializeObject<Dictionary<string, object>>(destinationConfigurationFieldContent);
-
-            if (!valuePairs.TryGetValue(enableTaggingPropertyName, out object currentEnableTaggingValue))
-            {
-                return null;
-            }
-            else
-            {
-                string enableTaggingValueStr = currentEnableTaggingValue.ToString().ToLower();
-                string newTaggingOptionValue = enableTaggingValueStr == "false" ? "Disabled" : "Enabled";
-
-                valuePairs.Remove(enableTaggingPropertyName);
-
-                if (valuePairs.TryGetValue(taggingOptionPropertyName, out _))
-                {
-                    valuePairs[taggingOptionPropertyName] = newTaggingOptionValue;
-                }
-                else
-                {
-                    valuePairs.Add(taggingOptionPropertyName, newTaggingOptionValue);
-                }
-
-                string updatedDestinationConfiguration = JsonConvert.SerializeObject(valuePairs, Formatting.None);
-                value.FieldValues[_destinationConfigurationFieldName] = updatedDestinationConfiguration;
-            }
-
-            return value;
         }
 
         private void ExecuteInternal(SourceProvider sourceProvider, Guid objectTypeGuid)
         {
-            _log.LogInformation("Update object of type: {type} for Provider {provderGuid} has been started.", objectTypeGuid.ToString(), _sourceProviderGuid);
-
-            QueryRequest query = GetQueryRequest(sourceProvider.ArtifactId, objectTypeGuid);
+            QueryRequest query = GetMigrationCandidateQuery(sourceProvider.ArtifactId, objectTypeGuid);
             using (IExportQueryResult exportResult = _relativityObjectManager.QueryWithExportAsync(query, 0, ExecutionIdentity.System).Result)
             {
                 string[] fieldNames = exportResult.ExportResult.FieldData.Select(f => f.Name).ToArray();
-                IList<RelativityObjectSlimDto> results;
-                int start = 0;
+                IList<RelativityObjectSlimDto> block;
+                int readItemsCount = 0;
+                int updatedItemsCount = 0;
+                int failedItemsCount = 0;
                 do
                 {
-                    results = exportResult.GetNextBlockAsync(start).Result
+                    block = exportResult.GetNextBlockAsync(readItemsCount).Result
                         .Select(x => x.ToRelativityObjectSlimDto(fieldNames))
-                        .Select(x => UpdateFieldsWithValidation(x))
-                        .Where(x => x != null).ToList();
+                        .ToList();
 
-                    MassUpdateObjects(results, objectTypeGuid.ToString());
+                    var updatedItems = block.Select(MigrateTaggingSettings)
+                            .Where(x => x != null)
+                            .ToList();
 
-                    start += results.Count;
+                    try
+                    {
+                        MassUpdateObjects(updatedItems, objectTypeGuid.ToString());
+                        updatedItemsCount += updatedItems.Count;
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.LogError(ex, "Unable to mass update block of objects during {command}", nameof(UpdateDestinationConfigurationTaggingSettingsCommand));
+                        failedItemsCount += updatedItems.Count;
+                    }
+
+                    readItemsCount += block.Count;
                 }
-                while (results.Any());
+                while (block.Any());
 
-                if (start == 0)
-                {
-                    _log.LogInformation("No objects of type: {type} for SourceProvider {provderGuid} has been found.", objectTypeGuid.ToString(), _sourceProviderGuid);
-                }
+                _log.LogWarning(
+                    "Command {command} execution report for object type {objectTypeGuid}: total: {totalCount}, updated: {updatedCount}, failed: {failedCount}",
+                    nameof(UpdateDestinationConfigurationTaggingSettingsCommand),
+                    objectTypeGuid,
+                    readItemsCount,
+                    updatedItemsCount,
+                    failedItemsCount);
             }
         }
 
-        private QueryRequest GetQueryRequest(int sourceProviderId, Guid objectTypeGuid)
+        private RelativityObjectSlimDto MigrateTaggingSettings(RelativityObjectSlimDto migrationCandidate)
+        {
+            const string enableTaggingPropertyName = "EnableTagging";
+            const string taggingOptionPropertyName = "TaggingOption";
+
+            string destinationConfigurationString = migrationCandidate.FieldValues[_destinationConfigurationFieldName] as string;
+            IDictionary<string, object> destinationConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, object>>(destinationConfigurationString);
+
+            if (destinationConfigurationDictionary.TryGetValue(enableTaggingPropertyName, out object enableTaggingValue))
+            {
+                destinationConfigurationDictionary.Remove(enableTaggingPropertyName);
+                destinationConfigurationDictionary[taggingOptionPropertyName] = Convert.ToBoolean(enableTaggingValue.ToString())
+                    ? "Enabled"
+                    : "Disabled";
+
+                string updatedDestinationConfiguration = JsonConvert.SerializeObject(destinationConfigurationDictionary, Formatting.None);
+                migrationCandidate.FieldValues[_destinationConfigurationFieldName] = updatedDestinationConfiguration;
+                return migrationCandidate;
+            }
+
+            return null; // null means there was no migration need
+        }
+
+        private QueryRequest GetMigrationCandidateQuery(int sourceProviderId, Guid objectTypeGuid)
         {
             return new QueryRequest()
             {
@@ -145,43 +148,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             return _relativityObjectManager.Query<SourceProvider>(query, ExecutionIdentity.System).FirstOrDefault();
         }
 
-        private RelativityObjectSlimDto UpdateFieldsWithValidation(RelativityObjectSlimDto values)
-        {
-            IList<string> refValues = values.FieldValues.Keys.ToList();
-
-            RelativityObjectSlimDto valuesToUpdate = UpdateFields(values);
-            if (valuesToUpdate == null)
-            {
-                return null;
-            }
-
-            if (!refValues.SequenceEqual(valuesToUpdate.FieldValues.Keys))
-            {
-                throw new CommandExecutionException(
-                    "Fields after update and retrieved fields does not match.");
-            }
-
-            return valuesToUpdate;
-        }
-
         private void MassUpdateObjects(IList<RelativityObjectSlimDto> values, string objectTypeGuid)
         {
+            if (values.Any() == false)
+            {
+                return;
+            }
+
             try
             {
-                _log.LogInformation("Trying to update {count} objects of type: {type}", values.Count, objectTypeGuid);
-
-                if (!values.Any())
-                {
-                    return;
-                }
-
                 using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
                 {
                     MassUpdatePerObjectsRequest updateRequest = GetMassUpdateRequest(values);
                     MassUpdateResult result = proxy.UpdateAsync(_helper.GetActiveCaseID(), updateRequest).Result;
-
-                    _log.LogInformation("Update Status - Success: {status} Message: {message} TotalObjectsUpdate: {count} ",
-                        result.Success, result.Message, result.TotalObjectsUpdated);
                 }
             }
             catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
@@ -197,8 +176,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
                 {
                     MassUpdateObjects(val, objectTypeGuid);
                 }
-
-                return;
             }
             catch (Exception ex)
             {
@@ -212,11 +189,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             return new MassUpdatePerObjectsRequest()
             {
                 Fields = _fieldsNamesForUpdate.Select(x => new FieldRef { Name = x }).ToList(),
-                ObjectValues = values.Select(x => new ObjectRefValuesPair()
-                {
-                    Object = new RelativityObjectRef { ArtifactID = x.ArtifactID },
-                    Values = x.FieldValues.Values.ToList()
-                }).ToList()
+                ObjectValues = values
+                    .Select(x => new ObjectRefValuesPair
+                        {
+                            Object = new RelativityObjectRef { ArtifactID = x.ArtifactID },
+                            Values = x.FieldValues.Values.ToList()
+                        })
+                    .ToList()
             };
         }
     }
