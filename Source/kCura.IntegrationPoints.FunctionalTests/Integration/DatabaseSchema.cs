@@ -31,6 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 new DataColumn() { ColumnName = "LockedByAgentID", DataType = typeof(int) },
                 new DataColumn() { ColumnName = "WorkspaceID", DataType = typeof(int) },
                 new DataColumn() { ColumnName = "RelatedObjectArtifactID", DataType = typeof(int) },
+                new DataColumn() { ColumnName = "CorrelationID", DataType = typeof(string) },
                 new DataColumn() { ColumnName = "TaskType", DataType = typeof(string) },
                 new DataColumn() { ColumnName = "NextRunTime", DataType = typeof(DateTime) },
                 new DataColumn() { ColumnName = "LastRunTime", DataType = typeof(DateTime), AllowDBNull = true },
