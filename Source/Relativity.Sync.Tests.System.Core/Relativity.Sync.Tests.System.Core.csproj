@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
      <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>net462</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <WarningLevel>4</WarningLevel>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -34,6 +34,7 @@
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="3.3.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
         <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->

@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.System.Core
             RelativityFacade.Instance.RelyOn<CoreComponent>();
             RelativityFacade.Instance.RelyOn<ApiComponent>();
 
-            InstallDataTransferLegacy();
+            // InstallDataTransferLegacy();
 
             ConfigureRelativityInstanceURL();
         }

@@ -8,20 +8,4 @@ using Relativity.Testing.Framework.Models;
 // No namespace applies this to the whole assembly
 public class SystemTestsSetup : InstanceTestsSetup
 {
-    public async override Task RunBeforeAnyTests()
-    {
-        await base.RunBeforeAnyTests().ConfigureAwait(false);
-
-        InstallRelativityImport();
-    }
-
-    private void InstallRelativityImport()
-    {
-        ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-
-        applicationService.InstallToLibrary(AppSettings.RelativityImportRAPPath, new LibraryApplicationInstallOptions
-        {
-            IgnoreVersion = true
-        });
-    }
 }
