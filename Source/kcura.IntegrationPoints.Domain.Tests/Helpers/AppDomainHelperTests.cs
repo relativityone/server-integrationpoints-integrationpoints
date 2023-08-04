@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         }
 
         [Test]
-		[Ignore("TO BE FIXED!")]
+		[Ignore("REL-865787")]
 		public void ReleaseDomainShallRemoveBaseDirectory()
         {
             // Act
