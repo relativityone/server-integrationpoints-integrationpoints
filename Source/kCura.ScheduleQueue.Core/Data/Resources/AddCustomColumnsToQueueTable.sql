@@ -33,3 +33,13 @@ BEGIN
     ALTER TABLE [eddsdbo].[{0}]
 	ADD Heartbeat [datetime]
 END
+
+IF NOT EXISTS(
+    SELECT *
+    FROM sys.columns 
+    WHERE Name      = N'CorrelationID'
+      AND Object_ID = Object_ID(N'[eddsdbo].[{0}]'))
+BEGIN
+ALTER TABLE [eddsdbo].[{0}]
+    ADD CorrelationID [nvarchar](max) NULL
+END
