@@ -244,11 +244,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
-                DestinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(profile.DestinationConfiguration),
-                FieldMappings = Serializer.Deserialize<List<FieldMap>>(profile.FieldMappings),
                 NextRun = profile.NextScheduledRuntimeUTC,
-                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false),
-                SourceConfiguration = profile.SourceConfiguration
+                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false)
             };
         }
 
