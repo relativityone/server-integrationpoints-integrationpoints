@@ -321,7 +321,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance);
+            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance.ToString());
         }
 
         public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode)
@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance);
+            SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance.ToString());
         }
 
         public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
@@ -427,7 +427,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, Guid batchInstance)
+        private void SubmitJob(int workspaceArtifactId, int integrationPointArtifactId, int userId, IntegrationPointDto integrationPointDto, Data.JobHistory jobHistory, SourceProvider sourceProvider, DestinationProvider destinationProvider, string correlationID)
         {
             _logger.LogInformation("Submitting Job for Integration Point {integrationPointId} with JobHistoryId {jobHistoryId}", integrationPointArtifactId, jobHistory.ArtifactId);
 
@@ -437,7 +437,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 _logger.LogInformation("Using Sync application to run the job");
                 try
                 {
-                    _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
+                    _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId, correlationID).GetAwaiter().GetResult();
                 }
                 catch (SyncJobSendingException ex)
                 {
@@ -448,7 +448,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             else
             {
                 _logger.LogInformation("Adding Job to IntegrationPoints Queue...");
-                Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, batchInstance, workspaceArtifactId, userId);
+                Job job = CreateJob(integrationPointDto, sourceProvider, destinationProvider, correlationID, workspaceArtifactId, userId);
                 if (job != null)
                 {
                     _agentLauncher.LaunchAgentAsync().GetAwaiter().GetResult();
@@ -577,7 +577,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IntegrationPointDto integrationPoint,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
-            Guid batchInstance,
+            string correlationID,
             int workspaceArtifactId,
             int userId)
         {
@@ -592,9 +592,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 
-                TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, batchInstance, integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
+                TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, Guid.Parse(correlationID), integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
-                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, batchInstance.ToString(), workspaceArtifactId, integrationPoint.ArtifactId, userId);
+                job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, correlationID, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
 
             _logger.LogInformation("Job was successfully created.");

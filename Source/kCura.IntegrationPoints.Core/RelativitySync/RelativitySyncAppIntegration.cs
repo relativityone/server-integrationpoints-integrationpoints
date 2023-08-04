@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             _logger = logger;
         }
 
-        public async Task SubmitSyncJobAsync(int workspaceArtifactId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
+        public async Task SubmitSyncJobAsync(int workspaceArtifactId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId, string correlationID)
         {
             try
             {
@@ -33,7 +33,8 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                     SubmitJobRequestDTO request = new SubmitJobRequestDTO()
                     {
                         WorkspaceID = workspaceArtifactId,
-                        SyncConfigurationArtifactID = syncConfigurationId
+                        SyncConfigurationArtifactID = syncConfigurationId,
+                        CorrelationID = correlationID
                     };
                     Guid jobId = await syncService.SubmitJobAsync(request).ConfigureAwait(false);
                     _logger.LogInformation("Sync job has been submitted. Job ID: {jobId}", jobId);

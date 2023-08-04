@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
 {
     public interface IRelativitySyncAppIntegration
     {
-        Task SubmitSyncJobAsync(int workspaceArtifactId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId);
+        Task SubmitSyncJobAsync(int workspaceArtifactId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId, string correlationID);
 
         Task CancelJobAsync(Guid jobId);
     }
