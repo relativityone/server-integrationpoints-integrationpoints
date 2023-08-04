@@ -19,7 +19,7 @@
 	<DapperContrib>2.0.78</DapperContrib>
     <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
     <FluentAssertions>4.19.4</FluentAssertions>
-    <IntegrationPointsMyFirstProvider>12.4.0-pre.5</IntegrationPointsMyFirstProvider>
+    <IntegrationPointsMyFirstProvider>12.4.0-pre.7</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
     <kCura>13.1.0</kCura>
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
@@ -68,7 +68,7 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
 	<RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.12.0-pre.177</RelativitySync>
+    <RelativitySync>0.12.0-pre.180</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
