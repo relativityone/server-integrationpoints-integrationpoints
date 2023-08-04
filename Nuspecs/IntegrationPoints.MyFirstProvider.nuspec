@@ -23,9 +23,9 @@
     <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.4.0-pre.13"/>
     <dependency id="Relativity.Kepler" version="2.15.6"/>
     <dependency id="Relativity.Kepler.Client" version="2.15.6"/>
-    <dependency id="Relativity.Telemetry.APM" version="2019.1.1"/>
-    <dependency id="Relativity.Telemetry.DataContracts.Shared" version="9.4.159"/>
-    <dependency id="Relativity.Telemetry.Services.Interface" version="9.6.88.61"/>
+    <dependency id="Relativity.Telemetry.APM" version="2019.10.9"/>
+    <dependency id="Relativity.Telemetry.DataContracts.Shared" version="3003.1.1"/>
+    <dependency id="Relativity.Telemetry.Services.Interface" version="3003.0.2"/>
     <dependency id="System.Data.SqlClient" version="4.6.0"/>
     <dependency id="SystemWrapper.Interfaces" version="0.19.0.115"/>
   </dependencies>
