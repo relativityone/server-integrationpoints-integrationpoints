@@ -218,7 +218,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
                         null,
                         _WORKSPACE_ID,
                         _RELATED_OBJ_ARTIFACT_ID,
-                        Guid.Empty,
+                        string.Empty,
                         taskTypeName,
                         DateTime.UtcNow.AddMinutes(nextRunTimeDiff),
                         null,

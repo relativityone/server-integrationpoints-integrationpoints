@@ -102,12 +102,6 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             return this;
         }
 
-        public JobBuilder WithCorrelationId(Guid correlationID)
-        {
-            _jobData[_CORRELATION_ID] = correlationID;
-            return this;
-        }
-
         public JobBuilder WithSubmittedBy(int submittedByArtifactId)
         {
             _jobData[_SUBMITTED_BY] = submittedByArtifactId;
@@ -176,7 +170,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             _jobData[_LOCKED_BY_AGENT_ID] = default(int);
             _jobData[_WORKSPACE_ID] = default(int);
             _jobData[_RELATED_OBJECT_ARTIFACT_ID] = default(int);
-            _jobData[_CORRELATION_ID] = default(Guid);
+            _jobData[_CORRELATION_ID] = default(string);
             _jobData[_TASK_TYPE] = TaskType.ExportService.ToString();
             _jobData[_NEXT_RUN_TIME] = default(DateTime);
             _jobData[_LAST_RUN_TIME] = default(DateTime);
