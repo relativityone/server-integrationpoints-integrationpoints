@@ -17,6 +17,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         List<IntegrationPointSlimDto> ReadAllSlim();
 
         /// <summary>
+        /// Retrieves all the integration points in the workspace.
+        /// </summary>
+        /// <returns>A list of integration point objects.</returns>
+        List<IntegrationPointDto> ReadAll();
+
+        /// <summary>
         /// Retrieves an integration point with all fields including long text fields (fields mapping, source configuration, destination configuration)
         /// </summary>
         /// <param name="artifactID">Artifact id of the integration point.</param>
