@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public static AzureTableHelper CreateFromTestConfig()
         {
-            return new AzureTableHelper(AppSettings.AzureStorageConnectionString);
+	        throw new NotSupportedException("AzureTableHelper: Should be removed - relone code");
         }
 
         public Task InsertAsync(string tableName, TableEntity entity)

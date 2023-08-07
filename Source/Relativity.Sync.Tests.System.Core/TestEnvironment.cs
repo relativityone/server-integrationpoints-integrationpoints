@@ -39,7 +39,6 @@ namespace Relativity.Sync.Tests.System.Core
 
         private static readonly Guid _HELPER_APP_GUID = new Guid("e08fd0d9-c3a1-4654-87ad-104f08980b84");
         private static readonly Guid _CUSTOM_HELPER_APP_GUID = new Guid("fdd69e45-880a-40bb-aae1-784271974d49");
-        private static readonly Guid _IMPORT_APP_GUID = new Guid("21F65FDC-3016-4F2B-9698-DE151A6186A2");
 
         public TestEnvironment()
         {
@@ -62,8 +61,6 @@ namespace Relativity.Sync.Tests.System.Core
                 {
                     throw new InvalidOperationException("Workspace creation failed. WorkspaceManager kepler service returned null");
                 }
-
-                InstallApplicationFromLibraryToWorkspace(newWorkspace.ArtifactID, _IMPORT_APP_GUID);
 
                 _workspaces.Add(newWorkspace);
                 return newWorkspace;
