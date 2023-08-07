@@ -159,6 +159,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
         public override object GetValue(int i)
         {
+            const string invalidPath = "null Value";
             _diagnosticLogger.LogDiagnostic("Reading for index {index}", i);
 
             if (i >= _columnCount)
@@ -168,7 +169,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 // In case of invalid native file path this condition converts Job to Item level error in IAPI.
                 if (specialFieldValue == null)
                 {
-                    return "null Value";
+                    return invalidPath;
                 }
 
                 return specialFieldValue;
@@ -179,7 +180,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             if (i == _nativeFilePathIndex && HasExtraNativeColumns && _currentNativeFile == null)
             {
                 _diagnosticLogger.LogDiagnostic("currentNativeFile is null");
-                return "null Value";
+                return invalidPath;
             }
 
             return _currentLine[i];
