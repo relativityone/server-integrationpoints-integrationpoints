@@ -135,10 +135,10 @@
     <PackageReference Include="Relativity.API" VersionOverride="17.4.2" >
       <NoWarn>NU1605</NoWarn>
     </PackageReference>
-    <PackageReference Include="Relativity.Kepler" VersionOverride="2.17.0" >
+    <PackageReference Include="Relativity.Kepler" VersionOverride="2.15.5" >
       <NoWarn>NU1605</NoWarn>
     </PackageReference>
-    <PackageReference Include="Relativity.Kepler.Client" VersionOverride="2.17.0" >
+    <PackageReference Include="Relativity.Kepler.Client" VersionOverride="2.15.5" >
       <NoWarn>NU1605</NoWarn>
     </PackageReference>
     <PackageReference Include="Relativity.OutsideIn" />
