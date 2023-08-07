@@ -15,6 +15,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Navigation;
 
