@@ -485,7 +485,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 WorkspaceId = job.WorkspaceID,
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
-                WorkflowId = job.CorrelationID,
+                CorrelationId = job.CorrelationID,
                 ActionName = job.TaskType
             };
         }

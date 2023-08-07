@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _logger = logger;
         }
 
-        public IDisposable ActivateTimer(long jobId, string workflowId, string jobType)
+        public IDisposable ActivateTimer(long jobId, string correlationId, string jobType)
         {
             if (!_toggleProvider.IsEnabled<EnableMemoryUsageReportingToggle>())
             {
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
             if (_appDomainMonitoringEnabler.EnableMonitoring())
             {
-                TimerCallback timerCallback = state => Execute(jobId, workflowId, jobType);
+                TimerCallback timerCallback = state => Execute(jobId, correlationId, jobType);
                 _timer = _timerFactory.Create(timerCallback, null, _config.TimerStartDelay, _config.MemoryUsageInterval, "Memory Usage Timer");
 
                 return _timer;
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             return Disposable.Empty;
         }
 
-        private void Execute(long jobId, string workflowId, string jobType)
+        private void Execute(long jobId, string correlationId, string jobType)
         {
             if (_agent.ToBeRemoved)
             {
@@ -87,15 +87,14 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                     { "r1.team.id", "PTCI-2456712" },
                     { "service.name", "integrationpoints-repo" },
                     { "r1.job.id", jobId.ToString() },
-                    { "JobType", jobType },
-                    { "WorkflowId", workflowId }
+                    { "JobType", jobType }
                 };
                 customData.AddDictionary(_processMemoryHelper.GetApplicationSystemStatistics());
                 Dictionary<string, object> dict = _systemHealthReporter.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
                 customData.AddDictionary(dict);
 
-                _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
-                _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {correlationID}", _METRIC_LOG_NAME, customData, workflowId);
+                _apmClient.CountOperation(_METRIC_NAME, correlationID: correlationId, customData: customData).Write();
+                _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {correlationID}", _METRIC_LOG_NAME, customData, correlationId);
             }
             catch (Exception ex)
             {
