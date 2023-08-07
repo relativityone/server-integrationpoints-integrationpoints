@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.System.Core
 
         private static Uri BuildRelativityUri()
         {
-	        var uriBuilder = new UriBuilder(ServerBindingType, RelativityHostName);
+	        var uriBuilder = new UriBuilder(ServerBindingType, RelativityHostName, -1, "/Relativity");
 	        return uriBuilder.Uri;
         }
 
