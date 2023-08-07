@@ -478,9 +478,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private AgentCorrelationContext GetCorrelationContext(Job job)
         {
-            Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
-            string correlationId = batchInstanceId.ToString();
-
             return new AgentCorrelationContext
             {
                 JobId = job.JobId,
@@ -488,7 +485,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 WorkspaceId = job.WorkspaceID,
                 UserId = job.SubmittedBy,
                 IntegrationPointId = job.RelatedObjectArtifactID,
-                WorkflowId = correlationId,
+                WorkflowId = job.CorrelationID,
                 ActionName = job.TaskType
             };
         }

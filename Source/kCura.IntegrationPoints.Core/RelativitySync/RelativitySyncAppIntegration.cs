@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                         CorrelationID = correlationID
                     };
                     Guid jobId = await syncService.SubmitJobAsync(request).ConfigureAwait(false);
-                    _logger.LogInformation("Sync job has been submitted. Job ID: {jobId}", jobId);
+                    _logger.LogInformation("Sync job for IntegrationPoint {integrationPointArtifactID} has been submitted. Job ID: {jobId}", integrationPointDto.ArtifactId, jobId);
                 }
             }
             catch (Exception ex)
