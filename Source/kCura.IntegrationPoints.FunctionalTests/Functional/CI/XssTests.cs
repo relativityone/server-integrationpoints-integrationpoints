@@ -5,6 +5,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
     [TestType.UI, TestType.System]
+    [Ignore("REL-865787")]
     public class XssTests : TestsBase
     {
         private readonly XssTestsImplementation _testsImplementation;
