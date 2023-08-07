@@ -65,7 +65,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             using (DataTable dataTable = _queueManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
                            correlationID, taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
-                           jobDetails, jobFlags, submittedBy, rootJobID)
+                           jobDetails, jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute())
             {
                 return GetFirstRowOrDefault(dataTable);

@@ -68,9 +68,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         {
             JobId = Integration.JobId.Next;
             AgentTypeID = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID;
+            CorrelationID = Guid.NewGuid().ToString();
             JobDetailsHelper = new TaskParameters()
             {
-                BatchInstance = Guid.NewGuid()
+                BatchInstance = Guid.Parse(CorrelationID)
             };
         }
 
