@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
                 NextRun = profile.NextScheduledRuntimeUTC,
-                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false)
+                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false),
             };
         }
 
