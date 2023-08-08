@@ -48,12 +48,6 @@ namespace Relativity.Sync.Tests.System.Core
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>().UpdateValue("RelativityInstanceURL", "Relativity.Core", AppSettings.RelativityUrl.AbsoluteUri);
         }
 
-        private void InstallDataTransferLegacy()
-        {
-            RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-                .InstallToLibrary(AppSettings.DataTransferLegacyPath);
-        }
-
         private static void SuppressCertificateCheckingIfConfigured()
         {
             if (AppSettings.SuppressCertificateCheck)

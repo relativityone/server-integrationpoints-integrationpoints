@@ -1,13 +1,6 @@
 <RunSettings>
   <TestRunParameters>
-    <Parameter name="PerformRelativityVersionCheck" value="false" />
-    <Parameter name="RsapiServicesUrl" value="/Relativity.Services" />
-    <Parameter name="RelativityRestUrl" value="/Relativity.Rest/api" />
-    <Parameter name="RelativityWebApiUrl" value="/RelativityWebAPI" />
     <Parameter name="SuppressCertificateCheck" value="true" />
-    <Parameter name="AzureStorageAccount" value="relativitysyncstorage" />
-    <Parameter name="AzureStorageAuthorizationKey" value="HjBqFlighpywrOE+og8gtNA9GqCwcL/6hRH7wCKdvkqD2snOIvTJ3+zgRweVfeXPmCCUZB4clHgueoWVANSglw==" />
-    <Parameter name="AzureStoragePerformanceContainer" value="performance-tests" />
     <Parameter name="RemoteServerRoot" value="\\emttest" />
     <Parameter name="RelativeArchivesLocation" value="DefaultFileRepository\Archives" />
     <Parameter name="RelativeBCPPathLocation" value="BCPPath" />
@@ -16,7 +9,5 @@
     <Parameter name="ArmRelativityTemplateMatterId" value="1000002" />
     <Parameter name="ArmCacheLocationId" value="1015534" />
     <Parameter name="ArmFileRepositoryId" value="1014887" />
-    <Parameter name="RelativityImportRAPPath" value="Relativity.Import\lib\Relativity.Import.rap" />
-    <Parameter name="DataTransferLegacyPath" value="DataTransfer.Legacy\lib\DataTransfer.Legacy.rap" />
   </TestRunParameters>
 </RunSettings>
