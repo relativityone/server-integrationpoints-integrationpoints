@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                 throw new IndexOutOfRangeException($"Ordinal [{i}] does not exist in the data table");
             }
 
-            string sourceName =  _source.GetName(i);
+            string sourceName = _source.GetName(i);
             string targetName = _sourceIdentifierToTargetName[sourceName];
             return targetName;
         }
