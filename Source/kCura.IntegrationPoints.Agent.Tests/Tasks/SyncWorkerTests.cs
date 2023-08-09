@@ -88,23 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 integrationPointService,
                 new EmptyDiagnosticLog());
 
-            _job = JobHelper.GetJob(
-                1,
-                null,
-                null,
-                1,
-                1,
-                111,
-                222,
-                TaskType.SyncEntityManagerWorker,
-                new DateTime(),
-                null,
-                "detail",
-                0,
-                new DateTime(),
-                1,
-                null,
-                null);
+            _job = JobHelper.GetFakeJobOfTaskType(TaskType.SyncEntityManagerWorker);
 
             _integrationPoint = new IntegrationPointDto()
             {

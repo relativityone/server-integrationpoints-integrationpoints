@@ -39,8 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private IExportInitProcessService _exportInitProcessService;
         private IIntegrationPointService _integrationPointService;
         private IIntegrationPointRepository _integrationPointRepositoryMock;
-        private readonly Job _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, 7, TaskType.ExportWorker,
-                DateTime.MinValue, DateTime.MinValue, null, 1, DateTime.MinValue, 2, "", null);
+        private readonly Job _job = JobHelper.GetFakeJobOfTaskType(TaskType.ExportWorker);
 
         #endregion // Private Fields
 

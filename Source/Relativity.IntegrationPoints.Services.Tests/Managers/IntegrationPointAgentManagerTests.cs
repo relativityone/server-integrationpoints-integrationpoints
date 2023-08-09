@@ -168,6 +168,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             dt.Columns.Add("LockedByAgentID", typeof(int));
             dt.Columns.Add("WorkspaceID", typeof(int));
             dt.Columns.Add("RelatedObjectArtifactID", typeof(int));
+            dt.Columns.Add("CorrelationID", typeof(string));
             dt.Columns.Add("TaskType", typeof(string));
             dt.Columns.Add("NextRunTime", typeof(DateTime));
             dt.Columns.Add("LastRunTime", typeof(DateTime));
@@ -217,6 +218,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
                         null,
                         _WORKSPACE_ID,
                         _RELATED_OBJ_ARTIFACT_ID,
+                        string.Empty,
                         taskTypeName,
                         DateTime.UtcNow.AddMinutes(nextRunTimeDiff),
                         null,

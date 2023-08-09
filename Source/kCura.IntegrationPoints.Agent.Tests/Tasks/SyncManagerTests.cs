@@ -610,6 +610,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 1,
                 111,
                 222,
+                string.Empty,
                 TaskType.SyncEntityManagerWorker,
                 new DateTime(),
                 null,

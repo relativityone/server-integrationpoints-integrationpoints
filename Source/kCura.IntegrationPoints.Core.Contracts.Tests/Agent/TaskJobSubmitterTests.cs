@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public override void SetUp()
         {
             _jobManager = Substitute.For<IJobManager>();
-            _jobManager.CreateJobWithTracker<TaskParameters>(Arg.Any<Job>(), Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<string>())
+            _jobManager.CreateJobWithTracker(Arg.Any<Job>(), Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<string>())
                 .Returns(new JobBuilder()
                             .WithJobId(_createdJobId)
                             .Build());

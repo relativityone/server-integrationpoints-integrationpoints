@@ -218,6 +218,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _jobManagerMock.Verify(x => x.CreateJobOnBehalfOfAUser(
                 It.IsAny<TaskParameters>(),
                 It.IsAny<TaskType>(),
+                It.IsAny<string>(),
                 _WORKSPACE_ID,
                 _integrationPointDto.ArtifactId,
                 _USER_ID,
@@ -691,6 +692,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _jobManagerMock.Verify(x => x.CreateJobOnBehalfOfAUser(
                 It.IsAny<TaskParameters>(),
                 It.IsAny<TaskType>(),
+                It.IsAny<string>(),
                 _WORKSPACE_ID,
                 _integrationPointDto.ArtifactId,
                 _USER_ID,
@@ -854,6 +856,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 x.CreateJob(
                     It.IsAny<TaskParameters>(),
                     It.IsAny<TaskType>(),
+                    It.IsAny<string>(),
                     It.IsAny<int>(),
                     artifactId,
                     It.IsAny<IScheduleRule>(),
@@ -999,6 +1002,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 x => x.CreateJobOnBehalfOfAUser(
                     It.IsAny<TaskParameters>(),
                     It.IsAny<TaskType>(),
+                    It.IsAny<string>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),

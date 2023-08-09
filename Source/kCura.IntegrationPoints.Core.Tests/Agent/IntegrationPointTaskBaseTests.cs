@@ -184,7 +184,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
                 BatchInstance = Guid.NewGuid(),
             };
 
-            Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+            Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0,
+                0, string.Empty, TaskType.SyncWorker, DateTime.Now, null,
                 jobDetailsText, 0, DateTime.Now, 0, string.Empty, string.Empty);
 
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
@@ -230,7 +231,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
                 BatchInstance = Guid.NewGuid(),
             };
 
-            Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
+            Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0,
+                0, string.Empty,  TaskType.SyncWorker, DateTime.Now, null,
                 jobDetailsText, 0, DateTime.Now, 0, string.Empty, string.Empty);
 
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);

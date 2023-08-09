@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Queries
             DataRow GetJobDataRow(Job job)
             {
                 return JobHelper.CreateJobDataRow(job.JobId, job.RootJobId, It.IsAny<int>(), It.IsAny<int>(), job.LockedByAgentID,
-                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<TaskType>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<TaskType>(), It.IsAny<DateTime>(), It.IsAny<DateTime?>(), It.IsAny<string>(),
                     It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), job.StopState, dataTable);
             }
 

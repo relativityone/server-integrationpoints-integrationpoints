@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private int _workspaceId;
         private int _integrationPointId;
         private int _userId;
+        private string _correlationIdFake;
         private TaskType _task;
         private IAPILog _logger;
 
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _task = TaskType.ExportService;
             _context = Substitute.For<IEddsServiceContext>();
             _context.UserID = 55555;
+            _correlationIdFake = Guid.NewGuid().ToString();
 
             _helper = Substitute.For<IHelper>();
             _jobService = Substitute.For<IJobService>();
@@ -61,10 +63,10 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = null;
 
-            _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId);
+            _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId, _userId);
 
             _serializer.DidNotReceive().Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null);
         }
 
         [Test]
@@ -72,13 +74,13 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = null;
 
-            _jobService.CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null)
+            _jobService.CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null)
                 .Throws(new AgentNotFoundException());
 
-            Assert.Throws<Exception>(() => _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId));
+            Assert.Throws<Exception>(() => _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId, _userId));
 
             _serializer.DidNotReceive().Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _userId, null, null);
         }
 
         [Test]
@@ -86,10 +88,10 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = new TaskParameters();
 
-            _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId, _userId);
+            _manager.CreateJobOnBehalfOfAUser(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId, _userId);
 
             _serializer.Received(1).Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _userId, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _userId, null, null);
         }
 
         [Test]
@@ -97,10 +99,10 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = null;
 
-            _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId);
+            _manager.CreateJob(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId);
 
             _serializer.DidNotReceive().Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null);
         }
 
         [Test]
@@ -108,13 +110,13 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = null;
 
-            _jobService.CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null)
+            _jobService.CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null)
                 .Throws(new AgentNotFoundException());
 
-            Assert.Throws<Exception>(() => _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId));
+            Assert.Throws<Exception>(() => _manager.CreateJob(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId));
 
             _serializer.DidNotReceive().Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), null, _context.UserID, null, null);
         }
 
         [Test]
@@ -122,10 +124,10 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             TaskParameters jobDetail = new TaskParameters();
 
-            _manager.CreateJob(jobDetail, TaskType.ExportService, _workspaceId, _integrationPointId);
+            _manager.CreateJob(jobDetail, TaskType.ExportService, _correlationIdFake, _workspaceId, _integrationPointId);
 
             _serializer.Received(1).Serialize(jobDetail);
-            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _context.UserID, null, null);
+            _jobService.Received(1).CreateJob(_workspaceId, _integrationPointId, _correlationIdFake, _task.ToString(), Arg.Any<DateTime>(), string.Empty, _context.UserID, null, null);
         }
 
         [Test]
@@ -286,8 +288,10 @@ namespace kCura.IntegrationPoints.Core.Tests
 
         private Job GetJob(long jobID, long? rootJobID)
         {
-            return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, "",
-                0, new DateTime(), 1, null, null);
+            return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111,
+                222, Guid.NewGuid().ToString(),TaskType.SyncEntityManagerWorker,
+                new DateTime(), null, "", 0, new DateTime(), 1,
+                null, null);
         }
 
     }

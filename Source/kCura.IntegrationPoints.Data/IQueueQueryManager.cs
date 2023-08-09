@@ -21,12 +21,12 @@ namespace kCura.IntegrationPoints.Data
         ICommand DeleteJob(long jobId);
 
         IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID,
-            string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            string correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
             string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
-        ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-            DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
-            string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
+        ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+            string correlationID, string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
         IQuery<DataTable> GetAllJobs();
 

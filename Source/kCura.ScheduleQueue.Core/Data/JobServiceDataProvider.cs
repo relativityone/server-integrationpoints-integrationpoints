@@ -49,23 +49,23 @@ namespace kCura.ScheduleQueue.Core.Data
                 .Execute();
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-            DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-            string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
+        public void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+            string correlationID, string taskType, DateTime nextRunTime, int agentTypeId, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
             _queueManager.CreateNewAndDeleteOldScheduledJob(oldScheduledJobId, workspaceID, relatedObjectArtifactID,
-                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
-                    jobFlags, submittedBy, rootJobID, parentJobID)
+                correlationID, taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
+                jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute();
         }
 
-        public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+        public DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID)
         {
             using (DataTable dataTable = _queueManager.CreateScheduledJob(workspaceID, relatedObjectArtifactID,
-                    taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule, jobDetails,
-                    jobFlags, submittedBy, rootJobID, parentJobID)
+                           correlationID, taskType, nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
+                           jobDetails, jobFlags, submittedBy, rootJobID, parentJobID)
                 .Execute())
             {
                 return GetFirstRowOrDefault(dataTable);

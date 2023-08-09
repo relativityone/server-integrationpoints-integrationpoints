@@ -25,6 +25,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int RelatedObjectArtifactID { get; set; }
 
+        public string CorrelationID { get; set; }
+
         public string TaskType { get; set; }
 
         public DateTime NextRunTime { get; set; }
@@ -66,9 +68,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         {
             JobId = Integration.JobId.Next;
             AgentTypeID = Const.Agent.INTEGRATION_POINTS_AGENT_TYPE_ID;
+            CorrelationID = Guid.NewGuid().ToString();
             JobDetailsHelper = new TaskParameters()
             {
-                BatchInstance = Guid.NewGuid()
+                BatchInstance = Guid.Parse(CorrelationID)
             };
         }
 
@@ -107,6 +110,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             row["LockedByAgentID"] = (object)LockedByAgentID ?? DBNull.Value;
             row["WorkspaceID"] = WorkspaceID;
             row["RelatedObjectArtifactID"] = RelatedObjectArtifactID;
+            row["CorrelationID"] = CorrelationID;
             row["TaskType"] = TaskType;
             row["NextRunTime"] = NextRunTime;
             row["LastRunTime"] = (object)LastRunTime ?? DBNull.Value;
