@@ -63,13 +63,13 @@
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0-pre.22\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.4.0-pre.14\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.4.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0-pre.22\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.15.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.2.15.6\lib\net462\Relativity.Kepler.dll</HintPath>
