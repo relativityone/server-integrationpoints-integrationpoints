@@ -1,5 +1,5 @@
-@Library('ProjectMayhem@v1') _
+@Library('ProjectMayhem@vServer') _
 
 libraryCD {
-    slackChannel = "ci-sync"
+    slackChannel = "ci-server-delta"    
 }

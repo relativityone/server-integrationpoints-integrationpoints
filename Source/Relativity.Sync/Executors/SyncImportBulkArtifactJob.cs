@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
-using Relativity.AntiMalware.SDK;
+using Relativity.Sync.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
@@ -128,9 +128,6 @@ namespace Relativity.Sync.Executors
 
                     AntiMalwareEvent antiMalwareEvent = new AntiMalwareEvent
                     {
-                        WorkspaceID = _workspaceId,
-                        UncOrUri = infectedFilePath,
-                        Exception = new Exception($"Malware detected in document: {documentIdentifier}")
                     };
 
                     _antiMalwareEventHelper.ReportAntiMalwareEventAsync(antiMalwareEvent).GetAwaiter().GetResult();

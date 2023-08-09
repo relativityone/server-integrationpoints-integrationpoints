@@ -6,7 +6,7 @@ using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
-using Relativity.AntiMalware.SDK;
+using Relativity.Sync.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
