@@ -13,10 +13,9 @@
 
   <ItemGroup>
     <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.1.0" />
-    <PackageReference Include="Relativity.API" Version="12.0.0" />
-    <PackageReference Include="Relativity.Kepler" Version="2.0.7" />
-    <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" Version="0.2.0" />
-    <PackageReference Include="Relativity.Telemetry.APM" Version="2019.1.1" />
+    <PackageReference Include="Relativity.API" Version="17.4.2" />
+    <PackageReference Include="Relativity.Kepler" Version="2.15.6" />
+    <PackageReference Include="Relativity.Telemetry.APM" Version="2019.10.9" />
   </ItemGroup>
   
   <ItemGroup>
