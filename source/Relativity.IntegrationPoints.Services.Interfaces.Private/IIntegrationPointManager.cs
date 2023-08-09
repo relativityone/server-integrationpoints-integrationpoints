@@ -64,6 +64,14 @@ namespace Relativity.IntegrationPoints.Services
 		Task<object> RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
+		/// Retry integration point
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace's id where the requested integration point object lives</param>
+		/// <param name="integrationPointArtifactId">the integration point's artifact id</param>
+		/// <param name="switchToAppendOverlayMode">if set to <see langword="true"/> the job will be retried with Append/Overlay mode</param>
+		Task<object> RetryIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode = false);
+
+		/// <summary>
 		/// Get all available integration point objects in the workspace.
 		/// </summary>
 		/// <param name="workspaceArtifactId">An artifact id of the workspace.</param>
