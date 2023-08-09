@@ -24,11 +24,6 @@ namespace Relativity.IntegrationPoints.MyFirstProvider.Provider.FunctionalTests
 				.Resolve<ILibraryApplicationService>();
 		}
 
-		[OneTimeTearDown]
-		public void OneTimeTearDown()
-		{
-		}
-
 		[IdentifiedTest("ceb4a72f-fb34-427f-a03d-5bdbdf571aed")]
 		public void MyFirstProvider_ShouldInstallProperlyIntoWorkspace()
 		{
