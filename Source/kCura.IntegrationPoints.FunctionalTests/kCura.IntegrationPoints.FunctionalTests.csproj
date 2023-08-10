@@ -128,6 +128,7 @@
     <PackageReference Include="netDumbster" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
+    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.API">
       <NoWarn>NU1605</NoWarn>
@@ -138,6 +139,7 @@
     <PackageReference Include="Relativity.Kepler.Client">
       <NoWarn>NU1605</NoWarn>
     </PackageReference>
+    <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
