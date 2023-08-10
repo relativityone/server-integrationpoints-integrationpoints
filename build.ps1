@@ -45,7 +45,7 @@ param(
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
-$NugetUrl = "https://relativity.jfrog.io/relativity/nuget-download/v5.3.0/nuget.exe"
+$NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $ToolsDir = Join-Path $BaseDir "buildtools"
 $NugetExe = Join-Path $ToolsDir "nuget.exe"
 
@@ -67,7 +67,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Progress "Importing required Powershell modules..."
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
-Import-Module (Join-Path $ToolsDir "psake.*\tools\psake\psake.psd1") -ErrorAction Stop
+Import-Module (Join-Path $ToolsDir "psake-rel.*\tools\psake\psake.psd1") -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools.*\PSBuildTools.psd1") -ErrorAction Stop
 Install-Module VSSetup -Scope CurrentUser -Force
 

@@ -12,3 +12,10 @@ For functional tests, point PowerShell to the root of this repository and provid
 ## Maintainers
 
 This repository is owned by the Codigo o Plomo Team.
+#team-server-delta
+
+## History  
+
+The server-main branch was forked for Relativity Server by the Server Vertical.
+Tag: 12.3
+Branch: server-main

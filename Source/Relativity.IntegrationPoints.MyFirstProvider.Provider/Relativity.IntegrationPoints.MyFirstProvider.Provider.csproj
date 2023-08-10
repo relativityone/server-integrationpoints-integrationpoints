@@ -36,14 +36,17 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Apps.Common.Config, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Config.2.1.3\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Config, Version=2.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Config.2.1.9\lib\net462\kCura.Apps.Common.Config.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Data, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Data.2.1.3\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Data, Version=2.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Data.2.1.9\lib\net462\kCura.Apps.Common.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.3.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.3\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Utils, Version=2.1.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.2.1.9\lib\net462\kCura.Apps.Common.Utils.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.EventHandler, Version=17.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.EventHandler.17.4.2\lib\net462\kCura.EventHandler.dll</HintPath>
@@ -60,28 +63,32 @@
       <HintPath>..\packages\Relativity.DataTransfer.MessageService.1.0.4\lib\Relativity.DataTransfer.MessageService.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.9\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0\lib\net462\Relativity.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.Services.Interfaces.Private, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.3.1\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.Services.Interfaces.Private.1.4.0\lib\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.IntegrationPoints.SourceProviderInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.0.9\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\packages\Relativity.IntegrationPoints.SDK.1.3.0\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=2.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.2.17.0\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=2.15.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.2.15.6\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=2.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.Client.2.17.0\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Logging.Interfaces, Version=3000.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Logging.Interfaces.3000.4.1\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.APM, Version=2019.1.1.81, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.APM.2019.1.1\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=2.15.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.2.15.6\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.159.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.159\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.APM, Version=2019.10.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.APM.2019.10.9\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Telemetry.Services.Interface, Version=9.6.88.61, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.9.6.88.61\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=3003.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.3003.1.1\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=3003.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.3003.0.2\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
