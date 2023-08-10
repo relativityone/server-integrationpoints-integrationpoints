@@ -11,6 +11,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId, bool switchToAppendOverlayMode = false);
         Task<string> GetJobHistoryStatus(int jobHistoryId, int workspaceId);
         Task WaitForJobToFinishAsync(int jobHistoryId, int workspaceId, int checkDelayInMs = 500, string expectedStatus = "Completed");
-        Task<Workload> GetWorkloadSizeAsync();
     }
 }
