@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public static AzureStorageHelper CreateFromTestConfig()
         {
-	        throw new NotSupportedException("AzureStorageHelper: Should be removed - relone code");
+	        throw new NotSupportedException("REL-865786 - AzureStorageHelper: Should be removed - relone code");
         }
 
         public async Task<string> DownloadFileAsync(string filePath, string destinationPath)

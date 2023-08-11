@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit
 
         public event IImportNotifier.OnProgressEventHandler OnProgress;
 
-        //public event IImportNotifier.OnBatchCompleteEventHandler OnBatchComplete;
 #pragma warning restore 67 // Event is never used
 
         public void RaiseOnProcessProgress(int failedItems, int totalItemsProcessed)
