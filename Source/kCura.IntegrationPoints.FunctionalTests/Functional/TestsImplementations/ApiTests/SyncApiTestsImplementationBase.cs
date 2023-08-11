@@ -51,11 +51,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         public void OneTimeTeardown()
         {
+            Console.WriteLine("Sync ReIsolation OneTimeTeardown: Begin");
             foreach (var workspace in _destinationWorkspaces)
             {
-                RelativityFacade.Instance.DeleteWorkspace(workspace);
+	            try
+	            {
+		            if (RelativityFacade.Instance.WorkspaceExists(workspace))
+		            {
+						RelativityFacade.Instance.DeleteWorkspace(workspace);
+					}
+		            
+	            }
+	            catch (Exception ex)
+	            {
+					Console.WriteLine("Sync ReIsolation OneTimeTeardown Workspace delete Error: ", ex.ToString());
+	            }
+                
             }
-        }
+			Console.WriteLine("Sync ReIsolation OneTimeTeardown: End");
+		}
 
         public async Task RunIntegrationPoint()
         {
