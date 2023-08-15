@@ -35,7 +35,7 @@
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="3.3.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.9.1-pre.10" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
