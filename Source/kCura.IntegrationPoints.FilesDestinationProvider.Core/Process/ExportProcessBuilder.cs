@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FileNaming.CustomFileNaming;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -40,6 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private readonly IExportServiceFactory _exportServiceFactory;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IExportFieldsService _exportFieldsService;
+        private readonly IWebApiConfig _webApiConfig;
 
         public ExportProcessBuilder(
             ICompositeLoggingMediator loggingMediator,
@@ -54,7 +56,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             IDirectory directoryWrap,
             IExportServiceFactory exportServiceFactory,
             IRepositoryFactory repositoryFactory,
-            IExportFieldsService exportFieldsService)
+            IExportFieldsService exportFieldsService,
+            IWebApiConfig webApiConfig)
         {
             _loggingMediator = loggingMediator;
             _userMessageNotification = userMessageNotification;
@@ -68,6 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             _exportServiceFactory = exportServiceFactory;
             _repositoryFactory = repositoryFactory;
             _exportFieldsService = exportFieldsService;
+            _webApiConfig = webApiConfig;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
         }
 
@@ -113,6 +117,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private void PerformLogin(ExportFile exportFile)
         {
             var cookieContainer = new CookieContainer();
+            WinEDDS.Config.ProgrammaticServiceURL = _webApiConfig.WebApiUrl;
+            _logger.LogInformation("Connecting to WebAPI in IExporter using WebAPIPath: {WebAPIPath}.", _webApiConfig.WebApiUrl);
 
             exportFile.CookieContainer = cookieContainer;
             exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
