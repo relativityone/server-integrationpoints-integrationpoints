@@ -43,10 +43,10 @@
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
-    <Reference Include="FreeImageNET, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FreeImageNET, Version=2.9.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.9.1\lib\net462\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="itextsharp, Version=2.7.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+    <Reference Include="itextsharp, Version=2.9.1.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.9.1\lib\net462\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.8.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -61,7 +61,7 @@
     <Reference Include="Relativity, Version=48.2.26.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.48.2.26.0\lib\net462\Relativity.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.DataExchange.Client.SDK, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.DataExchange.Client.SDK, Version=2.9.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.DataExchange.Client.SDK.2.9.1\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataTransfer.Nodes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
