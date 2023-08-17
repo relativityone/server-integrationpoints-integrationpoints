@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
@@ -22,7 +23,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public static AzureStorageHelper CreateFromTestConfig()
         {
-            return new AzureStorageHelper(AppSettings.AzureStorageConnectionString, AppSettings.AzureStoragePerformanceContainer);
+	        throw new NotSupportedException("REL-865786 - AzureStorageHelper: Should be removed - relone code");
         }
 
         public async Task<string> DownloadFileAsync(string filePath, string destinationPath)

@@ -9,7 +9,7 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
     {
         public Uri GetServicesURL()
         {
-            return AppSettings.RsapiServicesUrl;
+	        throw new NotSupportedException("Should be deprecated to take out RsapiServices");
         }
 
         public Uri GetRESTServiceUrl()

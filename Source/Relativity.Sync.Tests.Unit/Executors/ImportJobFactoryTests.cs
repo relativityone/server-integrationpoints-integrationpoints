@@ -10,7 +10,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
-using Relativity.AntiMalware.SDK;
+using Relativity.Sync.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -21,7 +21,6 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
-
 namespace Relativity.Sync.Tests.Unit.Executors
 {
     [TestFixture]

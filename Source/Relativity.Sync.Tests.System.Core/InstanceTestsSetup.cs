@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.System.Core
             RelativityFacade.Instance.RelyOn<CoreComponent>();
             RelativityFacade.Instance.RelyOn<ApiComponent>();
 
-            InstallDataTransferLegacy();
+            // InstallDataTransferLegacy();
 
             ConfigureRelativityInstanceURL();
         }
@@ -46,12 +46,6 @@ namespace Relativity.Sync.Tests.System.Core
         private void ConfigureRelativityInstanceURL()
         {
             RelativityFacade.Instance.Resolve<IInstanceSettingsService>().UpdateValue("RelativityInstanceURL", "Relativity.Core", AppSettings.RelativityUrl.AbsoluteUri);
-        }
-
-        private void InstallDataTransferLegacy()
-        {
-            RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-                .InstallToLibrary(AppSettings.DataTransferLegacyPath);
         }
 
         private static void SuppressCertificateCheckingIfConfigured()

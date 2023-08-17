@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
      <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>net462</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <WarningLevel>4</WarningLevel>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,17 +31,16 @@
         <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-    <ItemGroup>
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    </ItemGroup>
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="3.3.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.9.1" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="Relativity.Testing.Framework" Version="7.2.1" />
-        <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.1.5" />
+        <PackageReference Include="Relativity.Testing.Framework" Version="10.3.0" />
+        <PackageReference Include="Relativity.Testing.Framework.Api" Version="10.3.0" />
         <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
         <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
     </ItemGroup>

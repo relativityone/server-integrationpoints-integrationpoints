@@ -2,110 +2,95 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
+
 using NUnit.Framework;
 
 namespace Relativity.Sync.Tests.System.Core
 {
-    public static class AppSettings
+	public static class AppSettings
     {
-        private static Uri _relativityRestUrl;
-        private static Uri _relativityServicesUrl;
-        private static Uri _relativityWebApiUrl;
-        private static Uri _relativityUrl;
-
         public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
-        public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
-            ? TestContext.Parameters["RelativityHostAddress"]
-            : ConfigurationManager.AppSettings.Get(nameof(RelativityHostName));
+        public static string ServerBindingType => GetTestParameterStringValue("ServerBindingType");
 
-        public static string RelativityServicesAddress => GetAppSettingOrDefaultValue("RsapiServicesHostAddress");
+        public static string RelativityHostName => GetTestParameterStringValue("RelativityHostAddress");
 
-        public static Uri RelativityUrl => _relativityUrl ?? (_relativityUrl = BuildHostNamedBasedUri("Relativity"));
+        public static Uri RelativityUrl => BuildHostNamedBasedUri("Relativity");
 
-        public static Uri RsapiServicesUrl => _relativityServicesUrl ?? (_relativityServicesUrl = BuildServicesBasedUri("Relativity.Services"));
+        public static Uri RelativityRestUrl => BuildHostNamedBasedUri("Relativity.Rest/api");
 
-        public static Uri RelativityRestUrl => _relativityRestUrl ?? (_relativityRestUrl = BuildHostNamedBasedUri("Relativity.Rest/api"));
+        public static Uri RelativityWebApiUrl => BuildHostNamedBasedUri("RelativityWebAPI");
 
-        public static Uri RelativityWebApiUrl => _relativityWebApiUrl ?? (_relativityWebApiUrl = BuildHostNamedBasedUri("RelativityWebAPI"));
+        public static string RelativityUserName => GetTestParameterStringValue("AdminUsername");
 
-        public static string RelativityUserName => GetConfigValue("AdminUsername");
+        public static string RelativityUserPassword => GetTestParameterStringValue("AdminPassword");
 
-        public static string RelativityUserPassword => GetConfigValue("AdminPassword");
+        public static string SqlServer => GetTestParameterStringValue("SqlServer");
 
-        public static string BasicAccessToken => Convert.ToBase64String(Encoding.ASCII.GetBytes($"{RelativityUserName}:{RelativityUserPassword}"));
+        public static string SqlUsername => GetTestParameterStringValue("SqlUsername");
 
-        public static string SqlServer => GetConfigValue("SqlServer");
-
-        public static string SqlUsername => GetConfigValue("SqlUsername");
-
-        public static string SqlPassword => GetConfigValue("SqlPassword");
+        public static string SqlPassword => GetTestParameterStringValue("SqlPassword");
 
         public static string ConnectionStringEDDS => string.Format("Data Source={0};Initial Catalog=EDDS", SqlServer);
 
         public static string ConnectionStringWorkspace(int workspaceID) => string.Format("Data Source={0};Initial Catalog=EDDS{1}", SqlServer, workspaceID);
 
-        public static string AzureStorageAccount => GetConfigValue(nameof(AzureStorageAccount));
+        public static bool SuppressCertificateCheck => GetTestParameterBooleanValue("SuppressCertificateCheck");
 
-        public static string AzureStorageAuthorizationKey => GetConfigValue(nameof(AzureStorageAuthorizationKey));
+        public static string RelativeArchivesLocation => GetTestParameterStringValue("RelativeArchivesLocation");
 
-        public static string AzureStorageConnectionString
-            => string.Format(@"DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1};EndpointSuffix=core.windows.net", AzureStorageAccount, AzureStorageAuthorizationKey);
+        public static string RelativeBCPPathLocation => GetTestParameterStringValue("RelativeBCPPathLocation");
 
-        public static string AzureStoragePerformanceContainer => GetConfigValue(nameof(AzureStoragePerformanceContainer));
+        public static string RemoteServerRoot => GetTestParameterStringValue("RemoteServerRoot");
 
-        public static bool SuppressCertificateCheck => bool.Parse(GetConfigValue("SuppressCertificateCheck"));
+        public static string RemoteArchivesLocation => GetTestParameterPathValue(RemoteServerRoot, RelativeArchivesLocation);
 
-        public static string RelativeArchivesLocation => GetConfigValue("RelativeArchivesLocation");
+        public static string RemoteBCPPathLocation => GetTestParameterPathValue(RemoteServerRoot, RelativeBCPPathLocation);
 
-        public static string RelativeBCPPathLocation => GetConfigValue("RelativeBCPPathLocation");
+        public static string ResourcePoolName => GetTestParameterStringValue("ResourcePoolName");
 
-        public static string RemoteServerRoot => GetConfigValue("RemoteServerRoot");
+        public static string PerformanceResultsFilePath => GetTestParameterStringValue("PerformanceResultsFilePath");
 
-        public static string RemoteArchivesLocation => Path.Combine(RemoteServerRoot, RelativeArchivesLocation);
+        public static bool UseLogger => !GetTestParameterBooleanValue("SuppressCertificateCheck");
 
-        public static string RemoteBCPPathLocation => Path.Combine(RemoteServerRoot, RelativeBCPPathLocation);
+        public static int ArmRelativityTemplateMatterId => GetTestParameterIntegerValue("ArmRelativityTemplateMatterId");
 
-        public static string ResourcePoolName => GetConfigValue("ResourcePoolName");
+        public static int ArmCacheLocationId => GetTestParameterIntegerValue("ArmCacheLocationId");
 
-        public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
-
-        public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;
-
-        public static int ArmRelativityTemplateMatterId => int.Parse(GetConfigValue("ArmRelativityTemplateMatterId"));
-
-        public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
-
-        public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
-
-        public static string RelativityImportRAPPath => Path.Combine(GetConfigValue("BuildToolsDirectory"), GetConfigValue("RelativityImportRAPPath"));
-
-        public static string DataTransferLegacyPath => Path.Combine(GetConfigValue("BuildToolsDirectory"), GetConfigValue("DataTransferLegacyPath"));
+        public static int ArmFileRepositoryId => GetTestParameterIntegerValue("ArmFileRepositoryId");
 
         private static Uri BuildHostNamedBasedUri(string path)
         {
-            if (string.IsNullOrEmpty(RelativityHostName))
+            string hostname = RelativityHostName;
+            if (string.IsNullOrEmpty(hostname))
             {
-                throw new ConfigurationErrorsException($"{nameof(RelativityHostName)} is not set. Please supply it's value in app.config in order to run system tests.");
+                throw new ConfigurationErrorsException($"{nameof(hostname)} is not set. Please provide a value within the .runsettings file when running System tests.");
             }
 
-            var uriBuilder = new UriBuilder("https", RelativityHostName, -1, path);
+            var uriBuilder = new UriBuilder(ServerBindingType, hostname, -1, path);
             return uriBuilder.Uri;
         }
 
-        private static Uri BuildServicesBasedUri(string path)
+        private static string GetTestParameterPathValue(string path1, string path2)
         {
-            var uriBuilder = new UriBuilder("https", RelativityServicesAddress ?? RelativityHostName, -1, path);
-            return uriBuilder.Uri;
+            string value = Path.Combine(path1, path2);
+            return value;
         }
 
-        private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
-            ? TestContext.Parameters[name]
-            : ConfigurationManager.AppSettings.Get(name);
+        private static string GetTestParameterStringValue(string name)
+        {
+            string value = TestContext.Parameters[name];
+            return value;
+        }
 
-        private static string GetAppSettingOrDefaultValue(string name) => string.IsNullOrEmpty(ConfigurationManager.AppSettings.Get(name))
-            ? TestContext.Parameters[name]
-            : RelativityHostName;
+        private static bool GetTestParameterBooleanValue(string name, bool defaultValue = false)
+        {
+            return bool.TryParse(GetTestParameterStringValue(name), out bool actualValue) ? actualValue : defaultValue;
+        }
+
+        private static int GetTestParameterIntegerValue(string name, int defaultValue = 0)
+        {
+            return int.TryParse(GetTestParameterStringValue(name), out int actualValue) ? actualValue : defaultValue;
+        }
     }
 }
