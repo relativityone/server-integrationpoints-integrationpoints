@@ -114,23 +114,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
         public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
         {
-            IEnumerable<IntegrationPointProfile> profilesToUpdate = FilterProfiles(profiles, (profile) =>
-                CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-            return profilesToUpdate;
+            return profiles.Where(p => CanProfileBePreservedAndUpdated(p, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
         }
 
         public IEnumerable<IntegrationPointProfile> GetProfilesToDelete(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
         {
-            IEnumerable<IntegrationPointProfile> profilesToDelete = FilterProfiles(profiles, (profile) =>
-                !CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-            return profilesToDelete;
-        }
-
-        private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
-        {
-            IEnumerable<IntegrationPointProfile> filteredProfiles = profiles
-                .Where(filter);
-            return filteredProfiles;
+            return profiles.Where(p => !CanProfileBePreservedAndUpdated(p, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
         }
 
         private bool CanProfileBePreservedAndUpdated(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
