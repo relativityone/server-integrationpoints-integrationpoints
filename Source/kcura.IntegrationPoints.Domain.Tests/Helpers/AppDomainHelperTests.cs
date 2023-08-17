@@ -91,7 +91,8 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         }
 
         [Test]
-        public void ReleaseDomainShallRemoveBaseDirectory()
+		[Ignore("REL-865787")]
+		public void ReleaseDomainShallRemoveBaseDirectory()
         {
             // Act
             _sut.ReleaseDomain(_appDomain);

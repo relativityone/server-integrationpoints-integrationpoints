@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             base.OnTearDownFixture();
             if (_existingWorkspaceArtifactID == 0 && TestContext.CurrentContext.Result.FailCount == 0)
             {
-                RelativityFacade.Instance.DeleteWorkspace(Workspace);
+                RelativityFacade.Instance.TryDeleteWorkspace(Workspace);
             }
         }
     }

@@ -55,5 +55,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         {
             throw new NotImplementedException();
         }
-    }
+
+		public Task<bool> IsEnabledByGuidAsync(Guid componentGuid)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsEnabledByGuid(Guid componentGuid)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

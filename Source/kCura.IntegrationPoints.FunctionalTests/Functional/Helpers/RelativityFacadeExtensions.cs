@@ -41,11 +41,22 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             return instance.Resolve<IWorkspaceService>().Get(workspaceArtifactID);
         }
 
-        public static void DeleteWorkspace(this IRelativityFacade instance, Workspace workspace)
+        public static void TryDeleteWorkspace(this IRelativityFacade instance, Workspace workspace)
         {
             IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
+            try
+            {
+                if (!workspaceService.Exists(workspace.ArtifactID))
+                {
+                    return;
+                }
 
-            workspaceService.Delete(workspace.ArtifactID);
+                workspaceService.Delete(workspace.ArtifactID);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Functional test failed to delete workspace {workspace.ArtifactID}. Error: {e}");
+            }
         }
 
         public static void RequireAgent(this IRelativityFacade instance, string agentTypeName, int runInterval)

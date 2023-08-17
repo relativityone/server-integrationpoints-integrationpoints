@@ -35,8 +35,19 @@
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="paket.references" />
     <None Include="Properties\DataSources\System.Data.DataSet.datasource" />
   </ItemGroup>
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" />
+    <PackageReference Include="Castle.Windsor" />
+    <PackageReference Include="LanguageExt.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Relativity" />
+    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
+    <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" />
+    <PackageReference Include="Relativity.Services.Interfaces" />
+    <PackageReference Include="Relativity.Toggles" />
+    <PackageReference Include="Relativity.Logging.Interfaces" />
+  </ItemGroup>
 </Project>

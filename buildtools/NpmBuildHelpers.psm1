@@ -59,3 +59,98 @@ function Invoke-NpmCommand {
 		}
 	}
 }
+
+Function Install-NugetPackage
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true, HelpMessage="Name of the Nuget package")]
+        [string]$Name,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Version of the Nuget package")]
+        [string]$Version,
+ 
+        [Parameter(Mandatory=$false, HelpMessage="Location of nuget.exe")]
+        [string]$NuGetEXE,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Location of the BuildTools folder")]
+        [string]$ToolsDir
+    )
+
+    if ([string]::IsNullOrEmpty($NuGetEXE)) {
+        $NuGetEXE = [System.IO.Path]::Combine($ToolsDir, "nuget.exe")
+    }
+
+    if (-not(Test-Path -Path $NuGetEXE)) {
+        Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v6.5.0/nuget.exe" -OutFile $NuGetEXE
+    }
+ 
+    & $NuGetEXE install $Name -Version $Version -OutputDirectory $ToolsDir -Verbosity "normal"
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occurred while restoring packages in the buildtools directory."
+    }
+}
+
+
+Function Install-NugetPackage
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true, HelpMessage="Name of the Nuget package")]
+        [string]$Name,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Version of the Nuget package")]
+        [string]$Version,
+ 
+        [Parameter(Mandatory=$false, HelpMessage="Location of nuget.exe")]
+        [string]$NuGetEXE,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Location of the BuildTools folder")]
+        [string]$ToolsDir
+    )
+
+    if ([string]::IsNullOrEmpty($NuGetEXE)) {
+        $NuGetEXE = [System.IO.Path]::Combine($ToolsDir, "nuget.exe")
+    }
+
+    if (-not(Test-Path -Path $NuGetEXE)) {
+        Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v6.5.0/nuget.exe" -OutFile $NuGetEXE
+    }
+ 
+    & $NuGetEXE install $Name -Version $Version -OutputDirectory $ToolsDir -Verbosity "normal"
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occurred while restoring packages in the buildtools directory."
+    }
+}
+
+
+Function Install-NugetPackage
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true, HelpMessage="Name of the Nuget package")]
+        [string]$Name,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Version of the Nuget package")]
+        [string]$Version,
+ 
+        [Parameter(Mandatory=$false, HelpMessage="Location of nuget.exe")]
+        [string]$NuGetEXE,
+ 
+        [Parameter(Mandatory=$true, HelpMessage="Location of the BuildTools folder")]
+        [string]$ToolsDir
+    )
+
+    if ([string]::IsNullOrEmpty($NuGetEXE)) {
+        $NuGetEXE = [System.IO.Path]::Combine($ToolsDir, "nuget.exe")
+    }
+
+    if (-not(Test-Path -Path $NuGetEXE)) {
+        Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v6.5.0/nuget.exe" -OutFile $NuGetEXE
+    }
+ 
+    & $NuGetEXE install $Name -Version $Version -OutputDirectory $ToolsDir -Verbosity "normal"
+    if ($LASTEXITCODE -ne 0) {
+        Throw "An error occurred while restoring packages in the buildtools directory."
+    }
+}

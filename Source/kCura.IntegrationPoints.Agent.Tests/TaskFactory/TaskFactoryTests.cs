@@ -7,7 +7,6 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Agent.CustomProvider;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -35,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private IJobSynchronizationChecker _jobSynchronizationChecker;
         private ITaskFactoryJobHistoryService _jobHistoryService;
         private Mock<IWindsorContainer> _containerFake;
-        private Mock<ICustomProviderFlowCheck> _newCustomProviderCheckFake;
         private ITaskFactory _instance;
         private IFixture _fxt;
 
@@ -61,16 +59,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
-            _newCustomProviderCheckFake = new Mock<ICustomProviderFlowCheck>();
-            _newCustomProviderCheckFake.Setup(
-                    x => x.ShouldBeUsedAsync(
-                        It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
+			_containerFake = new Mock<IWindsorContainer>();
 
-            _containerFake = new Mock<IWindsorContainer>();
-            _containerFake.Setup(x => x.Resolve<ICustomProviderFlowCheck>()).Returns(_newCustomProviderCheckFake.Object);
-
-            _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
+			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(
                 helper,
                 taskExceptionMediator,
                 _jobSynchronizationChecker,
@@ -196,30 +187,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             // Assert
             Assert.Throws<IntegrationPointsException>(() => action());
-        }
-
-        [Test]
-        public void CreateTask_ShouldCreateNewCustomProviderTask_WhenCriteriaAreMet()
-        {
-            // Arrange
-            CustomProviderTask expectedTask = _fxt.Create<CustomProviderTask>();
-
-            Job job = _fxt.Build<Job>()
-                .With(x => x.TaskType, TaskType.SyncManager.ToString())
-                .Create();
-
-            var agentBase = new TestAgentBase(Guid.NewGuid());
-
-            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsedAsync(It.IsAny<IntegrationPointDto>()))
-                .ReturnsAsync(true);
-
-            _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
-
-            // Act
-            ITask task = _instance.CreateTask(job, agentBase);
-
-            // Assert
-            task.Should().Be(expectedTask);
         }
 
         private IIntegrationPointService CreateIntegrationPointServiceMock()

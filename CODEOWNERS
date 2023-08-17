@@ -1,16 +1,1 @@
-
-CODEOWNERS.destination_branch_pattern develop
-CODEOWNERS.destination_branch_pattern master
-CODEOWNERS.destination_branch_pattern release-*
- 
-CODEOWNERS.toplevel.create_pull_request_comment enable
- 
-@@@AdlerSieben                @Tomasz.Peczek @Kamil.Bizon @Artur.Jaskiewicz @Krzysztof.Skowronek @Kamil.Makarowski
-
-*                             @@AdlerSieben
-CODEOWNERS                    @Tomasz.Peczek
-
-# Help
-# GitHub Documentation: https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
-# Supported pattern format: https://confluence.atlassian.com/bitbucketserver070/branch-permission-patterns-996644139.html
-# Template Source: https://mibexsoftware.atlassian.net/wiki/spaces/CODEOWNERS/pages/222822413/Usage
+* @shivaraj.nagaraj @amith.shet @ravi.konnur @sameer.khan @rajasekar.ravi @dhanush.sathukumati @nishant.shetty @ashok.mahabaleshwar

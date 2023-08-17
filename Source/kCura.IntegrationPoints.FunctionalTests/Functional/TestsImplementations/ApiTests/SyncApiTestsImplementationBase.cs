@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         {
             foreach (var workspace in _destinationWorkspaces)
             {
-                RelativityFacade.Instance.DeleteWorkspace(workspace);
+	            RelativityFacade.Instance.TryDeleteWorkspace(workspace);
             }
         }
 

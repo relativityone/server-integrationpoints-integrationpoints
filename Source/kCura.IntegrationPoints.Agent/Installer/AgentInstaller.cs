@@ -6,10 +6,6 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
-using kCura.IntegrationPoints.Agent.CustomProvider;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FileShare;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
@@ -139,10 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .ImplementedBy<OAuth2TokenGenerator>()
                 .LifestyleTransient());
 
-            container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
-            container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
-            container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
-            container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());
             container.Register(Component.For<IDynamicProxyFactory>().ImplementedBy<DynamicProxyFactory>().LifestyleSingleton());
             container.Register(Component.For<IKeplerServiceFactory>().ImplementedBy<ServiceFactory>().LifestyleTransient());
 
@@ -167,8 +159,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 .LifestyleTransient());
 
             container.AddEmailSender();
-
-            ConfigureOtherProviderFlow(container);
         }
 
         private static void ConfigureContainer(IWindsorContainer container)
@@ -197,18 +187,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<SystemStatisticsReporter>().LifestyleTransient());
 
             container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
-        }
-
-        private static void ConfigureOtherProviderFlow(IWindsorContainer container)
-        {
-            container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
-            container.Register(Component.For<IImportApiRunnerFactory>().ImplementedBy<ImportApiRunnerFactory>().LifestyleTransient());
-            container.Register(Component.For<IImportApiService>().ImplementedBy<ImportApiService>().LifestyleTransient());
-            container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
-            container.Register(Component.For<IDocumentImportSettingsBuilder>().ImplementedBy<DocumentImportSettingsBuilder>().LifestyleTransient());
-            container.Register(Component.For<IRdoImportSettingsBuilder>().ImplementedBy<RdoImportSettingsBuilder>().LifestyleTransient());
-            container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
-            container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
         }
     }
 }

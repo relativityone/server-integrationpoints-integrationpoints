@@ -113,17 +113,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public async Task<Workload> GetWorkloadSizeAsync()
-        {
-            Workload workloadSizeReturned = null;
-            using (var integrationPointAgentManager = _serviceFactory.GetServiceProxy<IIntegrationPointsAgentManager>())
-            {
-                workloadSizeReturned = await integrationPointAgentManager.GetWorkloadAsync().ConfigureAwait(false);
-            }
-
-            return workloadSizeReturned;
-        }
-
         private async Task WaitForJobStatus(int jobHistoryId, int workspaceId, Func<string, bool> waitUntil, int checkDelayInMs)
         {
             string status = await GetJobHistoryStatus(jobHistoryId, workspaceId);

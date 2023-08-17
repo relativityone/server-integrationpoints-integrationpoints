@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             foreach (var destinationWorkspace in _destinationWorkspaces)
             {
-                RelativityFacade.Instance.DeleteWorkspace(destinationWorkspace);
+                RelativityFacade.Instance.TryDeleteWorkspace(destinationWorkspace);
             }
 
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)

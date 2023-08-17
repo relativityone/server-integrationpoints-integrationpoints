@@ -83,7 +83,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 
             container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>().LifestyleTransient());
             container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>().LifestyleTransient());
-            container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>().LifestyleTransient());
             container.Register(Component.For<IButtonStateBuilder>().ImplementedBy<ButtonStateBuilder>().LifestyleTransient());
 
             container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
@@ -169,7 +168,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
             container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
             container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
-            container.Register(Component.For<IAgentLauncher>().ImplementedBy<AgentLauncher>().LifestyleTransient());
 
             container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
 

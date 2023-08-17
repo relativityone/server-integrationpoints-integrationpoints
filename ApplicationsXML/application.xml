@@ -1764,111 +1764,15 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5537554</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Storage.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537555</ArtifactId>
-      <Keywords />
-      <Name>DnsClient.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537556</ArtifactId>
-      <Keywords />
-      <Name>System.Text.Json.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537559</ArtifactId>
-      <Keywords />
-      <Name>System.Memory.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5537594</ArtifactId>
       <Keywords />
       <Name>System.Runtime.CompilerServices.Unsafe.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5537595</ArtifactId>
-      <Keywords />
-      <Name>System.Text.Encodings.Web.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537596</ArtifactId>
-      <Keywords />
-      <Name>System.Numerics.Vectors.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537602</ArtifactId>
-      <Keywords />
-      <Name>Relativity.AntiMalware.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5537603</ArtifactId>
       <Keywords />
       <Name>Relativity.Environment.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537630</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Storage.Extensions.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537631</ArtifactId>
-      <Keywords />
-      <Name>Microsoft.Bcl.AsyncInterfaces.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537632</ArtifactId>
-      <Keywords />
-      <Name>Azure.Core.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537634</ArtifactId>
-      <Keywords />
-      <Name>System.Diagnostics.DiagnosticSource.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537646</ArtifactId>
-      <Keywords />
-      <Name>Azure.Storage.Files.DataLake.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537647</ArtifactId>
-      <Keywords />
-      <Name>Azure.Identity.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537648</ArtifactId>
-      <Keywords />
-      <Name>Azure.Security.KeyVault.Secrets.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537649</ArtifactId>
-      <Keywords />
-      <Name>Azure.Storage.Blobs.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537651</ArtifactId>
-      <Keywords />
-      <Name>Azure.Storage.Common.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
@@ -1881,30 +1785,6 @@
       <ArtifactId>5537802</ArtifactId>
       <Keywords />
       <Name>Dapper.Contrib.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539018</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539236</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Private.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539439</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Import.Models.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5539467</ArtifactId>
-      <Keywords />
-      <Name>Relativity.HostingBridge.SDK.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>

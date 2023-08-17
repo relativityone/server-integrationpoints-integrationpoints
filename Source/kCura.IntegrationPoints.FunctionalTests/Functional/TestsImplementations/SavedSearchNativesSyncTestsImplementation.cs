@@ -42,7 +42,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)
         {
-            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisibleWithRetries(3);
+	        string sInstanceName =  RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+		        .Get("FriendlyInstanceName", "Relativity.Authentication").Value;
+
+	        integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisibleWithRetries(3);
             integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisibleWithRetries();
             integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisibleWithRetries();
             integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisibleWithRetries();
@@ -60,7 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Natives");
             integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {_savedSearchName}");
             integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
-            integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
+            integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo($"This instance({sInstanceName})");
             integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Document);
             integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(DestinationWorkspace.Name);
             integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(DestinationWorkspace.Name);

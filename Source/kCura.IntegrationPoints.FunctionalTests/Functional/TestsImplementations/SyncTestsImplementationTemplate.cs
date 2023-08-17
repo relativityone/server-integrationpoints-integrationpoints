@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             foreach (KeyValuePair<string, Workspace> destinationWorkspace in DestinationWorkspaces)
             {
-                RelativityFacade.Instance.DeleteWorkspace(destinationWorkspace.Value);
+                RelativityFacade.Instance.TryDeleteWorkspace(destinationWorkspace.Value);
             }
         }
 

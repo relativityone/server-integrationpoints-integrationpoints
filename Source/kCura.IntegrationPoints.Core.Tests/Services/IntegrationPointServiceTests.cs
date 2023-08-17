@@ -54,8 +54,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IJobHistoryErrorService> _jobHistoryErrorServiceMock;
         private Mock<IChoiceQuery> _choiceQueryFake;
         private Mock<IRelativitySyncConstrainsChecker> _relativitySyncConstrainsCheckerFake;
-        private Mock<IRelativitySyncAppIntegration> _relativitySyncAppIntegrationMock;
-        private Mock<IAgentLauncher> _agentLauncherMock;
         private SourceProvider _sourceProvider;
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
@@ -188,10 +186,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPoint.ArtifactId))
                 .Returns(false);
 
-            _relativitySyncAppIntegrationMock = _fxt.Freeze<Mock<IRelativitySyncAppIntegration>>();
-
-            _agentLauncherMock = _fxt.Freeze<Mock<IAgentLauncher>>();
-
             _sut = _fxt.Create<IntegrationPointService>();
         }
 
@@ -227,29 +221,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 It.IsAny<Guid>(),
                 It.IsAny<ChoiceRef>(),
                 It.IsAny<DateTime?>()));
-
-            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Once());
-        }
-
-        [Test]
-        public void RunIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
-        {
-            // Arrange
-            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPointDto.ArtifactId))
-                .Returns(true);
-
-            // Act
-            _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
-
-            // Assert
-            _relativitySyncAppIntegrationMock.Verify(
-                x => x.SubmitSyncJobAsync(
-                    _WORKSPACE_ID,
-                    It.IsAny<IntegrationPointDto>(),
-                    It.IsAny<int>(),
-                    _USER_ID));
-
-            VerifyJobShouldNotBeCreated();
         }
 
         [Test]
@@ -304,76 +275,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 Times.Exactly(numberOfPendingJobs));
 
             _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(numberOfPendingJobs));
-        }
-
-        [Test]
-        public void MarkIntegrationPointToStopJobs_ShouldStopOnlySyncAppJobs()
-        {
-            // Arrange
-            const int numberOfPendingJobs = 2;
-            const int numberOfProcessingJobs = 3;
-            const int numberOfSyncAppJobs = 4;
-
-            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
-                .CreateMany(numberOfPendingJobs)
-                .ToArray();
-
-            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
-                .CreateMany(numberOfProcessingJobs)
-                .ToArray();
-
-            Data.JobHistory[] syncJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.JobID, () => Guid.NewGuid().ToString())
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .CreateMany(numberOfSyncAppJobs)
-                .ToArray();
-
-            _jobHistoryManagerFake
-                .Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPoint.ArtifactId))
-                .Returns(new StoppableJobHistoryCollection
-                {
-                    PendingJobHistory = pendingJobHistory,
-                    ProcessingJobHistory = processingJobHistory.Concat(syncJobHistory).ToArray()
-                });
-
-            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> syncJobs = syncJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            _jobManagerMock
-                .Setup(x => x.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId))
-                .Returns(pendingJobs.Concat(processingJobs).Concat(syncJobs).ToDictionary(x => x.Key, x => x.Value));
-
-            // Act
-            _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPoint.ArtifactId);
-
-            // Assert
-            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
-
-            _jobHistoryServiceMock.Verify(
-                x => x.UpdateRdoWithoutDocuments(
-                    It.Is<Data.JobHistory>(
-                        y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
-                Times.Exactly(numberOfPendingJobs));
-
-            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(numberOfPendingJobs));
-
-            _relativitySyncAppIntegrationMock.Verify(x => x.CancelJobAsync(It.IsAny<Guid>()), Times.Exactly(numberOfSyncAppJobs));
         }
 
         [Test]
@@ -494,34 +395,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
             // Assert
             action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
-
-            VerifyJobShouldNotBeCreated();
-        }
-
-        [Test]
-        public void RetryIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
-        {
-            // Arrange
-            _integrationPoint.HasErrors = true;
-
-            SetupLastRunJobHistory(
-                _fxt.Build<Data.JobHistory>()
-                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
-                    .Create());
-
-            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPointDto.ArtifactId))
-                .Returns(true);
-
-            // Act
-            _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, switchToAppendOverlayMode: false);
-
-            // Assert
-            _relativitySyncAppIntegrationMock.Verify(
-                x => x.SubmitSyncJobAsync(
-                    _WORKSPACE_ID,
-                    It.IsAny<IntegrationPointDto>(),
-                    It.IsAny<int>(),
-                    _USER_ID));
 
             VerifyJobShouldNotBeCreated();
         }
@@ -1003,8 +876,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<long?>(),
                     It.IsAny<long>()),
                 Times.Never());
-
-            _agentLauncherMock.Verify(x => x.LaunchAgentAsync(), Times.Never());
         }
     }
 }
