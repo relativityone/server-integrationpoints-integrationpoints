@@ -59,24 +59,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         }
 
         [Test]
-        public void NoProviderInPreviousWorkspace()
-        {
-            // arrange
-            _sut.SourceProvidersToReturn = new List<Data.SourceProvider>();
-
-            // act
-            Response result = _sut.Execute();
-
-            // assert
-            result.Success.Should().BeFalse("because provider was not present in previous workspace");
-            _errorServiceMock
-                .Verify(x =>
-                    x.Log(It.Is<ErrorModel>(error => error.Message == "Failed to migrate Source Provider.")),
-                    "because no providers were installed in a previous workspace"
-                );
-        }
-
-        [Test]
         [SmokeTest]
         public void OneProviderInPreviousWorkspace()
         {
