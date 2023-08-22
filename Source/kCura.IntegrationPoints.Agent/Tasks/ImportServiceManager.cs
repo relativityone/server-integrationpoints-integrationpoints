@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.AdlsHelpers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Toggles;
@@ -55,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IRipToggleProvider _toggleProvider;
         private readonly IFileIdentificationService _fileIdentificationService;
         private readonly IDataTransferLocationService _dataTransferLocationService;
+        private readonly IAdlsHelper _adlsHelper;
         private readonly ILogger<ImportServiceManager> _logger;
         private readonly object _syncRoot = new object();
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
@@ -86,6 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IRipToggleProvider toggleProvider,
             IFileIdentificationService fileIdentificationService,
             IDataTransferLocationService dataTransferLocationService,
+            IAdlsHelper adlsHelper,
             ILogger<ImportServiceManager> logger,
             IDiagnosticLog diagnosticLog)
             : base(
@@ -115,6 +118,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _toggleProvider = toggleProvider;
             _fileIdentificationService = fileIdentificationService;
             _dataTransferLocationService = dataTransferLocationService;
+            _adlsHelper = adlsHelper;
             _logger = logger;
         }
 
@@ -143,6 +147,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 string providerSettings = UpdatedProviderSettingsLoadFile();
 
                 DiagnosticLog.LogDiagnostic("ProviderSettings: {settings}", providerSettings);
+
+                LogWorkspaceFileShareTypeAsync(job).GetAwaiter().GetResult();
 
                 int sourceRecordCount = UpdateSourceRecordCount(settings);
                 if (sourceRecordCount > 0)
@@ -198,6 +204,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
+        private async Task LogWorkspaceFileShareTypeAsync(Job job)
+        {
+            if (IntegrationPointDto.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
+            {
+                bool isWorkspaceOnAdls = await _adlsHelper.IsWorkspaceMigratedToAdlsAsync(job.WorkspaceID).ConfigureAwait(false);
+                _logger.LogInformation("Workspace ID: {workspaceId} is migrated to ADLS: {isAdls}", job.WorkspaceID, isWorkspaceOnAdls);
+            }
+        }
+
         private bool ShouldProcessExtraFileMetadata()
         {
             bool useCalToggleValue = _toggleProvider.IsEnabled<UseCalInLegacyTapiToggle>();
@@ -235,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                     nativeFiles.CompleteAdding();
 
-                    await identificationTask;
+                    await identificationTask.ConfigureAwait(false);
                 }
 
                 watch.Stop();
@@ -250,12 +265,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         protected override void FinalizeService(Job job)
         {
             base.FinalizeService(job);
-            RemoveTrackingEntry(job, Identifier,  !IsDrainStopped());
+            RemoveTrackingEntry(job, Identifier, !IsDrainStopped());
         }
 
         private void RemoveTrackingEntry(Job job, Guid batchId, bool isBatchFinished)
         {
-            _logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished)  ;
+            _logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished);
             _jobTracker.CheckEntries(job, batchId.ToString(), isBatchFinished);
         }
 

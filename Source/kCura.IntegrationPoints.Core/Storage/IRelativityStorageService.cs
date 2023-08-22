@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.Core.Storage
     {
         Task<IStorageAccess<string>> GetStorageAccessAsync();
 
+        Task<IEnumerable<StorageEndpoint>> GetStorageEndpointsAsync();
+
         Task<StorageStream> CreateFileOrTruncateExistingAsync(string path);
 
         Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken));

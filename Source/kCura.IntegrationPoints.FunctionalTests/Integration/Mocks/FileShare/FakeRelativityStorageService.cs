@@ -17,6 +17,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             return Task.FromResult(_storageAccess);
         }
 
+        public Task<IEnumerable<StorageEndpoint>> GetStorageEndpointsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
         {
             var fileInfo = new FileInfo(path);

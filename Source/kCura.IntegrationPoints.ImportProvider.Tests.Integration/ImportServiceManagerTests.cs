@@ -31,6 +31,7 @@ using Relativity.API;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Agent.AdlsHelpers;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
@@ -186,6 +187,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 Substitute.For<IRipToggleProvider>(),
                 Substitute.For<IFileIdentificationService>(),
                 Substitute.For<IDataTransferLocationService>(),
+                Substitute.For<IAdlsHelper>(),
                 Substitute.For<ILogger<ImportServiceManager>>(),
                 new EmptyDiagnosticLog());
         }
