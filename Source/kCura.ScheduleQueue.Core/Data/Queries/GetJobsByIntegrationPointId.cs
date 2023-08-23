@@ -25,6 +25,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
                               ,[LockedByAgentID]
                               ,[WorkspaceID]
                               ,[RelatedObjectArtifactID]
+                              ,[CorrelationID]
                               ,[TaskType]
                               ,[NextRunTime]
                               ,[LastRunTime]
