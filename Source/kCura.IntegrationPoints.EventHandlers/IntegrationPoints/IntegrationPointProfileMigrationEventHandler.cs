@@ -63,6 +63,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         private async Task MigrateProfilesAsync()
         {
+            Logger.LogWarning("Starting IntegrationPointProfileMigration for workspace: {workspaceId}. Template workspace: {templateWorkspaceId}", WorkspaceID, TemplateWorkspaceID);
+
             int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
             int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
             List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
@@ -147,8 +149,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
             foreach (IntegrationPointProfile profile in profilesToUpdate)
             {
-                FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
-                bool success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+                bool success = false;
+                try
+                {
+                    FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
+                    success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Failed to update integration point profile {profileArtifactId}", profile.ArtifactId);
+                }
 
                 if (!success)
                 {
@@ -225,8 +235,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
             JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
             sourceConfiguration[nameof(SourceConfiguration.SourceViewId)] = 0;
-            int templateSearchId = sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)].ToObject<int>();
-            sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = TryMatchSavedSearchArtifactId(templateSearchId);
+
+            if (sourceConfiguration.TryGetValue(nameof(SourceConfiguration.SavedSearchArtifactId), StringComparison.InvariantCultureIgnoreCase, out JToken value))
+            {
+                int templateSearchId = value.ToObject<int>();
+                sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = TryMatchSavedSearchArtifactId(templateSearchId);
+            }
+
             sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
             sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
             string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using FluentAssertions;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -70,6 +71,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         private IServiceFactory _serviceFactory;
         private IRepositoryFactory _repositoryFactory;
         private IExportFieldsService _exportFieldsService;
+        private IWebApiConfig _webApiConfigMock;
         private ExportProcessBuilder _sut;
         private Job _job;
         private Dictionary<int, FieldEntry> AllExportableAvfIds => new Dictionary<int, FieldEntry>
@@ -107,6 +109,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             IExportServiceFactory exportServiceFactory = Substitute.For<IExportServiceFactory>();
             exportServiceFactory.Create(Arg.Any<ExportDataContext>()).Returns(_serviceFactory);
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _webApiConfigMock = Substitute.For<IWebApiConfig>();
 
             var helper = Substitute.For<IHelper>();
 
@@ -131,7 +134,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
                 directoryWrap,
                 exportServiceFactory,
                 _repositoryFactory,
-                _exportFieldsService
+                _exportFieldsService,
+                _webApiConfigMock
             );
 
             _job = JobExtensions.CreateJob();

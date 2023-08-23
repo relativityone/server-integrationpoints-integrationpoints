@@ -36,13 +36,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             Logger.LogInformation($"Running {nameof(SourceProvidersMigrationEventHandler)}");
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger, _kubernetesMode);
-            Logger.LogInformation("Executing Source Providers migration job");
-            Response migrationJobResult = migrationJob.Execute();
-            Logger.LogInformation("Source Providers migration job execution result success: {result}", migrationJobResult.Success);
-            if (!migrationJobResult.Success)
+
+            if (sourceProviders.Any())
             {
-                throw new InvalidSourceProviderException(migrationJobResult.Message, migrationJobResult.Exception);
+                var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller,
+                    TemplateWorkspaceID, Logger, _kubernetesMode);
+                Logger.LogInformation("Executing Source Providers migration job");
+                Response migrationJobResult = migrationJob.Execute();
+                Logger.LogInformation("Source Providers migration job execution result success: {result}",
+                    migrationJobResult.Success);
+                if (!migrationJobResult.Success)
+                {
+                    throw new InvalidSourceProviderException(migrationJobResult.Message, migrationJobResult.Exception);
+                }
             }
         }
 
