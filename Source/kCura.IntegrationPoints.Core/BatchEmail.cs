@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -72,13 +73,12 @@ namespace kCura.IntegrationPoints.Core
 
         private void SendEmails(Job job, List<string> emails)
         {
-            TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            ChoiceRef jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
+            ChoiceRef jobStatus = _jobStatusUpdater.GenerateStatus(Guid.Parse(job.CorrelationID));
 
             EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);
             TaskParameters emailTaskParameters = new TaskParameters
             {
-                BatchInstance = taskParameters.BatchInstance,
+                BatchInstance = Guid.Parse(job.CorrelationID),
                 BatchParameters = jobParameters
             };
             Job sendEmailJob = JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);

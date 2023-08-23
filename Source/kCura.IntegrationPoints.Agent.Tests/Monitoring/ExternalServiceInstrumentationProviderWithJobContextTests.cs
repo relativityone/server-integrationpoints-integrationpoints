@@ -279,6 +279,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .WithJobId(_JOB_ID)
                 .WithWorkspaceId(_WORKSPACE_ID)
                 .WithJobDetails(parameters)
+                .WithCorrelationID(_BATCH_INSTANCE.ToString())
                 .Build();
         }
 

@@ -328,8 +328,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private async Task SendAutomatedWorkflowsTriggerAsync(Job job)
         {
-            TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = JobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
+            JobHistory jobHistory = JobHistoryService.GetRdoWithoutDocuments(new Guid(job.CorrelationID));
             ChoiceRef status = _jobStatusUpdater.GenerateStatus(jobHistory);
 
             if (status.EqualsToChoice(JobStatusChoices.JobHistoryCompleted))

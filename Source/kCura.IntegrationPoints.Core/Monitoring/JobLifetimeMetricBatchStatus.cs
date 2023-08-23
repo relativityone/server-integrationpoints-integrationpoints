@@ -55,8 +55,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
             string providerName = GetProviderName(job);
             JobHistory jobHistory = GetHistory(job);
             ChoiceRef status = _updater.GenerateStatus(jobHistory, job.JobId);
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            string correlationId = taskParameters.BatchInstance.ToString();
+            string correlationId = job.CorrelationID;
 
             _log.LogInformation("On Lifetime Metric - BatchInstance {batchInstanceId}, Status {status}",
                 correlationId, status?.Name);
@@ -151,8 +150,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
         private JobHistory GetHistory(Job job)
         {
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            return _jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
+            return _jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID));
         }
 
         private string GetProviderName(Job job)

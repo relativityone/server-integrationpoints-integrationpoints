@@ -201,6 +201,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             Job job = _fxt.Build<Job>()
                 .With(x => x.JobDetails, new JSONSerializer().Serialize(parameters))
+                .With(x => x.CorrelationID, jobHistoryGuid.ToString())
                 .With(x => x.RelatedObjectArtifactID, integrationPoint.ArtifactId)
                 .With(x => x.WorkspaceID, integrationPoint.DestinationConfiguration.CaseArtifactId)
                 .Create();
@@ -240,7 +241,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private void SetupJobDetails()
         {
-            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
+            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(_jobDetails));
 
             _jobDetailsService.Setup(x => x.UpdateJobDetailsAsync(It.IsAny<Job>(), It.IsAny<CustomProviderJobDetails>()))

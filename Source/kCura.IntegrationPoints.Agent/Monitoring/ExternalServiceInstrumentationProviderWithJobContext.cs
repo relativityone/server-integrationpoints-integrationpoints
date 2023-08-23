@@ -70,8 +70,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
             }
             else if (_currentJobContext?.JobId != job.JobId)
             {
-                string correlationId = GetCorrelationId(job);
-                _currentJobContext = new InstrumentationJobContext(job.JobId, correlationId, job.WorkspaceID);
+                _currentJobContext = new InstrumentationJobContext(job.JobId, job.CorrelationID, job.WorkspaceID);
             }
 
             return _currentJobContext;
@@ -87,21 +86,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
             catch (InvalidOperationException ex)
             {
                 _logger.LogWarning(ex, "Error while retrieving job from context.");
-            }
-            return result;
-        }
-
-        private string GetCorrelationId(Job job)
-        {
-            string result = string.Empty;
-            try
-            {
-                TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-                result = taskParameters.BatchInstance.ToString();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Error occured while retrieving batch instance for job: {jobId}", job.JobId);
             }
             return result;
         }

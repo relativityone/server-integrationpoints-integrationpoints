@@ -88,9 +88,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Arrange
             TestAgent sut = PrepareSut();
 
+            Job job = JobExtensions.CreateJob();
+            job.CorrelationID = _batchInstanceGuid.ToString();
+
             SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
 
-            Job job = JobExtensions.CreateJob();
 
             // Act
             sut.ProcessJob_Test(job);
@@ -105,9 +107,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Arrange
             TestAgent sut = PrepareSut();
 
-            SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
-
             Job job = JobExtensions.CreateJob();
+            job.CorrelationID = _batchInstanceGuid.ToString();
+
+            SetupJobHistoryStatus(JobStatusChoices.JobHistorySuspended);
 
             // Act
             sut.ProcessJob_Test(job);
@@ -243,7 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             serializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>())).Returns(
                 new TaskParameters
                 {
-                    BatchInstance = Guid.NewGuid()
+                    BatchInstance = _batchInstanceGuid
                 });
 
             Mock<IConfig> config = new Mock<IConfig>();

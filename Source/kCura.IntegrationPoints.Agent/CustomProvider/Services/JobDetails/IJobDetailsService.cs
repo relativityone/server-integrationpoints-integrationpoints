@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
 {
     public interface IJobDetailsService
     {
-        Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails);
+        Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails, string correlationID);
 
         Task UpdateJobDetailsAsync(Job job, CustomProviderJobDetails jobDetails);
     }

@@ -362,7 +362,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 { "service.name", "integrationpoints-repo" },
                 { "r1.job.id", _jobId.ToString() },
                 { "JobType", _jobType },
-                { "WorkflowId", _jobDetails },
                 { "SystemProcessMemoryInMB", _dummyMemorySize },
                 { "AppDomainMemoryInMB", _dummyMemorySize },
                 { "AppDomainLifetimeTotalAllocatedMemoryInMB", _dummyMemorySize },

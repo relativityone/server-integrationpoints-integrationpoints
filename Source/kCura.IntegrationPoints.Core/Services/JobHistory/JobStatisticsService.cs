@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             var message = new JobProgressMessage
             {
                 Provider = provider,
-                CorrelationID = _helper.GetBatchInstance(_job).ToString(),
+                CorrelationID = _job.CorrelationID,
                 UnitOfMeasure = UnitsOfMeasureConstants.BYTES,
                 JobID = _job.JobId.ToString(),
                 WorkspaceID = ((IntegrationPointSourceConfiguration?.SourceWorkspaceArtifactId == 0)
@@ -125,8 +125,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             _logger.LogInformation("OnJobComplete event started for JobID={jobId}", _job.JobId);
 
-            Guid batchInstance = _helper.GetBatchInstance(_job);
-            string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, batchInstance.ToString());
+            string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _job.CorrelationID);
 
             long totalSize;
             if (_job.TaskType == TaskType.ImportService.ToString())
@@ -143,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 // TODO refactoring, command query separation
                 _logger.LogInformation("In JobStatisticsService.cs executing UpdateAndRetrieveStats()[CreateJobTrackingEntry.sql and UpdateJobStatistics.sql] with {tableName}", tableName);
                 JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
-                UpdateJobHistory(batchInstance, stats, totalSize);
+                UpdateJobHistory(Guid.Parse(_job.CorrelationID), stats, totalSize);
             }
 
             _rowErrors = 0;
@@ -153,7 +152,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             _diagnosticLog.LogDiagnostic("Status Update: ImportedDocsCount {importedDocsCount}, ErroredDocsCount {erroredDocsCount}", importedCount, errorCount);
 
-            Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
+            Update(Guid.Parse(_job.CorrelationID), importedCount, errorCount);
         }
 
         private void UpdateJobHistory(Guid batchInstance, JobStatistics stats, long totalSize)
@@ -186,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             try
             {
-                Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(_helper.GetBatchInstance(_job));
+                Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(_job.CorrelationID));
                 int updatedNumberOfTransferredItems = Math.Max(0, (historyRdo.ItemsTransferred ?? 0) + transferredItem);
                 historyRdo.ItemsTransferred = updatedNumberOfTransferredItems;
                 historyRdo.ItemsWithErrors += erroredCount;
