@@ -67,7 +67,6 @@
     <Folder Include="CustomProvider\Services\JobProgress\" />
     <Folder Include="CustomProvider\Services\IntegrationPointRdoService\" />
     <Folder Include="CustomProvider\Services\EntityServices\" />
-    <Folder Include="AdlsHelpers\" />
   </ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

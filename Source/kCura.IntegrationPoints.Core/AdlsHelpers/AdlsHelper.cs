@@ -9,10 +9,12 @@ using Relativity.Environment.V1.Workspace;
 using Relativity.Environment.V1.Workspace.Models;
 using Relativity.Storage;
 
-namespace kCura.IntegrationPoints.Agent.AdlsHelpers
+namespace kCura.IntegrationPoints.Core.AdlsHelpers
 {
     public class AdlsHelper : IAdlsHelper
     {
+        private Dictionary<string, int> _fileShareFqdnToNumberOfFiles = new Dictionary<string, int>();
+
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IRelativityStorageService _storageService;
         private readonly IAPILog _logger;
@@ -48,6 +50,36 @@ namespace kCura.IntegrationPoints.Agent.AdlsHelpers
                 _logger.LogError(ex, "Error occurred when checking if workspace ID: {workspaceId} is migrated to ADLS", workspaceId);
                 throw;
             }
+        }
+
+        public void AddToFileShareStatistics(string fileLocation)
+        {
+            string fileShareFqdn = new Uri(fileLocation).Host.ToLower();
+
+            if (_fileShareFqdnToNumberOfFiles.ContainsKey(fileShareFqdn))
+            {
+                _fileShareFqdnToNumberOfFiles[fileShareFqdn] += 1;
+            }
+            else
+            {
+                _fileShareFqdnToNumberOfFiles.Add(fileShareFqdn, 1);
+            }
+        }
+
+        public async Task LogFileSharesSummaryAsync()
+        {
+            List<string> adlsFileShares = await GetAdlsFilesharesAsync().ConfigureAwait(false);
+
+            var summary = _fileShareFqdnToNumberOfFiles
+                .Select(x => new
+                {
+                    FileShareFqdn = x.Key,
+                    IsOnAdls = adlsFileShares.Contains(x.Key),
+                    NumberOfFiles = x.Value
+                })
+                .ToList();
+
+            _logger.LogInformation("Summary of fileshares used in transfer: {@summary}", summary);
         }
 
         private async Task<List<string>> GetAdlsFilesharesAsync()
