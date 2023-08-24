@@ -2,7 +2,7 @@
  
 ### Changed
  
-- [REL-870446](https://jira.kcura.com/browse/REL-870446) - Added DefaultValue attribute to toggles EnableSyncNonDocumentFlowToggle and EnableRelativitySyncApplicationToggle.
+- [REL-870446](https://jira.kcura.com/browse/REL-870446) - Added DefaultValue attribute to toggles EnableSyncNonDocumentFlowToggle and EnableRelativitySyncApplicationToggle. So that Sync toggles are enabled by default
 
 ## [13.2.0] - 08-17-2023
  
