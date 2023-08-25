@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Core.Contracts.Configuration;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 
 namespace Relativity.IntegrationPoints.Services.Models

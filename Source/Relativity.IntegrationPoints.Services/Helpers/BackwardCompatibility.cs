@@ -82,6 +82,7 @@ namespace Relativity.IntegrationPoints.Services.Helpers
             sourceConfiguration.TaggingOption = destinationConfiguration.TaggingOption.ToString();
             sourceConfiguration.FolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
             sourceConfiguration.TargetWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
+            sourceConfiguration.ProductionImport = destinationConfiguration.ProductionImport;
         }
     }
 }
