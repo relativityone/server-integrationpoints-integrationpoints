@@ -1,28 +1,20 @@
-﻿namespace Relativity.IntegrationPoints.Services.Models
+﻿using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using Newtonsoft.Json;
+
+namespace Relativity.IntegrationPoints.Services.Models
 {
-    internal class RelativityProviderSourceConfigurationBackwardCompatibility
+    internal class RelativityProviderSourceConfigurationBackwardCompatibility : SourceConfiguration
     {
-        public int SavedSearchArtifactId { get; }
-
-        public int SourceWorkspaceArtifactId { get; }
-
-        public int TargetWorkspaceArtifactId { get; }
-
         /// <summary>
         ///     This is not used - DestinationFolderArtifactId
         /// </summary>
-        public int FolderArtifactId { get; }
+        public int FolderArtifactId { get; set;  }
 
-        public int TypeOfExport { get; }
+        [JsonProperty(PropertyName = "TaggingOption")]
+        public string TaggingOption { get; set; }
 
-        public RelativityProviderSourceConfigurationBackwardCompatibility(RelativityProviderSourceConfiguration sourceConfiguration,
-            RelativityProviderDestinationConfiguration destinationConfiguration)
-        {
-            SavedSearchArtifactId = sourceConfiguration.SavedSearchArtifactId;
-            SourceWorkspaceArtifactId = sourceConfiguration.SourceWorkspaceArtifactId;
-            TargetWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
-            FolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
-            TypeOfExport = sourceConfiguration.TypeOfExport;
-        }
+        public bool ProductionImport { get; set; }
+
+        public bool UseDynamicFolderPath { get; set; }
     }
 }
