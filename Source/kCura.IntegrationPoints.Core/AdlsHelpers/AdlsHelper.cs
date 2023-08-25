@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.AdlsHelpers
             _logger = logger;
         }
 
-        public async Task<bool> IsWorkspaceMigratedToAdlsAsync(int workspaceId)
+        public async Task<bool?> IsWorkspaceMigratedToAdlsAsync(int workspaceId)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.AdlsHelpers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred when checking if workspace ID: {workspaceId} is migrated to ADLS", workspaceId);
-                throw;
+                return null;
             }
         }
 
@@ -68,18 +68,25 @@ namespace kCura.IntegrationPoints.Core.AdlsHelpers
 
         public async Task LogFileSharesSummaryAsync()
         {
-            List<string> adlsFileShares = await GetAdlsFilesharesAsync().ConfigureAwait(false);
+            try
+            {
+                List<string> adlsFileShares = await GetAdlsFilesharesAsync().ConfigureAwait(false);
 
-            var summary = _fileShareFqdnToNumberOfFiles
-                .Select(x => new
-                {
-                    FileShareFqdn = x.Key,
-                    IsOnAdls = adlsFileShares.Contains(x.Key),
-                    NumberOfFiles = x.Value
-                })
-                .ToList();
+                var summary = _fileShareFqdnToNumberOfFiles
+                    .Select(x => new
+                    {
+                        FileShareFqdn = x.Key,
+                        IsOnAdls = adlsFileShares.Contains(x.Key),
+                        NumberOfFiles = x.Value
+                    })
+                    .ToList();
 
-            _logger.LogInformation("Summary of fileshares used in transfer: {@summary}", summary);
+                _logger.LogInformation("Summary of fileshares used in transfer: {@summary}", summary);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to log file shares summary");
+            }
         }
 
         private async Task<List<string>> GetAdlsFilesharesAsync()

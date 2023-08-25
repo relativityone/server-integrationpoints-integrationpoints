@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             if (IntegrationPointDto.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
             {
-                bool isWorkspaceOnAdls = await _adlsHelper.IsWorkspaceMigratedToAdlsAsync(destinationWorkspaceId).ConfigureAwait(false);
+                bool? isWorkspaceOnAdls = await _adlsHelper.IsWorkspaceMigratedToAdlsAsync(destinationWorkspaceId).ConfigureAwait(false);
                 _logger.LogInformation("Destination Workspace ID: {workspaceId} is migrated to ADLS: {isAdls}", destinationWorkspaceId, isWorkspaceOnAdls);
             }
         }
