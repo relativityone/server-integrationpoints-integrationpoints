@@ -40,8 +40,8 @@ namespace Relativity.IntegrationPoints.Services.Helpers
                     ? JsonConvert.DeserializeObject<DestinationConfiguration>((string)integrationPointModel.DestinationConfiguration)
                     : JsonConvert.DeserializeObject<DestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
 
-                sourceConfiguration.TaggingOption = destinationConfiguration.TaggingOption.ToString();
-                sourceConfiguration.FolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
+                UpdateSourceConfiguration(sourceConfiguration, destinationConfiguration);
+                UpdateDestinationConfiguration(overwriteFieldsName, destinationConfiguration, sourceConfiguration);
 
                 integrationPointModel.SourceConfiguration = sourceConfiguration;
                 integrationPointModel.DestinationConfiguration = destinationConfiguration;
@@ -51,6 +51,37 @@ namespace Relativity.IntegrationPoints.Services.Helpers
                 _apiLog.LogError(e, "Error occurred during Relativity Provider configuration deserialization.");
                 throw new ArgumentException("Invalid configuration for Relativity Provider specified.", e);
             }
+        }
+
+        private static void UpdateDestinationConfiguration(
+            string overwriteFieldsName,
+            DestinationConfiguration destinationConfiguration,
+            RelativityProviderSourceConfigurationBackwardCompatibility sourceConfiguration)
+        {
+            Enum.TryParse(
+                overwriteFieldsName.
+                    Replace("/", string.Empty).
+                    Replace(" ", string.Empty), true,
+                out ImportOverwriteModeEnum result);
+            destinationConfiguration.ImportOverwriteMode = result;
+            destinationConfiguration.DestinationArtifactTypeId = destinationConfiguration.DestinationArtifactTypeId != 0
+                ? destinationConfiguration.DestinationArtifactTypeId
+                : destinationConfiguration.ArtifactTypeId;
+            destinationConfiguration.DestinationProviderType = kCura.IntegrationPoints.Core.Constants.IntegrationPoints
+                .RELATIVITY_DESTINATION_PROVIDER_GUID;
+            destinationConfiguration.Provider = "relativity";
+            destinationConfiguration.ExtractedTextFieldContainsFilePath = false;
+            destinationConfiguration.ExtractedTextFileEncoding = "utf-16";
+            destinationConfiguration.UseDynamicFolderPath = sourceConfiguration.UseDynamicFolderPath;
+        }
+
+        private static void UpdateSourceConfiguration(
+            RelativityProviderSourceConfigurationBackwardCompatibility sourceConfiguration,
+            DestinationConfiguration destinationConfiguration)
+        {
+            sourceConfiguration.TaggingOption = destinationConfiguration.TaggingOption.ToString();
+            sourceConfiguration.FolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;
+            sourceConfiguration.TargetWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
         }
     }
 }
