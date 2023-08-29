@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -43,16 +44,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private int _sourceSavedSearchArtifactID;
         private int? _itemLevelErrorSavedSearchArtifactID;
         private List<IBatchStatus> _exportServiceJobObservers;
+        private IJobHistoryErrorManager _jobHistoryErrorManager;
+        private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
+
         private readonly IExportServiceObserversFactory _exportServiceObserversFactory;
         private readonly IExporterFactory _exporterFactory;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IDocumentRepository _documentRepository;
         private readonly IExportDataSanitizer _exportDataSanitizer;
+        private readonly IAdlsHelper _adlsHelper;
         private readonly ILogger<ExportServiceManager> _logger;
         private readonly object _syncRoot = new object();
-        private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
-
-        private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
         public ExportServiceManager(
             IHelper helper,
@@ -73,6 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IIntegrationPointService integrationPointService,
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer,
+            IAdlsHelper adlsHelper,
             ILogger<ExportServiceManager> logger,
             IDiagnosticLog diagnosticLog)
             : base(
@@ -97,6 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _exporterFactory = exporterFactory;
             _documentRepository = documentRepository;
             _exportDataSanitizer = exportDataSanitizer;
+            _adlsHelper = adlsHelper;
             _logger = logger;
         }
 
@@ -107,6 +111,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 LogExecuteStart(job);
                 InitializeService(job, supportsDrainStop: false);
                 JobStopManager.ThrowIfStopRequested();
+
+                LogDestinationWorkspaceFileShareTypeAsync(IntegrationPointDto.DestinationConfiguration.CaseArtifactId).GetAwaiter().GetResult();
 
                 ImportSettings importSettings = new ImportSettings(IntegrationPointDto.DestinationConfiguration);
                 AdjustImportApiSettingsForUser(job, importSettings);
@@ -173,9 +179,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
+        private async Task LogDestinationWorkspaceFileShareTypeAsync(int destinationWorkspaceId)
+        {
+            if (IntegrationPointDto.DestinationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyModeEnum.CopyFiles)
+            {
+                bool? isWorkspaceOnAdls = await _adlsHelper.IsWorkspaceMigratedToAdlsAsync(destinationWorkspaceId).ConfigureAwait(false);
+                _logger.LogInformation("Destination Workspace ID: {workspaceId} is migrated to ADLS: {isAdls}", destinationWorkspaceId, isWorkspaceOnAdls);
+            }
+        }
+
         private void PushDocuments(Job job, ImportSettings userImportApiSettings, IDataSynchronizer synchronizer)
         {
-            int savedSearchID = UpdateStatusType.IsItemLevelErrorRetry()
+            int savedSearchID = _updateStatusType.IsItemLevelErrorRetry()
                 ? _itemLevelErrorSavedSearchArtifactID.Value
                 : _sourceSavedSearchArtifactID;
 
@@ -188,29 +203,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _documentRepository,
                 _exportDataSanitizer))
             {
-                LogPushingDocumentsStart(job);
-                IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
-                    .Select(observer => observer.ScratchTableRepository).ToArray();
-
-                var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
-                    Identifier, userImportApiSettings.DestinationConfiguration);
-
-                IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
-
-                lock (_syncRoot)
+                try
                 {
-                    JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
-                    dataTransferContext.UpdateTransferStatus();
-                }
+                    LogPushingDocumentsStart(job);
+                    IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+                        .Select(observer => observer.ScratchTableRepository).ToArray();
 
-                int totalRecords = exporter.TotalRecordsFound;
-                if (totalRecords > 0)
+                    var exporterTransferConfiguration = new ExporterTransferConfiguration(scratchTables, JobHistoryService,
+                        Identifier, userImportApiSettings.DestinationConfiguration);
+
+                    IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
+
+                    lock (_syncRoot)
+                    {
+                        JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
+                        dataTransferContext.UpdateTransferStatus();
+                    }
+
+                    int totalRecords = exporter.TotalRecordsFound;
+                    if (totalRecords > 0)
+                    {
+                        _logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
+
+                        synchronizer.SyncData(dataTransferContext, IntegrationPointDto.FieldMappings, userImportApiSettings, JobStopManager, DiagnosticLog);
+                    }
+                    LogPushingDocumentsSuccessfulEnd(job);
+                }
+                finally
                 {
-                    _logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
-
-                    synchronizer.SyncData(dataTransferContext, IntegrationPointDto.FieldMappings, userImportApiSettings, JobStopManager, DiagnosticLog);
+                    exporter.LogFileSharesSummaryAsync().GetAwaiter().GetResult();
                 }
-                LogPushingDocumentsSuccessfulEnd(job);
             }
         }
 
@@ -287,22 +309,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogJobHistoryErrorManagerSetupStart(job);
             // Load Job History Errors if any
             string uniqueJobId = GetUniqueJobId(job);
-            JobHistoryErrorManager =
+            _jobHistoryErrorManager =
                 ManagerFactory.CreateJobHistoryErrorManager(SourceConfiguration.SourceWorkspaceArtifactId,
                     uniqueJobId);
-            UpdateStatusType = JobHistoryErrorManager.StageForUpdatingErrors(job, JobHistory.JobType);
+            _updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, JobHistory.JobType);
 
             if (SourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch)
             {
                 _sourceSavedSearchArtifactID = RetrieveSavedSearchArtifactId(job);
 
                 // Load saved search for just item-level error retries
-                if (UpdateStatusType.IsItemLevelErrorRetry())
+                if (_updateStatusType.IsItemLevelErrorRetry())
                 {
                     _logger.LogInformation("Creating item level errors saved search for retry job.");
-                    _itemLevelErrorSavedSearchArtifactID = JobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
+                    _itemLevelErrorSavedSearchArtifactID = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job,
                         SourceConfiguration.SavedSearchArtifactId);
-                    JobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _itemLevelErrorSavedSearchArtifactID.Value);
+                    _jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _itemLevelErrorSavedSearchArtifactID.Value);
                 }
             }
             LogJobHistoryErrorManagerSetupSuccessfulEnd(job);
@@ -358,12 +380,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 tagSavedSearchManager,
                 SynchronizerFactory,
                 Serializer,
-                JobHistoryErrorManager,
+                _jobHistoryErrorManager,
                 JobStopManager,
                 sourceWorkspaceTagsCreator,
                 IntegrationPointDto.FieldMappings.ToArray(),
                 SourceConfiguration,
-                UpdateStatusType,
+                _updateStatusType,
                 JobHistory,
                 GetUniqueJobId(job),
                 userImportApiSettings);
@@ -400,7 +422,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             try
             {
                 // we can delete the temp saved search (only gets called on retry for item-level only errors)
-                if (UpdateStatusType == null || !UpdateStatusType.IsItemLevelErrorRetry())
+                if (_updateStatusType == null || !_updateStatusType.IsItemLevelErrorRetry())
                 {
                     return;
                 }

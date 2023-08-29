@@ -35,6 +35,7 @@ using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -215,6 +216,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IInstanceSettings>().ImplementedBy<InstanceSettings>());
             container.Register(Component.For<IJobDetailsService>().ImplementedBy<JobDetailsService>());
             container.Register(Component.For<IRelativityStorageService>().ImplementedBy<RelativityStorageService>().LifestyleSingleton());
+            container.Register(Component.For<IAdlsHelper>().ImplementedBy<AdlsHelper>());
             container.Register(Component.For<IIdFilesBuilder>().ImplementedBy<IdFilesBuilder>().LifestyleTransient());
             container.Register(Component.For<ILoadFileBuilder>().ImplementedBy<LoadFileBuilder>().LifestyleTransient());
             container.Register(Component.For<ISourceProviderService>().ImplementedBy<SourceProviderService>().LifestyleTransient());

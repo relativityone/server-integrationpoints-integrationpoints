@@ -41,6 +41,11 @@ namespace kCura.IntegrationPoints.Core.Storage
             return _storageAccess;
         }
 
+        public async Task<IEnumerable<StorageEndpoint>> GetStorageEndpointsAsync()
+        {
+            return await _helper.GetStorageEndpointsAsync(new ApplicationDetails(_TEAM_ID)).ConfigureAwait(false);
+        }
+
         public async Task<StorageStream> CreateFileOrTruncateExistingAsync(string path)
         {
             IStorageAccess<string> storageAccess = await GetStorageAccessAsync().ConfigureAwait(false);

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         private readonly IFolderPathReaderFactory _folderPathReaderFactory;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IFileRepository _fileRepository;
+        private readonly IAdlsHelper _adlsHelper;
         private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
@@ -32,7 +34,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             IFolderPathReaderFactory folderPathReaderFactory,
             IRelativityObjectManager relativityObjectManager,
             IFileRepository fileRepository,
-            ISerializer serializer)
+            ISerializer serializer,
+            IAdlsHelper adlsHelper)
         {
             _repositoryFactory = repositoryFactory;
             _helper = helper;
@@ -40,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             _relativityObjectManager = relativityObjectManager;
             _fileRepository = fileRepository;
             _serializer = serializer;
+            _adlsHelper = adlsHelper;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
         }
 
@@ -132,13 +136,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 _repositoryFactory,
                 _fileRepository,
                 jobStopManager,
+                _adlsHelper,
+                destinationConfiguration,
                 _helper,
                 _serializer,
                 mappedFiles,
                 startAtRecord,
                 sourceConfiguration,
-                searchArtifactId,
-                destinationConfiguration);
+                searchArtifactId);
         }
 
         private void LogBuildExporterExecutionWithParameters(

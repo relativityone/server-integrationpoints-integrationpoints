@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         private IDocumentRepository _documentRepository;
         private IRepositoryFactory _repositoryFactoryMock;
         private IJobStopManager _jobStopManager;
+        private IAdlsHelper _aldsHelper;
         private IHelper _helper;
         private FieldMap[] _mappedFields;
         private IFileRepository _fileRepository;
@@ -48,6 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             _documentRepository = Substitute.For<IDocumentRepository>();
             _repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
             _jobStopManager = Substitute.For<IJobStopManager>();
+            _aldsHelper = Substitute.For<IAdlsHelper>();
             _helper = Substitute.For<IHelper>();
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _serializer = Substitute.For<ISerializer>();
@@ -94,13 +97,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
+                _aldsHelper,
+                null,
                 _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 sourceConfiguration,
-                _SEARCH_ARTIFACT_ID,
-                null);
+                _SEARCH_ARTIFACT_ID);
 
             IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -136,13 +140,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
+                _aldsHelper,
+                settings,
                 _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID,
-                settings
+                _SEARCH_ARTIFACT_ID
             );
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
@@ -187,13 +192,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
+                _aldsHelper,
+                _settings,
                 _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID,
-                _settings);
+                _SEARCH_ARTIFACT_ID);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -259,13 +265,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
+                _aldsHelper,
+                _settings,
                 _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID,
-                _settings);
+                _SEARCH_ARTIFACT_ID);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -331,13 +338,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _repositoryFactoryMock,
                 _fileRepository,
                 _jobStopManager,
+                _aldsHelper,
+                _settings,
                 _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID,
-                _settings);
+                _SEARCH_ARTIFACT_ID);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 

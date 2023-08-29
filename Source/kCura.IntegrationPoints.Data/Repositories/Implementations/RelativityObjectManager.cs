@@ -677,11 +677,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                             .RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, runID, remainingObjectsCount, startIndex)
                             .ConfigureAwait(false);
 
-                        results.AddRange(partialResults);
-                        remainingObjectsCount -= partialResults.Length;
-                        startIndex += partialResults.Length;
+                        if (partialResults != null && partialResults.Any())
+                        {
+                            results.AddRange(partialResults);
+                            remainingObjectsCount -= partialResults.Length;
+                            startIndex += partialResults.Length;
+                        }
                     }
-                    while (remainingObjectsCount > 0 && partialResults.Any());
+                    while (remainingObjectsCount > 0 && partialResults != null && partialResults.Any());
 
                     return results.ToArray();
                 }

@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Common.Handlers;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Domain.Managers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -211,6 +212,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IRipToggleProvider>(),
                 Substitute.For<IFileIdentificationService>(),
                 Substitute.For<IDataTransferLocationService>(),
+                Substitute.For<IAdlsHelper>(),
                 Substitute.For<ILogger<ImportServiceManager>>(),
                 new EmptyDiagnosticLog());
         }

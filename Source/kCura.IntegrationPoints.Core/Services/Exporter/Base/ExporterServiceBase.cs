@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
@@ -102,6 +103,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
         public abstract IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration);
 
         public abstract ArtifactDTO[] RetrieveData(int size);
+
+        public virtual Task LogFileSharesSummaryAsync()
+        {
+            return Task.CompletedTask;
+        }
 
         public void Dispose()
         {

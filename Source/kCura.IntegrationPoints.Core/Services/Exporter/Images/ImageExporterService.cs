@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.DTO;
@@ -21,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
     public class ImageExporterService : ExporterServiceBase
     {
         private readonly DestinationConfiguration _destinationConfiguration;
+        private readonly IAdlsHelper _adlsHelper;
 
         public ImageExporterService(
             IDocumentRepository documentRepository,
@@ -28,13 +31,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             IRepositoryFactory repositoryFactory,
             IFileRepository fileRepository,
             IJobStopManager jobStopManager,
+            IAdlsHelper adlsHelper,
+            DestinationConfiguration destinationConfiguration,
             IHelper helper,
             ISerializer serializer,
             FieldMap[] mappedFields,
             int startAt,
             SourceConfiguration sourceConfiguration,
-            int searchArtifactId,
-            DestinationConfiguration destinationConfiguration)
+            int searchArtifactId)
             : base(
                 documentRepository,
                 relativityObjectManager,
@@ -49,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
                 searchArtifactId)
         {
             _destinationConfiguration = destinationConfiguration;
+            _adlsHelper = adlsHelper;
         }
 
         public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
@@ -140,6 +145,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             return imagesResult.ToArray();
         }
 
+        public override async Task LogFileSharesSummaryAsync()
+        {
+            await _adlsHelper.LogFileSharesSummaryAsync().ConfigureAwait(false);
+        }
+
         private string GetDocumentIdentifier(RelativityObjectSlimDto documentSlim)
         {
             // the assumption is based on the following facts:
@@ -221,10 +231,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             string imageFilename,
             int documentArtifactID,
             string documentIdentifier,
-            List<ArtifactFieldDTO> fields, int artifactType)
+            List<ArtifactFieldDTO> fields,
+            int artifactType)
         {
             List<ArtifactFieldDTO> artifactFieldDtos = AddImageFields(fields, fileLocation, imageFilename, documentIdentifier);
             var artifactDto = new ArtifactDTO(documentArtifactID, artifactType, string.Empty, artifactFieldDtos);
+
+            _adlsHelper.AddToFileShareStatistics(fileLocation);
+
             return artifactDto;
         }
 

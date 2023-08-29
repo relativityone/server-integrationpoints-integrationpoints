@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
     public class TaskFactory : ITaskFactory
     {
         private readonly IWindsorContainer _container;
-        private readonly IAgentHelper _helper;
         private readonly ITaskExceptionMediator _taskExceptionMediator;
         private readonly IAPILog _logger;
         private readonly IJobSynchronizationChecker _jobSynchronizationChecker;
@@ -44,7 +43,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             IRelativityStorageService relativityStorageService,
             IRipToggleProvider toggleProvider)
         {
-            _helper = helper;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
             _taskExceptionMediator = taskExceptionMediator;
             _jobSynchronizationChecker = jobSynchronizationChecker;

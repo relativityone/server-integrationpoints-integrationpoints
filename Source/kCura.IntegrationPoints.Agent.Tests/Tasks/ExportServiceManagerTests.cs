@@ -10,6 +10,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -81,6 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private IScheduleRuleFactory _scheduleRuleFactory;
         private ISerializer _serializer;
         private IExportDataSanitizer _exportDataSanitizer;
+        private IAdlsHelper _adlsHelper;
         private Job _job;
         private JobHistory _jobHistory;
         private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
@@ -113,6 +115,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _integrationPointService = Substitute.For<IIntegrationPointService>();
             _documentRepository = Substitute.For<IDocumentRepository>();
             _exportDataSanitizer = Substitute.For<IExportDataSanitizer>();
+            _adlsHelper = Substitute.For<IAdlsHelper>();
 
             _sendingEmailNotification = Substitute.For<IBatchStatus>();
             _updateJobHistoryStatus = Substitute.For<IBatchStatus>();
@@ -234,6 +237,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 integrationPointService: _integrationPointService,
                 documentRepository: _documentRepository,
                 exportDataSanitizer: _exportDataSanitizer,
+                _adlsHelper,
                 Substitute.For<ILogger<ExportServiceManager>>(),
                 diagnosticLog: new EmptyDiagnosticLog());
             _managerFactory.CreateJobHistoryManager().Returns(_historyManager);
@@ -501,6 +505,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _integrationPointService,
                 _documentRepository,
                 _exportDataSanitizer,
+                _adlsHelper,
                 Substitute.For<ILogger<ExportServiceManager>>(),
                 diagnosticLog);
             try
