@@ -1,6 +1,11 @@
 # Changelog for Relativity Sync
 All notable changes to this project will be documented in this file.
 
+## [0.12.2] - 09-01-2023
+
+### Changed
+- [REL-871666](https://jira.kcura.com/browse/REL-871666) - Improve Import API error message when Kepler and WebAPI endpoints are not found.
+
 ## [0.12.1] - 08-31-2023
 
 ### Added
