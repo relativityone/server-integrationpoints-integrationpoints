@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
@@ -11,7 +12,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             ArtifactId = integrationPoint.ArtifactId;
             SourceConfiguration = integrationPoint.SourceConfiguration;
-            DestinationConfiguration = integrationPoint.DestinationConfiguration;
+            DestinationConfiguration = CustomProviderDestinationConfiguration.From(integrationPoint.DestinationConfiguration);
             SecuredConfiguration = integrationPoint.SecuredConfiguration;
             FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, FieldMapType.Normal, i)).ToList();
         }
@@ -20,7 +21,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         public string SourceConfiguration { get; }
 
-        public DestinationConfiguration DestinationConfiguration { get; set; }
+        public CustomProviderDestinationConfiguration DestinationConfiguration { get; set; }
 
         public string SecuredConfiguration { get; }
 

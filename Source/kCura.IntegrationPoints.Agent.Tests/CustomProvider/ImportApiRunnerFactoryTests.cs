@@ -1,5 +1,6 @@
 using System;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
@@ -47,8 +48,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     : 12345
             };
 
+            CustomProviderDestinationConfiguration settings = CustomProviderDestinationConfiguration.From(importSettings);
+
             // Act
-            IImportApiRunner runner = _sut.BuildRunner(importSettings);
+            IImportApiRunner runner = _sut.BuildRunner(settings);
 
             // Assert
             Assert.IsInstanceOf(expectedRunnerType, runner);
