@@ -1,3 +1,4 @@
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
@@ -10,6 +11,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
         /// <summary>
         /// Builds the ImportAPI runner based on destination configuration.
         /// </summary>
-        IImportApiRunner BuildRunner(DestinationConfiguration destinationConfiguration);
+        IImportApiRunner BuildRunner(CustomProviderDestinationConfiguration destinationConfiguration);
     }
 }

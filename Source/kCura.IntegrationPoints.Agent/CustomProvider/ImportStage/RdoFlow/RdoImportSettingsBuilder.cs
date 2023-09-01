@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Import.V1.Builders.Rdos;
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         }
 
         /// <inheritdoc />
-        public RdoImportConfiguration Build(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
@@ -96,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
 
         private ImportRdoSettings ConfigureArtifactType(
             IWithRdo withRdo,
-            DestinationConfiguration destinationConfiguration)
+            CustomProviderDestinationConfiguration destinationConfiguration)
         {
             return withRdo.WithRdo(f => f
                 .WithArtifactTypeId(destinationConfiguration.ArtifactTypeId)

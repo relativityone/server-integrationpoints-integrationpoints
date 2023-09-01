@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.Services.Choice;
 using Relativity.Sync;
 using BatchStatus = kCura.IntegrationPoints.Agent.CustomProvider.DTO.BatchStatus;
 
@@ -78,6 +79,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private async Task ExecuteAsync(Job job)
         {
+
+            _logger.LogInformation("Running custom provider JobID: {jobId}.", job.JobId);
+
             CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails).ConfigureAwait(false);
             ImportJobContext importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, jobDetails.JobHistoryGuid, jobDetails.JobHistoryID);
             IntegrationPointDto integrationPointDto = null;
@@ -156,28 +160,30 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private async Task ReportJobEndAsync(Job job, ImportJobResult endResult, CustomProviderJobDetails details)
         {
-            Guid jobHistoryStatus;
+            ChoiceRef jobHistoryStatus;
             switch (endResult.Status)
             {
                 case JobEndStatus.Completed:
                     jobHistoryStatus = details.Batches.Any(x => x.Status == BatchStatus.CompletedWithErrors)
-                        ? JobStatusChoices.JobHistoryCompletedWithErrorsGuid
-                        : JobStatusChoices.JobHistoryCompletedGuid;
+                        ? JobStatusChoices.JobHistoryCompletedWithErrors
+                        : JobStatusChoices.JobHistoryCompleted;
                     break;
                 case JobEndStatus.Failed:
-                    jobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailedGuid;
+                    jobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailed;
                     break;
                 case JobEndStatus.Canceled:
-                    jobHistoryStatus = JobStatusChoices.JobHistoryStoppedGuid;
+                    jobHistoryStatus = JobStatusChoices.JobHistoryStopped;
                     break;
                 case JobEndStatus.DrainStopped:
-                    jobHistoryStatus = JobStatusChoices.JobHistorySuspendingGuid;
+                    jobHistoryStatus = JobStatusChoices.JobHistorySuspending;
                     break;
                 default:
                     throw new NotSupportedException($"Unknown Import Job State - {endResult.Status}");
             }
 
-            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, job.RelatedObjectArtifactID, details.JobHistoryID, jobHistoryStatus).ConfigureAwait(false);
+            await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, job.RelatedObjectArtifactID, details.JobHistoryID, jobHistoryStatus.Guids[0]).ConfigureAwait(false);
+
+            _logger.LogInformation("Custom Provider job finished - {status}, ImportDetails: {@result}", jobHistoryStatus.Name, endResult);
         }
 
         private async Task HandleExceptionAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid status, Exception e)

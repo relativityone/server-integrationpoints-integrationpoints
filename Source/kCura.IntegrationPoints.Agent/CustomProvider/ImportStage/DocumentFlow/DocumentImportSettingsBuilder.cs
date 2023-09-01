@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 

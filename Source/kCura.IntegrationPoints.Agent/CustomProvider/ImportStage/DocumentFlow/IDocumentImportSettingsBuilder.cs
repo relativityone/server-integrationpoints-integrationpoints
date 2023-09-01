@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
 {
@@ -15,6 +15,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
         /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
         /// <returns>The ImportAPI v2.0 configuration object.</returns>
-        Task<DocumentImportConfiguration> BuildAsync(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
+        Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
     }
 }
