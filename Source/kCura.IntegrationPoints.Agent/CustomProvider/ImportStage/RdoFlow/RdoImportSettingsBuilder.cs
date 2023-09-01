@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
+            _logger.LogInformation("Indexed FieldsMapping: {@fieldsMapping}", fieldMappings);
+
             IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
 
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
