@@ -48,7 +48,7 @@
     <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
-    <RelativityDataExchangeClientSDK>2.9.1</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>2.9.2</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>0.4.0</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
@@ -68,7 +68,7 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.12.0</RelativitySync>
+    <RelativitySync>0.12.2</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
