@@ -26,9 +26,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
         public static string AzureADProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "AADProvider\\lib\\AADProvider.rap");
 
+        public static string MyFirstProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "MyFirstProvider\\lib\\MyFirstProvider.rap");
+
         public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
 
         public static string LogsDirectoryPath => Path.Combine(TestContext.CurrentContext.WorkDirectory, "Artifacts", "Logs");
+
         private static string GetConfigValue(string name) => TestContext.Parameters.Exists(name)
             ? TestContext.Parameters[name]
             : ConfigurationManager.AppSettings.Get(name);

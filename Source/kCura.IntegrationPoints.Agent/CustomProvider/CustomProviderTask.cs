@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.Services.Choice;
@@ -91,6 +92,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             try
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+
+                LogIntegrationPointConfiguration(integrationPointDto);
 
                 IntegrationPointInfo integrationPointInfo = new IntegrationPointInfo(integrationPointDto);
 
@@ -193,6 +196,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             await _jobHistoryService.UpdateStatusAsync(workspaceId, integrationPointId, jobHistoryId, status).ConfigureAwait(false);
 
             await _jobHistoryErrorService.AddJobErrorAsync(workspaceId, jobHistoryId, e).ConfigureAwait(false);
+        }
+
+        private void LogIntegrationPointConfiguration(IntegrationPointDto integrationPointDto)
+        {
+            _logger
+                .ForContext("SourceConfiguration", JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration), true)
+                .ForContext("DestinationConfiguration", integrationPointDto.DestinationConfiguration, true)
+                .LogInformation("Read IntegrationPoint Configuration {artifactId}.", integrationPointDto.ArtifactId);
         }
     }
 }
