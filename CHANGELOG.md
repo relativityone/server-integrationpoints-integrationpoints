@@ -1,3 +1,9 @@
+## [23013.2.2] - 09-04-2023
+
+### Changed
+
+- Bumped the application version to align with the Server 2023 application versioning strategy ADR.
+
 ## [13.2.2] - 09-01-2023
 
 ### Changed  
