@@ -145,10 +145,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 { "hello", "world" },
                 { "merhaba", "dunya"}
             };
+            var correlationID = Guid.NewGuid();
+            _job.CorrelationID = correlationID.ToString();
 
             TaskParameters taskParams = new TaskParameters
             {
-                BatchInstance = Guid.NewGuid(),
+                BatchInstance = correlationID,
                 BatchParameters = new EntityManagerJobParameters
                 {
                     EntityManagerMap = entityManagerMap,

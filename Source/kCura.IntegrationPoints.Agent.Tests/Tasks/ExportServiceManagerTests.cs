@@ -175,8 +175,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SavedSearchArtifactId = 987654,
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
+            var correlationID = Guid.NewGuid();
 
-            _taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+            _taskParameters = new TaskParameters() { BatchInstance = correlationID };
+            _job.CorrelationID = correlationID.ToString();
             _jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, Overwrite = OverwriteModeNames.AppendOnlyModeName };
             _sourceProvider = new SourceProvider();
             _updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();

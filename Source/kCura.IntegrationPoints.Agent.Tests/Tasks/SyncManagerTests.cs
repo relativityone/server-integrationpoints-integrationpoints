@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private TestSyncManager _syncManagerEventHelper;
         private JobHistory _jobHistory;
         private IJobStopManager _jobStopManager;
-        private Guid _batchInstance;
+        private Guid _correlationID;
         private TaskResult _taskResult;
         private IJobHistoryManager _jobHistoryManager;
         private IAgentValidator _agentValidator;
@@ -109,13 +109,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             };
             _taskResult = new TaskResult();
 
-            _batchInstance = Guid.NewGuid();
+            _correlationID = Guid.NewGuid();
+            _job.CorrelationID = _correlationID.ToString();
             _instance = new SyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
                 _integrationPointService, _serializer, guidService, _jobHistoryService,
                 _jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
                 batchStatuses, _agentValidator, Substitute.For<ILogger<SyncManager>>(), new EmptyDiagnosticLog())
             {
-                BatchInstance = _batchInstance,
+                BatchInstance = _correlationID,
                 IntegrationPointDto = _integrationPoint
             };
 
@@ -133,7 +134,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 x => x.Configuration.Equals(_integrationPoint.SourceConfiguration) && x.SecuredConfiguration.Equals(_integrationPoint.SecuredConfiguration))).Returns(_dataReader);
             _dataReader.Read().Returns(true, false);
             _dataReader.GetString(0).Returns(_data);
-            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
+            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
             _jobService.GetJobNextUtcRunDateTime(_job, scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
             _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
@@ -328,7 +329,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
 
             // assert
-            Assert.AreEqual(_batchInstance, _syncManagerEventHelper.BatchInstance);
+            Assert.AreEqual(_correlationID, _syncManagerEventHelper.BatchInstance);
             Assert.AreSame(_integrationPoint, _syncManagerEventHelper.IntegrationPointDto);
             Assert.AreSame(_jobHistory, _syncManagerEventHelper.JobHistory);
 
@@ -337,7 +338,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // We expect to update Start Time and State of JobHistory object
             _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(_jobHistory);
-            _managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _batchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>());
+            _managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>());
         }
 
         [Test]
@@ -593,11 +594,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             _job.JobDetails = "something something here";
             _integrationPointService.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-            _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
+            _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _correlationID, Arg.Any<DateTime>())
                 .Returns(_jobHistory);
             _jobHistory.StartTimeUTC = null;
             _serializer.Deserialize<TaskParameters>(_job.JobDetails)
-                .Returns((new TaskParameters() { BatchInstance = _batchInstance }));
+                .Returns((new TaskParameters() { BatchInstance = _correlationID }));
         }
 
         private Job GetJob(string jobDetails)
