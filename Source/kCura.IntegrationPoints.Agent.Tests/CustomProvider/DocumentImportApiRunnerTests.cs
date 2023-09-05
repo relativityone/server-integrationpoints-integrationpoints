@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.CustomProvider;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IDocumentImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<DestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Setup(x => x.BuildAsync(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(_importConfiguration);
 
             _sut = new DocumentImportApiRunner(

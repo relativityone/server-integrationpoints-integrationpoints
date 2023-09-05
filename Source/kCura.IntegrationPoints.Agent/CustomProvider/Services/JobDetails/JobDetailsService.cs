@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
                 };
             }
 
-            _logger.LogInformation("Running custom provider job ID: {importJobId}", customProviderJobDetails.JobHistoryGuid);
+            _logger.LogInformation("Read custom provider job details: {@details}", customProviderJobDetails);
 
             return customProviderJobDetails;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
@@ -14,6 +15,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
         /// <returns>The ImportAPI v2.0 configuration object.</returns>
-        RdoImportConfiguration Build(DestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
+        RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
     }
 }

@@ -1,7 +1,7 @@
 using Castle.Windsor;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
 
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
         }
 
         /// <inheritdoc />
-        public IImportApiRunner BuildRunner(DestinationConfiguration destinationConfiguration)
+        public IImportApiRunner BuildRunner(CustomProviderDestinationConfiguration destinationConfiguration)
         {
             _logger.LogInformation("Creating ImportApiRunner based on destination configuration: {@destinationConfiguration}", destinationConfiguration);
 

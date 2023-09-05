@@ -8,6 +8,7 @@ Mono.TextTransform
 Relativity
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
+Relativity.Environment.SDK
 Relativity.IntegrationPoints.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private

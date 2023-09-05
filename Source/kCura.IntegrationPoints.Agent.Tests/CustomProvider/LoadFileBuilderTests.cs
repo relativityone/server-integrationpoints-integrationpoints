@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Storage;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Import.V1.Models.Sources;
@@ -77,6 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
                 FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
+                DestinationConfiguration = new Synchronizers.RDO.DestinationConfiguration()
             };
 
             // Act
@@ -112,7 +114,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             IntegrationPointDto integrationPointDto = new IntegrationPointDto
             {
-                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList()
+                FieldMappings = fieldMap.Select(x => x.FieldMap).ToList(),
+                DestinationConfiguration = new Synchronizers.RDO.DestinationConfiguration()
             };
 
             IndexedFieldMap fullName = new IndexedFieldMap(new FieldMap()

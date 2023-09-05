@@ -114,7 +114,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                         DestinationField = new FieldEntry(),
                         FieldMapType = FieldMapTypeEnum.Identifier
                     }
-                }
+                },
+                DestinationConfiguration = new Synchronizers.RDO.DestinationConfiguration()
             };
 
             return new IntegrationPointInfo(integrationPointDto);

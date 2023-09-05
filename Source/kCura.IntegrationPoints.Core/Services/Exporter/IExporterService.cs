@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 
@@ -31,5 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         /// <param name="size">the size of data to be returned</param>
         /// <returns>An array of ArtifactDTO object represents the result of data</returns>
         ArtifactDTO[] RetrieveData(int size);
+
+        Task LogFileSharesSummaryAsync();
     }
 }

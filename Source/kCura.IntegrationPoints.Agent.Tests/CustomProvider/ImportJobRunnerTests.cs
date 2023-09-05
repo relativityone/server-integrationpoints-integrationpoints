@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiRunner = new Mock<IImportApiRunner>();
 
             _importApiRunnerFactory
-                .Setup(x => x.BuildRunner(It.IsAny<DestinationConfiguration>()))
+                .Setup(x => x.BuildRunner(It.IsAny<CustomProviderDestinationConfiguration>()))
                 .Returns(_importApiRunner.Object);
 
             _jobProgressUpdater = new Mock<IDisposable>();
@@ -208,8 +208,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
             ImportJobRunner sut = PrepareSut();
 
+            var integrationPoint = new IntegrationPointDto()
+            {
+                DestinationConfiguration = new DestinationConfiguration()
+            };
+
             // Act
-            Func<Task> action = async () => await sut.RunJobAsync(job, jobDetails, new IntegrationPointInfo(new IntegrationPointDto()), jobContext, Mock.Of<IDataSourceProvider>(), CompositeCancellationToken.None);
+            Func<Task> action = async () => await sut.RunJobAsync(job, jobDetails, new IntegrationPointInfo(integrationPoint), jobContext, Mock.Of<IDataSourceProvider>(), CompositeCancellationToken.None);
 
             // Assert
             action.ShouldThrow<Exception>();

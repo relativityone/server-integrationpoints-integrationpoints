@@ -242,13 +242,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             if (expectedProfile.DestinationConfiguration != null)
             {
                 DestinationConfiguration expectedProfileDestinationConfig = JsonConvert.DeserializeObject<DestinationConfiguration>(expectedProfile.DestinationConfiguration);
-                expectedProfileDestinationConfig.ArtifactTypeId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ArtifactTypeID);
-                expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).CaseArtifactId);
-                expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ImportNativeFile);
-                expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).UseFolderPathInformation);
-                expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FolderPathSourceField);
-                expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
-                expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
+                expectedProfileDestinationConfig.ArtifactTypeId.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).DestinationArtifactTypeId);
+                expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).CaseArtifactId);
+                expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).ImportNativeFile);
+                expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).UseFolderPathInformation);
+                expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).FolderPathSourceField);
+                expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
+                expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((DestinationConfiguration)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
             }
         }
 
