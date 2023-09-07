@@ -1,4 +1,8 @@
-﻿using kCura.IntegrationPoints.Core.Provider.Internals;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Data;
@@ -7,10 +11,6 @@ using LanguageExt;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Toggles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         private readonly IAPILog _logger;
         private readonly IDataProviderFactoryFactory _dataProviderFactoryFactory;
         private readonly IToggleProvider _toggleProvider;
-        readonly ISourceProviderRepository _sourceProviderRepository;
+        private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
 
         public RipProviderInstaller(
