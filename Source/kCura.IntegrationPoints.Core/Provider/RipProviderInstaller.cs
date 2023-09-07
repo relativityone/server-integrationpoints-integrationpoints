@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         private readonly IAPILog _logger;
         private readonly IDataProviderFactoryFactory _dataProviderFactoryFactory;
         private readonly IToggleProvider _toggleProvider;
-        private readonly ISourceProviderRepository _sourceProviderRepository;
+        readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
 
         public RipProviderInstaller(
@@ -98,37 +98,7 @@ namespace kCura.IntegrationPoints.Core.Provider
             global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             return UpdateApplicationGuidIfMissing(provider)
-                .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
                 .BindAsync(AddOrUpdateProviderAsync);
-        }
-
-        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> ValidateProvider(
-            IDataProviderFactory dataProviderFactory,
-            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
-        {
-            return TryLoadingProvider(dataProviderFactory, provider);
-        }
-
-        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> TryLoadingProvider(
-            IDataProviderFactory dataProviderFactory,
-            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
-        {
-            try
-            {
-                if (_toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActive"))
-                {
-                    _logger.LogInformation("[Workaround] Skip Source Provider loading validation when Application Installation Agent works in K8s");
-                    return provider;
-                }
-
-                dataProviderFactory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
-                return provider;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while loading {provider}", provider?.Name);
-                return $"Error while loading '{provider?.Name}' provider: {ex.Message}";
-            }
         }
 
         private async Task<Either<string, Unit>> AddOrUpdateProviderAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
@@ -146,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         private async Task<List<SourceProvider>> GetInstalledRdoProvidersAsync(Guid applicationGuid)
         {
             List<SourceProvider> installedSourceProviders = await _sourceProviderRepository
-                .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
+                .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid, ExecutionIdentity.System)
                 .ConfigureAwait(false);
 
             List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();
@@ -180,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             try
             {
-                _sourceProviderRepository.Update(existingProviderDto);
+                _sourceProviderRepository.Update(existingProviderDto, ExecutionIdentity.System);
                 _logger.LogInformation("Updated existing {object} - {artifactID}", nameof(SourceProvider), existingProviderDto.ArtifactId);
                 return Unit.Default;
             }
@@ -211,7 +181,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             try
             {
-                int sourceProviderArtifactID = _sourceProviderRepository.Create(providerDto);
+                int sourceProviderArtifactID = _sourceProviderRepository.Create(providerDto, ExecutionIdentity.System);
                 _logger.LogInformation("Created new {object} - {artifactID}", nameof(SourceProvider), sourceProviderArtifactID);
                 return Unit.Default;
             }
