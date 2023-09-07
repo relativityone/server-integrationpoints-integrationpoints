@@ -189,11 +189,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogCreateBatchJobEnd(job, batchIDs);
         }
 
-        public Guid GetBatchInstance(Job job)
-        {
-            return new TaskParameterHelper(Serializer, _guidService).GetBatchInstance(job);
-        }
-
         public override void Execute(Job job)
         {
             LogExecuteStart(job);
