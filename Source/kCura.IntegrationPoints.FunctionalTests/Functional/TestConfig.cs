@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.IO;
+using LanguageExt;
 using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional
@@ -21,6 +22,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional
         public static int DocumentImportTimeout => int.Parse(GetConfigValue("DocumentImportTimeout"));
 
         public static string ARMTestServicesRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "ARMTestServices.RAP\\lib\\ARMTestServices.rap");
+
+        public static string SyncApplicationRapDirectory => Path.Combine(GetConfigValue("BuildToolsDirectory"), "Sync\\lib\\Relativity.Sync.rap");
 
         public static string DataTransferLegacyRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "DataTransfer.Legacy\\lib\\DataTransfer.Legacy.rap");
 
