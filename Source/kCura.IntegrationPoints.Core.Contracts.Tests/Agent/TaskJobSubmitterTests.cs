@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         private IJobManager _jobManager;
         private IJobService _jobService;
         private Job _testJob;
-        private Guid _testGuid;
         private TaskType _task;
         private const long _createdJobId = 1;
 
@@ -24,15 +23,14 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public override void SetUp()
         {
             _jobManager = Substitute.For<IJobManager>();
-            _jobManager.CreateJobWithTracker(Arg.Any<Job>(), Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<string>())
+            _jobManager.CreateJobWithTracker(Arg.Any<Job>(), Arg.Any<TaskParameters>(), Arg.Any<TaskType>())
                 .Returns(new JobBuilder()
                             .WithJobId(_createdJobId)
                             .Build());
             _jobService = Substitute.For<IJobService>();
             _testJob = JobExtensions.CreateJob();
-            _testGuid = Guid.NewGuid();
             _task = TaskType.None;
-            _instance = new TaskJobSubmitter(_jobManager, _jobService, _testJob, _task, _testGuid);
+            _instance = new TaskJobSubmitter(_jobManager, _jobService, _testJob, _task);
         }
 
         [Test]
@@ -47,9 +45,8 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
             // Assert
             _jobManager.Received(1).CreateJobWithTracker(
                 _testJob,
-                Arg.Is<TaskParameters>(x => x.BatchInstance == _testGuid && (string)x.BatchParameters == sorawit),
-                _task,
-                _testGuid.ToString());
+                Arg.Is<TaskParameters>(x => x.BatchInstance == Guid.Parse(_testJob.CorrelationID) && (string)x.BatchParameters == sorawit),
+                _task);
         }
     }
 }

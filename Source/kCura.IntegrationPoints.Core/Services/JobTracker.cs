@@ -17,40 +17,40 @@ namespace kCura.IntegrationPoints.Core.Services
             _logger = logger;
         }
 
-        public static string GenerateJobTrackerTempTableName(Job job, string batchID)
+        public static string GenerateJobTrackerTempTableName(Job job)
         {
             if (job == null)
             {
                 throw new ArgumentNullException(nameof(job));
             }
 
-            return string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, batchID);
+            return string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, job.CorrelationID);
         }
 
-        public void CreateTrackingEntry(Job job, string batchId)
+        public void CreateTrackingEntry(Job job)
         {
             if (job == null)
             {
                 throw new ArgumentNullException(nameof(job));
             }
 
-            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job);
             _logger.LogInformation("Creating job entry {jobTrackerTempTableName}", jobTrackerTempTableName);
 
             _tracker.CreateTrackingEntry(jobTrackerTempTableName, job.JobId, job.WorkspaceID);
         }
 
-        public bool CheckEntries(Job job, string batchId, bool batchIsFinished)
+        public bool CheckEntries(Job job, bool batchIsFinished)
         {
-            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job);
             _logger.LogInformation("JobTracker RemoveEntryAndCheckStatus for {jobTrackerTempTableName}", jobTrackerTempTableName);
 
             return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
         }
 
-        public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
+        public BatchStatusQueryResult GetBatchesStatuses(Job job)
         {
-            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job);
 
             return _tracker.GetBatchesStatuses(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
         }

@@ -59,22 +59,22 @@ namespace kCura.IntegrationPoints.Core.Services
             return CreateJob(jobDetails, task, parentJob.CorrelationID, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
         }
 
-        public Job CreateJobWithTracker(Job parentJob, TaskParameters jobDetails, TaskType type, string batchId)
+        public Job CreateJobWithTracker(Job parentJob, TaskParameters jobDetails, TaskType type)
         {
             Job job = CreateJobInternal(jobDetails, type, parentJob.CorrelationID, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
-            _tracker.CreateTrackingEntry(job, batchId);
+            _tracker.CreateTrackingEntry(job);
 
             return job;
         }
 
-        public bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true)
+        public bool CheckBatchOnJobComplete(Job job, bool isBatchFinished = true)
         {
-            return _tracker.CheckEntries(job, batchId, isBatchFinished);
+            return _tracker.CheckEntries(job, isBatchFinished);
         }
 
-        public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
+        public BatchStatusQueryResult GetBatchesStatuses(Job job)
         {
-            return _tracker.GetBatchesStatuses(job, batchId);
+            return _tracker.GetBatchesStatuses(job);
         }
 
         public Job CreateJob(TaskParameters jobDetails, TaskType task, string correlationId, int workspaceId, int integrationPointId,

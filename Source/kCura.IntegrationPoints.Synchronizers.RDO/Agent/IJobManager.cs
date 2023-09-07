@@ -21,11 +21,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 
-        Job CreateJobWithTracker(Job parentJob, TaskParameters jobDetails, TaskType type, string batchId);
+        Job CreateJobWithTracker(Job parentJob, TaskParameters jobDetails, TaskType type);
 
-        bool CheckBatchOnJobComplete(Job job, string batchId, bool isBatchFinished = true);
+        bool CheckBatchOnJobComplete(Job job, bool isBatchFinished = true);
 
-        BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId);
+        BatchStatusQueryResult GetBatchesStatuses(Job job);
 
         /// <summary>
         /// Stops the scheduled queue jobs.

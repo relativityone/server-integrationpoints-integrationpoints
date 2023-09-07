@@ -115,11 +115,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
             _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
-            jobHistoryService.GetRdoWithoutDocuments(_taskParams.BatchInstance).Returns(_jobHistory);
+            jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(_job.CorrelationID)).Returns(_jobHistory);
 
             jobHistoryService.GetRdoWithoutDocuments(Guid.Empty).Returns(_jobHistory);
 
-            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
+            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, Guid.Parse(_job.CorrelationID), _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
 
             serializer.Deserialize<List<string>>(Arg.Is<string>(_taskParams.BatchParameters.ToString())).Returns(recordIds);
@@ -133,10 +133,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 new Guid(destinationProvider.Identifier),
                 _integrationPoint.DestinationConfiguration)
                 .Returns(_dataSynchronizer);
-            _jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(true);
-            _jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, _taskParams.BatchInstance)
+            _jobManager.CheckBatchOnJobComplete(_job).Returns(true);
+            _jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, Guid.Parse(_job.CorrelationID))
                 .Returns(associatedJobs);
-            _jobManager.GetBatchesStatuses(_job, _taskParams.BatchInstance.ToString())
+            _jobManager.GetBatchesStatuses(_job)
                 .Returns(new BatchStatusQueryResult { ProcessingCount = 1 });
 
             _jobService.GetJob(_job.JobId).Returns(_job);
@@ -280,7 +280,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         public void Execute_EnsureToAlwaysDisposeJobStopManager()
         {
             // arrange
-            _jobManager.CheckBatchOnJobComplete(_job, _taskParams.BatchInstance.ToString()).Returns(false);
+            _jobManager.CheckBatchOnJobComplete(_job).Returns(false);
 
             // act
             _instance.Execute(_job);

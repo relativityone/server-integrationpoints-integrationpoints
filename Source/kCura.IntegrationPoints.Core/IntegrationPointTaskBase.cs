@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             var factory = AppDomainRdoSynchronizerFactoryFactory as GeneralWithEntityRdoSynchronizerFactory;
             if (factory != null)
             {
-                factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker, BatchInstance);
+                factory.TaskJobSubmitter = new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker);
                 factory.SourceProvider = SourceProvider;
             }
             IDataSynchronizer destinationProvider = AppDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
@@ -201,14 +201,14 @@ namespace kCura.IntegrationPoints.Core.Agent
             }
         }
 
-        protected void SetJobHistory()
+        protected void SetJobHistory(Job job)
         {
             if (JobHistory == null)
             {
-                JobHistory = JobHistoryService.GetRdoWithoutDocuments(BatchInstance);
+                JobHistory = JobHistoryService.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID));
                 if (JobHistory == null)
                 {
-                    _logger.LogWarning("Failed to retrieve corresponding Job History for BatchInstance {JobId}.", BatchInstance);
+                    _logger.LogWarning("Failed to retrieve corresponding Job History for BatchInstance(CorrelationID) {JobId}.", job.CorrelationID);
                     throw new ArgumentException("Failed to retrieve corresponding Job History.");
                 }
 

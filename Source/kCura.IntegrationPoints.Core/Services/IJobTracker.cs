@@ -5,10 +5,10 @@ namespace kCura.IntegrationPoints.Core.Services
 {
     public interface IJobTracker
     {
-        void CreateTrackingEntry(Job job, string batchId);
+        void CreateTrackingEntry(Job job);
 
-        bool CheckEntries(Job job, string batchId, bool batchIsFinished);
+        bool CheckEntries(Job job, bool batchIsFinished);
 
-        BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId);
+        BatchStatusQueryResult GetBatchesStatuses(Job job);
     }
 }

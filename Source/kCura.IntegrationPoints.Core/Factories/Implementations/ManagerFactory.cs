@@ -90,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 jobService,
                 jobHistoryService,
                 _helper,
-                jobIdentifier,
                 jobId,
                 _agent,
                 supportsDrainStop,

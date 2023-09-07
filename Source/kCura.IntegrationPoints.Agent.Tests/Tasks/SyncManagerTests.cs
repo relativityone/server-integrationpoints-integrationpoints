@@ -153,8 +153,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobManager.Received(1).CreateJobWithTracker(
                 _job,
                 Arg.Is<TaskParameters>(parameter => parameter.BatchInstance == _instance.BatchInstance && parameter.BatchParameters == (object)ids),
-                TaskType.SyncWorker,
-                _instance.BatchInstance.ToString()
+                TaskType.SyncWorker
             );
             Assert.AreEqual(1, _instance.BatchJobCount);
         }
@@ -167,8 +166,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobManager.When(manager => manager.CreateJobWithTracker(
                     _job,
                     Arg.Is<TaskParameters>(parameter => parameter.BatchInstance == _instance.BatchInstance && parameter.BatchParameters == (object)ids),
-                    TaskType.SyncWorker,
-                    _instance.BatchInstance.ToString()))
+                    TaskType.SyncWorker))
                 .Do(info => { throw new Exception(); });
 
             // ACT & ASSERT
@@ -353,7 +351,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
 
             // assert
-            _jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker, Arg.Any<string>());
+            _jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker);
             Assert.AreEqual(0, _syncManagerEventHelper.BatchJobCount);
         }
 
@@ -375,7 +373,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
 
             // assert
-            _jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker, Arg.Any<string>());
+            _jobManager.DidNotReceive().CreateJobWithTracker(_job, Arg.Any<TaskParameters>(), TaskType.SyncWorker);
             Assert.AreEqual(0, _syncManagerEventHelper.BatchJobCount);
         }
 
@@ -398,7 +396,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             Assert.Throws<OperationCanceledException>(() => _syncManagerEventHelper.BatchTask(_job, ids));
 
             // assert
-            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker, Arg.Any<string>());
+            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker);
             Assert.AreEqual(1, _syncManagerEventHelper.BatchJobCount);
         }
 
@@ -417,8 +415,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _syncManagerEventHelper.BatchTask(_job, ids);
 
             // assert
-            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker, Arg.Any<string>());
-            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "3" })), TaskType.SyncWorker, Arg.Any<string>());
+            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "1", "2" })), TaskType.SyncWorker);
+            _jobManager.Received(1).CreateJobWithTracker(_job, Arg.Is<TaskParameters>(param => ((List<string>)param.BatchParameters).SequenceEqual(new[] { "3" })), TaskType.SyncWorker);
             Assert.AreEqual(2, _syncManagerEventHelper.BatchJobCount);
         }
 
