@@ -200,10 +200,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
         private void LogIntegrationPointConfiguration(IntegrationPointDto integrationPointDto)
         {
-            _logger
-                .ForContext("SourceConfiguration", JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration), true)
-                .ForContext("DestinationConfiguration", integrationPointDto.DestinationConfiguration, true)
-                .LogInformation("Read IntegrationPoint Configuration {artifactId}.", integrationPointDto.ArtifactId);
+            try
+            {
+                _logger
+                    .ForContext("SourceConfiguration", JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration), true)
+                    .ForContext("DestinationConfiguration", integrationPointDto.DestinationConfiguration, true)
+                    .LogInformation("Read IntegrationPoint Configuration {artifactId}.", integrationPointDto.ArtifactId);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception occurred when logging Integration Point configuration");
+            }
         }
     }
 }
