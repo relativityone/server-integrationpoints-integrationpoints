@@ -104,7 +104,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DestinationWorkspaceOnDocumentField = RdoOptions.DestinationWorkspace.DestinationWorkspaceOnDocument;
 
 			// Truncating the ExecutingApplicationVersion if length>10
-			if (SyncConfiguration.ExecutingApplicationVersion.ToString() != string.Empty || SyncConfiguration.ExecutingApplicationVersion != null)
+			if (!string.IsNullOrEmpty(SyncConfiguration.ExecutingApplicationVersion)
             {
                 SyncConfiguration.ExecutingApplicationVersion = SyncConfiguration.ExecutingApplicationVersion.Length > 10 ? SyncConfiguration.ExecutingApplicationVersion.Substring(0, 10) : SyncConfiguration.ExecutingApplicationVersion;
             }
