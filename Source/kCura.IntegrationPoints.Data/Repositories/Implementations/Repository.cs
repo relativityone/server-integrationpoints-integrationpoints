@@ -1,4 +1,5 @@
-﻿using Relativity.Services.Objects.DataContracts;
+﻿using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -12,24 +13,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _objectManager = objectManager;
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
-            return _objectManager.Query<T>(new QueryRequest());
+            return _objectManager.Query<T>(new QueryRequest(), executionIdentity);
         }
 
-        public int Create(T rdo)
+        public int Create(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
-            return _objectManager.Create(rdo);
+            return _objectManager.Create(rdo, executionIdentity: executionIdentity);
         }
 
-        public bool Update(T rdo)
+        public bool Update(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
-            return _objectManager.Update(rdo);
+            return _objectManager.Update(rdo ,executionIdentity: executionIdentity);
         }
 
-        public bool Delete(T rdo)
+        public bool Delete(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
-            return _objectManager.Delete(rdo);
+            return _objectManager.Delete(rdo, executionIdentity: executionIdentity);
         }
     }
 }

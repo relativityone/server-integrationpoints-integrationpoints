@@ -75,8 +75,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding
                         NumberOfRecords = numberOfRecordsInBatch
                     };
 
-                    _logger.LogInformation(
-                        "Finished writing IDs file for batch {@batch}.", batch);
+                    _logger.LogInformation("Finished writing IDs file for batch {@batch}.", batch);
 
                     batches.Add(batch);
 
