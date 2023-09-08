@@ -1,6 +1,11 @@
 # Changelog for Relativity Sync
 All notable changes to this project will be documented in this file.
 
+## [0.12.3] - 09-08-2023
+
+### Changed 
+- [REL-875022](https://jira.kcura.com/browse/REL-875022) - P1 defect by truncating the ExecutingApplicationVersion length to 10.
+
 ## [0.12.2] - 09-01-2023
 
 ### Changed 

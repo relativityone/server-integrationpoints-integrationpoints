@@ -102,7 +102,16 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DestinationWorkspaceDestinationInstanceArtifactId = RdoOptions.DestinationWorkspace.DestinationInstanceArtifactIdGuid;
             SyncConfiguration.JobHistoryOnDocumentField = RdoOptions.DestinationWorkspace.JobHistoryOnDocumentGuid;
             SyncConfiguration.DestinationWorkspaceOnDocumentField = RdoOptions.DestinationWorkspace.DestinationWorkspaceOnDocument;
-        }
+
+			// Truncating the ExecutingApplicationVersion if length>10
+			if (SyncConfiguration.ExecutingApplicationVersion.ToString() != string.Empty || SyncConfiguration.ExecutingApplicationVersion != null)
+            {
+				if(SyncConfiguration.ExecutingApplicationVersion.Length>10)
+                {
+					SyncConfiguration.ExecutingApplicationVersion = SyncConfiguration.ExecutingApplicationVersion.Substring(0, 10);
+                }
+			}
+		}
 
         public void CorrelationId(string correlationId)
         {
