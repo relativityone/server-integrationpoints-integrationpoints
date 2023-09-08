@@ -323,8 +323,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ConfigureBatchInstance(Job job)
         {
-            Identifier = Guid.Parse(job.CorrelationID);
-            ImportSettings.CorrelationId = Guid.Parse(job.CorrelationID);
+            if (string.IsNullOrWhiteSpace(job.CorrelationID))
+            {
+                Identifier = Guid.NewGuid();
+            }
+            else
+            {
+                Identifier = Guid.Parse(job.CorrelationID);
+            }
+            ImportSettings.CorrelationId = Identifier;
             ImportSettings.JobID = job.RootJobId ?? job.JobId;
         }
 

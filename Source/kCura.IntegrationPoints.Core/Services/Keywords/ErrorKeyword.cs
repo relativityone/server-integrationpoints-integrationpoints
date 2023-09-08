@@ -1,8 +1,8 @@
-﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
         public string Convert()
         {
-            var history = _historyService.GetRdoWithoutDocuments(Guid.Parse(_job.CorrelationID));
+            var details = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
+            var history = _historyService.GetRdoWithoutDocuments(details.BatchInstance);
             var error = _query.GetJobLevelError(history.ArtifactId);
             return error.Error;
         }

@@ -657,6 +657,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         }
 
         [Test]
+        public void Execute_JobHasNoBatchId_ExpectNewBatchIdToBeGenerated()
+        {
+            // ARRANGE
+            const string newConfig = "new config";
+            Job job = new JobBuilder()
+                .WithWorkspaceId(_configuration.SourceWorkspaceArtifactId)
+                .WithRelatedObjectArtifactId(_integrationPointDto.ArtifactId)
+                .WithJobDetails(string.Empty)
+                .Build();
+            SetUp(job);
+            _serializer.Serialize(Arg.Any<TaskParameters>()).Returns(newConfig);
+            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
+
+            // ACT
+            _instance.Execute(job);
+
+            // ASSERT
+            Assert.AreEqual(newConfig, _job.JobDetails);
+        }
+
+        [Test]
         public void Execute_EnsureToValidateJob()
         {
             // ARRANGE
