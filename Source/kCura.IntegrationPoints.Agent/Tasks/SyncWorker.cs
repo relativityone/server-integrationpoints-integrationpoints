@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 List<string> entryIDs = GetEntryIDs(job);
 
-                SetJobHistory(job);
+                SetJobHistory();
 
                 ExtendSourceConfigurationWithBatchStartingIndex(job);
 
@@ -169,14 +169,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected void ConfigureJobStopManager(Job job, bool supportsDrainStop)
         {
-            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Guid.Parse(job.CorrelationID), job.JobId, supportsDrainStop: supportsDrainStop, DiagnosticLog);
+            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: supportsDrainStop, DiagnosticLog);
             JobHistoryErrorService.JobStopManager = JobStopManager;
         }
 
         protected virtual List<string> GetEntryIDs(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            BatchInstance = Guid.Parse(job.CorrelationID);
+            BatchInstance = taskParameters.BatchInstance;
             if (taskParameters.BatchParameters != null)
             {
                 if (taskParameters.BatchParameters is JArray)
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 // if there is no StopManager, batch should finish
                 bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
-                bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, isBatchFinished);
+                bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
 
                 if (isJobComplete)
                 {
@@ -443,7 +443,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void UpdateJobHistoryStopState(Job job)
         {
-            BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job);
+            BatchStatusQueryResult batchesStatuses = JobManager.GetBatchesStatuses(job, BatchInstance.ToString());
 
             bool otherBatchesProcessing = batchesStatuses.ProcessingCount > 1; // one is the current batch, so if there are other batches it means at least 2
             bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;

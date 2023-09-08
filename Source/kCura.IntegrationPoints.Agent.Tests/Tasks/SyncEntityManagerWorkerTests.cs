@@ -210,10 +210,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
                 Arg.Any<DestinationConfiguration>()).Returns(_dataSynchronizer);
             _dataSynchronizer.TotalRowsProcessed.Returns(entityManagerMap.Count);
-            jobManager.CheckBatchOnJobComplete(_job).Returns(true);
+            jobManager.CheckBatchOnJobComplete(_job, taskParams.BatchInstance.ToString()).Returns(true);
             jobManager.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId, taskParams.BatchInstance)
                 .Returns(associatedJobs);
-            jobManager.GetBatchesStatuses(_job)
+            jobManager.GetBatchesStatuses(_job, taskParams.BatchInstance.ToString())
                 .Returns(new BatchStatusQueryResult {ProcessingCount = 1});
         }
 

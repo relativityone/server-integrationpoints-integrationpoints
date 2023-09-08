@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             _logger.LogInformation("OnJobComplete event started for JobID={jobId}", _job.JobId);
 
-            string tableName = JobTracker.GenerateJobTrackerTempTableName(_job);
+            string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _job.CorrelationID);
 
             long totalSize;
             if (_job.TaskType == TaskType.ImportService.ToString())

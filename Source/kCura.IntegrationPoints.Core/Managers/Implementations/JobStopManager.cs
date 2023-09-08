@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly CancellationTokenSource _stopCancellationTokenSource;
         private readonly CancellationTokenSource _drainStopCancellationTokenSource;
         private readonly IDiagnosticLog _diagnosticLog;
+        private readonly Guid _jobBatchIdentifier;
         private readonly IJobService _jobService;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly long _jobId;
@@ -36,11 +37,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public event EventHandler<EventArgs> StopRequestedEvent;
 
         public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper,
-            long jobId, IRemovableAgent agent, bool supportsDrainStop,
+            Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
             CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource, IDiagnosticLog diagnosticLog)
         {
             _jobService = jobService;
             _jobHistoryService = jobHistoryService;
+            _jobBatchIdentifier = jobHistoryInstanceId;
             _jobId = jobId;
             _agent = agent;
             _supportsDrainStop = supportsDrainStop;
@@ -176,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 if (job.StopState.HasFlag(StopState.Stopping))
                 {
                     _logger.LogInformation("Stopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
-                    JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID));
+                    JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 
                     if (jobHistory == null)
                     {

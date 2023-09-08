@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
     {
         private Job _goldFlowJob;
         private string _goldFlowExpectedTempTableName;
+        private string _goldFlowBatchId;
         private IJobResourceTracker _jobResourceTracker;
         private Mock<IJobResourceTracker> _jobResourceTrackerMock;
         private Mock<IAPILog> _loggerMock;
@@ -23,8 +24,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public override void FixtureSetUp()
         {
             base.FixtureSetUp();
+            _goldFlowBatchId = "batchID";
             _goldFlowJob = GetJob(11, 22, 33);
-            _goldFlowExpectedTempTableName = $"RIP_JobTracker_22_33_{_goldFlowJob.CorrelationID}";
+            _goldFlowExpectedTempTableName = "RIP_JobTracker_22_33_batchID";
             _jobResourceTrackerMock = new Mock<IJobResourceTracker>();
             _loggerMock = new Mock<IAPILog>();
             _loggerMockObject = _loggerMock.Object;
@@ -56,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void GenerateJobTrackerTempTableName_GoldFlow()
         {
-            string tempTableName = JobTracker.GenerateJobTrackerTempTableName(_goldFlowJob);
+            string tempTableName = JobTracker.GenerateJobTrackerTempTableName(_goldFlowJob, _goldFlowBatchId);
 
             Assert.AreEqual(tempTableName, _goldFlowExpectedTempTableName);
         }
@@ -64,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void GenerateJobTrackerTempTableName_JobIsNull_ThrowsArgumentNullException()
         {
-            Assert.Throws<ArgumentNullException>(() => JobTracker.GenerateJobTrackerTempTableName(null));
+            Assert.Throws<ArgumentNullException>(() => JobTracker.GenerateJobTrackerTempTableName(null, _goldFlowBatchId));
         }
 
         [Test]
@@ -72,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             JobTracker jobTracker = PrepareJobTracker();
 
-            jobTracker.CreateTrackingEntry(_goldFlowJob);
+            jobTracker.CreateTrackingEntry(_goldFlowJob, _goldFlowBatchId);
 
             _jobResourceTrackerMock.Verify(x => x.CreateTrackingEntry(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<int>()));
         }
@@ -82,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             JobTracker jobTracker = PrepareJobTracker();
 
-            Assert.Throws<ArgumentNullException>(() => jobTracker.CreateTrackingEntry(null));
+            Assert.Throws<ArgumentNullException>(() => jobTracker.CreateTrackingEntry(null, _goldFlowBatchId));
         }
 
         [Test]
@@ -90,7 +92,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             JobTracker jobTracker = PrepareJobTracker();
 
-            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, true);
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, true);
 
             Assert.IsTrue(checkResult);
         }
@@ -100,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             JobTracker jobTracker = PrepareJobTracker();
 
-            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, false);
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, false);
 
             Assert.IsFalse(checkResult);
         }
@@ -111,7 +113,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Job nonExistingJob = GetJob(1, 1, 1);
             JobTracker jobTracker = PrepareJobTracker();
 
-            bool checkResult = jobTracker.CheckEntries(nonExistingJob, true);
+            bool checkResult = jobTracker.CheckEntries(nonExistingJob, _goldFlowBatchId, true);
+
+            Assert.IsFalse(checkResult);
+        }
+
+        [Test]
+        public void CheckEntries_ExistingJobWrongBatchId_False()
+        {
+            JobTracker jobTracker = PrepareJobTracker();
+
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, "wrong batch id", true);
 
             Assert.IsFalse(checkResult);
         }
@@ -119,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Job GetJob(int jobId, int workspaceID, long? rootJobId = null)
         {
             return JobHelper.GetJob(jobId, rootJobId, null, 0, 0, workspaceID,
-                0, Guid.NewGuid().ToString(), TaskType.None, DateTime.MinValue,
+                0, string.Empty, TaskType.None, DateTime.MinValue,
                 null, null, 0, DateTime.MinValue, 0, null, null);
         }
     }

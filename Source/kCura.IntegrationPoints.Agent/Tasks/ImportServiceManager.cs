@@ -271,7 +271,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void RemoveTrackingEntry(Job job, Guid batchId, bool isBatchFinished)
         {
             _logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished);
-            _jobTracker.CheckEntries(job, isBatchFinished);
+            _jobTracker.CheckEntries(job, batchId.ToString(), isBatchFinished);
         }
 
         protected override void RunValidation(Job job)

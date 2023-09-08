@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 BatchParameters = batchIDs,
                 BatchStartingIndex = startIndex
             };
-            _jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType());
+            _jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), BatchInstance.ToString());
             BatchJobCount++;
             LogCreateBatchJobEnd(job, batchIDs);
         }

@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobServiceMock = new Mock<IJobService>();
             _jobHistoryServiceMock = new Mock<IJobHistoryService>();
             _agentFake = new Mock<IRemovableAgent>();
-            
+            _jobHistoryInstanceGuid = Guid.NewGuid();
             _jobId = 123;
             _helperFake = new Mock<IHelper>();
             _helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<JobStopManager>()).Returns(Mock.Of<IAPILog>());
@@ -52,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 _jobServiceMock.Object,
                 _jobHistoryServiceMock.Object,
                 _helperFake.Object,
+                _jobHistoryInstanceGuid,
                 _jobId,
                 _agentFake.Object,
                 supportsDrainStop,
@@ -167,7 +168,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _jobHistory.JobStatus = status;
             Job job = PrepareJob(StopState.Stopping);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID))).Returns(_jobHistory);
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Returns(_jobHistory);
 
             // act
             sut.Execute();
@@ -200,7 +201,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             JobStopManager sut = PrepareSut(false);
             Job job = PrepareJob(StopState.Stopping);
             _jobServiceMock.Setup(x => x.GetJob(_jobId)).Returns(job);
-            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID))).Throws(new Exception("something"));
+            _jobHistoryServiceMock.Setup(x => x.GetRdoWithoutDocuments(_jobHistoryInstanceGuid)).Throws(new Exception("something"));
 
             // act
             sut.Execute();
