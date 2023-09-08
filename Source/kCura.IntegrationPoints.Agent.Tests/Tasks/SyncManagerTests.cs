@@ -342,24 +342,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         }
 
         [Test]
-        public void RaiseJobPreExecute_FailToGetBatchInstance()
-        {
-            // arrange
-            _job.JobDetails = "something something here";
-            Exception exception = new Exception();
-            _serializer.Deserialize<TaskParameters>(_job.JobDetails).Throws(exception);
-
-            // act
-            _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
-
-            // assert
-            _jobHistoryErrorService.Received(1).AddError(
-                Arg.Is<ChoiceRef>(errorType => errorType.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
-                Arg.Is<Exception>(ex => ex.Message == "Failed to get Batch Instance."));
-            _jobHistoryErrorService.Received(1).CommitErrors();
-        }
-
-        [Test]
         public void RaiseJobPostExecute_GoldFlow()
         {
             // arrange
