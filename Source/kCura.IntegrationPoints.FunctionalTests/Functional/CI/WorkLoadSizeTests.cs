@@ -16,7 +16,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        [Ignore("REL-862989")]
         public async Task ShouldGetWorkloadSize()
         {
             WorkloadSize expectedValue = WorkloadSize.One;

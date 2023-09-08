@@ -28,7 +28,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         }
 
         [Test]
-        [Ignore("REL-862989")]
         public async Task JobRetryTest()
         {
             await _implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
