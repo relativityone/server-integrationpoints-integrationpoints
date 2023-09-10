@@ -1,3 +1,9 @@
+## [23013.2.3] - 09-08-2023
+
+### Changed
+
+- [REL-875022](https://jira.kcura.com/browse/REL-875022) - Revving Relativity Sync.
+
 ## [23013.2.2] - 09-04-2023
 
 ### Changed
