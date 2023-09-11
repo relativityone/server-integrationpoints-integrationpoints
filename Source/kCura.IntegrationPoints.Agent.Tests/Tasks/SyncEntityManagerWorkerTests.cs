@@ -145,10 +145,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 { "hello", "world" },
                 { "merhaba", "dunya"}
             };
+            var correlationID = Guid.NewGuid();
+            _job.CorrelationID = correlationID.ToString();
 
             TaskParameters taskParams = new TaskParameters
             {
-                BatchInstance = Guid.NewGuid(),
+                BatchInstance = correlationID,
                 BatchParameters = new EntityManagerJobParameters
                 {
                     EntityManagerMap = entityManagerMap,
@@ -264,7 +266,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             dynMethod.Invoke(task, new object[] { job });
 
             // ASSERT
-            Assert.AreEqual(new Guid("2b7bda1b-11c9-4349-b446-ae5c8ca2c408"), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
+            Assert.AreEqual(Guid.Parse(job.CorrelationID), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
 
             List<EntityManagerMap> custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("_entityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
             Assert.AreEqual(3, custodianManagerMap.Count);

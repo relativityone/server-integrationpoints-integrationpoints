@@ -151,10 +151,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SourceWorkspaceArtifactId = 8465,
                 SavedSearchArtifactId = 987654
             };
+            var correlationID = Guid.NewGuid();
+            job.CorrelationID = correlationID.ToString();
 
             _taskParameters = new TaskParameters
             {
-                BatchInstance = Guid.NewGuid(),
+                BatchInstance = correlationID,
                 BatchParameters = new LoadFileTaskParameters
                 {
                     LastModifiedDate = _LOAD_FILE_MODIFIED_DATE,

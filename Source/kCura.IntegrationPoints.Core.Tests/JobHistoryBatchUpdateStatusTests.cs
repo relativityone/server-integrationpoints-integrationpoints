@@ -69,7 +69,9 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             // ARRANGE
             Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-            TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+            Guid correlationID = Guid.NewGuid();
+            job.CorrelationID = correlationID.ToString();
+            TaskParameters parameters = new TaskParameters() { BatchInstance = correlationID };
             _jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(state));
             _serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
             _jobHistoryService.GetRdoWithoutDocuments(parameters.BatchInstance).Returns(new JobHistory
@@ -92,6 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             // ARRANGE
             Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
+            job.CorrelationID = Guid.NewGuid().ToString();
 
             ChoiceRef expectedStatus = JobStatusChoices.JobHistoryCompleted;
             var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
@@ -117,6 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             // ARRANGE
             Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
+            job.CorrelationID = Guid.NewGuid().ToString();
 
             ChoiceRef expectedStatus = JobStatusChoices.JobHistoryCompleted;
             var expectedEndTimeUtc = new DateTime(2010, 10, 10, 10, 10, 10);
@@ -146,8 +150,10 @@ namespace kCura.IntegrationPoints.Core.Tests
         public void OnJobComplete_LogErrorWhenGetHistoryFails()
         {
             // ARRANGE
+            Guid correlationID = Guid.NewGuid();
             Job job = new JobBuilder().WithJobId(_jobID).WithWorkspaceId(_workspaceID).Build();
-            TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+            job.CorrelationID = correlationID.ToString();
+            TaskParameters parameters = new TaskParameters() { BatchInstance = correlationID };
             _serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
             _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>())
                 .Returns((JobHistory)null);
@@ -168,7 +174,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 JobStatus = JobStatusChoices.JobHistoryProcessing
             };
 
-            TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+            TaskParameters parameters = new TaskParameters() { BatchInstance = Guid.Parse(job.CorrelationID) };
             _jobService.GetJob(job.JobId).Returns(job.CopyJobWithStopState(StopState.None));
             _serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameters);
             _jobHistoryService.GetRdoWithoutDocuments(parameters.BatchInstance).Returns(history);

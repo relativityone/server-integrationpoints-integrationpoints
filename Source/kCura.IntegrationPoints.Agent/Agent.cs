@@ -179,19 +179,13 @@ namespace kCura.IntegrationPoints.Agent
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
-                .ActivateTimer(job.JobId, GetBatchInstanceId(container, job).ToString(), job.TaskType);
+                .ActivateTimer(job.JobId, job.CorrelationID, job.TaskType);
         }
 
         private IDisposable StartHeartbeatReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IHeartbeatReporter>()
                 .ActivateHeartbeat(job.JobId);
-        }
-
-        private Guid GetBatchInstanceId(IWindsorContainer container, Job job)
-        {
-            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
-            return taskParameterHelper.GetBatchInstance(job);
         }
 
         private void SendJobStartedMessage(IWindsorContainer container, Job job)
@@ -202,15 +196,15 @@ namespace kCura.IntegrationPoints.Agent
                 IProviderTypeService providerTypeService = container.Resolve<IProviderTypeService>();
                 IMessageService messageService = container.Resolve<IMessageService>();
 
-                Guid batchInstanceId = GetBatchInstanceId(container, job);
-                Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
-                if (!IsJobResumed(container, batchInstanceId))
+                Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", job.CorrelationID);
+                //TODO change Guid to string 
+                if (!IsJobResumed(container, Guid.Parse(job.CorrelationID)))
                 {
                     IntegrationPointSlimDto integrationPoint = integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
                     var message = new JobStartedMessage
                     {
                         Provider = integrationPoint.GetProviderName(providerTypeService),
-                        CorrelationID = batchInstanceId.ToString()
+                        CorrelationID = job.CorrelationID
                     };
                     messageService.Send(message).GetAwaiter().GetResult();
                 }

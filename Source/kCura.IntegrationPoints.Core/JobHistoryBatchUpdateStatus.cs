@@ -74,8 +74,7 @@ namespace kCura.IntegrationPoints.Core
 
         private JobHistory GetHistory(Job job)
         {
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
+            JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(job.CorrelationID));
 
             if (jobHistory == null)
             {

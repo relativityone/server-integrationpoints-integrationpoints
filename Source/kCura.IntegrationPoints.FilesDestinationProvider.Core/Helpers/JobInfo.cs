@@ -34,8 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 
         private JobHistory GetJobHistoryRdo()
         {
-            var taskParameters = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
-            JobHistory jobHistoryRdo = _jobHistoryService.GetRdoWithoutDocuments(taskParameters.BatchInstance);
+            JobHistory jobHistoryRdo = _jobHistoryService.GetRdoWithoutDocuments(Guid.Parse(_job.CorrelationID));
             return jobHistoryRdo;
         }
     }

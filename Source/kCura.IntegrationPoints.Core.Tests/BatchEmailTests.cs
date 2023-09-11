@@ -155,6 +155,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 .Returns(Data.JobStatusChoices.JobHistoryCompletedWithErrors);
             Job parentJob = GetTestJob();
             parentJob.JobDetails = jobDetails;
+            parentJob.CorrelationID = batchInstanceGuid.ToString();
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(parentJob, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
             // ACT

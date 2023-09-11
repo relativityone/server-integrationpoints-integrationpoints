@@ -178,8 +178,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SavedSearchArtifactId = 987654,
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
+            var correlationID = Guid.NewGuid();
 
-            _taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
+            _taskParameters = new TaskParameters() { BatchInstance = correlationID };
+            _job.CorrelationID = correlationID.ToString();
             _jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, Overwrite = OverwriteModeNames.AppendOnlyModeName };
             _sourceProvider = new SourceProvider();
             _updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
@@ -652,27 +654,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // ASSERT
             _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<ImportSettings>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
-        }
-
-        [Test]
-        public void Execute_JobHasNoBatchId_ExpectNewBatchIdToBeGenerated()
-        {
-            // ARRANGE
-            const string newConfig = "new config";
-            Job job = new JobBuilder()
-                .WithWorkspaceId(_configuration.SourceWorkspaceArtifactId)
-                .WithRelatedObjectArtifactId(_integrationPointDto.ArtifactId)
-                .WithJobDetails(string.Empty)
-                .Build();
-            SetUp(job);
-            _serializer.Serialize(Arg.Any<TaskParameters>()).Returns(newConfig);
-            _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
-
-            // ACT
-            _instance.Execute(job);
-
-            // ASSERT
-            Assert.AreEqual(newConfig, _job.JobDetails);
         }
 
         [Test]

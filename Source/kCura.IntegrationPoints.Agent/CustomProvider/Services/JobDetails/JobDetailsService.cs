@@ -24,9 +24,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             _logger = logger;
         }
 
-        public async Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails)
+        public async Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails, string correlationID)
         {
-            Guid jobHistoryGuid = GetBatchInstance(jobDetails);
+            Guid jobHistoryGuid = Guid.Parse(correlationID);
 
             CustomProviderJobDetails customProviderJobDetails = null;
 
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to get Job History ID for Batch Instance GUID: {batchInstance}", jobHistoryGuid);
+                _logger.LogError(ex, "Failed to get Job History ID for Batch Instance GUID: {correlationID}", correlationID);
                 throw;
             }
 
@@ -72,31 +72,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             _jobService.UpdateJobDetails(job);
 
             return Task.CompletedTask;
-        }
-
-        private Guid GetBatchInstance(string jobDetails)
-        {
-            try
-            {
-                Guid? deserializedBatchInstance = _serializer.Deserialize<TaskParameters>(jobDetails)?.BatchInstance;
-
-                if (deserializedBatchInstance.HasValue && deserializedBatchInstance.Value != Guid.Empty)
-                {
-                    return deserializedBatchInstance.Value;
-                }
-
-                return GetJobHistoryGuid(jobDetails);
-            }
-            catch
-            {
-                return GetJobHistoryGuid(jobDetails);
-            }
-        }
-
-        private Guid GetJobHistoryGuid(string jobDetails)
-        {
-            CustomProviderJobDetails customProviderJobDetails = _serializer.Deserialize<CustomProviderJobDetails>(jobDetails ?? string.Empty);
-            return customProviderJobDetails.JobHistoryGuid;
         }
     }
 }

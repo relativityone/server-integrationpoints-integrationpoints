@@ -250,7 +250,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     _WORKSPACE_ID,
                     It.IsAny<IntegrationPointDto>(),
                     It.IsAny<int>(),
-                    _USER_ID));
+                    _USER_ID,
+                    It.IsAny<string>()));
 
             VerifyJobShouldNotBeCreated();
         }
@@ -524,7 +525,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     _WORKSPACE_ID,
                     It.IsAny<IntegrationPointDto>(),
                     It.IsAny<int>(),
-                    _USER_ID));
+                    _USER_ID,
+                    It.IsAny<string>()));
 
             VerifyJobShouldNotBeCreated();
         }

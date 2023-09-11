@@ -96,6 +96,7 @@ namespace kCura.IntegrationPoints.Data
                 LockedByAgentID = LockedByAgentID,
                 WorkspaceID = WorkspaceID,
                 RelatedObjectArtifactID = RelatedObjectArtifactID,
+                CorrelationID = CorrelationID,
                 TaskType = TaskType,
                 NextRunTime = NextRunTime,
                 LastRunTime = LastRunTime,

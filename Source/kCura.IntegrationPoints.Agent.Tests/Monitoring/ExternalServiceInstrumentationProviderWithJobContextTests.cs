@@ -185,34 +185,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _messageService.Received().Send(Arg.Is<IMessage>(x=>ValidateEmptyJobContextIsSet(x)));
         }
 
-        [Test]
-        public void ItShouldUseEmptyCorrelationIdJobContextWhenJobDetailsAreMissing()
-        {
-            ItShouldUseEmptyCorrelationIdJobContextWhenBatchInstanceIsNotSetInJobDetails(GetJobWithoutJobDetails());
-        }
-
-        [Test]
-        public void ItShouldUseEmptyCorrelationIdJobContextWhenJobDetailsAreInvalid()
-        {
-            ItShouldUseEmptyCorrelationIdJobContextWhenBatchInstanceIsNotSetInJobDetails(GetJobWithInvalidJobDetails());
-        }
-
-        private void ItShouldUseEmptyCorrelationIdJobContextWhenBatchInstanceIsNotSetInJobDetails(Job job)
-        {
-            // arrange
-            _config.MeasureDurationOfExternalCalls.Returns(true);
-            SetJobContext(job);
-            IExternalServiceInstrumentation
-                instrumentation = _sut.Create(_SERVICE_TYPE, _SERVICE_NAME, _OPERATION_NAME);
-
-            // act
-            IExternalServiceInstrumentationStarted startedInstrumentation = instrumentation.Started();
-            startedInstrumentation.Completed();
-
-            // assert
-            _messageService.Received().Send(Arg.Is<IMessage>(x => ValidateEmptyCorrelationIdIsSet(x)));
-        }
-
         private bool ValidateCallContext(InstrumentationServiceCallContext context)
         {
             bool isValid = true;
@@ -231,11 +203,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private bool ValidateEmptyJobContextIsSet(IMessage message)
         {
             return ValidateJobContext(message, 0, 0, string.Empty);
-        }
-
-        private bool ValidateEmptyCorrelationIdIsSet(IMessage message)
-        {
-            return ValidateJobContext(message, _JOB_ID, _WORKSPACE_ID, string.Empty);
         }
 
         private bool ValidateJobContext(IMessage message, long jobId, int workspaceId, string correlationId)
@@ -279,6 +246,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .WithJobId(_JOB_ID)
                 .WithWorkspaceId(_WORKSPACE_ID)
                 .WithJobDetails(parameters)
+                .WithCorrelationID(_BATCH_INSTANCE.ToString())
                 .Build();
         }
 

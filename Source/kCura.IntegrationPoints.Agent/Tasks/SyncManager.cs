@@ -320,7 +320,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void SetupJob(Job job)
         {
-            BatchInstance = GetBatchInstance(job);
+            BatchInstance = Guid.Parse(job.CorrelationID);
             if (job.RelatedObjectArtifactID < 1)
             {
                 LogMissingJobRelatedObject(job);

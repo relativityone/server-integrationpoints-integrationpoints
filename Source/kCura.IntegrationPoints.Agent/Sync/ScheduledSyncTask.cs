@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Sync
             try
             {
                 _log.LogInformation("Submitting Scheduled Sync Job for JobHistory {jobHistoryId} in IntegrationPoint {integrationPointId}", jobHistoryId, integrationPoint.ArtifactId);
-                await _syncAppIntegration.SubmitSyncJobAsync(job.WorkspaceID, integrationPoint, jobHistoryId, job.SubmittedBy).ConfigureAwait(false);
+                await _syncAppIntegration.SubmitSyncJobAsync(job.WorkspaceID, integrationPoint, jobHistoryId, job.SubmittedBy, job.CorrelationID).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

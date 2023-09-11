@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 jobParameters.EntityManagerMap = jobParameters.EntityManagerMap.Skip(totalLinkedManagers).ToDictionary(x => x.Key, x => x.Value);
                 TaskParameters taskParameters = new TaskParameters()
                 {
-                    BatchInstance = BatchInstance,
+                    BatchInstance = Guid.Parse(job.CorrelationID),
                     BatchParameters = jobParameters,
                 };
 
@@ -224,7 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private EntityManagerJobParameters GetParameters(Job job)
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
-            BatchInstance = taskParameters.BatchInstance;
+            BatchInstance = Guid.Parse(job.CorrelationID);
 
             EntityManagerJobParameters jobParameters;
             if (taskParameters.BatchParameters is JObject)
