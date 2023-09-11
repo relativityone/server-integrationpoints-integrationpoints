@@ -1,6 +1,5 @@
 ﻿using System.Configuration;
 using System.IO;
-using LanguageExt;
 using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional
