@@ -22,6 +22,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
         public static string ARMTestServicesRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "ARMTestServices.RAP\\lib\\ARMTestServices.rap");
 
+        public static string SyncApplicationRapDirectory => Path.Combine(GetConfigValue("BuildToolsDirectory"), "Sync\\lib\\Relativity.Sync.rap");
+
         public static string DataTransferLegacyRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "DataTransfer.Legacy\\lib\\DataTransfer.Legacy.rap");
 
         public static string AzureADProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "AADProvider\\lib\\AADProvider.rap");

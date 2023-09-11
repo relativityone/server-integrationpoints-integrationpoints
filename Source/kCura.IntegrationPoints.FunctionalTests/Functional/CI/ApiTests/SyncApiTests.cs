@@ -28,7 +28,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         }
 
         [Test]
-        [Ignore("REL-862989")]
         public async Task JobRetryTest()
         {
             await _implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
@@ -36,7 +35,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 
         [Test]
         [TestType.Critical]
-        [Ignore("REL-862989")]
         public async Task JobRunTest()
         {
             await _implementation.RunIntegrationPoint().ConfigureAwait(false);

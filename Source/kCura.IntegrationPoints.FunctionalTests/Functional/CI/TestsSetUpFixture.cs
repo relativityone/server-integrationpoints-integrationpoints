@@ -43,6 +43,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             InstallDataTransferLegacy();
 
             workspace.InstallLegalHold();
+
+            EnsureSyncAppIsInstalled(workspaceId);
+
+            RelativityFacade.Instance.RequireAgent(Const.SYNC_AGENT_TYPE_NAME, Const.SYNC_AGENT_RUN_INTERVAL);
         }
 
         private async Task ConfigureTestingEnvironmentAsync()
@@ -192,6 +196,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             catch (DirectoryNotFoundException ex)
             {
                 TestContext.Progress.Log($"Could not found path with screenshots {basePath}", ex);
+            }
+        }
+
+        private void EnsureSyncAppIsInstalled(int workspaceId)
+        {
+            ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+
+            LibraryApplication app = applicationService.Get(Const.Application.SYNC_APPLICATION_NAME);
+
+            if (app == null)
+            {
+                applicationService.InstallToLibrary(
+                TestConfig.SyncApplicationRapDirectory,
+                new LibraryApplicationInstallOptions { IgnoreVersion = true });
+
+                app = applicationService.Get(Const.Application.SYNC_APPLICATION_NAME);
+            }
+
+            if (!applicationService.IsInstalledInWorkspace(workspaceId, app.ArtifactID))
+            {
+                applicationService.InstallToWorkspace(workspaceId, app.ArtifactID);
             }
         }
     }

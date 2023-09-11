@@ -29,7 +29,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD.ApiTests
 
         [IdentifiedTest("ACB959DF-6C5A-42A3-AFBC-3E180B500B72")]
         [TestExecutionCategory.RAPCD.Verification.Functional]
-        [Ignore("REL-862989")]
         public async Task JobRunTest()
         {
             await _implementation.RunIntegrationPoint().ConfigureAwait(false);
