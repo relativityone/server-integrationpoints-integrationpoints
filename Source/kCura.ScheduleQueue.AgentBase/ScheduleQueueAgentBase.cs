@@ -252,10 +252,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                     if (IsAzureADWorker(job))
                     {
-                        Logger.LogInformation(
-                            "Job {jobId} is in unknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin. JobDetails: {@job}",
-                            job.JobId,
-                            job);
+                        Logger.LogInformation("Job {jobId} is in unknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin.", job.JobId);
                         _jobService.UnlockJob(job);
                         continue;
                     }
@@ -288,6 +285,8 @@ namespace kCura.ScheduleQueue.AgentBase
         {
             try
             {
+                Logger.LogInformation("Checking if Job {jobId} is AzureAD Type...", job.JobId);
+
                 if (job.TaskType != nameof(TaskType.SyncWorker) && job.TaskType != nameof(TaskType.SyncEntityManagerWorker))
                 {
                     return false;
@@ -296,6 +295,9 @@ namespace kCura.ScheduleQueue.AgentBase
                 IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
 
                 IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+
+                Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
+
                 if (!integrationPoint.SourceProvider.HasValue)
                 {
                     return false;
@@ -303,7 +305,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
 
-                Logger.LogInformation("Checking if {taskType} job is typeof AzureAD - {applicationIdentifier}", sourceProvider.ApplicationIdentifier);
+                Logger.LogInformation("Checking if {taskType} job is typeof AzureAD - {applicationIdentifier}", job.TaskType, sourceProvider.ApplicationIdentifier);
 
                 return Guid.Parse(sourceProvider.ApplicationIdentifier) == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5");
             }
