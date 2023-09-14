@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -172,6 +173,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                     break;
                 case JobEndStatus.Failed:
                     jobHistoryStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+                    HandleImportServiceFailure(endResult);
                     break;
                 case JobEndStatus.Canceled:
                     jobHistoryStatus = JobStatusChoices.JobHistoryStopped;
@@ -186,6 +188,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             await _jobHistoryService.UpdateStatusAsync(job.WorkspaceID, job.RelatedObjectArtifactID, details.JobHistoryID, jobHistoryStatus.Guids[0]).ConfigureAwait(false);
 
             _logger.LogInformation("Custom Provider job finished - {status}, ImportDetails: {@result}", jobHistoryStatus.Name, endResult);
+        }
+
+        private void HandleImportServiceFailure(ImportJobResult endResult)
+        {
+            if (endResult.Status == JobEndStatus.Failed)
+            {
+                string messages = endResult.Errors != null && endResult.Errors.Any() ? string.Join(Environment.NewLine, endResult.Errors) : "Import API transfer failed";
+                throw new Exception($"Job failed with following errors: {messages}");
+            }
         }
 
         private async Task HandleExceptionAsync(int workspaceId, int integrationPointId, int jobHistoryId, Guid status, Exception e)
