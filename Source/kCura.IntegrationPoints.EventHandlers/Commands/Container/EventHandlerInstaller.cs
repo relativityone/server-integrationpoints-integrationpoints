@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Validators;
+using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
@@ -98,6 +99,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
             container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
             container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
             container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
+
+            container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
+            container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
 
             container.Register(Component.For<NonDocumentObjectMigrationCommand>().ImplementedBy<NonDocumentObjectMigrationCommand>().LifestyleTransient());
 
