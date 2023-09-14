@@ -20,19 +20,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         }
 
         /// <inheritdoc />
-        public RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap identifierField)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
             _logger.LogInformation("Indexed FieldsMapping: {@fieldsMapping}", fieldMappings);
 
-            IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
-
             IWithFields fieldsSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
                 destinationConfiguration.FieldOverlayBehavior,
-                identifier.DestinationFieldName);
+                identifierField.DestinationFieldName);
 
             IWithRdo withRdo = ConfigureFieldsMappingSettings(
                 fieldsSettings,
@@ -104,11 +102,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
             return withRdo.WithRdo(f => f
                 .WithArtifactTypeId(destinationConfiguration.ArtifactTypeId)
                 .WithoutParentColumnIndex());
-        }
-
-        private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
-        {
-            return fieldMappings.FirstOrDefault(x => x.FieldMap.DestinationField.IsIdentifier);
         }
 
         private static MultiFieldOverlayBehaviour ToMultiFieldOverlayBehaviour(string overlayBehaviorString)

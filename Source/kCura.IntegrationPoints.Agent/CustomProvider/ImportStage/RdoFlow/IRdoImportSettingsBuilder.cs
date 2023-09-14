@@ -14,7 +14,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         /// </summary>
         /// <param name="destinationConfiguration">The object defining the destination configuration.</param>
         /// <param name="fieldMappings">List of fields mappings to transfer.</param>
+        /// <param name="identifierField">Identifier field</param>
         /// <returns>The ImportAPI v2.0 configuration object.</returns>
-        RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings);
+        RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap identifierField);
     }
 }

@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.FieldMapping;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
@@ -235,6 +236,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<DocumentImportApiRunner>().ImplementedBy<DocumentImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<RdoImportApiRunner>().ImplementedBy<RdoImportApiRunner>().LifestyleTransient());
             container.Register(Component.For<IEntityFullNameService>().ImplementedBy<EntityFullNameService>().LifestyleTransient());
+            container.Register(Component.For<IFieldMapService>().ImplementedBy<FieldMapService>().LifestyleTransient());
             container.Register(Component.For<IEntityFullNameObjectManagerService>().ImplementedBy<EntityFullNameObjectManagerService>().LifestyleTransient());
             container.Register(Component.For<INotificationService>().ImplementedBy<NotificationService>().LifestyleTransient());
         }

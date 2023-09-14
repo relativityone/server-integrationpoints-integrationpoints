@@ -33,11 +33,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint, IndexedFieldMap identifierField)
         {
             _logger.LogInformation("ImportApiRunner for RDO flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
-            RdoImportConfiguration configuration = await CreateConfiguration(integrationPoint).ConfigureAwait(false);
+            RdoImportConfiguration configuration = await CreateConfiguration(integrationPoint, identifierField).ConfigureAwait(false);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 
@@ -46,9 +46,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
             await _importApiService.StartImportJobAsync(importJobContext).ConfigureAwait(false);
         }
 
-        private Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint)
+        private Task<RdoImportConfiguration> CreateConfiguration(IntegrationPointInfo integrationPoint, IndexedFieldMap identifierField)
         {
-            RdoImportConfiguration configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap);
+            RdoImportConfiguration configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap, identifierField);
 
             return Task.FromResult(configuration);
         }

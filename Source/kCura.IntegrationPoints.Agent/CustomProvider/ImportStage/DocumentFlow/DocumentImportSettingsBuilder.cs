@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
@@ -27,18 +26,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
+        public async Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap identifierField)
         {
             IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
             AdvancedImportSettings advancedSettings = await CreateAdvancedImportSettingsAsync();
 
-            IndexedFieldMap identifier = GetIdentifierField(fieldMappings);
             IWithNatives nativesSettings = ConfigureOverwriteModeSettings(
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
                 destinationConfiguration.FieldOverlayBehavior,
-                identifier.DestinationFieldName);
+                identifierField.DestinationFieldName);
 
             IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, destinationConfiguration.ImportNativeFileCopyMode);
 
@@ -171,11 +169,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
                     f.WithRootFolderID(destinationFolderArtifactId, r =>
                         r.WithAllDocumentsInRootFolder()));
             }
-        }
-
-        private static IndexedFieldMap GetIdentifierField(List<IndexedFieldMap> fieldMappings)
-        {
-            return fieldMappings.FirstOrDefault(x => x.FieldMap.DestinationField.IsIdentifier);
         }
 
         private static MultiFieldOverlayBehaviour ToMultiFieldOverlayBehaviour(string overlayBehaviorString)
