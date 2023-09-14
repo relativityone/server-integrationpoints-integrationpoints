@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
         private readonly Guid _progressObjectType = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
         private readonly Guid _batchObjectType = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
         private readonly Guid _syncConfigurationObjectType = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
+        private readonly Guid _syncStatisticsObjectType = new Guid("C931E60E-8EF8-4ACE-8C9F-06A97BCAF1BF");
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
 
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
             if (await ObjectTypeExistsAsync(workspaceId, _syncConfigurationObjectType).ConfigureAwait(false)
                 && await HasSyncConfigurationWorkspaceAsParentAsync(workspaceId).ConfigureAwait(false) == false)
             {
+                await CascadeDeleteObjectTypeAsync(workspaceId, _syncStatisticsObjectType).ConfigureAwait(false);
                 await CascadeDeleteObjectTypeAsync(workspaceId, _progressObjectType).ConfigureAwait(false);
                 await CascadeDeleteObjectTypeAsync(workspaceId, _batchObjectType).ConfigureAwait(false);
                 await CascadeDeleteObjectTypeAsync(workspaceId, _syncConfigurationObjectType).ConfigureAwait(false);
