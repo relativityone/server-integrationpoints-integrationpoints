@@ -193,6 +193,39 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryService.Verify(x => x.UpdateStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), JobStatusChoices.JobHistoryCompletedGuid));
         }
 
+        [Test]
+        public void Execute_ShouldCreateJobHistoryError_WhenIAPITransferFails()
+        {
+            // Arrange
+            List<CustomProviderBatch> batches = _fxt.Build<CustomProviderBatch>()
+                .With(x => x.Status, IntegrationPoints.Agent.CustomProvider.DTO.BatchStatus.Completed)
+                .CreateMany()
+                .ToList();
+
+            _jobDetails = _fxt.Build<CustomProviderJobDetails>()
+                .With(x => x.Batches, new List<CustomProviderBatch>())
+                .Create();
+
+            _entityFullNameService
+                .Setup(x => x.HandleFullNameMappingIfNeededAsync(It.IsAny<IntegrationPointInfo>()))
+                .ReturnsAsync(new IntegrationPointInfo(SetupIntegrationPoint()));
+
+            Job job = PrepareBasicJob();
+
+            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(
+                    It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<string>()))
+                .ReturnsAsync(batches);
+
+            SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Failed });
+            string expectedMessageStart = "Job failed with following errors:";
+
+            Action action = () => _sut.Execute(job);
+
+            // Assert
+            action.ShouldThrow<Exception>();
+            _jobHistoryErrorService.Verify(x => x.AddJobErrorAsync(It.IsAny<int>(), It.IsAny<int>(), It.Is<Exception>(y => y.Message.Contains(expectedMessageStart))));
+        }
+
         private Job PrepareJob(IntegrationPointDto integrationPoint, Guid jobHistoryGuid)
         {
             TaskParameters parameters = _fxt.Build<TaskParameters>()
