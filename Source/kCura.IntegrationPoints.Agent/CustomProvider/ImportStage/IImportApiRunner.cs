@@ -12,8 +12,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
         /// Creates, configurates and starts the ImportAPI v2.0 jobs.
         /// </summary>
         /// <param name="importJobContext">The job context containing the job-id and correlation-id.</param>
-        /// <param name="integrationPoint">integration Point object.</param>
+        /// <param name="integrationPoint">Integration Point object.</param>
+        /// <param name="identifierField">Identifier field</param>
         /// <exception cref="ImportApiResponseException"></exception>
-        Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint);
+        Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint, IndexedFieldMap identifierField);
     }
 }
