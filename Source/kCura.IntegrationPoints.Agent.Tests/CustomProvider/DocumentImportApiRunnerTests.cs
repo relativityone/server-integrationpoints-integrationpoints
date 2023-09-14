@@ -7,8 +7,6 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -37,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IDocumentImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
+                .Setup(x => x.BuildAsync(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>(), It.IsAny<IndexedFieldMap>()))
                 .ReturnsAsync(_importConfiguration);
 
             _sut = new DocumentImportApiRunner(
@@ -51,12 +49,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
+            var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
 
             // Assert
-            _settingsBuilderMock.Verify(x => x.BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap), Times.Once);
+            _settingsBuilderMock.Verify(x => x.BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap, identifier), Times.Once);
         }
 
         [Test]
@@ -64,9 +63,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
+            var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
 
             // Assert
             _importApiServiceMock.Verify(x => x.CreateImportJobAsync(_importJobContext), Times.Once);
