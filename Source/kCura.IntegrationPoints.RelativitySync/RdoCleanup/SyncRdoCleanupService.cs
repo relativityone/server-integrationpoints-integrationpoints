@@ -48,9 +48,9 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
 
                 ObjectTypeResponse objectType = await objectTypeManager.ReadAsync(workspaceId, syncConfigurationTypeId).ConfigureAwait(false);
 
-                _logger.LogInformation("SyncConfiguration Type was read - ArtifactTypeId: {artifactTypeId}, ParentObjectType: {objectType}", syncConfigurationTypeId, objectType.ParentObjectType.Value);
+                _logger.LogWarning("SyncConfiguration Type was read - ArtifactTypeId: {artifactTypeId}, ParentObjectType: {@objectType}", syncConfigurationTypeId, objectType.ParentObjectType.Value);
 
-                return objectType.ParentObjectType.Value.ArtifactID == (int)ArtifactType.Case;
+                return objectType.ParentObjectType.Value.ArtifactTypeID == (int)ArtifactType.Case;
             }
         }
 
