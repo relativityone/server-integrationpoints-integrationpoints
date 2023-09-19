@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID, 
+        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
             string correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
             long? rootJobID, long? parentJobID)
         {
@@ -276,7 +276,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private Job CreateJob(DataRow row)
         {
-            return row != null ? new Job(row) : null;
+            Job job = null;
+            if (row != null)
+            {
+                job = new Job(row);
+                if (string.IsNullOrWhiteSpace(job.CorrelationID))
+                {
+                    job.CorrelationID = Guid.NewGuid().ToString();
+                }
+            }
+
+            return job;
         }
 
         public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
