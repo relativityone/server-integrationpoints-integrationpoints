@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.InstanceSettings;
+using kCura.IntegrationPoints.Agent.CustomProvider.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
@@ -26,7 +28,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
         }
 
         /// <inheritdoc />
-        public async Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap identifierField)
+        public async Task<DocumentImportConfiguration> BuildAsync(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings)
         {
             IWithOverlayMode overlayModeSettings = ImportDocumentSettingsBuilder.Create();
 
@@ -36,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
                 destinationConfiguration.FieldOverlayBehavior,
-                identifierField.DestinationFieldName);
+                fieldMappings);
 
             IWithFieldsMapping fieldsMappingSettings = ConfigureFileImportSettings(nativesSettings, destinationConfiguration.ImportNativeFileCopyMode);
 
@@ -89,10 +91,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
             IWithOverlayMode overlayModeSettings,
             ImportOverwriteModeEnum overwriteMode,
             string overlayBehavior,
-            string identifierFieldName)
+            List<IndexedFieldMap> fieldMappings)
         {
+            IndexedFieldMap identifierField = fieldMappings.GetIdentifier();
+
             _logger.LogInformation(
-                "Configuring OverlayMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}", overwriteMode, overlayBehavior);
+                "Configuring OverlayMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}, IdentifierField: {identifierField}",
+                overwriteMode,
+                overlayBehavior,
+                identifierField.DestinationFieldName);
             switch (overwriteMode)
             {
                 case ImportOverwriteModeEnum.AppendOnly:
@@ -100,11 +107,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
 
                 case ImportOverwriteModeEnum.AppendOverlay:
                     return overlayModeSettings.WithAppendOverlayMode(
-                        x => x.WithKeyField(identifierFieldName)
+                        x => x.WithKeyField(identifierField.DestinationFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
                 case ImportOverwriteModeEnum.OverlayOnly:
                     return overlayModeSettings.WithOverlayMode(
-                        x => x.WithKeyField(identifierFieldName)
+                        x => x.WithKeyField(identifierField.DestinationFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
                 default:
                     throw new NotSupportedException($"ImportOverwriteMode {overwriteMode} is not supported.");

@@ -32,12 +32,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow
         }
 
         /// <inheritdoc/>
-        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPointInfo, IndexedFieldMap identifierField)
+        public async Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPointInfo)
         {
             _logger.LogInformation("ImportApiRunner for document flow started. ImportJobId: {jobId}", importJobContext.JobHistoryGuid);
 
             DocumentImportConfiguration configuration = await _importSettingsBuilder
-                .BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap, identifierField).ConfigureAwait(false);
+                .BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap).ConfigureAwait(false);
 
             await _importApiService.CreateImportJobAsync(importJobContext).ConfigureAwait(false);
 

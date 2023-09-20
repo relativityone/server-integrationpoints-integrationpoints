@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FieldMapping;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
@@ -24,7 +23,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
 {
     internal class ImportJobRunner : IImportJobRunner
     {
-        internal TimeSpan WaitForJobToFinishInterval = TimeSpan.FromSeconds(1);
+        internal TimeSpan WaitForJobToFinishInterval { get; set; } = TimeSpan.FromSeconds(1);
 
         private readonly IImportApiService _importApiService;
         private readonly IJobDetailsService _jobDetailsService;
@@ -33,7 +32,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
         private readonly IImportApiRunnerFactory _importApiRunnerFactory;
         private readonly IJobProgressHandler _jobProgressHandler;
         private readonly IItemLevelErrorHandler _errorsHandler;
-        private readonly IFieldMapService _fieldMapService;
 
         private readonly IAPILog _logger;
 
@@ -45,7 +43,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             IImportApiRunnerFactory importApiRunnerFactory,
             IJobProgressHandler jobProgressHandler,
             IItemLevelErrorHandler errorsHandler,
-            IFieldMapService fieldMapService,
             IAPILog logger)
         {
             _importApiService = importApiService;
@@ -55,7 +52,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             _importApiRunnerFactory = importApiRunnerFactory;
             _jobProgressHandler = jobProgressHandler;
             _errorsHandler = errorsHandler;
-            _fieldMapService = fieldMapService;
             _logger = logger;
         }
 
@@ -66,15 +62,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services
             {
                 IImportApiRunner importApiRunner = _importApiRunnerFactory.BuildRunner(integrationPointInfo.DestinationConfiguration);
 
-                IndexedFieldMap identifierField = await _fieldMapService
-                    .GetIdentifierFieldAsync(integrationPointInfo.DestinationConfiguration.CaseArtifactId,
-                        integrationPointInfo.DestinationConfiguration.ArtifactTypeId, integrationPointInfo.FieldMap)
-                    .ConfigureAwait(false);
-
                 await importApiRunner.RunImportJobAsync(
                         importJobContext,
-                        integrationPointInfo,
-                        identifierField)
+                        integrationPointInfo)
                     .ConfigureAwait(false);
 
                 using (await _jobProgressHandler.BeginUpdateAsync(importJobContext).ConfigureAwait(false))

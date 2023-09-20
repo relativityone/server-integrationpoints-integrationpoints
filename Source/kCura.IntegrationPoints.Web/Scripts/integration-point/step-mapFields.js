@@ -1414,6 +1414,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 				_destination.EntityManagerFieldContainsLink = this.model.EntityManagerFieldContainsLink();
 				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
+				_destination.OverlayIdentifier = this.model.selectedUniqueId();
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;                

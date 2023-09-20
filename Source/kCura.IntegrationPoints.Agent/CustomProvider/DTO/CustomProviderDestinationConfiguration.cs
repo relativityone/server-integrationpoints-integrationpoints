@@ -4,23 +4,25 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
 {
     public class CustomProviderDestinationConfiguration
     {
-        public int CaseArtifactId { get; private set; }
+        public int CaseArtifactId { get; set; }
 
-        public int ArtifactTypeId { get; private set; }
+        public int ArtifactTypeId { get; set; }
 
-        public ImportOverwriteModeEnum ImportOverwriteMode { get; private set; }
+        public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
 
-        public string FieldOverlayBehavior { get; private set; }
+        public string FieldOverlayBehavior { get; set; }
 
-        public int DestinationFolderArtifactId { get; private set; }
+        public int DestinationFolderArtifactId { get; set; }
 
-        public ImportNativeFileCopyModeEnum ImportNativeFileCopyMode { get; private set; }
+        public ImportNativeFileCopyModeEnum ImportNativeFileCopyMode { get; set; }
 
-        public bool UseFolderPathInformation { get; private set; }
+        public bool UseFolderPathInformation { get; set; }
 
-        public int FolderPathSourceField { get; private set; }
+        public int FolderPathSourceField { get; set; }
 
-        public bool MoveExistingDocuments { get; private set; }
+        public bool MoveExistingDocuments { get; set; }
+
+        public string OverlayIdentifier { get; set; }
 
         public static CustomProviderDestinationConfiguration From(DestinationConfiguration configuration)
         {
@@ -35,6 +37,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
                 UseFolderPathInformation = configuration.UseFolderPathInformation,
                 FolderPathSourceField = configuration.FolderPathSourceField,
                 MoveExistingDocuments = configuration.MoveExistingDocuments,
+                OverlayIdentifier = configuration.OverlayIdentifier
             };
         }
     }

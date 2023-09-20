@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -20,16 +22,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             _logger = logger;
         }
 
-        public async Task<IntegrationPointInfo> HandleFullNameMappingIfNeededAsync(IntegrationPointInfo integrationPoint)
-        {
-            if (await ShouldHandleFullNameAsync(integrationPoint.DestinationConfiguration.CaseArtifactId, integrationPoint.DestinationConfiguration.ArtifactTypeId, integrationPoint.FieldMap).ConfigureAwait(false))
-            {
-                await EnrichFieldMapWithFullNameAsync(integrationPoint).ConfigureAwait(false);
-            }
-
-            return integrationPoint;
-        }
-
         public string FormatFullName(Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary, IDataReader reader)
         {
             FieldEntry firstNameField = destinationFieldNameToFieldMapDictionary[EntityFieldNames.FirstName].FieldMap.SourceField;
@@ -43,20 +35,28 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             return fullName;
         }
 
-        private async Task<bool> ShouldHandleFullNameAsync(int workspaceId, int artifactTypeId, List<IndexedFieldMap> fieldsMap)
+        public async Task<bool> ShouldHandleFullNameAsync(CustomProviderDestinationConfiguration configuration, List<IndexedFieldMap> fieldsMap)
         {
             bool isFullNameMapped = fieldsMap.Exists(x => x.DestinationFieldName == EntityFieldNames.FullName);
-            bool isEntity = await _entityFullNameObjectManagerService.IsEntityAsync(workspaceId, artifactTypeId).ConfigureAwait(false);
+            bool isEntity = await _entityFullNameObjectManagerService.IsEntityAsync(configuration.CaseArtifactId, configuration.ArtifactTypeId).ConfigureAwait(false);
+            bool isOverlayWithCustomField = configuration.ImportOverwriteMode == ImportOverwriteModeEnum.OverlayOnly && configuration.OverlayIdentifier != EntityFieldNames.FullName;
 
-            bool shouldHandleFullName = isEntity && !isFullNameMapped;
+            bool shouldHandleFullName = isEntity && !isFullNameMapped && !isOverlayWithCustomField;
 
-            _logger.LogInformation("Should handle full name: {shouldHandleFullName} because is Full Name field mapped: {isFullNameMapped}, is Entity: {isEntity}", shouldHandleFullName, isFullNameMapped, isEntity);
+            _logger.LogInformation(
+                "Should handle full name: {shouldHandleFullName} because is Full Name field mapped: {isFullNameMapped}, is Entity: {isEntity}, OverlayWithCustomField: {overlayWithCustomField}",
+                shouldHandleFullName,
+                isFullNameMapped,
+                isEntity,
+                isOverlayWithCustomField);
 
             return shouldHandleFullName;
         }
 
-        private async Task EnrichFieldMapWithFullNameAsync(IntegrationPointInfo integrationPoint)
+        public async Task EnrichFieldMapWithFullNameAsync(IntegrationPointInfo integrationPoint)
         {
+            _logger.LogInformation("Enriching Fields Mapping with Full Name field...");
+
             int fullNameArtifactId = await _entityFullNameObjectManagerService.GetFullNameArtifactId(integrationPoint.DestinationConfiguration.CaseArtifactId).ConfigureAwait(false);
 
             var fullNameField = new FieldEntry

@@ -104,6 +104,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public bool UseSmartOverwrite { get; set; }
 
+        public string OverlayIdentifier { get; set; }
+
         // TODO: we need to make migration in order to get rid of this workaround
         public int GetDestinationArtifactTypeId()
         {
