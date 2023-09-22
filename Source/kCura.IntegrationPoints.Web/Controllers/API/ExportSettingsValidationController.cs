@@ -28,8 +28,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public HttpResponseMessage ValidateSettings(int workspaceID, IntegrationPointWebModel webModel)
         {
             ValidationResult validationResult = _validationService.Prevalidate(new IntegrationPointProviderValidationModel(webModel.ToDto(_serializer)));
-            var mapper = new ValidationResultMapper();
-            ValidationResultDTO validationResultDto = mapper.Map(validationResult);
+            ValidationResultDTO validationResultDto = ValidationResultMapper.Map(validationResult);
             return Request.CreateResponse(HttpStatusCode.OK, validationResultDto);
         }
     }

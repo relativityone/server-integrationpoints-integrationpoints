@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace kCura.IntegrationPoints.Domain.Extensions
@@ -51,6 +52,11 @@ namespace kCura.IntegrationPoints.Domain.Extensions
             }
 
             return default(T);
+        }
+
+        public static bool IsIn(this Enum value, params Enum[] inclusions)
+        {
+            return inclusions.Contains(value);
         }
     }
 }

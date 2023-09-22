@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -15,14 +13,10 @@ namespace kCura.IntegrationPoints.RelativitySync
     internal class JobHistorySyncService : IJobHistorySyncService
     {
         private readonly IRelativityObjectManager _relativityObjectManager;
-        private readonly IRipToggleProvider _toggles;
-        private readonly IAPILog _logger;
 
-        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager, IRipToggleProvider toggles, IAPILog logger)
+        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager)
         {
             _relativityObjectManager = relativityObjectManager;
-            _toggles = toggles;
-            _logger = logger.ForContext<JobHistorySyncService>();
         }
 
         public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceId, int integrationPointArtifactId)
@@ -146,33 +140,6 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .ConfigureAwait(false);
         }
 
-        private async Task<bool> HasErrorsAsync(IExtendedJob job)
-        {
-            QueryRequest request = new QueryRequest
-            {
-                ObjectType = JobHistoryErrorTypeRef(),
-                Condition =
-                    $"('{Data.JobHistoryErrorFields.JobHistory}' IN OBJECT [{job.JobHistoryId}]) AND ('{Data.JobHistoryErrorFields.ErrorType}' == CHOICE {ErrorTypeChoices.JobHistoryErrorItem.Guids[0]})"
-            };
-            Data.UtilityDTO.ResultSet<RelativityObject> itemLevelErrors = await _relativityObjectManager.QueryAsync(request, 0, 1).ConfigureAwait(false);
-            _logger.LogInformation("JobHistorySyncService.HasErrors(): Found {itemLevelErrors} from JobHistoryErrorObjects", itemLevelErrors.ResultCount);
-
-            QueryRequest requestForJobHistory = new QueryRequest()
-            {
-                ObjectType = JobHistoryRef(),
-                Condition = $"'Artifact ID' == '{job.JobHistoryId}'"
-            };
-
-            List<JobHistory> jobHistoryFromQuery =
-                await _relativityObjectManager.QueryAsync<JobHistory>(requestForJobHistory).ConfigureAwait(false);
-
-            int? jobHistoryItemsWithErrors = jobHistoryFromQuery.Single().ItemsWithErrors;
-
-            _logger.LogInformation("JobHistorySyncService.HasErrors(): Found {jobHistoryItemsWithErrors} from JobHistory.ItemsWithErrors", jobHistoryItemsWithErrors);
-
-            return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
-        }
-
         private async Task UpdateIntegrationPointLastRuntimeUtcAsync(IExtendedJob job, DateTime currentTimeUtc)
         {
             IList<FieldRefValuePair> fieldValues = new[]
@@ -199,14 +166,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             };
 
             await _relativityObjectManager.UpdateAsync(job.IntegrationPointId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
-        }       
-
-        private static FieldRef JobIdRef()
-        {
-            return new FieldRef
-            {
-                Guid = JobHistoryFieldGuids.JobIDGuid
-            };
         }
 
         private static FieldRef EndTimeRef()
@@ -222,14 +181,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             return new RelativityObjectRef
             {
                 ArtifactID = job.JobHistoryId
-            };
-        }
-
-        private static ObjectTypeRef JobHistoryRef()
-        {
-            return new ObjectTypeRef
-            {
-                Guid = ObjectTypeGuids.JobHistoryGuid
             };
         }
 
@@ -254,70 +205,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             return new FieldRef
             {
                 Guid = JobHistoryFieldGuids.JobStatusGuid
-            };
-        }
-
-        private static FieldRef StartTimeRef()
-        {
-            return new FieldRef
-            {
-                Guid = JobHistoryFieldGuids.StartTimeUTCGuid
-            };
-        }
-
-        private static ChoiceRef JobValidationFailedRef()
-        {
-            return new ChoiceRef()
-            {
-                Guid = JobStatusChoices.JobHistoryValidationFailed.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobStoppedStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistoryStopped.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobSuspendingStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistorySuspending.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobSuspendedStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistorySuspended.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobCompletedStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistoryCompleted.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobCompletedWithErrorsStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistoryCompletedWithErrors.Guids[0]
-            };
-        }
-
-        private static ChoiceRef JobFailedStateRef()
-        {
-            return new ChoiceRef
-            {
-                Guid = JobStatusChoices.JobHistoryErrorJobFailed.Guids[0]
             };
         }
 

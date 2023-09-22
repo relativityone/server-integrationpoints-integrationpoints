@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.UtilityDTO;
@@ -11,7 +10,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -21,7 +19,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         private JobHistorySyncService _sut;
         private Mock<IExtendedJob> _jobFake;
         private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
-        private Mock<IRipToggleProvider> _toggleProviderFake;
         private const int _JOB_ID = 1;
         private const int _JOB_HISTORY_ID = 10;
         private const int _WORKSPACE_ID = 100;
@@ -50,12 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _relativityObjectManagerFake.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<ExecutionIdentity>()))
                 .ReturnsAsync(new ResultSet<RelativityObject>());
 
-            _toggleProviderFake = new Mock<IRipToggleProvider>();
-
-            Mock<IAPILog> loggerFake = new Mock<IAPILog>();
-            loggerFake.Setup(x => x.ForContext<JobHistorySyncService>()).Returns(loggerFake.Object);
-
-            _sut = new JobHistorySyncService(_relativityObjectManagerFake.Object, _toggleProviderFake.Object, loggerFake.Object);
+            _sut = new JobHistorySyncService(_relativityObjectManagerFake.Object);
         }
 
         [Test]
