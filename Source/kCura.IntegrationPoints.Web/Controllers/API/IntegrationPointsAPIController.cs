@@ -90,8 +90,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (IntegrationPointValidationException ex)
             {
-                var validationResultMapper = new ValidationResultMapper();
-                ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
+                ValidationResultDTO validationResultDto = ValidationResultMapper.Map(ex.ValidationResult);
                 return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
             }
 

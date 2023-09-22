@@ -195,8 +195,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (IntegrationPointValidationException ex)
             {
-                var validationResultMapper = new ValidationResultMapper();
-                ValidationResultDTO validationResultDto = validationResultMapper.Map(ex.ValidationResult);
+                ValidationResultDTO validationResultDto = ValidationResultMapper.Map(ex.ValidationResult);
                 return Request.CreateResponse(HttpStatusCode.NotAcceptable, validationResultDto);
             }
 
@@ -228,8 +227,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         private ValidationResultDTO MapToValidationResultOutputModel(ValidationResult validationResult)
         {
-            var mapper = new ValidationResultMapper();
-            return mapper.Map(validationResult);
+            return ValidationResultMapper.Map(validationResult);
         }
     }
 }
