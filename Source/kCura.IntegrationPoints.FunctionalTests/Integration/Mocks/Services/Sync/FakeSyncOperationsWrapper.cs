@@ -40,8 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
         {
             Mock<ISyncJobFactory> syncJobFactory = new Mock<ISyncJobFactory>();
             syncJobFactory
-                .Setup(x => x.Create(It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
-                .Returns(_syncJob.Object);
+                .Setup(x => x.CreateAsync(It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
+                .ReturnsAsync(_syncJob.Object);
 
             return syncJobFactory.Object;
         }

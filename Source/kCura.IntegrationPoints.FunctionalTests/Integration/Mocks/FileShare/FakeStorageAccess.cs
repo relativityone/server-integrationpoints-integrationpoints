@@ -96,6 +96,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
+        public Task<byte[]> ReadByteRangeAsync(string path, long offset, int length, ReadByteRangeOptions readByteRangeOptions = null,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<int> ReadByteRangeToAsync(string path, long offset, int length, Stream destinationStream,
+            ReadByteRangeToOptions readByteRangeToOptions = null,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Task RenameFileAsync(string sourcePath, string destinationPath, RenameFileOptions renameFileOptions = null,
             CancellationToken cancellationToken = new CancellationToken())
         {

@@ -46,6 +46,10 @@
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Runtime.CompilerServices.Unsafe.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Text.Encodings.Web.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Bcl.AsyncInterfaces.dll</Assembly>
+					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Extensions.Caching.Abstractions.dll</Assembly>
+                    <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Extensions.Caching.Memory.dll</Assembly>
+                    <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Extensions.Options.dll</Assembly>
+                    <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Microsoft.Extensions.Primitives.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Core.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Storage.Common.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Azure.Storage.Files.DataLake.dll</Assembly>
@@ -60,6 +64,7 @@
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
+					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\LazyCache.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.Legacy.SDK.dll</Assembly>

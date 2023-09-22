@@ -1763,6 +1763,31 @@
       <Name>Microsoft.Bcl.AsyncInterfaces.dll</Name>
       <Notes />
     </Assembly>
+	<Assembly>
+		<Keywords />
+		<Name>Microsoft.Extensions.Caching.Abstractions.dll</Name>
+		<Notes />
+	</Assembly>
+	<Assembly>
+		<Keywords />
+		<Name>Microsoft.Extensions.Caching.Memory.dll</Name>
+		<Notes />
+	</Assembly>
+	<Assembly>
+		<Keywords />
+		<Name>Microsoft.Extensions.Options.dll</Name>
+		<Notes />
+	</Assembly>
+	<Assembly>
+		<Keywords />
+		<Name>Microsoft.Extensions.Primitives.dll</Name>
+		<Notes />
+	</Assembly>
+	<Assembly>
+		<Keywords />
+		<Name>LazyCache.dll</Name>
+		<Notes />
+	</Assembly>
     <Assembly>
       <Keywords />
       <Name>Azure.Core.dll</Name>
