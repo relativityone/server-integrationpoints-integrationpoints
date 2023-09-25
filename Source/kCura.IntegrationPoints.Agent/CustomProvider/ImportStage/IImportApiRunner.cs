@@ -15,6 +15,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage
         /// <param name="integrationPoint">Integration Point object.</param>
         /// <param name="identifierField">Identifier field</param>
         /// <exception cref="ImportApiResponseException"></exception>
-        Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint, IndexedFieldMap identifierField);
+        Task RunImportJobAsync(ImportJobContext importJobContext, IntegrationPointInfo integrationPoint);
     }
 }

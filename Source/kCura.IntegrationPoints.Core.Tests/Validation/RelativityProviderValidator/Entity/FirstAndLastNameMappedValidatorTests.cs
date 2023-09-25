@@ -3,28 +3,28 @@ using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation.Parts.Entity;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
-namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
+namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Entity
 {
     [TestFixture, Category("Unit")]
     public class FirstAndLastNameMappedValidatorTests
     {
         private FirstAndLastNameMappedValidator _sut;
         private Mock<IAPILog> _loggerFake;
-        private const string _FIRST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\""+EntityFieldNames.FirstName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
-                                                     "\"destinationField\":{\"displayName\":\""+EntityFieldNames.FirstName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+        private const string _FIRST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\"" + EntityFieldNames.FirstName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+                                                     "\"destinationField\":{\"displayName\":\"" + EntityFieldNames.FirstName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                      "\"fieldMapType\":\"None\"}";
-        private const string _FULLNAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\""+EntityFieldNames.FullName+"\",\"isIdentifier\":true,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
-                                                    "\"destinationField\":{\"displayName\":\""+EntityFieldNames.FullName+"\",\"isIdentifier\":true,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+        private const string _FULLNAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\"" + EntityFieldNames.FullName + "\",\"isIdentifier\":true,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+                                                    "\"destinationField\":{\"displayName\":\"" + EntityFieldNames.FullName + "\",\"isIdentifier\":true,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                     "\"fieldMapType\":\"Identifier\"}";
-        private const string _LAST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\""+EntityFieldNames.LastName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
-                                                              "\"destinationField\":{\"displayName\":\""+EntityFieldNames.LastName+"\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+        private const string _LAST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\"" + EntityFieldNames.LastName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
+                                                              "\"destinationField\":{\"displayName\":\"" + EntityFieldNames.LastName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                               "\"fieldMapType\":\"None\"}";
         private readonly JSONSerializer _serializer = new JSONSerializer();
 

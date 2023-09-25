@@ -99,8 +99,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
 
                 await ValidateJobAsync(job, jobDetails.JobHistoryID, integrationPointDto).ConfigureAwait(false);
 
-                integrationPointInfo = await _entityFullNameService.HandleFullNameMappingIfNeededAsync(integrationPointInfo).ConfigureAwait(false);
-
                 IDataSourceProvider sourceProvider = await _sourceProviderService.GetSourceProviderAsync(job.WorkspaceID, integrationPointDto.SourceProvider).ConfigureAwait(false);
 
                 CompositeCancellationToken token = _cancellationTokenFactory.GetCancellationToken(jobDetails.JobHistoryGuid, job.JobId);

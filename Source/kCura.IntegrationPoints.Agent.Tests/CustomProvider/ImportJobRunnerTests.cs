@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
-using kCura.IntegrationPoints.Agent.CustomProvider.Services.FieldMapping;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.IdFileBuilding;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
@@ -49,7 +48,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private Mock<IJobProgressHandler> _jobProgressHandler;
         private Mock<IJobHistoryService> _jobHistoryService;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
-        private Mock<IFieldMapService> _fieldMapService;
 
         private Mock<IStorageAccess<string>> _storageAccess;
         private Mock<IImportApiRunner> _importApiRunner;
@@ -67,11 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _loadFileBuilder = new Mock<ILoadFileBuilder>();
 
             IndexedFieldMap identifier = new IndexedFieldMap(new FieldMap(), FieldMapType.Normal, 0);
-            _fieldMapService = new Mock<IFieldMapService>();
-            _fieldMapService
-                .Setup(x =>
-                    x.GetIdentifierFieldAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IList<IndexedFieldMap>>()))
-                .ReturnsAsync(identifier);
 
             _relativityStorageService = new Mock<IRelativityStorageService>();
             _relativityStorageService
@@ -153,7 +146,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .ReturnsAsync(batches);
 
             _loadFileBuilder
-                .Setup(x => x.CreateDataFileAsync(It.IsAny<CustomProviderBatch>(), It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(),
+                .Setup(x => x.CreateDataFileAsync(
+                    It.IsAny<CustomProviderBatch>(),
+                    It.IsAny<IDataSourceProvider>(),
+                    It.IsAny<IntegrationPointInfo>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(new DataSourceSettings());
 
@@ -175,13 +171,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Verify(x => x.DeleteDirectoryRecursiveAsync(It.IsAny<string>()), Times.Once);
 
             _importApiRunner.Verify(
-                x => x.RunImportJobAsync(It.IsAny<ImportJobContext>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<IndexedFieldMap>()),
+                x => x.RunImportJobAsync(It.IsAny<ImportJobContext>(), It.IsAny<IntegrationPointInfo>()),
                 Times.Once);
 
             _importApiService
                 .Verify(
                     x => x.AddDataSourceAsync(It.IsAny<ImportJobContext>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()),
-                Times.Exactly(numberOfBatches));
+                    Times.Exactly(numberOfBatches));
 
             _jobProgressUpdater.Verify(x => x.Dispose(), Times.Once);
         }
@@ -203,7 +199,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             JobHistory jobHistory = new JobHistory();
 
             _idFilesBuilder
-                .Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(),
+                .Setup(x => x.BuildIdFilesAsync(
+                    It.IsAny<IDataSourceProvider>(),
+                    It.IsAny<IntegrationPointInfo>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(new List<CustomProviderBatch>());
 
@@ -248,7 +246,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             JobHistory jobHistory = new JobHistory();
 
             _idFilesBuilder
-                .Setup(x => x.BuildIdFilesAsync(It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(),
+                .Setup(x => x.BuildIdFilesAsync(
+                    It.IsAny<IDataSourceProvider>(),
+                    It.IsAny<IntegrationPointInfo>(),
                     It.IsAny<string>()))
                 .ReturnsAsync(new List<CustomProviderBatch>());
 
@@ -306,7 +306,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 _importApiRunnerFactory.Object,
                 _jobProgressHandler.Object,
                 _itemLevelErrorHandler.Object,
-                _fieldMapService.Object,
                 Mock.Of<IAPILog>());
         }
     }
