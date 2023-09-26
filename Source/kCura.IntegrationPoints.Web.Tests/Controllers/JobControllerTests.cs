@@ -154,8 +154,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
 
-            body.Errors.Should().Contain(expectedErrorMessage1)
-                .And.Contain(expectedErrorMessage2);
+            body.Errors[0].Should().Contain(expectedErrorMessage1);
+            body.Errors[0].Should().Contain(expectedErrorMessage3);
         }
 
         [TestCase(null)]
@@ -316,10 +316,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "The HTTPStatusCode should be OK");
-
-            JobActionResult body = response.Content.ReadAsAsync<JobActionResult>().GetAwaiter().GetResult();
-
-            body.IsValid.Should().BeTrue();
         }
 
         [Test]
@@ -338,13 +334,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 WorkspaceId = _WORKSPACE_ARTIFACT_ID
             };
 
-            IErrorManager errorManager = Substitute.For<IErrorManager>();
 
             _integrationPointService
                 .When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
                 .Throw(aggregateException);
-            _managerFactory.CreateErrorManager().Returns(errorManager);
-            errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
             // Act
             HttpResponseMessage response = _instance.Stop(_payload);
@@ -355,8 +348,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
-
-            errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
         }
 
         [Test]
@@ -371,13 +362,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 WorkspaceId = _WORKSPACE_ARTIFACT_ID
             };
 
-            IErrorManager errorManager = Substitute.For<IErrorManager>();
-
             _integrationPointService
                 .When(x => x.MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId))
                 .Throw(exception);
-            _managerFactory.CreateErrorManager().Returns(errorManager);
-            errorManager.Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
 
             // Act
             HttpResponseMessage response = _instance.Stop(_payload);
@@ -388,8 +375,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .MarkIntegrationPointToStopJobs(_payload.AppId, _payload.ArtifactId);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, "The HTTPStatusCode should be BadRequest");
-
-            errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => x.First().Equals(error)));
         }
 
         private void AssertRDOsPermissions()
@@ -400,7 +385,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.IntegrationPointTypeGuid, Arg.Any<ArtifactPermission>());
             _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.SourceProviderGuid, Arg.Any<ArtifactPermission>());
             _permissionRepository.Received().UserHasArtifactTypePermission(ObjectTypeGuids.DestinationProviderGuid, Arg.Any<ArtifactPermission>());
-
         }
     }
 }

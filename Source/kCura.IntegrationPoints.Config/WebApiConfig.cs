@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Config
             get
             {
                 Guid ripAppGuid = new Guid(Constants.IntegrationPoints.APPLICATION_GUID_STRING);
-                Uri relativityUri = _helper.GetUrlHelper().GetApplicationURL(ripAppGuid);
+                Uri relativityUri = _helper.GetUrlHelper().GetApplicationURL(ripAppGuid); // it's taken from Relativity.Core.RelativityInstanceURL instance setting
                 Uri webServiceUrl = new Uri($"{relativityUri.Scheme}://{relativityUri.Host}/Relativity.Rest/API/");
                 return webServiceUrl.AbsoluteUri;
             }

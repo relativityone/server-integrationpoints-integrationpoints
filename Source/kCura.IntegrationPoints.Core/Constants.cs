@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core
         {
             public const string APPLICATION_NAME = "rip";
             public const string APPLICATION_GUID_STRING = Domain.Constants.IntegrationPoints.APPLICATION_GUID_STRING;
-            public const string JOBS_ALREADY_RUNNING = "There are other jobs currently running or awaiting execution.";
             public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
             public const string NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT = "User does not have permission to edit the integration point.";
             public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
@@ -25,9 +24,7 @@ namespace kCura.IntegrationPoints.Core
             public const string RELATIVITY_DESTINATION_PROVIDER_GUID = DestinationProviders.RELATIVITY;
             public const string LOAD_FILE_DESTINATION_PROVIDER_GUID = DestinationProviders.LOADFILE;
             public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
-            public const string RETRY_ON_STOPPED_JOB = "The transfer cannot be retried because it has been stopped.";
             public const string FAILED_TO_CREATE_JOB_HISTORY = "Unable to create JobHistory.";
-            public const string FAILED_TO_RETRIEVE_JOB_HISTORY = "Unable to retrieve the previous job history.";
             public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
             public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE = "Unable to retrieve Integration Point Profile.";
             public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
