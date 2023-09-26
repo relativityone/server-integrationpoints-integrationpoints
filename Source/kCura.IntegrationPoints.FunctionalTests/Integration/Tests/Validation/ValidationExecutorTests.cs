@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
         public void ValidateOnProfile_ShouldValidate()
         {
             // Arrange
-            IntegrationPointTest integrationPoint = PrepareSavedSearchSyncIntegrationPoint();
+            IntegrationPointFake integrationPoint = PrepareSavedSearchSyncIntegrationPoint();
             ValidationContext context = PrepareValidationContext(integrationPoint);
 
             IValidationExecutor sut = PrepareSut();
@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
         public void ValidateOnSave_ShouldThrow_WhenMappingIdentifierOnly()
         {
             // Arrange
-            IntegrationPointTest integrationPoint = PrepareImportEntityFromLdapIntegrationPoint(true);
+            IntegrationPointFake integrationPoint = PrepareImportEntityFromLdapIntegrationPoint(true);
             ValidationContext context = PrepareValidationContext(integrationPoint);
 
             IValidationExecutor sut = PrepareSut();
@@ -65,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             validation.ShouldThrow<IntegrationPointValidationException>($"Field: \"First Name\" should be mapped in Destination");
         }
 
-        private void ValidateOnOperationShouldNotThrow(IntegrationPointTest integrationPoint, Action<IValidationExecutor, ValidationContext> validateAction)
+        private void ValidateOnOperationShouldNotThrow(IntegrationPointFake integrationPoint, Action<IValidationExecutor, ValidationContext> validateAction)
         {
             // Arrange
             ValidationContext context = PrepareValidationContext(integrationPoint);
@@ -79,7 +79,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             validation.ShouldNotThrow();
         }
 
-        private void ValidateOnOperationShouldThrow<TException>(IntegrationPointTest integrationPoint, Action<IValidationExecutor, ValidationContext> validateAction) where TException : Exception
+        private void ValidateOnOperationShouldThrow<TException>(IntegrationPointFake integrationPoint, Action<IValidationExecutor, ValidationContext> validateAction) where TException : Exception
         {
             // Arrange
             ValidationContext context = PrepareValidationContext(integrationPoint);
@@ -98,13 +98,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             return Container.Resolve<IValidationExecutor>();
         }
 
-        private ValidationContext PrepareValidationContext(IntegrationPointTest integrationPoint)
+        private ValidationContext PrepareValidationContext(IntegrationPointFake integrationPoint)
         {
-            IntegrationPointTypeTest integrationPointType = SourceWorkspace.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
+            IntegrationPointTypeFake integrationPointType = SourceWorkspace.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
 
-            SourceProviderTest sourceProvider = SourceWorkspace.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
+            SourceProviderFake sourceProvider = SourceWorkspace.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
 
-            DestinationProviderTest destinationProvider = SourceWorkspace.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
+            DestinationProviderFake destinationProvider = SourceWorkspace.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
 
             ValidationContext context = new ValidationContext
             {
@@ -119,23 +119,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             return context;
         }
 
-        private IntegrationPointTest PrepareSavedSearchSyncIntegrationPoint()
+        private IntegrationPointFake PrepareSavedSearchSyncIntegrationPoint()
         {
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
             return integrationPoint;
         }
 
-        private IntegrationPointTest PrepareNonDocumentSyncIntegrationPoint()
+        private IntegrationPointFake PrepareNonDocumentSyncIntegrationPoint()
         {
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateNonDocumentSyncIntegrationPoint(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateNonDocumentSyncIntegrationPoint(destinationWorkspace);
             return integrationPoint;
         }
 
-        private IntegrationPointTest PrepareImportEntityFromLdapIntegrationPoint(bool isMappingIdentifierOnly)
+        private IntegrationPointFake PrepareImportEntityFromLdapIntegrationPoint(bool isMappingIdentifierOnly)
         {
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
             return integrationPoint;
         }

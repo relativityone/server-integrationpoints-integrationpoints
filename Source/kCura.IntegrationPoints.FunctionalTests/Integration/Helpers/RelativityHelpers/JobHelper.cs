@@ -20,7 +20,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return job;
         }
 
-        public JobTest ScheduleBasicJob(WorkspaceTest workspace, DateTime? nextRunTime = null)
+        public JobTest ScheduleBasicJob(WorkspaceFake workspace, DateTime? nextRunTime = null)
         {
             JobTest job = CreateBasicJob(workspace)
                 .Build();
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleJobWithScheduleRule(WorkspaceTest workspace, ScheduleRuleTest rule)
+        public JobTest ScheduleJobWithScheduleRule(WorkspaceFake workspace, ScheduleRuleTest rule)
         {
             JobTest job = CreateBasicJob(workspace)
                 .WithScheduleRule(rule)
@@ -39,14 +39,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleIntegrationPointRun(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+        public JobTest ScheduleIntegrationPointRun(WorkspaceFake workspace, IntegrationPointFake integrationPoint)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .Build();
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleSyncIntegrationPointRunWithScheduleRule(WorkspaceTest workspace, IntegrationPointTest integrationPoint, ScheduleRuleTest rule = null)
+        public JobTest ScheduleSyncIntegrationPointRunWithScheduleRule(WorkspaceFake workspace, IntegrationPointFake integrationPoint, ScheduleRuleTest rule = null)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithTaskType(TaskType.ExportService)
@@ -55,8 +55,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleImportIntegrationPointRun(WorkspaceTest workspace,
-            IntegrationPointTest integrationPoint, long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
+        public JobTest ScheduleImportIntegrationPointRun(WorkspaceFake workspace,
+            IntegrationPointFake integrationPoint, long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithImportDetails(loadFileSize, loadFileModifiedDate, processedItemsCount)
@@ -65,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleSyncWorkerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint, object parameters, long? rootJobId = null)
+        public JobTest ScheduleSyncWorkerJob(WorkspaceFake workspace, IntegrationPointFake integrationPoint, object parameters, long? rootJobId = null)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithJobDetails(parameters)
@@ -77,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleSyncManagerJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint, object parameters, long? rootJobId = null)
+        public JobTest ScheduleSyncManagerJob(WorkspaceFake workspace, IntegrationPointFake integrationPoint, object parameters, long? rootJobId = null)
         {
             JobTest job = CreateBasicJob(workspace, integrationPoint)
                 .WithJobDetails(parameters)
@@ -88,13 +88,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        private JobBuilder CreateBasicJob(WorkspaceTest workspace)
+        private JobBuilder CreateBasicJob(WorkspaceFake workspace)
         {
-            IntegrationPointTest integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = workspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
             return CreateBasicJob(workspace, integrationPoint);
         }
 
-        private JobBuilder CreateBasicJob(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+        private JobBuilder CreateBasicJob(WorkspaceFake workspace, IntegrationPointFake integrationPoint)
         {
             return new JobBuilder()
                 .WithWorkspace(workspace)

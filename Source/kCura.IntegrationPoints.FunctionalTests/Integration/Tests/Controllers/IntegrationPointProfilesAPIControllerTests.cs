@@ -33,9 +33,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void GetAll_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfileFirst = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-            IntegrationPointProfileTest integrationPointProfileSecond = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfileFirst = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            IntegrationPointProfileFake integrationPointProfileSecond = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, "/getall");
 
             // Act
@@ -60,8 +60,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Get_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/{integrationPointProfileArtifactId}");
 
@@ -80,8 +80,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void GetValidatedProfileModel_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"GetValidatedProfileModel/{integrationPointProfileArtifactId}");
 
@@ -100,8 +100,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void GetByType_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             int typeArtifactId = integrationPointProfile.Type;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/GetByType/{typeArtifactId}");
 
@@ -119,8 +119,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Get_ReturnSuccessStatusCode_And_ReturnDeserializableSourceConfiguration_When_LongTextFieldLimitExceeded()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(destinationWorkspace, _longTextLimit);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(destinationWorkspace, _longTextLimit);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/{integrationPointProfileArtifactId}");
 
@@ -139,8 +139,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Get_ReturnSuccessStatusCode_And_ReturnDeserializableDestinationConfiguration_When_LongTextFieldLimitExceeded()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(destinationWorkspace, _longTextLimit);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(destinationWorkspace, _longTextLimit);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/{integrationPointProfileArtifactId}");
 
@@ -158,8 +158,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Get_ReturnSuccessStatusCode_And_ReturnDeserializableFieldMappings_When_LongTextFieldLimitExceeded()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(destinationWorkspace, _longTextLimit);
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(destinationWorkspace, _longTextLimit);
             int integrationPointProfileArtifactId = integrationPointProfile.ArtifactId;
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Get, $"/{integrationPointProfileArtifactId}");
 
@@ -176,7 +176,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Save_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
             IntegrationPointProfileDto integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Post, "");
             var expectedResult = new { returnURL = "RelativityViewUrlMock" };
@@ -197,7 +197,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void SaveUsingIntegrationPoint_ShouldReturnSuccessStatusCode()
         {
             // Arrange
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
             IntegrationPointDto integrationPointDto = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPointModel(destinationWorkspace);
             IntegrationPointProfilesAPIController sut = PrepareSut(HttpMethod.Post, "");
             IntegrationPointProfileFromIntegrationPointModel integrationPointProfileFromIntegrationPointModel = new IntegrationPointProfileFromIntegrationPointModel
@@ -247,7 +247,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return result;
         }
 
-        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileWebModel result)
+        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileFake initial, IntegrationPointProfileWebModel result)
         {
             result.ArtifactID.Should().Be(initial.ArtifactId);
             result.Name.Should().Be(initial.Name);

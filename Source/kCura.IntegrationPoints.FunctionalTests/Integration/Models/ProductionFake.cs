@@ -5,17 +5,17 @@ using Relativity.Services.Objects.DataContracts;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class ProductionTest : RdoTestBase
+    public class ProductionFake : RdoFakeBase
     {
         private const string PRODUCTION_NAME = "Production";
 
         public int SavedSearchId { get; set; }
 
-        public ProductionTest() : base(PRODUCTION_NAME)
+        public ProductionFake() : base(PRODUCTION_NAME)
         {
         }
 
-        public ProductionTest(int savedSearchId) : base(PRODUCTION_NAME)
+        public ProductionFake(int savedSearchId) : base(PRODUCTION_NAME)
         {
             SavedSearchId = savedSearchId;
         }

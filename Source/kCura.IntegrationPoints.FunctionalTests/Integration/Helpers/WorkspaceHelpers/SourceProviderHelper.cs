@@ -6,13 +6,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public class SourceProviderHelper : WorkspaceHelperBase
     {
-        public SourceProviderHelper(WorkspaceTest workspace) : base(workspace)
+        public SourceProviderHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
         public void CreateLDAP()
         {
-            var sourceProvider = new SourceProviderTest
+            var sourceProvider = new SourceProviderFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP_NAME,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP,
@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public void CreateRelativity()
         {
-            var sourceProvider = new SourceProviderTest
+            var sourceProvider = new SourceProviderFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY_NAME,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY,
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public void CreateFTP()
         {
-            var sourceProvider = new SourceProviderTest
+            var sourceProvider = new SourceProviderFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.FTP_NAME,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.FTP,
@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public void CreateLoadFile()
         {
-            var sourceProvider = new SourceProviderTest
+            var sourceProvider = new SourceProviderFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE_NAME,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE,
@@ -58,9 +58,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             Workspace.SourceProviders.Add(sourceProvider);
         }
 
-        public SourceProviderTest CreateMyFirstProvider()
+        public SourceProviderFake CreateMyFirstProvider()
         {
-            var myFirstProvider = new SourceProviderTest
+            var myFirstProvider = new SourceProviderFake
             {
                 Name = "My First Provider",
                 Identifier = MyFirstProvider.Provider.GlobalConstants.FIRST_PROVIDER_GUID,
@@ -71,9 +71,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return myFirstProvider;
         }
 
-        public SourceProviderTest CreateCustomProvider(string name, Guid identifier)
+        public SourceProviderFake CreateCustomProvider(string name, Guid identifier)
         {
-            var customProvider = new SourceProviderTest
+            var customProvider = new SourceProviderFake
             {
                 Name = name,
                 Identifier = identifier.ToString(),

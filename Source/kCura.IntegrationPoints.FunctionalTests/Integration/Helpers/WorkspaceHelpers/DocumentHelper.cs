@@ -10,33 +10,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         private readonly SavedSearchHelper _savedSearchHelper;
         private readonly ProductionHelper _productionHelper;
 
-        public DocumentHelper(WorkspaceTest workspace) : base(workspace)
+        public DocumentHelper(WorkspaceFake workspace) : base(workspace)
         {
             _savedSearchHelper = Workspace.Helpers.SavedSearchHelper;
             _productionHelper = Workspace.Helpers.ProductionHelper;
         }
 
-        public IList<DocumentTest> GetAllDocuments()
+        public IList<DocumentFake> GetAllDocuments()
         {
             return Workspace.Documents;
         }
 
-        public IList<DocumentTest> GetDocumentsWithoutImagesNativesAndFields()
+        public IList<DocumentFake> GetDocumentsWithoutImagesNativesAndFields()
         {
             return Workspace.Documents.Where(x => !x.HasNatives && !x.HasImages && !x.HasFields).ToList();
         }
 
-        public IList<DocumentTest> GetDocumentsForSavedSearchId(int savedSearchId)
+        public IList<DocumentFake> GetDocumentsForSavedSearchId(int savedSearchId)
         {
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearch(savedSearchId);
-            IList<DocumentTest> documents = GetDocumentsBySearchCriteria(savedSearch.SearchCriteria);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearch(savedSearchId);
+            IList<DocumentFake> documents = GetDocumentsBySearchCriteria(savedSearch.SearchCriteria);
 
             return documents;
         }
 
         public int GetImagesSizeForSavedSearch(int savedSearchId)
         {
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearch(savedSearchId);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearch(savedSearchId);
             int imagesSize = GetImagesSizeBySearchCriteria(savedSearch.SearchCriteria);
 
             return imagesSize;
@@ -44,16 +44,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public int GetImagesSizeForProduction(int productionId)
         {
-            ProductionTest production = _productionHelper.GetProduction(productionId);
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearch(production.SavedSearchId);
+            ProductionFake production = _productionHelper.GetProduction(productionId);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearch(production.SavedSearchId);
             int imagesSize = GetImagesSizeBySearchCriteria(savedSearch.SearchCriteria);
 
             return imagesSize;
         }
 
-        public int GetImagesSizeForFolderBySearchCriteria(FolderTest folder, SearchCriteria searchCriteria)
+        public int GetImagesSizeForFolderBySearchCriteria(FolderFake folder, SearchCriteria searchCriteria)
         {
-            IList<DocumentTest> documents = Workspace.Documents.Where(x =>
+            IList<DocumentFake> documents = Workspace.Documents.Where(x =>
                 x.HasImages == searchCriteria.HasImages &&
                 x.HasNatives == searchCriteria.HasNatives &&
                 x.HasFields == searchCriteria.HasFields &&
@@ -71,16 +71,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         private int GetImagesSizeBySearchCriteria(SearchCriteria searchCriteria)
         {
-            IEnumerable<DocumentTest> documents = GetDocumentsBySearchCriteria(searchCriteria);
+            IEnumerable<DocumentFake> documents = GetDocumentsBySearchCriteria(searchCriteria);
 
             int imagesSize = CalculateDocumentsImagesSize(documents);
 
             return imagesSize;
         }
 
-        private IList<DocumentTest> GetDocumentsBySearchCriteria(SearchCriteria searchCriteria)
+        private IList<DocumentFake> GetDocumentsBySearchCriteria(SearchCriteria searchCriteria)
         {
-            IList<DocumentTest> documents = Workspace.Documents.Where(x =>
+            IList<DocumentFake> documents = Workspace.Documents.Where(x =>
                 x.HasImages == searchCriteria.HasImages &&
                 x.HasNatives == searchCriteria.HasNatives &&
                 x.HasFields == searchCriteria.HasFields).ToList();
@@ -93,7 +93,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return documents;
         }
 
-        private int CalculateDocumentsImagesSize(IEnumerable<DocumentTest> documents)
+        private int CalculateDocumentsImagesSize(IEnumerable<DocumentFake> documents)
         {
             return documents.Select(x => x.ImageCount).Count();
         }

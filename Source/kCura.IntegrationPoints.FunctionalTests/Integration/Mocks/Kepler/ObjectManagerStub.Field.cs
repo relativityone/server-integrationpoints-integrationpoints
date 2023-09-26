@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupDocumentFields()
         {
-            IList<FieldTest> FieldsByObjectTypeFilter(QueryRequest request, IList<FieldTest> list, int start)
+            IList<FieldFake> FieldsByObjectTypeFilter(QueryRequest request, IList<FieldFake> list, int start)
             {
                 if (request.Condition == @"'Object Type Artifact Type Id' == OBJECT 10")
                 {
@@ -26,17 +26,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 }
                 if (HasFieldName(request) | HasObjectTypeRefWithGuid(request))
                 {
-                    List<FieldTest> fields = list.Where(x => x.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID).Skip(start - 1).ToList();
+                    List<FieldFake> fields = list.Where(x => x.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID).Skip(start - 1).ToList();
                     return fields;
                 }
                 if (IsChoiceQuery(request))
                 {
-                    List<FieldTest> fields = list
+                    List<FieldFake> fields = list
                         .Where(x => x.Guid == IntegrationPointProfileFieldGuids.OverwriteFieldsGuid).ToList();
                     return fields;
                 }
 
-                return new List<FieldTest>();
+                return new List<FieldFake>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),

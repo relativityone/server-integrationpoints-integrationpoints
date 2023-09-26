@@ -221,20 +221,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
         private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
         {
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(linkEntityManagers);
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(linkEntityManagers);
 
             Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
 
-            JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+            JobHistoryFake jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             InsertBatchToJobTrackerTable(job, jobHistory);
 
             return job;
         }
 
-        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryFake jobHistory)
         {
             string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
 
@@ -248,7 +248,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
         private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
         {
-            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            JobHistoryFake jobHistory = SourceWorkspace.JobHistory.Single();
             jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
         }
 
@@ -271,7 +271,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             foreach (var data in managementTestData.Data)
             {
-                SourceWorkspace.Entities.Add(new EntityTest
+                SourceWorkspace.Entities.Add(new EntityFake
                 {
                     UniqueId = data["uid"].ToString(),
                     FirstName = data["givenname"].ToString(),

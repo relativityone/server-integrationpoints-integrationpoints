@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             _secrets.Clear();
         }
 
-        public void Setup(WorkspaceTest workspace, IntegrationPointTest integrationPoint)
+        public void Setup(WorkspaceFake workspace, IntegrationPointFake integrationPoint)
         {
             string key = $"/{workspace.ArtifactId}/{integrationPoint.ArtifactId}/{integrationPoint.SecuredConfiguration}";
             _secrets[key] = new Dictionary<string, string> { { "SecuredConfiguration", integrationPoint.SecuredConfigurationDecrypted } };

@@ -6,13 +6,13 @@ using System.Collections.Generic;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class SyncConfigurationTest : RdoTestBase
+    public class SyncConfigurationFake : RdoFakeBase
     {
         public int JobHistoryId { get; set; }
 
         public bool Resuming { get; set; }
 
-        public SyncConfigurationTest() : base("SyncConfiguration")
+        public SyncConfigurationFake() : base("SyncConfiguration")
         {
         }
 

@@ -22,42 +22,42 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
     {
         private readonly ISerializer _serializer;
 
-        public IntegrationPointHelper(WorkspaceTest workspace, ISerializer serializer) : base(workspace)
+        public IntegrationPointHelper(WorkspaceFake workspace, ISerializer serializer) : base(workspace)
         {
             _serializer = serializer;
         }
 
-        public IntegrationPointTest CreateEmptyIntegrationPoint()
+        public IntegrationPointFake CreateEmptyIntegrationPoint()
         {
-            var integrationPoint = new IntegrationPointTest();
+            var integrationPoint = new IntegrationPointFake();
 
             Workspace.IntegrationPoints.Add(integrationPoint);
 
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateSavedSearchSyncIntegrationPointWithErrors(WorkspaceTest destinationWorkspace)
+        public IntegrationPointFake CreateSavedSearchSyncIntegrationPointWithErrors(WorkspaceFake destinationWorkspace)
         {
-            IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            IntegrationPointFake integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
             integrationPoint.HasErrors = true;
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateSavedSearchSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
+        public IntegrationPointFake CreateSavedSearchSyncIntegrationPoint(WorkspaceFake destinationWorkspace)
         {
-            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = CreateEmptyIntegrationPoint();
 
-            FolderTest destinationFolder = destinationWorkspace.Folders.First();
+            FolderFake destinationFolder = destinationWorkspace.Folders.First();
 
-            SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+            SavedSearchFake sourceSavedSearch = Workspace.SavedSearches.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
+            IntegrationPointTypeFake integrationPointType = Workspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
-            SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
+            SourceProviderFake sourceProvider = Workspace.SourceProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
@@ -87,21 +87,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateNonDocumentSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
+        public IntegrationPointFake CreateNonDocumentSyncIntegrationPoint(WorkspaceFake destinationWorkspace)
         {
             int artifactTypeId = GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME);
 
-            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = CreateEmptyIntegrationPoint();
 
-            ViewTest sourceView = Workspace.Views.First();
+            ViewFake sourceView = Workspace.Views.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
+            IntegrationPointTypeFake integrationPointType = Workspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
-            SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
+            SourceProviderFake sourceProvider = Workspace.SourceProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(destinationWorkspace);
@@ -129,10 +129,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateImportIntegrationPointWithEntities(SourceProviderTest sourceProvider,
+        public IntegrationPointFake CreateImportIntegrationPointWithEntities(SourceProviderFake sourceProvider,
             string identifierFieldName, string sourceProviderConfiguration)
         {
-            IntegrationPointTest integrationPoint = CreateImportIntegrationPoint(sourceProvider, identifierFieldName, sourceProviderConfiguration);
+            IntegrationPointFake integrationPoint = CreateImportIntegrationPoint(sourceProvider, identifierFieldName, sourceProviderConfiguration);
             integrationPoint.DestinationConfiguration = CreateDestinationConfiguration(
                 caseArtifactId: Workspace.ArtifactId,
                 artifactTypeId: GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME),
@@ -145,17 +145,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateImportIntegrationPoint(SourceProviderTest sourceProvider, string identifierFieldName, string sourceProviderConfiguration)
+        public IntegrationPointFake CreateImportIntegrationPoint(SourceProviderFake sourceProvider, string identifierFieldName, string sourceProviderConfiguration)
         {
-            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = CreateEmptyIntegrationPoint();
 
-            FolderTest destinationFolder = Workspace.Folders.First();
+            FolderFake destinationFolder = Workspace.Folders.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
+            IntegrationPointTypeFake integrationPointType = Workspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
                     .ImportGuid.ToString());
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders
                     .RELATIVITY);
 
@@ -180,9 +180,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointTest CreateImportDocumentLoadFileIntegrationPoint(string loadFile)
+        public IntegrationPointFake CreateImportDocumentLoadFileIntegrationPoint(string loadFile)
         {
-            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = CreateEmptyIntegrationPoint();
 
             integrationPoint.Name = $"Import LoadFile - {Guid.NewGuid()}";
             List<FieldMap> fieldsMapping =
@@ -190,12 +190,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
-            SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
+            SourceProviderFake sourceProvider = Workspace.SourceProviders.Single(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE);
 
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.Single(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.Single(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
             integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
@@ -204,7 +204,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes
                     .ImportGuid.ToString()).ArtifactId;
 
-            FolderTest destinationFolder = Workspace.Folders.First();
+            FolderFake destinationFolder = Workspace.Folders.First();
 
             ImportProviderSettings sourceConfiguration = new ImportProviderSettings
             {
@@ -231,11 +231,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         }
 
-        public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false, bool isMappingIdentifierOnly = false)
+        public IntegrationPointFake CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false, bool isMappingIdentifierOnly = false)
         {
             const string ou = "ou=Management";
 
-            IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = CreateEmptyIntegrationPoint();
 
             integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
 
@@ -244,12 +244,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 : Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
-            SourceProviderTest sourceProvider = Workspace.SourceProviders.Single(x =>
+            SourceProviderFake sourceProvider = Workspace.SourceProviders.Single(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP);
 
             integrationPoint.SourceProvider = sourceProvider.ArtifactId;
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.Single(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.Single(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
             integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
@@ -285,15 +285,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointDto CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
+        public IntegrationPointDto CreateSavedSearchIntegrationPointModel(WorkspaceFake destinationWorkspace)
         {
-            IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            IntegrationPointFake integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
             return integrationPoint.ToDto();
         }
 
         public void RemoveIntegrationPoint(int integrationPointId)
         {
-            foreach (IntegrationPointTest integrationPoint in Workspace.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
+            foreach (IntegrationPointFake integrationPoint in Workspace.IntegrationPoints.Where(x => x.ArtifactId == integrationPointId).ToArray())
             {
                 Workspace.IntegrationPoints.Remove(integrationPoint);
             }

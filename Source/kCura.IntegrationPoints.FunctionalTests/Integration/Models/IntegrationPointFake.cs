@@ -12,7 +12,7 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class IntegrationPointTest : RdoTestBase
+    public class IntegrationPointFake : RdoFakeBase
     {
         public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
 
@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public string SecuredConfigurationDecrypted { get; set; }
 
-        public IntegrationPointTest() : base("IntegrationPoint")
+        public IntegrationPointFake() : base("IntegrationPoint")
         {
             Name = $"Integration Point (Artifact ID {ArtifactId})";
             OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;

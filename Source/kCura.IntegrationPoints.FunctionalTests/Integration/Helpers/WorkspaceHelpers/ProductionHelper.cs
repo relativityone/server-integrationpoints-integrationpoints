@@ -9,19 +9,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
     {
         private readonly SavedSearchHelper _savedSearchHelper;
 
-        public ProductionHelper(WorkspaceTest workspace) : base(workspace)
+        public ProductionHelper(WorkspaceFake workspace) : base(workspace)
         {
             _savedSearchHelper = Workspace.Helpers.SavedSearchHelper;
         }
 
-        public IList<ProductionTest> GetAllProductions()
+        public IList<ProductionFake> GetAllProductions()
         {
             return Workspace.Productions;
         }
 
-        public ProductionTest GetProduction(int productionId)
+        public ProductionFake GetProduction(int productionId)
         {
-            ProductionTest production = Workspace.Productions.First(x => x.ArtifactId == productionId);
+            ProductionFake production = Workspace.Productions.First(x => x.ArtifactId == productionId);
 
             if (production == null)
             {
@@ -31,16 +31,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return production;
         }
 
-        public ProductionTest GetProductionBySearchCriteria(SearchCriteria searchCriteria)
+        public ProductionFake GetProductionBySearchCriteria(SearchCriteria searchCriteria)
         {
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
-            ProductionTest production = GetProductionWithSavedSearchId(savedSearch.ArtifactId);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            ProductionFake production = GetProductionWithSavedSearchId(savedSearch.ArtifactId);
             return production;
         }
 
-        private ProductionTest GetProductionWithSavedSearchId(int savedSearchId)
+        private ProductionFake GetProductionWithSavedSearchId(int savedSearchId)
         {
-            ProductionTest production = Workspace.Productions.First(x => x.SavedSearchId == savedSearchId);
+            ProductionFake production = Workspace.Productions.First(x => x.SavedSearchId == savedSearchId);
 
             if (production == null)
             {
