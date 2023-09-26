@@ -1,3 +1,9 @@
+## [23013.2.5] - 09-26-2023
+
+### Changed
+
+- [REL-873991](https://jira.kcura.com/browse/REL-873991) - RIP Job History entries disappear after editing and saving integration point - Backported [REL-833766](https://jira.kcura.com/browse/REL-833766) ticket from server 2022 release
+
 ## [23013.2.4] - 09-11-2023
 
 ### Changed
