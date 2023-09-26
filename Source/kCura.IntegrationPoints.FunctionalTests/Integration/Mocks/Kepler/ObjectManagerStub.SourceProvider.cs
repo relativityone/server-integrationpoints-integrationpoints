@@ -16,14 +16,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupSourceProvider()
         {
-            IList<SourceProviderTest> SourceProviderByCondition(QueryRequest request, IList<SourceProviderTest> list)
+            IList<SourceProviderFake> SourceProviderByCondition(QueryRequest request, IList<SourceProviderFake> list)
             {
                 if (IsSourceIdentifierCondition(request.Condition, out string identifier))
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
 
-                return new List<SourceProviderTest>();
+                return new List<SourceProviderFake>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),

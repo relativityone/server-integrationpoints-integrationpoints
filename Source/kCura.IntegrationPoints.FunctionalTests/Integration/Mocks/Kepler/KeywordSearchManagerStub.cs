@@ -19,10 +19,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private KeywordSearch GetKeywordSearch(int workspaceArtifactId, int searchArtifactId)
         {
-            SavedSearchTest savedSearch;
+            SavedSearchFake savedSearch;
             try
             {
-                WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceArtifactId);
+                WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceArtifactId);
                 savedSearch = workspace.SavedSearches.First(x => x.ArtifactId == searchArtifactId);
             }
             catch
@@ -37,11 +37,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 Fields = savedSearch.Values.Values
                     .Select(x =>
                 {
-                    FieldTest fieldTest = (FieldTest) x;
+                    FieldFake fieldFake = (FieldFake) x;
                     return new FieldRef
                     {
-                        Name = fieldTest.Name,
-                        ArtifactID = fieldTest.ArtifactId
+                        Name = fieldFake.Name,
+                        ArtifactID = fieldFake.ArtifactId
                     };
                 }).ToList()
             };

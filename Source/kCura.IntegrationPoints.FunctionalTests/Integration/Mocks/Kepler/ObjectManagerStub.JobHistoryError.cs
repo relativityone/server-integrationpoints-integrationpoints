@@ -56,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return false;
         }
 
-        private IList<JobHistoryErrorTest> JobHistoryErrorsFilter(QueryRequest request, IList<JobHistoryErrorTest> list)
+        private IList<JobHistoryErrorFake> JobHistoryErrorsFilter(QueryRequest request, IList<JobHistoryErrorFake> list)
         {
             if (IsMultiJobHistoryErrorItemLevelCondition(request.Condition, out List<int> jobHistoryIds))
             {
@@ -67,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return list.Where(x => x.JobHistory == jobHistory && errorTypes.Contains(x.ErrorType.Guids.Single())).ToList();
             }
 
-            return new List<JobHistoryErrorTest>();
+            return new List<JobHistoryErrorFake>();
         }
     }
 }

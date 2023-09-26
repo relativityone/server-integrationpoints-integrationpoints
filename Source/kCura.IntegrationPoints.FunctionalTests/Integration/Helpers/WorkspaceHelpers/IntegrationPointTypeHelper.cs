@@ -5,13 +5,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public class IntegrationPointTypeHelper : WorkspaceHelperBase
     {
-        public IntegrationPointTypeHelper(WorkspaceTest workspace) : base(workspace)
+        public IntegrationPointTypeHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
-        public IntegrationPointTypeTest CreateImportType()
+        public IntegrationPointTypeFake CreateImportType()
         {
-            var integrationPointType = new IntegrationPointTypeTest
+            var integrationPointType = new IntegrationPointTypeFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportName,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString(),
@@ -23,9 +23,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointType;
         }
 
-        public IntegrationPointTypeTest CreateExportType()
+        public IntegrationPointTypeFake CreateExportType()
         {
-            var integrationPointType = new IntegrationPointTypeTest
+            var integrationPointType = new IntegrationPointTypeFake
             {
                 Name = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportName,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString(),

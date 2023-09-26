@@ -6,7 +6,7 @@ using Relativity.Services.Objects.DataContracts;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class DocumentTest : RdoTestBase
+    public class DocumentFake : RdoFakeBase
     {
         private const string DOCUMENT_NAME = "Document";
         private readonly Dictionary<string, object> _fieldValues;
@@ -23,15 +23,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public string FolderName { get; set; }
 
-        public DocumentTest() : base(DOCUMENT_NAME)
+        public DocumentFake() : base(DOCUMENT_NAME)
         {
             _fieldValues = new Dictionary<string, object>();
         }
 
-        public DocumentTest(IList<FieldTest> fields) : base(DOCUMENT_NAME)
+        public DocumentFake(IList<FieldFake> fields) : base(DOCUMENT_NAME)
         {
             _fieldValues = new Dictionary<string, object>();
-            foreach (FieldTest field in fields)
+            foreach (FieldFake field in fields)
             {
                 _fieldValues.Add(field.Name, field);
             }

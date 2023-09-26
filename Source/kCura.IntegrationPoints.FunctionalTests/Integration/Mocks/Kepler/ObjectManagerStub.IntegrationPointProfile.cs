@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-        private IList<IntegrationPointProfileTest> IntegrationPointProfileFilter(QueryRequest request, IList<IntegrationPointProfileTest> list)
+        private IList<IntegrationPointProfileFake> IntegrationPointProfileFilter(QueryRequest request, IList<IntegrationPointProfileFake> list)
         {
             return list;
         }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class EntityTest : RdoTestBase
+    public class EntityFake : RdoFakeBase
     {
         public override List<Guid> Guids => Const.RdoGuids.Entity.Guids;
 
@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             set => SetField(EntityFieldGuids.ManagerGuid, value);
         }
 
-        public EntityTest() : base("Entity")
+        public EntityFake() : base("Entity")
         {
         }
 

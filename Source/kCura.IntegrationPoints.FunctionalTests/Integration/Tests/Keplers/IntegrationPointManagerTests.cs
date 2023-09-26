@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint(true);
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), new IntegrationPointTest
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), new IntegrationPointFake
             {
                 Artifact = { ArtifactId = request.IntegrationPoint.ArtifactId },
                 LastRuntimeUTC = DateTime.Now,
@@ -121,12 +121,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             const int integrationPointsCount = 5;
-            List<IntegrationPointTest> integrationPointsCreated =
+            List<IntegrationPointFake> integrationPointsCreated =
                 Enumerable.Range(0, integrationPointsCount)
                     .Select(i => SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace))
                     .ToList();
 
-            SourceWorkspace.Fields.Add(new FieldTest
+            SourceWorkspace.Fields.Add(new FieldFake
             {
                 Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
                 IsIdentifier = false,
@@ -172,7 +172,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             const string integrationPointName = "Adler Sieben";
-            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(SourceWorkspace);
+            IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(SourceWorkspace);
             PrepareMocks();
 
             // Act
@@ -207,7 +207,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         private CreateIntegrationPointRequest PrepareIntegrationPoint(bool integrationPointsWithErrors = false)
         {
             PrepareMocks();
-            IntegrationPointTest integrationPoint = integrationPointsWithErrors ?
+            IntegrationPointFake integrationPoint = integrationPointsWithErrors ?
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPointWithErrors(SourceWorkspace) :
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
 
@@ -239,13 +239,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         private void PrepareMocks()
         {
-            SourceWorkspace.Fields.Add(new FieldTest
+            SourceWorkspace.Fields.Add(new FieldFake
             {
                 Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
                 Artifact = { ArtifactId = Const.OVERWRITE_FIELD_ARTIFACT_ID }
             });
 
-            SourceWorkspace.Fields.Add(new FieldTest
+            SourceWorkspace.Fields.Add(new FieldFake
             {
                 Guid = ObjectTypeGuids.IntegrationPointGuid,
                 Artifact = { ArtifactId = Const.INTEGRATION_POINTS_ARTIFACT_ID }
@@ -305,20 +305,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         internal int DestinationProvider { get; set; }
         internal string Name { get; set; }
 
-        internal IntegrationPointDesiredState(IntegrationPointTest integrationPointTest)
+        internal IntegrationPointDesiredState(IntegrationPointFake integrationPointFake)
         {
-            ArtifactId = integrationPointTest.ArtifactId;
-            Name = integrationPointTest.Name;
-            SourceProvider = integrationPointTest.SourceProvider ?? 0;
-            DestinationProvider = integrationPointTest.DestinationProvider ?? 0;
+            ArtifactId = integrationPointFake.ArtifactId;
+            Name = integrationPointFake.Name;
+            SourceProvider = integrationPointFake.SourceProvider ?? 0;
+            DestinationProvider = integrationPointFake.DestinationProvider ?? 0;
         }
 
-        internal IntegrationPointDesiredState(IntegrationPointProfileTest integrationPointProfileTest)
+        internal IntegrationPointDesiredState(IntegrationPointProfileFake integrationPointProfileFake)
         {
-            ArtifactId = integrationPointProfileTest.ArtifactId;
-            Name = integrationPointProfileTest.Name;
-            SourceProvider = integrationPointProfileTest.SourceProvider ?? 0;
-            DestinationProvider = integrationPointProfileTest.DestinationProvider ?? 0;
+            ArtifactId = integrationPointProfileFake.ArtifactId;
+            Name = integrationPointProfileFake.Name;
+            SourceProvider = integrationPointProfileFake.SourceProvider ?? 0;
+            DestinationProvider = integrationPointProfileFake.DestinationProvider ?? 0;
         }
 
         public IntegrationPointDesiredState(IntegrationPointModel integrationPointModel)

@@ -16,34 +16,34 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
     {
         private readonly ISerializer _serializer;
 
-        public IntegrationPointProfileHelper(WorkspaceTest workspace, ISerializer serializer) : base(workspace)
+        public IntegrationPointProfileHelper(WorkspaceFake workspace, ISerializer serializer) : base(workspace)
         {
             _serializer = serializer;
         }
 
-        public IntegrationPointProfileTest CreateEmptyIntegrationPointProfile()
+        public IntegrationPointProfileFake CreateEmptyIntegrationPointProfile()
         {
-            var integrationPoint = new IntegrationPointProfileTest();
+            var integrationPoint = new IntegrationPointProfileFake();
 
             Workspace.IntegrationPointProfiles.Add(integrationPoint);
 
             return integrationPoint;
         }
 
-        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfile(WorkspaceTest destinationWorkspace)
+        public IntegrationPointProfileFake CreateSavedSearchIntegrationPointProfile(WorkspaceFake destinationWorkspace)
         {
-            IntegrationPointProfileTest integrationPoint = CreateEmptyIntegrationPointProfile();
+            IntegrationPointProfileFake integrationPoint = CreateEmptyIntegrationPointProfile();
 
-            FolderTest destinationFolder = destinationWorkspace.Folders.First();
+            FolderFake destinationFolder = destinationWorkspace.Folders.First();
 
-            SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+            SavedSearchFake sourceSavedSearch = Workspace.SavedSearches.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+            IntegrationPointTypeFake integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
-            SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
+            SourceProviderFake sourceProvider = Workspace.SourceProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+            DestinationProviderFake destinationProvider = Workspace.DestinationProviders.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
@@ -72,10 +72,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+        public IntegrationPointProfileFake CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(WorkspaceFake destinationWorkspace, int longTextLimit)
         {
-            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-            SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+            IntegrationPointProfileFake integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            SavedSearchFake sourceSavedSearch = Workspace.SavedSearches.First();
             integrationPointProfile.SourceConfiguration = _serializer.Serialize(new
             {
                 SourceWorkspaceArtifactId = Workspace.ArtifactId,
@@ -88,9 +88,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointProfile;
         }
 
-        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
+        public IntegrationPointProfileFake CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(WorkspaceFake destinationWorkspace, int longTextLimit)
         {
-            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            IntegrationPointProfileFake integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
             fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
             fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
@@ -99,10 +99,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointProfile;
         }
 
-        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+        public IntegrationPointProfileFake CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(WorkspaceFake destinationWorkspace, int longTextLimit)
         {
-            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-            FolderTest destinationFolder = destinationWorkspace.Folders.First();
+            IntegrationPointProfileFake integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            FolderFake destinationFolder = destinationWorkspace.Folders.First();
             integrationPointProfile.DestinationConfiguration = CreateDestinationConfiguration(
                 caseArtifactId: destinationWorkspace.ArtifactId,
                 destinationFolderArtifactId: destinationFolder.ArtifactId);
@@ -110,9 +110,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointProfile;
         }
 
-        public IntegrationPointProfileDto CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
+        public IntegrationPointProfileDto CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceFake destinationWorkspace)
         {
-            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            IntegrationPointProfileFake integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             IntegrationPointProfileDto integrationPointProfileDto = new IntegrationPointProfileDto
             {
                 Name = integrationPointProfile.Name,

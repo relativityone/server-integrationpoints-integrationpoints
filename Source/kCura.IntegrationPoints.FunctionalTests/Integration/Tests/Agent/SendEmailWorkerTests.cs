@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             const int numberOfRecords = 1000;
             string xmlPath = myFirstProviderUtil.PrepareRecords(numberOfRecords);
-            JobTest job = myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext, _EMAIL_TO_ADDRESS);
+            JobTest job = myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryFake jobHistory, RegisterJobContext, _EMAIL_TO_ADDRESS);
             SyncWorker sut = myFirstProviderUtil.PrepareSut((importJob) => { importJob.Complete(); });
 
             jobHistory.TotalItems = 2000;
@@ -74,10 +74,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
         private JobTest PrepareSendEmailWorkerJob(bool withBatchInstance)
         {
-            SourceProviderTest provider =
+            SourceProviderFake provider =
                 SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
                     identifierFieldName: "Name", sourceProviderConfiguration: null);
 

@@ -14,13 +14,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     {
         private void SetupSavedSearchDocuments()
         {
-            IList<DocumentTest> DocumentsFilter(QueryRequest request, IList<DocumentTest> list)
+            IList<DocumentFake> DocumentsFilter(QueryRequest request, IList<DocumentFake> list)
             {
                 bool hasNatives = request.Condition.Contains($"'{DocumentFieldsConstants.HasNativeFieldGuid}' == true");
                 bool hasImages = request.Condition.Contains($"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE");
                 bool hasFields = request.Fields.Any();
 
-                List<DocumentTest> documents = list.Where(x =>
+                List<DocumentFake> documents = list.Where(x =>
                         x.HasNatives == hasNatives &&
                         x.HasImages == hasImages &&
                         x.HasFields == hasFields)

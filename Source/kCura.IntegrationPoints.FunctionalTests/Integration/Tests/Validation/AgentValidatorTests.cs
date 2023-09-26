@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
         public void Validate_ShouldNotThrow()
         {
             // Arrange
-            IntegrationPointTest integrationPoint = PrepareIntegrationPoint();
+            IntegrationPointFake integrationPoint = PrepareIntegrationPoint();
 
             IAgentValidator sut = Container.Resolve<IAgentValidator>();
 
@@ -23,11 +23,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
             validation.ShouldNotThrow();
         }
 
-        private IntegrationPointTest PrepareIntegrationPoint()
+        private IntegrationPointFake PrepareIntegrationPoint()
         {
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
             return integrationPoint;

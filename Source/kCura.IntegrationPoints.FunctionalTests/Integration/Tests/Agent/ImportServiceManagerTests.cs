@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             _fakeFileInfoFactory.SetupFile(loadFile, newSize, newModifiedDate);
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
                 .CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: 0);
@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             _fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
                 .CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
@@ -137,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             sut.Execute(job.AsJob());
 
             // Assert
-            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            JobHistoryFake jobHistory = SourceWorkspace.JobHistory.Single();
 
             jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
             jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
@@ -163,7 +163,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             fakeJobStatisticsQuery.AlreadyTransferredItems = initialItemsTransferred;
             fakeJobStatisticsQuery.AlreadyFailedItems = initialItemLevelErrors;
 
-            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            JobHistoryFake jobHistory = SourceWorkspace.JobHistory.Single();
             jobHistory.ItemsTransferred = initialItemsTransferred;
             jobHistory.ItemsWithErrors = initialItemLevelErrors;
 
@@ -205,7 +205,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             sut.Execute(job.AsJob());
 
             // Assert
-            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            JobHistoryFake jobHistory = SourceWorkspace.JobHistory.Single();
 
             jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistoryCompletedGuid);
             jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
@@ -223,7 +223,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 .LifestyleTransient().Named(nameof(FakeWinEddsFileReaderFactory)).IsDefault());
             _fakeFileInfoFactory.SetupFile(loadFile, size, modifiedDate);
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
                 .CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleImportIntegrationPointRun(SourceWorkspace, integrationPoint, size, modifiedDate, processedItemsCount: processedItemsCount);

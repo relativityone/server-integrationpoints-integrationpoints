@@ -39,9 +39,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             {
                 if (IsArtifactIdCondition(request.Condition, out int artifactId))
                 {
-                    List<UserTest> user = new List<UserTest>
+                    List<UserFake> user = new List<UserFake>
                     {
-                        new UserTest
+                        new UserFake
                         {
                             Artifact =
                             {

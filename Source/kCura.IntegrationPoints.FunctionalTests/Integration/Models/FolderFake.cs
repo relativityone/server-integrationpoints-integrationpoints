@@ -5,11 +5,11 @@ using System.Collections.Generic;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class FolderTest : RdoTestBase
+    public class FolderFake : RdoFakeBase
     {
         public string Name { get; set; }
 
-        public FolderTest() : base("Folder")
+        public FolderFake() : base("Folder")
         {
         }
 

@@ -18,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     q => IsSyncConfigurationByJobHistoryIdQuery(q)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                 {
-                    WorkspaceTest workspace = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId);
+                    WorkspaceFake workspace = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId);
 
                     string jobHistory = Regex.Match(request.Condition, @"'JobHistoryId' == (\d+)").Groups[1].Value;
                     int jobHistoryId = int.Parse(jobHistory);

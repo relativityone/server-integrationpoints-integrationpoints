@@ -17,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
     public class IntegrationPointProfileManagerTests : TestsBase
     {
         private IIntegrationPointProfileManager _sut;
-        private WorkspaceTest _destinationWorkspace;
+        private WorkspaceFake _destinationWorkspace;
 
         [SetUp]
         public override void SetUp()
@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
             // Assert
-            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            IntegrationPointProfileFake testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             testedProfile.Should().NotBeNull();
             AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
         }
@@ -55,8 +55,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspace.ArtifactId, request.IntegrationPoint.ArtifactId, profileName).ConfigureAwait(false);
 
             // Assert
-            IntegrationPointTest existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
-            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            IntegrationPointFake existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
+            IntegrationPointProfileFake testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
 
             testedProfile.Should().NotBeNull();
             testedProfile.Name.Should().Be(profileName);
@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.UpdateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
             // Assert
-            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            IntegrationPointProfileFake testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             testedProfile.Should().NotBeNull();
             AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
         }
@@ -109,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetIntegrationPointProfileAsync_ShouldReturnCorrectObject()
         {
             // Arrange
-            IntegrationPointProfileTest expectedProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
+            IntegrationPointProfileFake expectedProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
 
             // Act
             IntegrationPointModel result = await _sut.GetIntegrationPointProfileAsync(SourceWorkspace.ArtifactId, expectedProfile.ArtifactId).ConfigureAwait(false);
@@ -123,7 +123,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetAllIntegrationPointProfilesAsync_ShouldReturnCorrectObjectSet()
         {
             // Arrange
-            List<IntegrationPointProfileTest> expectedProfiles = new List<IntegrationPointProfileTest>();
+            List<IntegrationPointProfileFake> expectedProfiles = new List<IntegrationPointProfileFake>();
             expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
             expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
 
@@ -160,7 +160,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ArtifactId;
                     break;
                 case RequestType.CreateFromIntegrationPoint:
-                    IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
+                    IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
                     artifactId = integrationPoint.ArtifactId;
                     name = integrationPoint.Name;
                     sourceProviderId = (int)integrationPoint.SourceProvider;
@@ -170,7 +170,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     logErrors = (bool)integrationPoint.LogErrors;
                     break;
                 case RequestType.Update:
-                    IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
+                    IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
                     artifactId = integrationPointProfile.ArtifactId;
                     name = integrationPointProfile.Name;
                     sourceProviderId = (int)integrationPointProfile.SourceProvider;
@@ -222,7 +222,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             };
         }
 
-        private void AssertObtainedIntegrationPointProfile(IntegrationPointModel integrationPointModel, IntegrationPointProfileTest expectedProfile)
+        private void AssertObtainedIntegrationPointProfile(IntegrationPointModel integrationPointModel, IntegrationPointProfileFake expectedProfile)
         {
             expectedProfile.ArtifactId.Should().Be(integrationPointModel.ArtifactId);
             expectedProfile.Name.Should().Be(integrationPointModel.Name);
@@ -230,7 +230,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             expectedProfile.DestinationProvider.Should().Be(integrationPointModel.DestinationProvider);
         }
 
-        private void AssertCreatedIntegrationPointProfile(IntegrationPointModel integrationPoint, IntegrationPointProfileTest expectedProfile)
+        private void AssertCreatedIntegrationPointProfile(IntegrationPointModel integrationPoint, IntegrationPointProfileFake expectedProfile)
         {
             expectedProfile.SourceProvider.Should().Be(integrationPoint.SourceProvider);
             expectedProfile.DestinationProvider.Should().Be(integrationPoint.DestinationProvider);
@@ -260,8 +260,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         private List<FieldMap> GetFieldMapping(int artifactTypeId)
         {
-            FieldTest sourceIdentifier = SourceWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
-            FieldTest destinationIdentifier = _destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
+            FieldFake sourceIdentifier = SourceWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
+            FieldFake destinationIdentifier = _destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
             return new List<FieldMap>
             {

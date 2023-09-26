@@ -50,8 +50,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             {
                 try
                 {
-                    WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
-                    RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+                    WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                    RdoFakeBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
 
                     if (foundRdo != null)
                     {
@@ -112,26 +112,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryGuid)
             {
-                var newRdo = new JobHistoryTest();
-                newRdo.LoadRelativityObjectByName<JobHistoryTest>(objectCreationInfo.CreatedObject);
+                var newRdo = new JobHistoryFake();
+                newRdo.LoadRelativityObjectByName<JobHistoryFake>(objectCreationInfo.CreatedObject);
                 workspace.JobHistory.Add(newRdo);
             }
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryErrorGuid)
             {
-                var newRdo = new JobHistoryErrorTest();
-                newRdo.LoadRelativityObjectByGuid<JobHistoryErrorTest>(objectCreationInfo.CreatedObject);
+                var newRdo = new JobHistoryErrorFake();
+                newRdo.LoadRelativityObjectByGuid<JobHistoryErrorFake>(objectCreationInfo.CreatedObject);
                 workspace.JobHistoryErrors.Add(newRdo);
             }
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointProfileGuid)
             {
-                var newRdo = new IntegrationPointProfileTest();
-                newRdo.LoadRelativityObjectByName<IntegrationPointProfileTest>(objectCreationInfo.CreatedObject);
+                var newRdo = new IntegrationPointProfileFake();
+                newRdo.LoadRelativityObjectByName<IntegrationPointProfileFake>(objectCreationInfo.CreatedObject);
                 workspace.IntegrationPointProfiles.Add(newRdo);
             }
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
             {
-                var newRdo = new IntegrationPointTest();
-                newRdo.LoadRelativityObjectByGuid<IntegrationPointTest>(objectCreationInfo.CreatedObject);
+                var newRdo = new IntegrationPointFake();
+                newRdo.LoadRelativityObjectByGuid<IntegrationPointFake>(objectCreationInfo.CreatedObject);
                 workspace.IntegrationPoints.Add(newRdo);
             }
             else
@@ -147,14 +147,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     It.IsAny<ReadRequest>()))
             .Returns((int workspaceId, ReadRequest request) =>
             {
-                RdoTestBase foundRdo;
+                RdoFakeBase foundRdo;
                 if (workspaceId == -1)
                 {
                     foundRdo = Relativity.Workspaces.First(x => x.ArtifactId == request.Object.ArtifactID);
                 }
                 else
                 {
-                    WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                    WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
                     foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
                 }
 
@@ -165,11 +165,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             );
         }
 
-        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceFake, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
-            QueryRequest request, int length) where T : RdoTestBase
+            QueryRequest request, int length) where T : RdoFakeBase
         {
-            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
 
@@ -179,11 +179,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return result;
         }
 
-        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceFake, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
-            QueryRequest request, int start, int length) where T : RdoTestBase
+            QueryRequest request, int start, int length) where T : RdoFakeBase
         {
-            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
 
@@ -193,11 +193,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return result;
         }
 
-        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceFake, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
-            QueryRequest request, int length) where T : RdoTestBase
+            QueryRequest request, int length) where T : RdoFakeBase
         {
-            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
 
@@ -208,11 +208,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return result;
         }
 
-        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceFake, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
-            QueryRequest request, int start, int length) where T : RdoTestBase
+            QueryRequest request, int start, int length) where T : RdoFakeBase
         {
-            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+            WorkspaceFake workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
             List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
 
@@ -241,11 +241,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         }
 
         private List<RelativityObject> FindObjects<T>(
-                Func<WorkspaceTest, IList<T>> collectionGetter,
+                Func<WorkspaceFake, IList<T>> collectionGetter,
                 Func<QueryRequest, IList<T>, IList<T>> customFilter,
                 QueryRequest request,
-                WorkspaceTest workspace)
-            where T : RdoTestBase
+                WorkspaceFake workspace)
+            where T : RdoFakeBase
         {
             IEnumerable<T> foundObjects = FindObjectsByStandardCondition(collectionGetter, request, workspace);
             if (foundObjects == null)
@@ -259,11 +259,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         }
 
         private List<RelativityObject> FindObjects<T>(
-                Func<WorkspaceTest, IList<T>> collectionGetter,
+                Func<WorkspaceFake, IList<T>> collectionGetter,
                 Func<QueryRequest, IList<T>, int, IList<T>> customFilter,
                 QueryRequest request,
-                WorkspaceTest workspace, int start)
-            where T : RdoTestBase
+                WorkspaceFake workspace, int start)
+            where T : RdoFakeBase
         {
             IEnumerable<T> foundObjects = FindObjectsByStandardCondition(collectionGetter, request, workspace);
             if (foundObjects == null)
@@ -277,10 +277,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         }
 
         private IEnumerable<T> FindObjectsByStandardCondition<T>(
-                Func<WorkspaceTest, IList<T>> collectionGetter,
+                Func<WorkspaceFake, IList<T>> collectionGetter,
                 QueryRequest request,
-                WorkspaceTest workspace)
-            where T : RdoTestBase
+                WorkspaceFake workspace)
+            where T : RdoFakeBase
         {
             if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
@@ -299,7 +299,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         }
 
         private static void AddRelativityObjectsToResult<T>(IEnumerable<T> objectsToAdd,
-            List<RelativityObject> resultList) where T : RdoTestBase
+            List<RelativityObject> resultList) where T : RdoFakeBase
         {
             resultList.AddRange(objectsToAdd.Select(x => x.ToRelativityObject()));
         }
@@ -377,7 +377,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             };
         }
 
-        private RelativityObject GetRelativityObject(UpdateRequest request, RdoTestBase rdo)
+        private RelativityObject GetRelativityObject(UpdateRequest request, RdoFakeBase rdo)
         {
             return new RelativityObject()
             {

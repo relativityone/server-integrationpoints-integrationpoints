@@ -9,13 +9,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public class JobHistoryHelper : WorkspaceHelperBase
     {
-        public JobHistoryHelper(WorkspaceTest workspace) : base(workspace)
+        public JobHistoryHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
-        public JobHistoryTest CreateJobHistory(JobTest job, IntegrationPointTest integrationPoint)
+        public JobHistoryFake CreateJobHistory(JobTest job, IntegrationPointFake integrationPoint)
         {
-            JobHistoryTest jobHistory = new JobHistoryTest()
+            JobHistoryFake jobHistory = new JobHistoryFake()
             {
                 BatchInstance = job.JobDetailsHelper.BatchInstance.ToString(),
                 IntegrationPoint = new[] { integrationPoint.ArtifactId },
@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         }
 
         public void CreateCustomJobHistory(
-            IntegrationPointTest integrationPoint,
+            IntegrationPointFake integrationPoint,
             string destinationName,
             DateTime endDate,
             ChoiceRef status,
@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             int totalItems = 0,
             string overwrite = OverwriteModeNames.AppendOnlyModeName)
         {
-            JobHistoryTest jobHistory = new JobHistoryTest
+            JobHistoryFake jobHistory = new JobHistoryFake
             {
                 Name = integrationPoint.Name,
                 IntegrationPoint = new[] { integrationPoint.ArtifactId },
