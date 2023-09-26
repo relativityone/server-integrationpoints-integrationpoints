@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -20,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             {
                 BatchInstance = job.JobDetailsHelper.BatchInstance.ToString(),
                 IntegrationPoint = new[] { integrationPoint.ArtifactId },
-                JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistoryPendingGuid })
+                JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors,
             };
             integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
             Workspace.JobHistory.Add(jobHistory);

@@ -554,8 +554,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 // If the Relativity provider is selected, we need to create an export task
                 TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider);
 
-                CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
-
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, Guid.Parse(correlationID), integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
                 job = _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, correlationID, workspaceArtifactId, integrationPoint.ArtifactId, userId);
@@ -625,20 +623,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
 
             return TaskType.SyncManager;
-        }
-
-        private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)
-        {
-            if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager || taskType == TaskType.ExportManager)
-            {
-                IQueueManager queueManager = ManagerFactory.CreateQueueManager();
-                bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-
-                if (jobsExecutingOrInQueue)
-                {
-                    throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
-                }
-            }
         }
 
         private void HandleValidationError(Data.JobHistory jobHistory, IntegrationPointDto integrationPointDto, Exception ex)
@@ -729,7 +713,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             int integrationPointArtifactId)
         {
             _logger.LogInformation(
-                "Checking if provider and last Job History for Integration Point {integrationPointId} is valid for run",
+                "Checking if last Job History for Integration Point {integrationPointId} is valid for run",
                 integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
@@ -757,7 +741,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ProviderType providerType)
         {
             _logger.LogInformation(
-                "Checking if last Job History for Integration Point {integrationPointId} is valid for retry",
+                "Checking if provider type and last Job History for Integration Point {integrationPointId} is valid for retry",
                 integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();

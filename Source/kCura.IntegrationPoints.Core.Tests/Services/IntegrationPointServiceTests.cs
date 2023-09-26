@@ -40,6 +40,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
     [Category("Unit")]
     public class IntegrationPointServiceTests
     {
+        private const string _jobHistoryStatusDoesNotAllowRun =
+            "Integration Point validation failed.\r\nRun is not allowed for current job status.";
+
+        private const string _jobHistoryStatusDoesNotAllowRetry =
+            "Integration Point validation failed.\r\nRetry is allowed only if provider is relativity and last run completed with errors.";
+
         private IFixture _fxt;
         private IntegrationPointService _sut;
         private Mock<ICaseServiceContext> _contextFake;
@@ -200,6 +206,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void RunIntegrationPoint_GoldFlow_RelativityProvider()
         {
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns(JobStatusChoices.JobHistoryCompleted.Name);
+
             // Act
             _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
 
@@ -240,6 +249,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Arrange
             _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPointDto.ArtifactId))
                 .Returns(true);
+
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns(JobStatusChoices.JobHistoryCompleted.Name);
 
             // Act
             _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
@@ -465,6 +477,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _validationExecutorMock.Setup(x => x.ValidateOnRun(It.IsAny<ValidationContext>()))
                 .Throws<InvalidOperationException>();
 
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns((string)null); // no previous job-history
+
             // Act
             Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
 
@@ -497,7 +512,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
 
             // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+            action.ShouldThrow<Exception>().WithMessage(_jobHistoryStatusDoesNotAllowRun);
 
             VerifyJobShouldNotBeCreated();
         }
@@ -527,34 +542,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<int>(),
                     _USER_ID,
                     It.IsAny<string>()));
-
-            VerifyJobShouldNotBeCreated();
-        }
-
-        [Test]
-        public void RetryIntegrationPoint_ShouldThrowException_WhenIntegrationPointHasNoErrors()
-        {
-            // Arrange
-            _integrationPoint.HasErrors = null;
-
-            SetupLastRunJobHistory(
-                _fxt.Build<Data.JobHistory>()
-                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
-                    .Create());
-
-            // Act
-            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, false);
-
-            // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
-
-            _jobHistoryServiceMock.Verify(
-                x => x.CreateRdo(
-                    It.IsAny<IntegrationPointDto>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<ChoiceRef>(),
-                    It.IsAny<DateTime?>()),
-                Times.Never);
 
             VerifyJobShouldNotBeCreated();
         }
@@ -604,7 +591,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, false);
 
             // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
+            action.ShouldThrow<Exception>().WithMessage(_jobHistoryStatusDoesNotAllowRetry);
 
             VerifyJobShouldNotBeCreated();
         }
@@ -615,10 +602,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Arrange
             _integrationPointDto.HasErrors = true;
 
-            int lastJobHistoryId = _fxt.Create<int>();
-
-            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(lastJobHistoryId);
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns((string)null);
 
             _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Returns((List<Data.JobHistory>)null);
@@ -627,28 +612,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, false);
 
             // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
-        }
-
-        [Test]
-        public void RetryIntegrationPoint_FailToRetrieveJobHistory_ReceiveException()
-        {
-            // Arrange
-            _integrationPointDto.HasErrors = true;
-
-            int lastJobHistoryId = _fxt.Create<int>();
-
-            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(lastJobHistoryId);
-
-            _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
-                .Throws<Exception>();
-
-            // Act
-            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, false);
-
-            // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
+            action.ShouldThrow<Exception>().WithMessage(_jobHistoryStatusDoesNotAllowRetry);
         }
 
         [Test]
@@ -666,7 +630,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID, false);
 
             // Assert
-            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB);
+            action.ShouldThrow<Exception>().WithMessage(_jobHistoryStatusDoesNotAllowRetry);
         }
 
         [Test]
@@ -974,6 +938,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPoint.ArtifactId))
                 .Returns(jobHistory.ArtifactId);
+
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(jobHistory.JobStatus.Name);
 
             _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Returns(new List<Data.JobHistory> { jobHistory });
