@@ -84,15 +84,22 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, string lastJobHistoryStatus)
         {
-            bool lastJobCondition = lastJobHistoryStatus.IsIn(
+            if (string.Equals(
+                    lastJobHistoryStatus,
+                    JobStatusChoices.JobHistoryPending.Name,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+
+            bool isValidatingOrProcessing = lastJobHistoryStatus.IsIn(
                 StringComparison.InvariantCultureIgnoreCase,
-                JobStatusChoices.JobHistoryPending.Name,
                 JobStatusChoices.JobHistoryValidating.Name,
                 JobStatusChoices.JobHistoryProcessing.Name);
 
-            return providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
-                   && exportType != ExportType.ProductionSet
-                   && lastJobCondition;
+            return isValidatingOrProcessing
+                   && providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
+                   && exportType != ExportType.ProductionSet;
         }
 
         private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)
