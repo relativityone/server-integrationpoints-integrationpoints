@@ -41,5 +41,11 @@ namespace kCura.IntegrationPoints.Core.Validation
         public static readonly string ERROR_MISSING_FIRST_NAME_FIELD_MAP = $"Field: \"{EntityFieldNames.FirstName}\" should be mapped in Destination";
 
         public static readonly string ERROR_MISSING_LAST_NAME_FIELD_MAP = $"Field: \"{EntityFieldNames.LastName}\" should be mapped in Destination";
+
+        public static readonly string ERROR_OVERLAY_IDENTIFIER_FIELD_NOT_FOUND_IN_MAPPING = "Overlay Identifier Field was not mapped";
+
+        public static readonly string ERROR_OTHER_OVERLAY_IDENTIFIER_WITH_FULL_NAME_MAPPED = "Full Name should not be mapped with other Overlay Identifier Field";
+
+        public static readonly string ERROR_MISSING_MANAGER_FIELD_MAP_WHEN_MANAGER_LINKING_CONFIGURED = "Manager field should be mapped when Entity Manager Contains Link option is set";
     }
 }

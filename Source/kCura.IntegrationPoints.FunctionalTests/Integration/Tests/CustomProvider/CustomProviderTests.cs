@@ -93,7 +93,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
                 .LifestyleTransient().IsDefault());
 
             IImportJobRunner importJobRunner = Container.Resolve<IImportJobRunner>();
-            importJobRunner.GetType().GetField("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
+            importJobRunner.GetType().GetProperty("WaitForJobToFinishInterval", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(importJobRunner, TimeSpan.FromMilliseconds(200));
             Container.Register(Component.For<IImportJobRunner>().UsingFactoryMethod(() => importJobRunner)
                 .LifestyleTransient().IsDefault());

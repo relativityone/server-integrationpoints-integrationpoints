@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         }
 
         /// <inheritdoc />
-        public RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap identifierField)
+        public RdoImportConfiguration Build(CustomProviderDestinationConfiguration destinationConfiguration, List<IndexedFieldMap> fieldMappings, IndexedFieldMap overlyIdentifierField)
         {
             IWithOverlayMode overlayModeSettings = ImportRdoSettingsBuilder.Create();
 
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
                 overlayModeSettings,
                 destinationConfiguration.ImportOverwriteMode,
                 destinationConfiguration.FieldOverlayBehavior,
-                identifierField.DestinationFieldName);
+                overlyIdentifierField.DestinationFieldName);
 
             IWithRdo withRdo = ConfigureFieldsMappingSettings(
                 fieldsSettings,
@@ -56,10 +56,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
             IWithOverlayMode overlayModeSettings,
             ImportOverwriteModeEnum overwriteMode,
             string overlayBehavior,
-            string identifierFieldName)
+            string overlayIdentifierFieldName)
         {
             _logger.LogInformation(
-                "Configuring OverlayMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}", overwriteMode, overlayBehavior);
+                "Configuring OverlayMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}, OverlayIdentifierField: {overlayIdentifierField}",
+                overwriteMode,
+                overlayBehavior,
+                overlayIdentifierFieldName);
             switch (overwriteMode)
             {
                 case ImportOverwriteModeEnum.AppendOnly:
@@ -67,12 +70,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
 
                 case ImportOverwriteModeEnum.AppendOverlay:
                     return overlayModeSettings.WithAppendOverlayMode(
-                        x => x.WithKeyField(identifierFieldName)
+                        x => x.WithKeyField(overlayIdentifierFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
 
                 case ImportOverwriteModeEnum.OverlayOnly:
                     return overlayModeSettings.WithOverlayMode(
-                        x => x.WithKeyField(identifierFieldName)
+                        x => x.WithKeyField(overlayIdentifierFieldName)
                             .WithMultiFieldOverlayBehaviour(ToMultiFieldOverlayBehaviour(overlayBehavior)));
                 default:
                     throw new NotSupportedException($"ImportOverwriteMode {overwriteMode} is not supported.");

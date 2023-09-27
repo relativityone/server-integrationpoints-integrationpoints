@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _importApiServiceMock = new Mock<IImportApiService>();
             _settingsBuilderMock = new Mock<IDocumentImportSettingsBuilder>();
             _settingsBuilderMock
-                .Setup(x => x.BuildAsync(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>(), It.IsAny<IndexedFieldMap>()))
+                .Setup(x => x.BuildAsync(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(_importConfiguration);
 
             _sut = new DocumentImportApiRunner(
@@ -49,13 +49,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
-            var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
 
             // Assert
-            _settingsBuilderMock.Verify(x => x.BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap, identifier), Times.Once);
+            _settingsBuilderMock.Verify(x => x.BuildAsync(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap), Times.Once);
         }
 
         [Test]
@@ -63,10 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
-            var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
 
             // Assert
             _importApiServiceMock.Verify(x => x.CreateImportJobAsync(_importJobContext), Times.Once);

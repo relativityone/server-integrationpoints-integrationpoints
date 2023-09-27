@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Core.Validation.Helpers;
 using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Core.Validation.Parts.Entity;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Domain;
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IValidator>().ImplementedBy<SchedulerValidator>().LifestyleTransient());
             container.Register(Component.For<IValidator>().ImplementedBy<IntegrationPointTypeValidator>().LifestyleTransient());
             container.Register(Component.For<IValidator>().ImplementedBy<FirstAndLastNameMappedValidator>().LifestyleTransient());
+            container.Register(Component.For<IValidator>().ImplementedBy<OverlayFieldIdentifierValidator>().LifestyleTransient());
+            container.Register(Component.For<IValidator>().ImplementedBy<ManagerMappedWhenLinkingEnabledValidator>().LifestyleTransient());
 
             container.Register(Component.For<IRelativityProviderValidatorsFactory>().ImplementedBy<RelativityProviderValidatorsFactory>().LifestyleTransient());
             container.Register(Component.For<IValidator>().ImplementedBy<RelativityProviderConfigurationValidator>().LifestyleTransient());

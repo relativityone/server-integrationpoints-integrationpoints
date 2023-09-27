@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using kCura.IntegrationPoint.Tests.Core;
@@ -8,12 +8,12 @@ using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow;
-using kCura.IntegrationPoints.Common.Kepler;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 {
@@ -26,9 +26,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         private RdoImportConfiguration _importConfiguration;
 
         private Mock<IRdoImportSettingsBuilder> _settingsBuilderMock;
-        private Mock<IObjectManager> _objectManagerMock;
-        private Mock<IKeplerServiceFactory> _keplerFactoryMock;
         private Mock<IImportApiService> _importApiServiceMock;
+        private Mock<IEntityFullNameService> _entityFullNameServiceMock;
         private RdoImportApiRunner _sut;
 
         [SetUp]
@@ -44,32 +43,16 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Setup(x => x.Build(It.IsAny<CustomProviderDestinationConfiguration>(), It.IsAny<List<IndexedFieldMap>>(), It.IsAny<IndexedFieldMap>()))
                 .Returns(_importConfiguration);
 
-            _objectManagerMock = new Mock<IObjectManager>();
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 0, 1))
-                .ReturnsAsync(new QueryResultSlim
-                {
-                    Objects = new List<RelativityObjectSlim>
-                    {
-                        new RelativityObjectSlim
-                        {
-                            Values = new List<object>
-                            {
-                                new Random().Next()
-                            }
-                        }
-                    },
-                    ResultCount = 1,
-                    TotalCount = 1
-                });
-
-            _keplerFactoryMock = new Mock<IKeplerServiceFactory>();
-            _keplerFactoryMock
-                .Setup(x => x.CreateProxyAsync<IObjectManager>())
-                .ReturnsAsync(_objectManagerMock.Object);
+            _entityFullNameServiceMock = new Mock<IEntityFullNameService>();
+            _entityFullNameServiceMock.Setup(x => x.ShouldHandleFullNameAsync(
+                    It.IsAny<CustomProviderDestinationConfiguration>(),
+                    It.IsAny<List<IndexedFieldMap>>()))
+                .ReturnsAsync(false);
 
             _sut = new RdoImportApiRunner(
                 _settingsBuilderMock.Object,
                 _importApiServiceMock.Object,
+                _entityFullNameServiceMock.Object,
                 new Mock<IAPILog>().Object);
         }
 
@@ -78,13 +61,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             // Arrange
             var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
-            var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
 
             // Assert
-            _settingsBuilderMock.Verify(x => x.Build(integrationPointInfo.DestinationConfiguration, integrationPointInfo.FieldMap, identifier), Times.Once);
+            _settingsBuilderMock.Verify(
+                x => x.Build(
+                    integrationPointInfo.DestinationConfiguration,
+                    integrationPointInfo.FieldMap,
+                    It.IsAny<IndexedFieldMap>()),
+                Times.Once);
         }
 
         [Test]
@@ -95,12 +82,74 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             var identifier = _fxt.Create<IndexedFieldMap>();
 
             // Act
-            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo, identifier);
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
 
             // Assert
             _importApiServiceMock.Verify(x => x.CreateImportJobAsync(_importJobContext), Times.Once);
             _importApiServiceMock.Verify(x => x.ConfigureRdoImportApiJobAsync(_importJobContext, _importConfiguration), Times.Once);
             _importApiServiceMock.Verify(x => x.StartImportJobAsync(_importJobContext), Times.Once);
+        }
+
+        [Test]
+        public async Task RunImportJobAsync_ShouldBuildConfigurationWithCustomFieldAsOverlay_WhenFullNameIsNotAddedOnTheFly()
+        {
+            // Arrange
+            var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
+            var overlayIdentifier = integrationPointInfo.FieldMap.Last();
+
+            integrationPointInfo.DestinationConfiguration.OverlayIdentifier = overlayIdentifier.DestinationFieldName;
+
+            // Act
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
+
+            // Assert
+            _settingsBuilderMock.Verify(
+                x => x.Build(
+                    integrationPointInfo.DestinationConfiguration,
+                    integrationPointInfo.FieldMap,
+                    overlayIdentifier),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task RunImportJobAsync_ShouldBuildConfigurationWithFullNameAsOverlay_WhenFullNameIsAddedOnTheFly()
+        {
+            // Arrange
+            var integrationPointInfo = _fxt.Create<IntegrationPointInfo>();
+
+            _entityFullNameServiceMock.Setup(x => x.ShouldHandleFullNameAsync(
+                    It.IsAny<CustomProviderDestinationConfiguration>(),
+                    It.IsAny<List<IndexedFieldMap>>()))
+                .ReturnsAsync(true);
+            _entityFullNameServiceMock.Setup(x => x.EnrichFieldMapWithFullNameAsync(integrationPointInfo))
+                .Returns((IntegrationPointInfo integrationPoint) =>
+                {
+                    FieldMap fieldEntry = _fxt.Create<FieldMap>();
+
+                    fieldEntry.DestinationField.DisplayName = EntityFieldNames.FullName;
+
+                    IndexedFieldMap fullNameField = new IndexedFieldMap(
+                        fieldEntry, FieldMapType.Normal, 0);
+
+                    integrationPoint.FieldMap.Add(fullNameField);
+
+                    return Task.FromResult(integrationPoint);
+                });
+
+            var overlayIdentifier = integrationPointInfo.FieldMap.Last();
+
+            integrationPointInfo.DestinationConfiguration.OverlayIdentifier = overlayIdentifier.DestinationFieldName;
+
+            // Act
+            await _sut.RunImportJobAsync(_importJobContext, integrationPointInfo);
+
+            // Assert
+            _settingsBuilderMock.Verify(
+                x => x.Build(
+                    integrationPointInfo.DestinationConfiguration,
+                    integrationPointInfo.FieldMap,
+                    It.Is<IndexedFieldMap>(y => y.DestinationFieldName == EntityFieldNames.FullName)),
+                Times.Once);
         }
     }
 }

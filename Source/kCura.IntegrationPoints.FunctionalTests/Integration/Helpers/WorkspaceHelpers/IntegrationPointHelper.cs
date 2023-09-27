@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain.Models;
@@ -307,7 +308,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             int caseArtifactId,
             int destinationFolderArtifactId = 0,
             int artifactTypeId = (int)ArtifactType.Document,
-            bool entityManagerFieldContainsLink = false)
+            bool entityManagerFieldContainsLink = false,
+            string overlayIdentifier = EntityFieldNames.UniqueId)
         {
             return _serializer.Serialize(new DestinationConfiguration()
             {
@@ -319,6 +321,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 DestinationArtifactTypeId = artifactTypeId,
                 DestinationFolderArtifactId = destinationFolderArtifactId,
                 EntityManagerFieldContainsLink = entityManagerFieldContainsLink,
+                OverlayIdentifier = overlayIdentifier,
             });
         }
     }
