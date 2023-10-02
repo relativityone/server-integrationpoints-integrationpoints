@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Agent.Sync;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Storage;

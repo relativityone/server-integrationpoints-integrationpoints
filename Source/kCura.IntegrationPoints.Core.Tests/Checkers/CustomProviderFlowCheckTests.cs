@@ -2,13 +2,11 @@
 using AutoFixture;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Agent.CustomProvider;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Models;
 using Moq;
 using NUnit.Framework;
-using Relativity;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider

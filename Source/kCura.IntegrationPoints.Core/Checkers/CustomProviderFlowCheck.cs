@@ -1,11 +1,10 @@
 ﻿using System;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using Relativity;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider
+namespace kCura.IntegrationPoints.Core.Checkers
 {
     internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {

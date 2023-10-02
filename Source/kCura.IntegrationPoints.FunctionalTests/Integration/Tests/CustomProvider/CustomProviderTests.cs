@@ -11,7 +11,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobProgress;
-using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
