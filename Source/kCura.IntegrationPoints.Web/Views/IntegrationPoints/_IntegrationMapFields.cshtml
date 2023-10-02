@@ -168,7 +168,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
+                        <div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false' && SelectedOverwrite() != 'Append Only'">
                             <div class="field-label required">Unique Identifier:</div>
                             <div class="field-value ">
                                 <select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'name', optionsText: 'name', select2: {}"></select>
