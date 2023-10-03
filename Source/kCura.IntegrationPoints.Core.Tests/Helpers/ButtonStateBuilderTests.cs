@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -37,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private IRelativitySyncConstrainsChecker _syncConstrainsChecker;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
+        private ICustomProviderFlowCheck _customProviderFlowCheck;
 
         [SetUp]
         public override void SetUp()
@@ -57,6 +59,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _managerFactory.CreateQueueManager().Returns(_queueManager);
             _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
             _managerFactory.CreateStateManager().Returns(_stateManager);
+
+            _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true, false)]
@@ -315,6 +319,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 _integrationPointService,
                 _syncConstrainsChecker,
                 _permissionValidator,
+                _customProviderFlowCheck,
                 _managerFactory);
         }
     }

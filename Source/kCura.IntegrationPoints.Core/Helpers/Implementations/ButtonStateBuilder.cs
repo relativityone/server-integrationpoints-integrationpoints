@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IRelativitySyncConstrainsChecker _syncConstrainsChecker;
         private readonly IViewErrorsPermissionValidator _viewErrorsPermissionValidator;
+        private readonly ICustomProviderFlowCheck _customProviderFlowCheck;
         private readonly IJobHistoryManager _jobHistoryManager;
         private readonly IQueueManager _queueManager;
         private readonly IStateManager _stateManager;
@@ -36,6 +38,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IIntegrationPointService integrationPointService,
             IRelativitySyncConstrainsChecker syncConstrainsChecker,
             IViewErrorsPermissionValidator viewErrorsPermissionValidator,
+            ICustomProviderFlowCheck customProviderFlowCheck,
             IManagerFactory managerFactory)
         {
             _serializer = serializer;
@@ -44,6 +47,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _integrationPointService = integrationPointService;
             _syncConstrainsChecker = syncConstrainsChecker;
             _viewErrorsPermissionValidator = viewErrorsPermissionValidator;
+            _customProviderFlowCheck = customProviderFlowCheck;
 
             _queueManager = managerFactory.CreateQueueManager();
             _jobHistoryManager = managerFactory.CreateJobHistoryManager();
@@ -52,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
         public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactId);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(integrationPointArtifactId);
 
             SourceConfiguration.ExportType exportType = GetExportType(integrationPoint.ArtifactId);
 
@@ -65,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             bool integrationPointIsStoppable = IntegrationPointIsStoppable(
                 providerType,
                 workspaceArtifactId,
-                integrationPointArtifactId,
+                integrationPoint,
                 exportType,
                 useSyncApp);
 
@@ -120,18 +124,18 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
         }
 
-        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType, bool useSyncApp)
+        private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, IntegrationPointDto integrationPoint, SourceConfiguration.ExportType exportType, bool useSyncApp)
         {
-            StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
+            StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPoint.ArtifactId);
 
-            bool hasExecutingJobs = !useSyncApp && _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
+            bool hasExecutingJobs = !useSyncApp && _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPoint.ArtifactId);
 
             if (stoppableJobCollection.HasOnlyPendingJobHistory && !hasExecutingJobs)
             {
                 return true;
             }
 
-            if (IsNonStoppableBasedOnProviderType(providerType, exportType))
+            if (IsNonStoppableBasedOnProviderType(providerType, exportType, integrationPoint))
             {
                 return false;
             }
@@ -139,10 +143,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             return stoppableJobCollection.HasStoppableJobHistory;
         }
 
-        private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, SourceConfiguration.ExportType exportType)
+        private bool IsNonStoppableBasedOnProviderType(ProviderType providerType, SourceConfiguration.ExportType exportType, IntegrationPointDto integrationPoint)
         {
             return
-                (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) ||
+                (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile && !_customProviderFlowCheck.ShouldBeUsed(integrationPoint)) ||
                 (providerType == ProviderType.Relativity && exportType == SourceConfiguration.ExportType.ProductionSet);
         }
     }

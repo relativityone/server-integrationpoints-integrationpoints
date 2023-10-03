@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Checkers
 {
-    internal interface ICustomProviderFlowCheck
+    public interface ICustomProviderFlowCheck
     {
         bool ShouldBeUsed(IntegrationPointDto integrationPoint);
     }
