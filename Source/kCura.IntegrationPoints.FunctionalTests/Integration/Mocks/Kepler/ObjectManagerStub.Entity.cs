@@ -43,14 +43,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return false;
         }
 
-        private IList<EntityTest> EntitiesFilter(QueryRequest request, IList<EntityTest> list)
+        private IList<EntityFake> EntitiesFilter(QueryRequest request, IList<EntityFake> list)
         {
             if (GetEntitiesByUid(request.Condition, out List<string> entitiesUids))
             {
                 return list.Where(x => entitiesUids.Contains(x.UniqueId)).ToList();
             }
 
-            return new List<EntityTest>();
+            return new List<EntityFake>();
         }
     }
 }

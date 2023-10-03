@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -316,11 +317,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
             }
 
+            ValidateLastJobHistoryBeforeRun(workspaceArtifactId, integrationPointArtifactId);
+
             Guid batchInstance = Guid.NewGuid();
             Data.JobHistory jobHistory = CreateJobHistory(integrationPointDto, batchInstance, JobTypeChoices.JobHistoryRun);
-
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
-
             SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance.ToString());
         }
 
@@ -347,14 +348,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE);
             }
 
-            ValidateIntegrationPointBeforeRetryErrors(workspaceArtifactId, integrationPointArtifactId, integrationPointDto, sourceProvider);
+            ProviderType providerType = _providerTypeService.GetProviderType(
+                integrationPointDto.SourceProvider,
+                integrationPointDto.DestinationProvider);
+
+            ValidateLastJobHistoryBeforeRetry(workspaceArtifactId, integrationPointArtifactId, providerType);
 
             Guid batchInstance = Guid.NewGuid();
-
             Data.JobHistory jobHistory = CreateJobHistory(integrationPointDto, batchInstance, JobTypeChoices.JobHistoryRetryErrors, switchToAppendOverlayMode);
-
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
-
             SubmitJob(workspaceArtifactId, integrationPointArtifactId, userId, integrationPointDto, jobHistory, sourceProvider, destinationProvider, batchInstance.ToString());
         }
 
@@ -505,44 +507,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)
-        {
-            _logger.LogInformation("Checking if last Job History for Integration Point {integrationPointId} is valid for retry",
-                integrationPointArtifactId);
-
-            Data.JobHistory lastJobHistory = null;
-            try
-            {
-                IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-                int lastJobHistoryArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(workspaceArtifactId, integrationPointArtifactId);
-
-                _logger.LogInformation("Last Job History for IntegrationPoint {integrationPointId} was retrieved - {lastJobHistoryId}",
-                    integrationPointArtifactId, lastJobHistoryArtifactId);
-
-                var request = new QueryRequest
-                {
-                    Condition = $"'ArtifactID' == {lastJobHistoryArtifactId}"
-                };
-                lastJobHistory = ObjectManager.Query<Data.JobHistory>(request).Single();
-
-                _logger.LogInformation("Last Job History RDO for {lastJobHistoryId} was read.", lastJobHistoryArtifactId);
-            }
-            catch (Exception exception)
-            {
-                throw new Exception(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY, exception);
-            }
-
-            if (lastJobHistory == null)
-            {
-                throw new Exception(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
-            }
-
-            if (lastJobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))
-            {
-                throw new Exception(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB);
-            }
-        }
-
         private void CheckStopPermission(int integrationPointArtifactId)
         {
             IntegrationPointDto dto = Read(integrationPointArtifactId);
@@ -589,8 +553,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 // If the Relativity provider is selected, we need to create an export task
                 TaskType jobTaskType = GetJobTaskType(sourceProvider, destinationProvider);
-
-                CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, Guid.Parse(correlationID), integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
@@ -661,20 +623,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
 
             return TaskType.SyncManager;
-        }
-
-        private void CheckForOtherJobsExecutingOrInQueue(TaskType taskType, int workspaceArtifactId, int integrationPointArtifactId)
-        {
-            if (taskType == TaskType.ExportService || taskType == TaskType.SyncManager || taskType == TaskType.ExportManager)
-            {
-                IQueueManager queueManager = ManagerFactory.CreateQueueManager();
-                bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-
-                if (jobsExecutingOrInQueue)
-                {
-                    throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
-                }
-            }
         }
 
         private void HandleValidationError(Data.JobHistory jobHistory, IntegrationPointDto integrationPointDto, Exception ex)
@@ -760,22 +708,54 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void ValidateIntegrationPointBeforeRetryErrors(
+        private void ValidateLastJobHistoryBeforeRun(
+            int workspaceArtifactId,
+            int integrationPointArtifactId)
+        {
+            _logger.LogInformation(
+                "Checking if last Job History for Integration Point {integrationPointId} is valid for run",
+                integrationPointArtifactId);
+
+            IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
+            string lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
+
+            bool lastStatusAllowsRun = lastJobHistoryStatus.IsIn(
+                StringComparison.InvariantCultureIgnoreCase,
+                null,
+                JobStatusChoices.JobHistoryCompleted.Name,
+                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
+                JobStatusChoices.JobHistoryErrorJobFailed.Name,
+                JobStatusChoices.JobHistoryStopped.Name,
+                JobStatusChoices.JobHistoryValidationFailed.Name);
+
+            if (lastStatusAllowsRun == false)
+            {
+                string errorMessage = "Run is not allowed for current job status.";
+                throw new IntegrationPointValidationException(new ValidationResult(false, errorMessage));
+            }
+        }
+
+        private void ValidateLastJobHistoryBeforeRetry(
             int workspaceArtifactId,
             int integrationPointArtifactId,
-            IntegrationPointDto integrationPoint,
-            SourceProvider sourceProvider)
+            ProviderType providerType)
         {
-            if (!sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
-            }
+            _logger.LogInformation(
+                "Checking if provider type and last Job History for Integration Point {integrationPointId} is valid for retry",
+                integrationPointArtifactId);
 
-            CheckPreviousJobHistoryStatusOnRetry(workspaceArtifactId, integrationPointArtifactId);
+            IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
+            string lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
 
-            if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
+            bool completedWithErrors = string.Equals(
+                lastJobHistoryStatus,
+                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
+                StringComparison.InvariantCultureIgnoreCase);
+
+            if (providerType != ProviderType.Relativity || completedWithErrors == false)
             {
-                throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+                string errorMessage = "Retry is allowed only if provider is relativity and last run completed with errors.";
+                throw new IntegrationPointValidationException(new ValidationResult(false, errorMessage));
             }
         }
 

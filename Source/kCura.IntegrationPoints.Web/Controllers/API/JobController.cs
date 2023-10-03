@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,13 +13,11 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
-using Microsoft.Owin.Security.Provider;
 using Relativity.API;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
@@ -37,7 +34,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
-        public JobController(IRepositoryFactory repositoryFactory, IManagerFactory managerFactory, IIntegrationPointService integrationPointService, IAPILog log)
+        public JobController(
+            IRepositoryFactory repositoryFactory,
+            IManagerFactory managerFactory,
+            IIntegrationPointService integrationPointService,
+            IAPILog log)
         {
             _repositoryFactory = repositoryFactory;
             _managerFactory = managerFactory;
@@ -53,35 +54,27 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             try
             {
                 _log.LogInformation("'Run' button clicked for Integration Point id: {id}", payload.ArtifactId);
-
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-                IntegrationPointSlimDto integrationPoint = _integrationPointService
-                    .ReadSlim(Convert.ToInt32(payload.ArtifactId));
+                IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(Convert.ToInt32(payload.ArtifactId));
+                ValidateSecuredConfiguration(integrationPoint.SecuredConfiguration);
+                ValidateRDOPermission(payload.AppId);
 
-                // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
-                // so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
-                // if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
-                Guid parseResult;
-                if (Guid.TryParse(integrationPoint.SecuredConfiguration, out parseResult))
-                {
-                    throw new IntegrationPointsException("Integration point secret store configuration is missing. " +
-                                                         "This may be caused by RIP being restored from ARM backup. " +
-                                                         "Please try to edit integration point configuration and reenter credentials.");
-                }
+                int userId = GetUserIdIfExists();
+                _integrationPointService.RunIntegrationPoint(payload.AppId, payload.ArtifactId, userId);
 
-                HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, ActionType.Run);
-
-                return httpResponseMessage;
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (IntegrationPointValidationException ex)
+            {
+                _log.LogWarning(ex, "JobController.Run action failed due to request validation exception");
+                var actionResult = new JobActionResult(ValidationResultMapper.Map(ex.ValidationResult).Errors.Select(x => x.Message));
+                return Request.CreateResponse(HttpStatusCode.BadRequest, actionResult);
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "Failed to Run job.");
-
-                var result = new JobActionResult();
-                result.Errors.Add(ex.Message);
-
-                return Request.CreateResponse(HttpStatusCode.BadRequest, result);
+                _log.LogError(ex, "JobController.Run action failed due to exception");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new JobActionResult(ex.FlattenErrorMessages()));
             }
         }
 
@@ -90,13 +83,29 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
         public HttpResponseMessage Retry(Payload payload, bool switchToAppendOverlayMode = false)
         {
-            _log.LogInformation("'Retry' button clicked for Integration Point id: {id}", payload.ArtifactId);
+            try
+            {
+                _log.LogInformation("'Retry' button clicked for Integration Point id: {id}", payload.ArtifactId);
+                AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 
-            AuditAction(payload, _RETRY_AUDIT_MESSAGE);
+                ValidateRDOPermission(payload.AppId);
 
-            HttpResponseMessage httpResponseMessage = RunInternal(payload.AppId, payload.ArtifactId, ActionType.Retry, switchToAppendOverlayMode);
+                int userId = GetUserIdIfExists();
+                _integrationPointService.RetryIntegrationPoint(payload.AppId, payload.ArtifactId, userId, switchToAppendOverlayMode);
 
-            return httpResponseMessage;
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (IntegrationPointValidationException ex)
+            {
+                _log.LogWarning(ex, "JobController.Retry action failed due to request validation exception");
+                var actionResult = new JobActionResult(ValidationResultMapper.Map(ex.ValidationResult).Errors.Select(x => x.Message));
+                return Request.CreateResponse(HttpStatusCode.BadRequest, actionResult);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "JobController.Retry action failed due to exception");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new JobActionResult(ex.FlattenErrorMessages()));
+            }
         }
 
         // POST API/Job/Stop
@@ -105,83 +114,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             AuditAction(payload, _STOP_AUDIT_MESSAGE);
 
-            JobActionResult result = new JobActionResult();
             try
             {
                 _integrationPointService.MarkIntegrationPointToStopJobs(payload.AppId, payload.ArtifactId);
 
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
-            catch (AggregateException exception)
+            catch (IntegrationPointValidationException ex)
             {
-                // TODO: Add an extension to aggregate messages without stack traces. Place it in ExceptionExtensions.cs
-                IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-                string aggregatedErrorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
-                CreateRelativityError(aggregatedErrorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
-
-                result.Errors.AddRange(innerExceptions);
+                _log.LogWarning(ex, "JobController.Stop action failed due to request validation exception");
+                var actionResult = new JobActionResult(ValidationResultMapper.Map(ex.ValidationResult).Errors.Select(x => x.Message));
+                return Request.CreateResponse(HttpStatusCode.BadRequest, actionResult);
             }
-            catch (IntegrationPointValidationException exception)
+            catch (Exception ex)
             {
-                ValidationResultDTO validationResult = CreateResponseForFailedValidation(exception);
-                result.Errors.AddRange(validationResult.Errors.Select(x => x.Message));
+                _log.LogError(ex, "JobController.Stop action failed due to exception");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, new JobActionResult(ex.FlattenErrorMessages()));
             }
-            catch (Exception exception)
-            {
-                CreateRelativityError(exception.Message, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
-
-                result.Errors.Add(exception.Message);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
-        }
-
-        private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, ActionType action, bool switchToAppendOverlayMode = false)
-        {
-            JobActionResult result = new JobActionResult();
-            try
-            {
-                ValidateRDOPermission(workspaceId);
-
-                int userId = GetUserIdIfExists();
-                if (action == ActionType.Run)
-                {
-                    _integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
-                }
-                else
-                {
-                    _integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK, result);
-            }
-            catch (AggregateException exception)
-            {
-                IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-
-                result.Errors.Add(exception.Message);
-                result.Errors.AddRange(innerExceptions);
-            }
-            catch (IntegrationPointValidationException exception)
-            {
-                ValidationResultDTO validationResult = CreateResponseForFailedValidation(exception);
-                result.Errors.AddRange(validationResult.Errors.Select(x => x.Message));
-            }
-            catch (Exception exception)
-            {
-                _log.LogError(exception, "Error occurred in Run request: WorkspaceId {workspaceId}, IntegrationPointId {integrationPointId}, Action: {action}",
-                    workspaceId, relatedObjectArtifactId, action);
-
-                result.Errors.Add(exception.Message);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.BadRequest, result);
-        }
-
-        private ValidationResultDTO CreateResponseForFailedValidation(IntegrationPointValidationException exception)
-        {
-            var validationResultMapper = new ValidationResultMapper();
-            return validationResultMapper.Map(exception.ValidationResult);
         }
 
         private void AuditAction(Payload payload, string auditMessage)
@@ -189,6 +138,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             IAuditManager auditManager = _managerFactory.CreateAuditManager(payload.AppId);
             AuditElement audit = new AuditElement { AuditMessage = auditMessage };
             auditManager.RelativityAuditRepository.CreateAuditRecord(payload.ArtifactId, audit);
+        }
+
+        private void ValidateSecuredConfiguration(string securedConfiguration)
+        {
+            // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
+            // so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
+            // if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
+            if (Guid.TryParse(securedConfiguration, out Guid parseResult))
+            {
+                throw new IntegrationPointValidationException(new ValidationResult(
+                    false,
+                    "Integration point secret store configuration is missing. " +
+                    "This may be caused by RIP being restored from ARM backup. " +
+                    "Please try to edit integration point configuration and reenter credentials."));
+            }
         }
 
         private int GetUserIdIfExists()
@@ -207,32 +171,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             return 0;
         }
 
-        private void CreateRelativityError(string message, string fullText, int workspaceArtifactId)
-        {
-            IErrorManager errorManager = _managerFactory.CreateErrorManager();
-
-            ErrorDTO error = new ErrorDTO()
-            {
-                Message = message,
-                FullText = fullText,
-                Source = APPLICATION_NAME,
-                WorkspaceId = workspaceArtifactId
-            };
-
-            errorManager.Create(new[] { error });
-        }
-
         public class Payload
         {
             public int AppId { get; set; }
 
             public int ArtifactId { get; set; }
-        }
-
-        private enum ActionType
-        {
-            Run,
-            Retry
         }
 
         private void ValidateRDOPermission(int workspaceId)

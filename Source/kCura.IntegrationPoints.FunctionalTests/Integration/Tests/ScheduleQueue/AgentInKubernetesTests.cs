@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             // Arrange
             long? rootJobId = ArtifactProvider.NextId();
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
 
             JobTest jobWithSameRootId1 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
 
@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             long? rootJobId = ArtifactProvider.NextId();
 
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
 
             JobTest jobWithSameRootId1 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
             JobTest jobWithSameRootId2 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);

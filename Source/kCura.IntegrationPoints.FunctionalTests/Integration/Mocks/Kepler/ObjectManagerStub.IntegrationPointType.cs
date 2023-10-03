@@ -44,14 +44,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return false;
         }
 
-        private IList<IntegrationPointTypeTest> IntegrationPointTypeFilter(QueryRequest request, IList<IntegrationPointTypeTest> list)
+        private IList<IntegrationPointTypeFake> IntegrationPointTypeFilter(QueryRequest request, IList<IntegrationPointTypeFake> list)
         {
             if (IsIntegrationPointTypeByIdentifierCondition(request.Condition, out string identifier))
             {
                 return list.Where(x => x.Identifier == identifier).ToList();
             }
 
-            return new List<IntegrationPointTypeTest>();
+            return new List<IntegrationPointTypeFake>();
         }
     }
 }

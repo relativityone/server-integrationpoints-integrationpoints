@@ -246,7 +246,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
         private JobTest ScheduleImportCustomProviderJob()
         {
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint();
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint();
 
             Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
@@ -259,7 +259,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.CustomProvider
 
         private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
         {
-            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            JobHistoryFake jobHistory = SourceWorkspace.JobHistory.Single();
             jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
         }
 

@@ -5,19 +5,21 @@ using Relativity.Services.Objects.DataContracts;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class ObjectTypeTest : RdoTestBase
+    public class FieldFake : RdoFakeBase
     {
         public string Name { get; set; }
 
-        public string ObjectType { get; set; }
+        public int ObjectTypeId { get; set; }
 
-        public int ObjectTypeArtifactTypeId { get; set; }
-
-        public int ArtifactTypeId { get; set; }
+        public bool IsIdentifier { get; set; }
 
         public Guid Guid { get; set; }
 
-        public ObjectTypeTest() : base("Object Type")
+        public FieldFake() : base("Field")
+        {
+        }
+
+        public FieldFake(int artifactId) : base("Field", artifactId)
         {
         }
 
@@ -39,11 +41,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                     {
                         Field = new Field
                         {
+                            Name = "Is Identifier"
+                        },
+                        Value = IsIdentifier
+                    },
+                    new FieldValuePair
+                    {
+                        Field = new Field
+                        {
                             Name = "Name"
                         },
                         Value = Name
                     }
-                }
+                },
             };
         }
     }

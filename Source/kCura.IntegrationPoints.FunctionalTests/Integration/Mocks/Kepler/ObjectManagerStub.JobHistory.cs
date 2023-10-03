@@ -59,7 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return false;
             }
 
-            IList<JobHistoryTest> JobHistoryFilter(QueryRequest request, IList<JobHistoryTest> list)
+            IList<JobHistoryFake> JobHistoryFilter(QueryRequest request, IList<JobHistoryFake> list)
             {
                 if (IsIntegrationPointCondition(request.Condition, out int integrationPointId))
                 {
@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     return list.Where(x => x.ArtifactId == artifactId).ToList();
                 }
 
-                return new List<JobHistoryTest>();
+                return new List<JobHistoryFake>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),

@@ -7,11 +7,11 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class JobHistoryErrorTest : RdoTestBase
+    public class JobHistoryErrorFake : RdoFakeBase
     {
         public override List<Guid> Guids => Const.RdoGuids.JobHistoryError.Guids;
 
-        public JobHistoryErrorTest() : base("JobHistoryError")
+        public JobHistoryErrorFake() : base("JobHistoryError")
         {
         }
 

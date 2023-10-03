@@ -102,7 +102,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 
         private Task<int> SaveSyncConfiguration(ISyncContext context)
         {
-            SyncConfigurationTest syncConfiguration = new SyncConfigurationTest
+            SyncConfigurationFake syncConfiguration = new SyncConfigurationFake
             {
                 JobHistoryId = context.JobHistoryId
             };
@@ -115,7 +115,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 
         public Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId)
         {
-            SyncConfigurationTest result = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
+            SyncConfigurationFake result = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
                .SyncConfigurations.SingleOrDefault(x => x.JobHistoryId == jobHistoryId);
 
             return Task.FromResult(result?.ArtifactId);

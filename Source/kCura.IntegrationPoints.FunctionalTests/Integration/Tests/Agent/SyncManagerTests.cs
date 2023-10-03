@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             Guid customProviderId = Guid.NewGuid();
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
 
             FakeCustomProvider customProviderImpl = new FakeCustomProvider()
             {
@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(1);
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
 
             SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
@@ -75,9 +75,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             const int numberOfRecords = 1500;
             string xmlPath = PrepareRecords(numberOfRecords);
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
             SyncManager sut = PrepareSut<SyncManager>();
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
@@ -97,10 +97,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             const int numberOfRecords = 5500;
             string xmlPath = PrepareRecords(numberOfRecords);
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
             Container.Register(Component.For<SyncManagerTest>().ImplementedBy<SyncManagerTest>().LifestyleTransient().IsDefault());
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
             SyncManagerTest sut = PrepareSut<SyncManagerTest>();
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
@@ -122,10 +122,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             const int numberOfRecords = 5500;
             string xmlPath = PrepareRecords(numberOfRecords);
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
             Container.Register(Component.For<SyncManagerTest>().ImplementedBy<SyncManagerTest>().LifestyleTransient().IsDefault());
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
             SyncManagerTest sut = PrepareSut<SyncManagerTest>();
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
@@ -153,7 +153,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             string xmlPath = PrepareRecords();
             Guid customProviderId = Guid.NewGuid();
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
 
             FakeCustomProvider customProviderImpl = new FakeCustomProvider()
             {
@@ -163,7 +163,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 }
             };
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
 
             SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
@@ -181,9 +181,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             const int numberOfRecords = 1500;
             string xmlPath = PrepareRecords(numberOfRecords);
 
-            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderFake provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryFake jobHistory, xmlPath);
 
             SyncManager sut = PrepareSut<SyncManager>();
 
@@ -196,11 +196,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
         }
 
-        private JobTest PrepareJob(SourceProviderTest provider, out JobHistoryTest jobHistory, string xmlPath = null)
+        private JobTest PrepareJob(SourceProviderFake provider, out JobHistoryFake jobHistory, string xmlPath = null)
         {
             FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
 
             integrationPoint.SourceProvider = provider.ArtifactId;
@@ -247,7 +247,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             return tmpPath;
         }
 
-        private void VerifyJobHistoryStatus(JobHistoryTest actual, Guid expectedStatus)
+        private void VerifyJobHistoryStatus(JobHistoryFake actual, Guid expectedStatus)
         {
             actual.JobStatus.Guids.Single().Should().Be(expectedStatus);
         }

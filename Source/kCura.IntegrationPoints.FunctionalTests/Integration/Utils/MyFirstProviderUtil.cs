@@ -26,13 +26,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
     {
         private readonly IWindsorContainer _container;
         private readonly RelativityInstanceTest _fakeRelativityInstance;
-        private readonly WorkspaceTest _sourceWorkspace;
+        private readonly WorkspaceFake _sourceWorkspace;
         private readonly ISerializer _serializer;
 
         public MyFirstProviderUtil(
             IWindsorContainer container,
             RelativityInstanceTest fakeRelativityInstance,
-            WorkspaceTest sourceWorkspace,
+            WorkspaceFake sourceWorkspace,
             ISerializer serializer)
         {
             _container = container;
@@ -61,10 +61,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
         {
             _fakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-            SourceProviderTest provider =
+            SourceProviderFake provider =
                 _sourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 _sourceWorkspace.Helpers.IntegrationPointHelper
                     .CreateImportIntegrationPoint(
                         provider,
@@ -106,14 +106,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
 
         public JobTest PrepareJobWithEntities(
             string xmlPath,
-            out JobHistoryTest jobHistory,
+            out JobHistoryFake jobHistory,
             Action<JobTest> registerJobContext,
             string emailToAddress = null)
         {
-            SourceProviderTest provider =
+            SourceProviderFake provider =
                 _sourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 _sourceWorkspace.Helpers.IntegrationPointHelper
                     .CreateImportIntegrationPointWithEntities(
                         provider,
@@ -135,14 +135,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
 
         public JobTest PrepareJob(
             string xmlPath,
-            out JobHistoryTest jobHistory,
+            out JobHistoryFake jobHistory,
             Action<JobTest> registerJobContext,
             string emailToAddress = null,
-            IntegrationPointTest integrationPoint = null)
+            IntegrationPointFake integrationPoint = null)
         {
             AgentTest agent = _fakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-            SourceProviderTest provider =
+            SourceProviderFake provider =
                 _sourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
             if (integrationPoint == null)
@@ -179,7 +179,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             return job;
         }
 
-        public void PrepareOtherJobs(JobTest job, JobHistoryTest jobHistory, JobTest[] otherJobs)
+        public void PrepareOtherJobs(JobTest job, JobHistoryFake jobHistory, JobTest[] otherJobs)
         {
             foreach (var otherJob in otherJobs)
             {
@@ -239,7 +239,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
                 .IsDefault());
         }
 
-        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryFake jobHistory)
         {
             string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
 

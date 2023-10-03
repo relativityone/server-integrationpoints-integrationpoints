@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
-            IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
+            IList<DocumentFake> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
             // Act
             long totalDocuments = await _sut
@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(false, true, true);
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalSize, FileType.Tif);
 
@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalFileSize, FileType.Tif);
 
@@ -109,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(true, false, false);
-            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            SavedSearchFake savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             SetupExport(totalFileSize, FileType.Native);
 
@@ -127,7 +127,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
-            IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
+            IList<DocumentFake> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
             // Act
             long totalDocuments = await _sut
@@ -143,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(false, false, true);
-            ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
+            ProductionFake production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
             int totalSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             SetupExport(totalSize, FileType.Tif);
 
@@ -161,7 +161,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
-            ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
+            ProductionFake production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
             string tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{production.ArtifactId}";
@@ -198,7 +198,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             SearchCriteria searchCriteria = new SearchCriteria(true, false, true);
-            ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
+            ProductionFake production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             SetupExport(totalFileSize, FileType.Native);
 
@@ -216,7 +216,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             int folderArtifactId = SourceWorkspace.Folders.First().ArtifactId;
-            IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
+            IList<DocumentFake> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
             // Act
             long totalDocuments = await _sut
@@ -231,7 +231,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesTotalForFolderAsync_ShouldProperlySumAllDocumentImages()
         {
             // Arrange
-            FolderTest folder = SourceWorkspace.Folders.First();
+            FolderFake folder = SourceWorkspace.Folders.First();
             SearchCriteria searchCriteria = new SearchCriteria(false, false, true);
             int totalSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalSize, FileType.Tif);
@@ -249,7 +249,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesFileSizeForFolderAsync_ShouldReturnValidFileSize()
         {
             // Arrange
-            FolderTest folder = SourceWorkspace.Folders.First();
+            FolderFake folder = SourceWorkspace.Folders.First();
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalFileSize, FileType.Tif);
@@ -282,7 +282,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetNativesFileSizeForFolderAsync_ShouldReturnValidFileSize()
         {
             // Arrange
-            FolderTest folder = SourceWorkspace.Folders.First();
+            FolderFake folder = SourceWorkspace.Folders.First();
             SearchCriteria searchCriteria = new SearchCriteria(true, false, true);
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
             SetupExport(totalFileSize, FileType.Native);
