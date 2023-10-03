@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts.Entity
 
             var result = new ValidationResult();
 
-            if (value.DestinationConfiguration.OverlayIdentifier == null)
+            if (string.IsNullOrWhiteSpace(value.DestinationConfiguration.OverlayIdentifier))
             {
                 Logger.LogWarning("Overlay field identifier was not set. Skip validation.");
                 return result;
