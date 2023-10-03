@@ -1,6 +1,11 @@
 # Changelog for Relativity Sync
 All notable changes to this project will be documented in this file.
 
+## [0.12.4] - 10-03-2023
+### Changed
+
+- [REL-866456](https://jira.kcura.com/browse/REL-866456) - Revved latest package for Relativity.DataTransfer.Legacy.SDK
+
 ## [0.12.3] - 09-08-2023
 
 ### Changed 
