@@ -16,12 +16,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasErrorViewPermissions,
             bool hasProfileAddPermission,
             bool calculationInProgress,
-            string lastJobHistoryStatus)
+            string lastJobHistoryStatus,
+            bool isIApiV2CustomProviderWorkflow)
         {
             bool runButtonEnabled = IsRunButtonEnable(lastJobHistoryStatus);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasErrorViewPermissions, lastJobHistoryStatus);
             bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, lastJobHistoryStatus);
-            bool stopButtonEnabled = IsStopButtonEnabled(providerType, exportType, lastJobHistoryStatus);
+            bool stopButtonEnabled = IsStopButtonEnabled(providerType, exportType, lastJobHistoryStatus, isIApiV2CustomProviderWorkflow);
             bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
             bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType, exportType);
             bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return providerType == ProviderType.Relativity && lastJobCondition;
         }
 
-        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, string lastJobHistoryStatus)
+        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, string lastJobHistoryStatus, bool isIApiV2CustomProviderWorkflow)
         {
             if (string.Equals(
                     lastJobHistoryStatus,
@@ -98,8 +99,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 JobStatusChoices.JobHistoryProcessing.Name);
 
             return isValidatingOrProcessing
-                   && providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
-                   && exportType != ExportType.ProductionSet;
+                   && exportType != ExportType.ProductionSet
+                   && (providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile) ||
+                       isIApiV2CustomProviderWorkflow);
         }
 
         private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)

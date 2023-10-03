@@ -67,7 +67,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 HasErrorViewPermissions(workspaceArtifactId),
                 HasProfileAddPermission(workspaceArtifactId),
                 calculationInProgress,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _customProviderFlowCheck.ShouldBeUsed(integrationPoint));
 
             return buttonState;
         }

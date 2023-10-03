@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Managers
         /// <param name="hasProfileAddPermission">If the user can add Integration Point Profile objects</param>
         /// <param name="calculationInProgress">If the job statistics calculation is in progress</param>
         /// <param name="lastJobHistoryStatus">The status of latest job history</param>
+        /// <param name="isIApiV2CustomProviderWorkflow">Enables stop button when running Custom provider workflow with IAPI 2.0</param>
         /// <returns>
         ///     A collection of booleans which explain the button state of the buttons on the console for the Relativity
         ///     Provider.
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Managers
             bool hasErrorViewPermissions,
             bool hasProfileAddPermission,
             bool calculationInProgress,
-            string lastJobHistoryStatus);
+            string lastJobHistoryStatus,
+            bool isIApiV2CustomProviderWorkflow);
     }
 }
