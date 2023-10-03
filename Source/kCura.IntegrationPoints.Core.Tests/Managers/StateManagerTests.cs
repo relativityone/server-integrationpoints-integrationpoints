@@ -3,8 +3,10 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
@@ -28,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Processing";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryProcessing;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -59,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = null;
+            ChoiceRef lastJobHistoryStatus = null;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Validating";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryValidating;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -125,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Completed with errors";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -158,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Completed with errors";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -191,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasProfileAddPermission = true;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Completed with errors";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -229,7 +231,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasProfileAddPermission = true;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Completed with errors";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -263,7 +265,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            string lastJobHistoryStatus = "Pending";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryPending;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
@@ -288,7 +290,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
             bool isCalculating = isCalculationInProgress;
-            string lastJobHistoryStatus = "Pending";
+            ChoiceRef lastJobHistoryStatus = JobStatusChoices.JobHistoryPending;
 
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(

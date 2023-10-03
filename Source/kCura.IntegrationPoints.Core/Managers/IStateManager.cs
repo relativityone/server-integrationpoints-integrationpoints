@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Services.Choice;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Managers
@@ -25,6 +26,6 @@ namespace kCura.IntegrationPoints.Core.Managers
             bool hasErrorViewPermissions,
             bool hasProfileAddPermission,
             bool calculationInProgress,
-            string lastJobHistoryStatus);
+            ChoiceRef lastJobHistoryStatus);
     }
 }
