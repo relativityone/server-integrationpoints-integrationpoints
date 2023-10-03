@@ -9,12 +9,16 @@ using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfigur
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class StateManagerTests : TestBase
     {
+        private bool _isIApiV2CustomProviderWorkflow;
+
         [SetUp]
         public override void SetUp()
         {
+            _isIApiV2CustomProviderWorkflow = false;
             _instance = new StateManager();
         }
 
@@ -37,7 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -68,7 +73,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert Enable
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -101,7 +107,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -134,7 +141,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -167,7 +175,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -200,7 +209,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -238,7 +248,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -252,6 +263,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
             Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
             Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
+
+        [Test]
+        [TestCase("Pending")]
+        [TestCase("Validating")]
+        [TestCase("Processing")]
+        public void GetOtherProviderWithIApiV2_StopButtonEnabledShouldBeTrue_WhenJobIsPendingOrIsExecuting(string lastJobHistoryStatus)
+        {
+            // Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
+            bool isCalculating = false;
+            _isIApiV2CustomProviderWorkflow = true;
+
+            // Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(
+                exportType,
+                ProviderType.FTP,
+                hasViewPermissions,
+                hasProfileAddPermission,
+                isCalculating,
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
+
+            // Assert
+            Assert.IsTrue(buttonStates.StopButtonEnabled);
         }
 
         [TestCase(ProviderType.Relativity, ExportType.ProductionSet, true)]
@@ -272,7 +310,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             buttonStates.RetryErrorsButtonVisible.Should().Be(expectedRetryErrorsVisibility);
@@ -297,7 +336,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             buttonStates.CalculateStatisticsButtonEnabled.Should().Be(calculateStatsButtonEnabled);

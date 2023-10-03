@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Checkers;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -55,6 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _managerFactory.CreateStateManager().Returns(_stateManager);
 
             _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
+            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<IntegrationPointDto>()).Returns(false);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, "Pending")]
@@ -100,7 +100,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(hasErrorViewPermission),
                     Arg.Is(hasAddProfilePermission),
                     Arg.Any<bool>(),
-                    Arg.Is(jobHistoryStatus));
+                    Arg.Is(jobHistoryStatus),
+                    Arg.Any<bool>());
         }
 
         [TestCase(CalculationStatus.New, false)]
@@ -138,7 +139,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<string>());
+                    Arg.Any<string>(),
+                    Arg.Any<bool>());
         }
 
         [Test]
@@ -171,7 +173,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<string>());
+                    Arg.Any<string>(),
+                    Arg.Any<bool>());
         }
 
         private void SetupIntegrationPoint(
@@ -182,13 +185,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             const int sourceProviderArtifactId = 210;
             const int destinationProviderArtifactId = 220;
 
-            IntegrationPointSlimDto integrationPoint = new IntegrationPointSlimDto
+            IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 SourceProvider = sourceProviderArtifactId,
                 DestinationProvider = destinationProviderArtifactId,
             };
 
-            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ID)
+            _integrationPointService.Read(_INTEGRATION_POINT_ID)
                 .Returns(integrationPoint);
             _integrationPointService.GetSourceConfiguration(integrationPoint.ArtifactId)
                 .Returns(JsonConvert.SerializeObject(new { TypeOfExport = exportType }));
