@@ -5,6 +5,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.DTO
 {
     public class CustomProviderJobDetails
     {
+        public Guid BatchInstance { get; set; }
+
         public int JobHistoryID { get; set; }
 
         public Guid JobHistoryGuid { get; set; }
