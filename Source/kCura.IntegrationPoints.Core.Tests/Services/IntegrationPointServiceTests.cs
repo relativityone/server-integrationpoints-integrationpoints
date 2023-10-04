@@ -207,7 +207,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RunIntegrationPoint_GoldFlow_RelativityProvider()
         {
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(JobStatusChoices.JobHistoryCompleted.Name);
+                .Returns(JobStatusChoices.JobHistoryCompleted);
 
             // Act
             _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .Returns(true);
 
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(JobStatusChoices.JobHistoryCompleted.Name);
+                .Returns(JobStatusChoices.JobHistoryCompleted);
 
             // Act
             _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
@@ -478,7 +478,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .Throws<InvalidOperationException>();
 
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns((string)null); // no previous job-history
+                .Returns((ChoiceRef)null); // no previous job-history
 
             // Act
             Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
@@ -603,7 +603,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _integrationPointDto.HasErrors = true;
 
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns((string)null);
+                .Returns((ChoiceRef)null);
 
             _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Returns((List<Data.JobHistory>)null);
@@ -940,7 +940,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .Returns(jobHistory.ArtifactId);
 
             _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryStatus(_WORKSPACE_ID, _integrationPoint.ArtifactId))
-                .Returns(jobHistory.JobStatus.Name);
+                .Returns(jobHistory.JobStatus);
 
             _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Returns(new List<Data.JobHistory> { jobHistory });

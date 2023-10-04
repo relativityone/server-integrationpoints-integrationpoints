@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.Services.Choice;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
@@ -73,16 +74,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             ProviderType providerType,
             bool hasErrorViewPermission,
             bool hasAddProfilePermission,
-            string jobHistoryStatus)
+            string jobHistoryStatusName)
         {
             // Arrange
             SetupIntegrationPoint(providerType, exportType);
+            ChoiceRef lastJobHistoryStatus = GetJobHistoryStatusByName(jobHistoryStatusName);
 
             _permissionValidator.Validate(_WORKSPACE_ID).Returns(
                 hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] { "error" }));
 
             _jobHistoryRepository.GetLastJobHistoryStatus(_INTEGRATION_POINT_ID)
-                .Returns(jobHistoryStatus);
+                .Returns(lastJobHistoryStatus);
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create)
                 .Returns(hasAddProfilePermission);
@@ -100,9 +102,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(hasErrorViewPermission),
                     Arg.Is(hasAddProfilePermission),
                     Arg.Any<bool>(),
-                    Arg.Is(jobHistoryStatus),
+                    Arg.Is(lastJobHistoryStatus),
                     Arg.Any<bool>());
         }
+
+        private ChoiceRef GetJobHistoryStatusByName(string statusName)
+        {
+            switch (statusName)
+            {
+                case "Pending": return JobStatusChoices.JobHistoryPending;
+                case "Completed with errors": return JobStatusChoices.JobHistoryCompletedWithErrors;
+
+                default: throw new NotSupportedException($"Not supported job history status {statusName}");
+            }
+        }
+
 
         [TestCase(CalculationStatus.New, false)]
         [TestCase(CalculationStatus.InProgress, true)]
@@ -121,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 .Returns(new ValidationResult());
 
             _jobHistoryRepository.GetLastJobHistoryStatus(_INTEGRATION_POINT_ID)
-                .Returns("Validating");
+                .Returns(JobStatusChoices.JobHistoryValidating);
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create)
                 .Returns(true);
@@ -139,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<string>(),
+                    Arg.Any<ChoiceRef>(),
                     Arg.Any<bool>());
         }
 
@@ -155,7 +169,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 .Returns(new ValidationResult());
 
             _jobHistoryRepository.GetLastJobHistoryStatus(_INTEGRATION_POINT_ID)
-                .Returns((string)null);
+                .Returns((ChoiceRef)null);
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create)
                 .Returns(true);
@@ -173,7 +187,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<string>(),
+                    Arg.Any<ChoiceRef>(),
                     Arg.Any<bool>());
         }
 

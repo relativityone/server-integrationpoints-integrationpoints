@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
         }
 
-        public string GetLastJobHistoryStatus(int workspaceArtifactId, int integrationPointArtifactId)
+        public ChoiceRef GetLastJobHistoryStatus(int workspaceArtifactId, int integrationPointArtifactId)
         {
             IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             return jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);

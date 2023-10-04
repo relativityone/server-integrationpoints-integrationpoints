@@ -717,16 +717,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-            string lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
+            ChoiceRef lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
 
-            bool lastStatusAllowsRun = lastJobHistoryStatus.IsIn(
-                StringComparison.InvariantCultureIgnoreCase,
+            bool lastStatusAllowsRun = lastJobHistoryStatus.EqualsToAnyChoice(
                 null,
-                JobStatusChoices.JobHistoryCompleted.Name,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                JobStatusChoices.JobHistoryErrorJobFailed.Name,
-                JobStatusChoices.JobHistoryStopped.Name,
-                JobStatusChoices.JobHistoryValidationFailed.Name);
+                JobStatusChoices.JobHistoryCompleted,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryStopped,
+                JobStatusChoices.JobHistoryValidationFailed);
 
             if (lastStatusAllowsRun == false)
             {
@@ -745,12 +744,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-            string lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
-
-            bool completedWithErrors = string.Equals(
-                lastJobHistoryStatus,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                StringComparison.InvariantCultureIgnoreCase);
+            ChoiceRef lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
+            bool completedWithErrors = lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryCompletedWithErrors);
 
             if (providerType != ProviderType.Relativity || completedWithErrors == false)
             {

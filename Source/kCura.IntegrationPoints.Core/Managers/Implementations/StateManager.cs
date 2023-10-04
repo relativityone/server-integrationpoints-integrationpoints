@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Services.Choice;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -16,8 +17,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasErrorViewPermissions,
             bool hasProfileAddPermission,
             bool calculationInProgress,
-            string lastJobHistoryStatus,
-            bool isIApiV2CustomProviderWorkflow)
+            ChoiceRef lastJobHistoryStatus,
+            isIApiV2CustomProviderWorkflow)
         {
             bool runButtonEnabled = IsRunButtonEnable(lastJobHistoryStatus);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasErrorViewPermissions, lastJobHistoryStatus);
@@ -50,53 +51,43 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return providerType == ProviderType.Relativity && !calculationInProgress;
         }
 
-        private bool IsRunButtonEnable(string lastJobHistoryStatus)
+        private bool IsRunButtonEnable(ChoiceRef lastJobHistoryStatus)
         {
-            return lastJobHistoryStatus.IsIn(
-                StringComparison.InvariantCultureIgnoreCase,
+            return lastJobHistoryStatus.EqualsToAnyChoice(
                 null,
-                JobStatusChoices.JobHistoryCompleted.Name,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                JobStatusChoices.JobHistoryErrorJobFailed.Name,
-                JobStatusChoices.JobHistoryStopped.Name,
-                JobStatusChoices.JobHistoryValidationFailed.Name);
+                JobStatusChoices.JobHistoryCompleted,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryStopped,
+                JobStatusChoices.JobHistoryValidationFailed);
         }
 
-        private bool IsViewErrorsLinkEnabled(ProviderType providerType, bool hasErrorViewPermissions, string lastJobHistoryStatus)
+        private bool IsViewErrorsLinkEnabled(ProviderType providerType, bool hasErrorViewPermissions, ChoiceRef lastJobHistoryStatus)
         {
-            bool lastJobCondition = lastJobHistoryStatus.IsIn(
-                StringComparison.InvariantCultureIgnoreCase,
-                JobStatusChoices.JobHistoryErrorJobFailed.Name,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                JobStatusChoices.JobHistoryValidationFailed.Name);
+            bool lastJobCondition = lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryValidationFailed);
 
             return providerType == ProviderType.Relativity && hasErrorViewPermissions && lastJobCondition;
         }
 
-        private bool IsRetryErrorsButtonEnabled(ProviderType providerType, string lastJobHistoryStatus)
+        private bool IsRetryErrorsButtonEnabled(ProviderType providerType, ChoiceRef lastJobHistoryStatus)
         {
-            bool lastJobCondition = string.Equals(
-                lastJobHistoryStatus,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                StringComparison.InvariantCultureIgnoreCase);
-
-            return providerType == ProviderType.Relativity && lastJobCondition;
+            return providerType == ProviderType.Relativity
+                   && lastJobHistoryStatus.EqualsToAnyChoice(JobStatusChoices.JobHistoryCompletedWithErrors);
         }
 
-        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, string lastJobHistoryStatus, bool isIApiV2CustomProviderWorkflow)
+        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus)
         {
-            if (string.Equals(
-                    lastJobHistoryStatus,
-                    JobStatusChoices.JobHistoryPending.Name,
-                    StringComparison.InvariantCultureIgnoreCase))
+            if (lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
             {
                 return true;
             }
 
-            bool isValidatingOrProcessing = lastJobHistoryStatus.IsIn(
-                StringComparison.InvariantCultureIgnoreCase,
-                JobStatusChoices.JobHistoryValidating.Name,
-                JobStatusChoices.JobHistoryProcessing.Name);
+            bool isValidatingOrProcessing = lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryValidating,
+                JobStatusChoices.JobHistoryProcessing);
 
             return isValidatingOrProcessing
                    && exportType != ExportType.ProductionSet
@@ -119,13 +110,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return hasProfileAddPermission;
         }
 
-        private bool IsDownloadErrorFileLinkEnabled( string lastJobHistoryStatus)
+        private bool IsDownloadErrorFileLinkEnabled(ChoiceRef lastJobHistoryStatus)
         {
-            return lastJobHistoryStatus.IsIn(
-                StringComparison.InvariantCultureIgnoreCase,
-                JobStatusChoices.JobHistoryErrorJobFailed.Name,
-                JobStatusChoices.JobHistoryCompletedWithErrors.Name,
-                JobStatusChoices.JobHistoryValidationFailed.Name);
+            return lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryValidationFailed);
         }
 
         private bool IsDownloadErrorFileLinkVisible(ProviderType providerType)

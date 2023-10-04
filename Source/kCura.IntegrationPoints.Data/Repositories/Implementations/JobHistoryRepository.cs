@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Relativity.Services.Objects.DataContracts;
+
+using Choice = Relativity.Services.Choice.ChoiceRef;
 using Sort = Relativity.Services.Objects.DataContracts.Sort;
 using SortEnum = Relativity.Services.Objects.DataContracts.SortEnum;
 
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return result.Select(x => x.ArtifactId).FirstOrDefault();
         }
 
-        public string GetLastJobHistoryStatus(int integrationPointArtifactId)
+        public Choice GetLastJobHistoryStatus(int integrationPointArtifactId)
         {
             string integrationPointCondition = CreateIntegrationPointCondition(integrationPointArtifactId);
 
@@ -63,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             };
 
             IEnumerable<JobHistory> result = _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items;
-            return result.Select(x => x.JobStatus.Name).FirstOrDefault();
+            return result.Select(x => x.JobStatus).FirstOrDefault();
         }
 
         public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)

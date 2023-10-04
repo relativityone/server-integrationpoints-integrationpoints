@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Managers
         /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
         /// <param name="workspaceArtifactId">Workspace artifact id</param>
         /// <returns>Status of the most recent finished Job History objects</returns>
-        string GetLastJobHistoryStatus(int workspaceArtifactId, int integrationPointArtifactId);
+        ChoiceRef GetLastJobHistoryStatus(int workspaceArtifactId, int integrationPointArtifactId);
 
         /// <summary>
         /// Gets the stoppable job histories for a given Integration Point.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// </summary>
         /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
         /// <returns>Status of the most recent finished Job History objects</returns>
-        string GetLastJobHistoryStatus(int integrationPointArtifactId);
+        ChoiceRef GetLastJobHistoryStatus(int integrationPointArtifactId);
 
         /// <summary>
         /// We mark job as failed or validation failed. We change status.
