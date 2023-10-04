@@ -55,11 +55,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
             int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
             transferredItemsCount.Should().Be(workspaceEntityCount)
-                .And.Be(_expectedTestData.EntryIds.Count());
+                .And.Be(_expectedTestData.Data.Count);
         }
 
         private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
+            Thread.Sleep(TimeSpan.FromSeconds(2));
+
             integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
 
             Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -92,9 +94,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             importFromLDAPMapFieldsPage.Cn.DoubleClick();
             importFromLDAPMapFieldsPage.GivenName.DoubleClick();
             importFromLDAPMapFieldsPage.Sn.DoubleClick();
+
             importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
             importFromLDAPMapFieldsPage.FirstName.DoubleClick();
             importFromLDAPMapFieldsPage.LastName.DoubleClick();
+
+            importFromLDAPMapFieldsPage.EntityManagerContainsLinkNo.Check();
 
             return importFromLDAPMapFieldsPage.Save.ClickAndGo();
         }
