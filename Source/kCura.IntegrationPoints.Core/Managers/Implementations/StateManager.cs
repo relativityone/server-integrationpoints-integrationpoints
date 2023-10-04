@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasProfileAddPermission,
             bool calculationInProgress,
             ChoiceRef lastJobHistoryStatus,
-            isIApiV2CustomProviderWorkflow)
+            bool isIApiV2CustomProviderWorkflow)
         {
             bool runButtonEnabled = IsRunButtonEnable(lastJobHistoryStatus);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasErrorViewPermissions, lastJobHistoryStatus);
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                    && lastJobHistoryStatus.EqualsToAnyChoice(JobStatusChoices.JobHistoryCompletedWithErrors);
         }
 
-        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus)
+        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus, bool isIApiV2CustomProviderWorkflow)
         {
             if (lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
             {

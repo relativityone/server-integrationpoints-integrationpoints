@@ -268,10 +268,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         }
 
         [Test]
-        [TestCase(JobStatusChoices.JobHistoryPending)]
-        [TestCase(JobStatusChoices.JobHistoryValidating)]
-        [TestCase(JobStatusChoices.JobHistoryProcessing)]
-        public void GetOtherProviderWithIApiV2_StopButtonEnabledShouldBeTrue_WhenJobIsPendingOrIsExecuting(ChoiceRef lastJobHistoryStatus)
+        [TestCase("Pending")]
+        [TestCase("Validating")]
+        [TestCase("Processing")]
+        public void GetOtherProviderWithIApiV2_StopButtonEnabledShouldBeTrue_WhenJobIsPendingOrExecuting(string lastJobHistoryStatus)
         {
             // Arrange
             ExportType exportType = ExportType.SavedSearch;
@@ -280,6 +280,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool isCalculating = false;
             _isIApiV2CustomProviderWorkflow = true;
 
+            ChoiceRef lastJobHistoryStatusChoice;
+
+            switch (lastJobHistoryStatus)
+            {
+                case "Validating":
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryValidating;
+                    break;
+                case "Processing":
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryProcessing;
+                    break;
+                default:
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryPending;
+                    break;
+            }
+
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
                 exportType,
@@ -287,7 +302,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus,
+                lastJobHistoryStatusChoice,
                 _isIApiV2CustomProviderWorkflow);
 
             // Assert
