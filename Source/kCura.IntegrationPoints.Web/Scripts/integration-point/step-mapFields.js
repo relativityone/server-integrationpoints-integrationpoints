@@ -223,7 +223,7 @@ ko.validation.insertValidationMessage = function (element) {
 			});
         
         if (typeof model.EntityManagerFieldContainsLink === "undefined" && artifactTypeId !== documentArtifactTypeId) {
-            model.EntityManagerFieldContainsLink = "true";
+            model.EntityManagerFieldContainsLink = "false";
         }
 
 		this.EntityManagerFieldContainsLink = ko.observable(model.EntityManagerFieldContainsLink || "false");

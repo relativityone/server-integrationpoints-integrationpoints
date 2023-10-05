@@ -7,15 +7,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
     using _ = IntegrationPointViewPage;
 
-    [WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
+    [WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 30, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
     internal partial class IntegrationPointViewPage : WorkspacePage<_>
     {
         [WaitUntilEnabled]
-        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
+        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 30, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
+        [FindByContent("Run")]
         public Button<IntegrationPointRunPopup, _> Run { get; private set; }
 
         [WaitUntilEnabled]
-        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
+        [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 30, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
         [FindByContent("Save as Profile")]
         public Button<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
 
