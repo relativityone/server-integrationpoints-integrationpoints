@@ -46,9 +46,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [FindByTitle("Last Name [Fixed-Length Text]")]
         [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
         public Option<string, _> LastName { get; private set; }
-
-        [FindById("entity-manager-contains-link-no")]
-        [WaitForJQueryAjax(TriggerEvents.BeforeClickOrFocus)]
-        public RadioButton<_> EntityManagerContainsLinkNo { get; private set; }
     }
 }

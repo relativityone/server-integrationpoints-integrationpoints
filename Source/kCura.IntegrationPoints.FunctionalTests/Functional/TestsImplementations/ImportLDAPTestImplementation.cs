@@ -98,9 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
             importFromLDAPMapFieldsPage.FirstName.DoubleClick();
             importFromLDAPMapFieldsPage.LastName.DoubleClick();
-
-            importFromLDAPMapFieldsPage.EntityManagerContainsLinkNo.Check();
-
+            
             return importFromLDAPMapFieldsPage.Save.ClickAndGo();
         }
     }
