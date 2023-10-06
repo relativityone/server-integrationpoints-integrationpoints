@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private void SetupIntegrationPoint()
         {
-            IList<IntegrationPointTest> IntegrationPointsByCondition(QueryRequest request, IList<IntegrationPointTest> list)
+            IList<IntegrationPointFake> IntegrationPointsByCondition(QueryRequest request, IList<IntegrationPointFake> list)
             {
                 if (IsProviderCondition(request.Condition, out int sourceId, out int destinationId))
                 {
@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     return list;
                 }
-                return new List<IntegrationPointTest>();
+                return new List<IntegrationPointFake>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),

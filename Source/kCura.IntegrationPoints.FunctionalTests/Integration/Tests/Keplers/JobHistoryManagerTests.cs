@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int expectedIndexOfFirstReturnedDataSet = request.Page * request.PageSize;
             int expectedNumberOfReturnedDataSets = request.PageSize;
 
-            List<JobHistoryTest> sourceData = SourceWorkspace.JobHistory.Skip(expectedIndexOfFirstReturnedDataSet).Take(expectedNumberOfReturnedDataSets).ToList();
+            List<JobHistoryFake> sourceData = SourceWorkspace.JobHistory.Skip(expectedIndexOfFirstReturnedDataSet).Take(expectedNumberOfReturnedDataSets).ToList();
 
             // Act
             JobHistorySummaryModel result = await _sut.GetJobHistoryAsync(request).ConfigureAwait(false);
@@ -144,20 +144,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         private void AddTestData()
         {
-            WorkspaceTest destinationWorkspace = SetupDestinationWorkspace(out string destinationName);
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            WorkspaceFake destinationWorkspace = SetupDestinationWorkspace(out string destinationName);
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
             SetupJobHistoryTestData(integrationPoint, destinationName);
         }
 
-        private WorkspaceTest SetupDestinationWorkspace(out string destinationName)
+        private WorkspaceFake SetupDestinationWorkspace(out string destinationName)
         {
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             destinationName = $"Workspace - {destinationWorkspaceArtifactId}";
             return FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
         }
 
-        private void SetupJobHistoryTestData(IntegrationPointTest integrationPoint, string destinationName)
+        private void SetupJobHistoryTestData(IntegrationPointFake integrationPoint, string destinationName)
         {
             SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                DateTime.Now, JobStatusChoices.JobHistoryCompleted, itemsTransferred: 17, totalItems: 17, overwrite: OverwriteModeNames.AppendOnlyModeName);

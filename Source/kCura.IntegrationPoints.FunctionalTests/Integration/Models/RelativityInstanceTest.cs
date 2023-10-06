@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class RelativityInstanceTest
     {
-        private readonly ObservableCollection<WorkspaceTest> _workspaces = new ObservableCollection<WorkspaceTest>();
+        private readonly ObservableCollection<WorkspaceFake> _workspaces = new ObservableCollection<WorkspaceFake>();
 
         public List<Error> Errors { get; } = new List<Error>();
 
@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public Dictionary<string, List<JobTrackerTest>> JobTrackerResourceTables { get; } = new Dictionary<string, List<JobTrackerTest>>();
 
-        public IList<WorkspaceTest> Workspaces => _workspaces;
+        public IList<WorkspaceFake> Workspaces => _workspaces;
 
         public TestContext TestContext { get; }
 

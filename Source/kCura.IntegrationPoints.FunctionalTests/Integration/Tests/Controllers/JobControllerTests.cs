@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
     public class JobControllerTests : TestsBase
     {
-        private WorkspaceTest _destinationWorkspace;
+        private WorkspaceFake _destinationWorkspace;
 
         [SetUp]
         public void Setup()
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Run_ShouldNotScheduleSyncJobInRipQueue()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobController.Payload payload = new JobController.Payload
@@ -59,7 +59,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Retry_ShouldNotScheduleSyncRetryJobInRipQueue()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
             integrationPoint.HasErrors = true;
 
@@ -89,7 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Retry_ShouldAssignCorrectOverwriteModeToJobHistory(string initialOverwriteMode, bool switchModeToAppendOverlay, string expectedOverwriteMode)
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
             integrationPoint.HasErrors = true;
             ConvertToOverwriteChoice(integrationPoint, initialOverwriteMode);
@@ -108,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             sut.Retry(payload, switchModeToAppendOverlay);
 
             // Assert
-            JobHistoryTest addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
+            JobHistoryFake addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
             addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);
         }
 
@@ -116,13 +116,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Stop_ShouldStopRunningJob()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 
-            JobHistoryTest jobHistory =
+            JobHistoryFake jobHistory =
                 SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryProcessing;
@@ -150,13 +150,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Stop_ShouldNotStopAlreadyStoppedJobJob()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 
-            JobHistoryTest jobHistory =
+            JobHistoryFake jobHistory =
                 SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
@@ -183,13 +183,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Stop_ShouldNotStopUnstoppableJob()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 
-            JobHistoryTest jobHistory =
+            JobHistoryFake jobHistory =
                 SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryProcessing;
@@ -217,7 +217,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         public void Stop_ShouldStopJobWithChildJobs()
         {
             // Arrange
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
@@ -238,7 +238,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             FakeRelativityInstance.JobsInQueue.AddRange(childJobs);
 
-            JobHistoryTest jobHistory =
+            JobHistoryFake jobHistory =
                 SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryProcessing;
@@ -279,7 +279,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             Container.Register(Component.For<IFileInfoFactory>().UsingFactoryMethod(c => fileInfoFactory)
                 .LifestyleTransient().Named(nameof(FakeFileInfoFactory)).IsDefault());
 
-            IntegrationPointTest integrationPoint =
+            IntegrationPointFake integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportDocumentLoadFileIntegrationPoint(loadFile);
 
             JobController.Payload payload = new JobController.Payload
@@ -313,9 +313,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             Proxy.PermissionManager.GrantNotConfiguredPermissions = false;
 
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper
+            WorkspaceFake destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper
                 .CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+            IntegrationPointFake integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
                 .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
             JobController.Payload payload = new JobController.Payload
@@ -360,7 +360,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return sut;
         }
 
-        private void ConvertToOverwriteChoice(IntegrationPointTest integrationPoint, string overwriteMode)
+        private void ConvertToOverwriteChoice(IntegrationPointFake integrationPoint, string overwriteMode)
         {
             switch (overwriteMode)
             {

@@ -7,18 +7,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public class SavedSearchHelper : WorkspaceHelperBase
     {
-        public SavedSearchHelper(WorkspaceTest workspace) : base(workspace)
+        public SavedSearchHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
-        public IList<SavedSearchTest> GetAllSavedSearches()
+        public IList<SavedSearchFake> GetAllSavedSearches()
         {
             return Workspace.SavedSearches;
         }
 
-        public SavedSearchTest GetSavedSearch(int savedSearchId)
+        public SavedSearchFake GetSavedSearch(int savedSearchId)
         {
-            SavedSearchTest savedSearch = Workspace.SavedSearches.First(x => x.ArtifactId == savedSearchId);
+            SavedSearchFake savedSearch = Workspace.SavedSearches.First(x => x.ArtifactId == savedSearchId);
 
             if (savedSearch == null)
             {
@@ -28,9 +28,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return savedSearch;
         }
 
-        public SavedSearchTest GetSavedSearchBySearchCriteria(SearchCriteria searchCriteria)
+        public SavedSearchFake GetSavedSearchBySearchCriteria(SearchCriteria searchCriteria)
         {
-            SavedSearchTest savedSearch = Workspace.SavedSearches.First(x =>
+            SavedSearchFake savedSearch = Workspace.SavedSearches.First(x =>
                     x.SearchCriteria.HasImages == searchCriteria.HasImages &&
                     x.SearchCriteria.HasFields == searchCriteria.HasFields &&
                     x.SearchCriteria.HasNatives == searchCriteria.HasNatives);

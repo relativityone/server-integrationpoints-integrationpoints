@@ -138,7 +138,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             if (IsArtifactTypeIdCondition(request.Condition, out int artifactTypeId))
             {
-                WorkspaceTest workspace = Relativity.Workspaces.Where(x => x.ArtifactId == workspaceId).FirstOrDefault();
+                WorkspaceFake workspace = Relativity.Workspaces.Where(x => x.ArtifactId == workspaceId).FirstOrDefault();
                 AddRelativityObjectsToResult(
                     workspace.ObjectTypes.Where(x => x.ArtifactTypeId == artifactTypeId)
                     , foundObjects);

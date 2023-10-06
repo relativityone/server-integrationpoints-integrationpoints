@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         public IWindsorContainer Container { get; set; }
 
-        public WorkspaceTest SourceWorkspace { get; set; }
+        public WorkspaceFake SourceWorkspace { get; set; }
 
         public FakeUser User { get; set; }
 

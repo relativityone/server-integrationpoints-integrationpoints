@@ -6,20 +6,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
 {
     public static class Extensions
     {
-        public static void ShouldHaveCorrectItemsTransferredUpdateHistory(this JobHistoryTest jobHistoryTest, int from, int to)
+        public static void ShouldHaveCorrectItemsTransferredUpdateHistory(this JobHistoryFake jobHistoryFake, int from, int to)
         {
             // items transferred can go down due to how IAPI works
             // it reports item transferred, then on item level error it we subtract one transferred item and increment item level errors
-            jobHistoryTest.ItemsTransferredHistory.All(x => x >= from && x <= to).Should().BeTrue();
-            jobHistoryTest.ItemsTransferredHistory.First().Should().Be(from);
-            jobHistoryTest.ItemsTransferredHistory.Last().Should().Be(to);
+            jobHistoryFake.ItemsTransferredHistory.All(x => x >= from && x <= to).Should().BeTrue();
+            jobHistoryFake.ItemsTransferredHistory.First().Should().Be(from);
+            jobHistoryFake.ItemsTransferredHistory.Last().Should().Be(to);
         }
 
-        public static void ShouldHaveCorrectItemsWithErrorsUpdateHistory(this JobHistoryTest jobHistoryTest, int from, int to)
+        public static void ShouldHaveCorrectItemsWithErrorsUpdateHistory(this JobHistoryFake jobHistoryFake, int from, int to)
         {
-            jobHistoryTest.ItemsWithErrorsHistory.First().Should().Be(from);
-            jobHistoryTest.ItemsWithErrorsHistory.Last().Should().Be(to);
-            jobHistoryTest.ItemsWithErrorsHistory.Should().BeInAscendingOrder();
+            jobHistoryFake.ItemsWithErrorsHistory.First().Should().Be(from);
+            jobHistoryFake.ItemsWithErrorsHistory.Last().Should().Be(to);
+            jobHistoryFake.ItemsWithErrorsHistory.Should().BeInAscendingOrder();
         }
     }
 }

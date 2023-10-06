@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetIntegrationPointTypes_ShouldReturnCorrectValues()
         {
             // Arrange
-            IList<IntegrationPointTypeTest> expectedIntegrationPointTypes = SourceWorkspace.IntegrationPointTypes;
+            IList<IntegrationPointTypeFake> expectedIntegrationPointTypes = SourceWorkspace.IntegrationPointTypes;
 
             // Act
             IList<IntegrationPointTypeModel> result = await _sut.GetIntegrationPointTypes(SourceWorkspace.ArtifactId);

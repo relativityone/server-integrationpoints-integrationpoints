@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Mock.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, int viewId) =>
                 {
-                    ViewTest view = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId).Views.SingleOrDefault(x => x.ArtifactId == viewId);
+                    ViewFake view = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId).Views.SingleOrDefault(x => x.ArtifactId == viewId);
 
                     if (view == null)
                     {

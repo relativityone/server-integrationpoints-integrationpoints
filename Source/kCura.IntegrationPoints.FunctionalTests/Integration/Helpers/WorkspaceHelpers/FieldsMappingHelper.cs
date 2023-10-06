@@ -12,15 +12,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
         private const string LONG_TEXT_NAME = "Long Text";
 
-        public FieldsMappingHelper(WorkspaceTest workspace) : base(workspace)
+        public FieldsMappingHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
-        public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest destinationWorkspace, int artifactTypeId)
+        public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceFake destinationWorkspace, int artifactTypeId)
         {
-            FieldTest sourceIdentifier = Workspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
+            FieldFake sourceIdentifier = Workspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
-            FieldTest destinationIdentifier = destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
+            FieldFake destinationIdentifier = destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
             return new List<FieldMap>
             {
@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public List<FieldMap> PrepareIdentifierFieldsMappingForImport(string identifierFieldName)
         {
-            FieldTest sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
+            FieldFake sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
 
             return new List<FieldMap>
             {
@@ -82,7 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public List<FieldMap> PrepareIdentifierFieldsMappingForLoadFileImport(string identifierFieldName)
         {
-            FieldTest sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
+            FieldFake sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
 
             return new List<FieldMap>
             {
@@ -114,7 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public List<FieldMap> PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
         {
             int _artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-            Dictionary<string, FieldTest> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == _artifactTypeIdEntity)
+            Dictionary<string, FieldFake> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == _artifactTypeIdEntity)
                 .ToDictionary(x => x.Name, x => x);
 
             return new List<FieldMap>
@@ -128,12 +128,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             };
         }
 
-        public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(WorkspaceTest destinationWorkspace)
+        public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(WorkspaceFake destinationWorkspace)
         {
             int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-            Dictionary<string, FieldTest> sourceWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+            Dictionary<string, FieldFake> sourceWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
                 .ToDictionary(x => x.Name, x => x);
-            Dictionary<string, FieldTest> destinationWorkspaceFields = destinationWorkspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+            Dictionary<string, FieldFake> destinationWorkspaceFields = destinationWorkspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
                 .ToDictionary(x => x.Name, x => x);
             return CreateEntitiesFieldMap(sourceWorkspaceFields, destinationWorkspaceFields);
         }
@@ -141,7 +141,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync()
         {
             int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-            Dictionary<string, FieldTest> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+            Dictionary<string, FieldFake> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
                 .ToDictionary(x => x.Name, x => x);
             return CreateEntitiesFieldMap(destinationWorkspaceFields);
         }
@@ -149,7 +149,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport()
         {
             int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-            Dictionary<string, FieldTest> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+            Dictionary<string, FieldFake> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
                 .ToDictionary(x => x.Name, x => x);
             List<FieldMap> IdentifierOnlyFieldMap = PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport();
             List<FieldMap> WithoutIdentifierFieldMap = new List<FieldMap>
@@ -190,7 +190,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return AddFieldEntriesToFieldsMap(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, FIXED_LENGTH_TEXT_NAME);
         }
 
-        private List<FieldMap> CreateEntitiesFieldMap(Dictionary<string, FieldTest> sourceWorkspaceFields, Dictionary<string, FieldTest> destinationWorkspaceFields)
+        private List<FieldMap> CreateEntitiesFieldMap(Dictionary<string, FieldFake> sourceWorkspaceFields, Dictionary<string, FieldFake> destinationWorkspaceFields)
         {
             return new List<FieldMap>
             {
@@ -221,7 +221,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             };
         }
 
-        private List<FieldMap> CreateEntitiesFieldMap(Dictionary<string, FieldTest> destinationWorkspaceFields)
+        private List<FieldMap> CreateEntitiesFieldMap(Dictionary<string, FieldFake> destinationWorkspaceFields)
         {
             return new List<FieldMap>
             {
@@ -252,7 +252,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             };
         }
 
-        private FieldEntry PrepareFieldEntry(string displayName, bool isIdentifier, string type, Dictionary<string, FieldTest> workspaceFields = null, bool trimDisplayName = false)
+        private FieldEntry PrepareFieldEntry(string displayName, bool isIdentifier, string type, Dictionary<string, FieldFake> workspaceFields = null, bool trimDisplayName = false)
         {
             string name = trimDisplayName ? string.Concat(displayName.Where(x => !char.IsWhiteSpace(x))) : displayName;
             return new FieldEntry
@@ -268,7 +268,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         private List<FieldMap> AddFieldEntriesToFieldsMap(int objectTypeId, string fieldType)
         {
-            Dictionary<string, FieldTest> fields = Workspace.Fields.Where(x => x.ObjectTypeId == objectTypeId)
+            Dictionary<string, FieldFake> fields = Workspace.Fields.Where(x => x.ObjectTypeId == objectTypeId)
                 .ToDictionary(x => x.Name, x => x);
 
             List<FieldMap> fieldsMap = new List<FieldMap>();

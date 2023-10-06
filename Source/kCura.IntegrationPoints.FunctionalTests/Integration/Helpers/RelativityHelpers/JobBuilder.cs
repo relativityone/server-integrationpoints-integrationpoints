@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return _job;
         }
 
-        public JobBuilder WithIntegrationPoint(IntegrationPointTest integrationPoint)
+        public JobBuilder WithIntegrationPoint(IntegrationPointFake integrationPoint)
         {
             _job.RelatedObjectArtifactID = integrationPoint.ArtifactId;
 
@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return this;
         }
 
-        public JobBuilder WithWorkspace(WorkspaceTest workspace)
+        public JobBuilder WithWorkspace(WorkspaceFake workspace)
         {
             _job.WorkspaceID = workspace.ArtifactId;
 

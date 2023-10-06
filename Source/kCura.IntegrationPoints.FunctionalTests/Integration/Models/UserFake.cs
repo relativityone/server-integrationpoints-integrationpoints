@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     /// <inheritdoc />
-    public class SavedSearchTest : RdoTestBase
+    public class UserFake : RdoFakeBase
     {
         public string Name { get; set; }
 
-        public string Owner { get; set; }
-
-        public SearchCriteria SearchCriteria { get; set; }
-
-        public SavedSearchTest() : base("SavedSearch")
+        public UserFake() : base("User")
         {
-            SearchCriteria = new SearchCriteria();
-        }
-
-        public SavedSearchTest(SearchCriteria searchCriteria) : base("SavedSearch")
-        {
-            SearchCriteria = searchCriteria;
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -41,18 +30,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                     {
                         Field = new Field
                         {
-                            Name = SavedSearchFieldsConstants.NAME_FIELD,
+                            Name = "Name",
                         },
                         Value = Name
-                    },
-                    new FieldValuePair
-                    {
-                        Field = new Field
-                        {
-                            Name = SavedSearchFieldsConstants.OWNER_FIELD,
-                        },
-                        Value = Owner
-                    },
+                    }
                 },
             };
         }

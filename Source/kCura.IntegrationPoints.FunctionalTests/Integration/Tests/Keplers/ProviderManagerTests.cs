@@ -29,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetSourceProviderArtifactIdAsync_ShouldReturnCorrectValues(string sourceProviderGuidIdentifier)
         {
             // Arrange
-            Models.SourceProviderTest expectedArtifactId = SourceWorkspace.SourceProviders.Where(x => x.Identifier == sourceProviderGuidIdentifier).First();
+            Models.SourceProviderFake expectedArtifactId = SourceWorkspace.SourceProviders.Where(x => x.Identifier == sourceProviderGuidIdentifier).First();
 
             // Act
             int result = await _sut.GetSourceProviderArtifactIdAsync(SourceWorkspace.ArtifactId, sourceProviderGuidIdentifier).ConfigureAwait(false);
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetDestinationProviderArtifactIdAsync_ShouldReturnCorrectValues(string destinationProviderGuidIdentifier)
         {
             // Arrange
-            Models.DestinationProviderTest expectedArtifactId = SourceWorkspace.DestinationProviders.Where(x => x.Identifier == destinationProviderGuidIdentifier).First();
+            Models.DestinationProviderFake expectedArtifactId = SourceWorkspace.DestinationProviders.Where(x => x.Identifier == destinationProviderGuidIdentifier).First();
 
             // Act
             int result = await _sut.GetDestinationProviderArtifactIdAsync(SourceWorkspace.ArtifactId, destinationProviderGuidIdentifier).ConfigureAwait(false);

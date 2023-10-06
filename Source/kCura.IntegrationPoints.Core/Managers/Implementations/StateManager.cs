@@ -1,5 +1,10 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using System;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.Services.Choice;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -9,21 +14,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public ButtonStateDTO GetButtonState(
             ExportType exportType,
             ProviderType providerType,
-            bool hasJobsExecutingOrInQueue,
-            bool hasErrors,
             bool hasErrorViewPermissions,
-            bool hasStoppableJobs,
             bool hasProfileAddPermission,
-            bool calculationInProgress)
+            bool calculationInProgress,
+            ChoiceRef lastJobHistoryStatus)
         {
-            bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
-            bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
-            bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors);
-            bool stopButtonEnabled = IsStopButtonEnabled(hasStoppableJobs);
+            bool runButtonEnabled = IsRunButtonEnable(lastJobHistoryStatus);
+            bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasErrorViewPermissions, lastJobHistoryStatus);
+            bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, lastJobHistoryStatus);
+            bool stopButtonEnabled = IsStopButtonEnabled(providerType, exportType, lastJobHistoryStatus);
             bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
             bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType, exportType);
             bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
-            bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
+            bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(lastJobHistoryStatus);
             bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
             bool calculateStatsButtonEnabled = IsCalculateStatisticsButtonEnabled(providerType, calculationInProgress);
 
@@ -44,32 +47,55 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         private bool IsCalculateStatisticsButtonEnabled(ProviderType providerType, bool calculationInProgress)
         {
-            return (providerType == ProviderType.Relativity) && !calculationInProgress;
+            return providerType == ProviderType.Relativity && !calculationInProgress;
         }
 
-        private bool IsRunButtonEnable(bool hasJobsExecutingOrInQueue)
+        private bool IsRunButtonEnable(ChoiceRef lastJobHistoryStatus)
         {
-            return !hasJobsExecutingOrInQueue;
+            return lastJobHistoryStatus.EqualsToAnyChoice(
+                null,
+                JobStatusChoices.JobHistoryCompleted,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryStopped,
+                JobStatusChoices.JobHistoryValidationFailed);
         }
 
-        private bool IsViewErrorsLinkEnabled(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions)
+        private bool IsViewErrorsLinkEnabled(ProviderType providerType, bool hasErrorViewPermissions, ChoiceRef lastJobHistoryStatus)
         {
-            return (providerType == ProviderType.Relativity) && !hasJobsExecutingOrInQueue && hasErrors && hasErrorViewPermissions;
+            bool lastJobCondition = lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryValidationFailed);
+
+            return providerType == ProviderType.Relativity && hasErrorViewPermissions && lastJobCondition;
         }
 
-        private bool IsRetryErrorsButtonEnabled(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors)
+        private bool IsRetryErrorsButtonEnabled(ProviderType providerType, ChoiceRef lastJobHistoryStatus)
         {
-            return (providerType == ProviderType.Relativity) && !hasJobsExecutingOrInQueue && hasErrors;
+            return providerType == ProviderType.Relativity
+                   && lastJobHistoryStatus.EqualsToAnyChoice(JobStatusChoices.JobHistoryCompletedWithErrors);
         }
 
-        private bool IsStopButtonEnabled(bool hasStoppableJobs)
+        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus)
         {
-            return hasStoppableJobs;
+            if (lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
+            {
+                return true;
+            }
+
+            bool isValidatingOrProcessing = lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryValidating,
+                JobStatusChoices.JobHistoryProcessing);
+
+            return isValidatingOrProcessing
+                   && providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
+                   && exportType != ExportType.ProductionSet;
         }
 
         private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)
         {
-            return (providerType == ProviderType.Relativity) && hasErrorViewPermissions;
+            return providerType == ProviderType.Relativity && hasErrorViewPermissions;
         }
 
         private bool IsRetryErrorsButtonVisible(ProviderType providerType, ExportType exportType)
@@ -82,9 +108,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return hasProfileAddPermission;
         }
 
-        private bool IsDownloadErrorFileLinkEnabled(bool hasErrors)
+        private bool IsDownloadErrorFileLinkEnabled(ChoiceRef lastJobHistoryStatus)
         {
-            return hasErrors;
+            return lastJobHistoryStatus.EqualsToAnyChoice(
+                JobStatusChoices.JobHistoryErrorJobFailed,
+                JobStatusChoices.JobHistoryCompletedWithErrors,
+                JobStatusChoices.JobHistoryValidationFailed);
         }
 
         private bool IsDownloadErrorFileLinkVisible(ProviderType providerType)

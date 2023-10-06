@@ -20,18 +20,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             _serializer = serializer;
         }
 
-        public WorkspaceTest CreateWorkspace(int? workspaceArtifactId = null)
+        public WorkspaceFake CreateWorkspace(int? workspaceArtifactId = null)
         {
-            WorkspaceTest workspace = new WorkspaceTest(_serializer, workspaceArtifactId);
+            WorkspaceFake workspace = new WorkspaceFake(_serializer, workspaceArtifactId);
 
             Relativity.Workspaces.Add(workspace);
 
-            workspace.Folders.Add(new FolderTest
+            workspace.Folders.Add(new FolderFake
             {
                 Name = workspace.Name
             });
 
-            workspace.ObjectTypes.Add(new ObjectTypeTest
+            workspace.ObjectTypes.Add(new ObjectTypeFake
                 {
                     Name = Const.Document._DOCUMENT_NAME,
                     Guid = Const.Document._DOCUMENT_GUID,
@@ -40,13 +40,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                     ArtifactTypeId = (int)ArtifactType.Document
                 }
             );
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = (int)ArtifactType.Document,
                 IsIdentifier = true,
                 Name = "Control Number"
             });
-            workspace.Fields.Add(new FieldTest(Const.OVERWRITE_FIELD_ARTIFACT_ID)
+            workspace.Fields.Add(new FieldFake(Const.OVERWRITE_FIELD_ARTIFACT_ID)
             {
                 ObjectTypeId = (int)ArtifactType.Document,
                 Guid = IntegrationPointProfileFieldGuids.OverwriteFieldsGuid,
@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 Name = "Overwrite Fields"
             });
 
-            workspace.ObjectTypes.Add(new ObjectTypeTest
+            workspace.ObjectTypes.Add(new ObjectTypeFake
                 {
                     Name = Const.Entity._ENTITY_OBJECT_NAME,
                     Guid = Const.Entity._ENTITY_OBJECT_GUID,
@@ -65,35 +65,35 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             );
 
             int _artifactTypeIdEntity = workspace.ObjectTypes.First(x => x.Name == Const.Entity._ENTITY_OBJECT_NAME).ArtifactTypeId;
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = _artifactTypeIdEntity,
                 Guid = new Guid(EntityFieldGuids.UniqueID),
                 IsIdentifier = true,
                 Name = "Unique ID"
             });
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = _artifactTypeIdEntity,
                 Guid = new Guid(EntityFieldGuids.FirstName),
                 IsIdentifier = false,
                 Name = Const.Entity._ENTITY_OBJECT_FIRST_NAME
             });
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = _artifactTypeIdEntity,
                 Guid = new Guid(EntityFieldGuids.LastName),
                 IsIdentifier = false,
                 Name = Const.Entity._ENTITY_OBJECT_LAST_NAME
             });
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = _artifactTypeIdEntity,
                 Guid = new Guid(EntityFieldGuids.FullName),
                 IsIdentifier = false,
                 Name = "Full Name"
             });
-            workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldFake
             {
                 ObjectTypeId = _artifactTypeIdEntity,
                 Guid = new Guid(EntityFieldGuids.Manager),
@@ -101,13 +101,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 Name = "Manager"
             });
 
-            workspace.SavedSearches.Add(new SavedSearchTest
+            workspace.SavedSearches.Add(new SavedSearchFake
             {
                 ParentObjectArtifactId = workspace.ArtifactId,
                 Name = "All Documents"
             });
 
-            workspace.Views.Add(new ViewTest
+            workspace.Views.Add(new ViewFake
             {
                 ParentObjectArtifactId = workspace.ArtifactId,
                 Name = "Default View"
@@ -119,10 +119,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, true, false));
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, false, true));
 
-            FolderTest folder = workspace.Folders.First();
-            IList<FieldTest> fields = workspace.Fields;
+            FolderFake folder = workspace.Folders.First();
+            IList<FieldFake> fields = workspace.Fields;
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -131,7 +131,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 1,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -140,7 +140,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 1,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -149,7 +149,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 10,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -158,7 +158,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 12,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -167,7 +167,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 0,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -176,7 +176,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 0,
             });
 
-            workspace.Documents.Add(new DocumentTest
+            workspace.Documents.Add(new DocumentFake
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -185,7 +185,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 32,
             });
 
-            workspace.Documents.Add(new DocumentTest
+            workspace.Documents.Add(new DocumentFake
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -194,7 +194,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 21,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -203,7 +203,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ImageCount = 15,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentFake(fields)
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -211,7 +211,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-            workspace.Documents.Add(new DocumentTest
+            workspace.Documents.Add(new DocumentFake
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -219,7 +219,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-            workspace.Documents.Add(new DocumentTest
+            workspace.Documents.Add(new DocumentFake
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -227,7 +227,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-            workspace.Documents.Add(new DocumentTest
+            workspace.Documents.Add(new DocumentFake
             {
                 ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -238,9 +238,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return workspace;
         }
 
-        public WorkspaceTest CreateWorkspaceWithIntegrationPointsApp(int? workspaceArtifactId)
+        public WorkspaceFake CreateWorkspaceWithIntegrationPointsApp(int? workspaceArtifactId)
         {
-            WorkspaceTest workspace = CreateWorkspace(workspaceArtifactId);
+            WorkspaceFake workspace = CreateWorkspace(workspaceArtifactId);
 
             workspace.Helpers.SourceProviderHelper.CreateLDAP();
             workspace.Helpers.SourceProviderHelper.CreateFTP();
@@ -265,15 +265,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             }
         }
 
-        private void CreateSavedSearchAndProduction(WorkspaceTest workspace, SearchCriteria searchCriteria)
+        private void CreateSavedSearchAndProduction(WorkspaceFake workspace, SearchCriteria searchCriteria)
         {
-            SavedSearchTest savedSearch = new SavedSearchTest(searchCriteria)
+            SavedSearchFake savedSearch = new SavedSearchFake(searchCriteria)
             {
                 ParentObjectArtifactId = workspace.ArtifactId
             };
 
             workspace.SavedSearches.Add(savedSearch);
-            workspace.Productions.Add(new ProductionTest(savedSearch.ArtifactId));
+            workspace.Productions.Add(new ProductionFake(savedSearch.ArtifactId));
         }
     }
 }

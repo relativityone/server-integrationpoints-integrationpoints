@@ -5,13 +5,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 {
     public class DestinationProviderHelper : WorkspaceHelperBase
     {
-        public DestinationProviderHelper(WorkspaceTest workspace) : base(workspace)
+        public DestinationProviderHelper(WorkspaceFake workspace) : base(workspace)
         {
         }
 
-        public DestinationProviderTest CreateRelativityProvider()
+        public DestinationProviderFake CreateRelativityProvider()
         {
-            var provider =  new DestinationProviderTest()
+            var provider =  new DestinationProviderFake()
             {
                 ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY,
@@ -23,9 +23,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return provider;
         }
 
-        public DestinationProviderTest CreateLoadFile()
+        public DestinationProviderFake CreateLoadFile()
         {
-            var destinationProvider = new DestinationProviderTest()
+            var destinationProvider = new DestinationProviderFake()
             {
                 ApplicationIdentifier = GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID,
                 Identifier = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.LOADFILE,
