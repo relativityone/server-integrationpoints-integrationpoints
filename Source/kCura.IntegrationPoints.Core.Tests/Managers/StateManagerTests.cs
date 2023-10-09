@@ -267,18 +267,47 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
         }
 
-        [Test]
-        [TestCase("Pending")]
-        [TestCase("Validating")]
-        [TestCase("Processing")]
-        public void GetOtherProviderWithIApiV2_StopButtonEnabledShouldBeTrue_WhenJobIsPendingOrExecuting(string lastJobHistoryStatus)
+        [TestCase("Pending", ProviderType.FTP, true, true)]
+        [TestCase("Validating", ProviderType.FTP, true, true)]
+        [TestCase("Processing", ProviderType.FTP, true, true)]
+        [TestCase("Pending", ProviderType.LDAP, true, true)]
+        [TestCase("Validating", ProviderType.LDAP, true, true)]
+        [TestCase("Processing", ProviderType.LDAP, true, true)]
+        [TestCase("Pending", ProviderType.Other, true, true)]
+        [TestCase("Validating", ProviderType.Other, true, true)]
+        [TestCase("Processing", ProviderType.Other, true, true)]
+        [TestCase("Pending", ProviderType.Relativity, true, true)]
+        [TestCase("Validating", ProviderType.Relativity, true, true)]
+        [TestCase("Processing", ProviderType.Relativity, true, true)]
+        [TestCase("Pending", ProviderType.LoadFile, true, true)]
+        [TestCase("Validating", ProviderType.LoadFile, true, true)]
+        [TestCase("Processing", ProviderType.LoadFile, true, true)]
+        [TestCase("Pending", ProviderType.FTP, false, true)]
+        [TestCase("Validating", ProviderType.FTP, false, false)]
+        [TestCase("Processing", ProviderType.FTP, false, false)]
+        [TestCase("Pending", ProviderType.LDAP, false, true)]
+        [TestCase("Validating", ProviderType.LDAP, false, false)]
+        [TestCase("Processing", ProviderType.LDAP, false, false)]
+        [TestCase("Pending", ProviderType.Other, false, true)]
+        [TestCase("Validating", ProviderType.Other, false, false)]
+        [TestCase("Processing", ProviderType.Other, false, false)]
+        [TestCase("Pending", ProviderType.Relativity, false, true)]
+        [TestCase("Validating", ProviderType.Relativity, false, true)]
+        [TestCase("Processing", ProviderType.Relativity, false, true)]
+        [TestCase("Pending", ProviderType.LoadFile, false, true)]
+        [TestCase("Validating", ProviderType.LoadFile, false, true)]
+        [TestCase("Processing", ProviderType.LoadFile, false, true)]
+        public void StopButtonEnabledShouldBeProperlySet_WhenJobIsPendingOrExecuting(
+            string lastJobHistoryStatus,
+            ProviderType providerType,
+            bool isIApiV2CustomProviderWorkflow,
+            bool expectedStopButtonVisibilityValue)
         {
             // Arrange
             ExportType exportType = ExportType.SavedSearch;
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
             bool isCalculating = false;
-            _isIApiV2CustomProviderWorkflow = true;
 
             ChoiceRef lastJobHistoryStatusChoice;
 
@@ -298,15 +327,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             // Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(
                 exportType,
-                ProviderType.FTP,
+                providerType,
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
                 lastJobHistoryStatusChoice,
-                _isIApiV2CustomProviderWorkflow);
+                isIApiV2CustomProviderWorkflow);
 
             // Assert
-            Assert.IsTrue(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.StopButtonEnabled == expectedStopButtonVisibilityValue);
         }
 
         [TestCase(ProviderType.Relativity, ExportType.ProductionSet, true)]

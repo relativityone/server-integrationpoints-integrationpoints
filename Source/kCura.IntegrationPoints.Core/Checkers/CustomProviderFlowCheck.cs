@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using Relativity;

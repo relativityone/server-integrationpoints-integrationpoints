@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -91,8 +90,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
             return isValidatingOrProcessing
                    && exportType != ExportType.ProductionSet
-                   && (providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile) ||
-                       isIApiV2CustomProviderWorkflow);
+                   && (providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
+                       || isIApiV2CustomProviderWorkflow);
         }
 
         private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)

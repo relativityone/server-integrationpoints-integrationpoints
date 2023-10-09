@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Choice;
 
@@ -62,14 +63,17 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             var jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             ChoiceRef lastJobHistoryStatus = jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);
 
+            bool isIApiV2CustomProviderWorkflow = providerType.IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other) && _customProviderFlowCheck.ShouldBeUsed(integrationPoint);
+
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
-                exportType,
-                providerType,
-                HasErrorViewPermissions(workspaceArtifactId),
-                HasProfileAddPermission(workspaceArtifactId),
-                calculationInProgress,
-                lastJobHistoryStatus,
-                _customProviderFlowCheck.ShouldBeUsed(integrationPoint));
+            exportType,
+            providerType,
+            HasErrorViewPermissions(workspaceArtifactId),
+            HasProfileAddPermission(workspaceArtifactId),
+            calculationInProgress,
+            lastJobHistoryStatus,
+            isIApiV2CustomProviderWorkflow
+            );
 
             return buttonState;
         }
