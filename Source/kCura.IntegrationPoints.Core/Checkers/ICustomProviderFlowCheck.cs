@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Checkers
 {
     public interface ICustomProviderFlowCheck
     {
-        bool ShouldBeUsed(IntegrationPointDto integrationPoint);
+        bool ShouldBeUsed(DestinationConfiguration destinationConfiguration);
     }
 }

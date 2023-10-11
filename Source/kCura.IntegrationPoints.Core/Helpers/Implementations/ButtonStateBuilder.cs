@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
@@ -49,21 +50,31 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
         public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            IntegrationPointDto integrationPoint = _integrationPointService.Read(integrationPointArtifactId);
+            var integrationPointFieldsGuids = new List<Guid>
+            {
+                IntegrationPointFieldGuids.DestinationConfigurationGuid,
+                IntegrationPointFieldGuids.SourceProviderGuid,
+                IntegrationPointFieldGuids.DestinationProviderGuid,
+            };
 
-            SourceConfiguration.ExportType exportType = GetExportType(integrationPoint.ArtifactId);
+            Dictionary<Guid, object> integrationPointFieldsValues = _integrationPointService.ReadWithSelectedFields(integrationPointArtifactId, integrationPointFieldsGuids);
+
+            SourceConfiguration.ExportType exportType = GetExportType(integrationPointArtifactId);
 
             ProviderType providerType = _providerTypeService.GetProviderType(
-                integrationPoint.SourceProvider,
-                integrationPoint.DestinationProvider);
+                (int)integrationPointFieldsValues[IntegrationPointFieldGuids.SourceProviderGuid],
+                (int)integrationPointFieldsValues[IntegrationPointFieldGuids.DestinationProviderGuid]);
 
-            CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPoint.ArtifactId);
+            CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPointArtifactId);
             bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
 
             var jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             ChoiceRef lastJobHistoryStatus = jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);
 
-            bool isIApiV2CustomProviderWorkflow = providerType.IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other) && _customProviderFlowCheck.ShouldBeUsed(integrationPoint);
+            bool isIApiV2CustomProviderWorkflow = providerType
+                .IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other)
+                                                  && _customProviderFlowCheck.ShouldBeUsed(
+                                                      (DestinationConfiguration)integrationPointFieldsValues[IntegrationPointFieldGuids.DestinationConfigurationGuid]);
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
             exportType,

@@ -107,6 +107,28 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return dto;
         }
 
+        public Dictionary<Guid, object> ReadWithSelectedFields(int artifactId, List<Guid> fieldsGuids)
+        {
+            Dictionary<Guid, object> integrationPointFieldValues = _integrationPointRepository.ReadWithSelectedFieldsAsync(artifactId, fieldsGuids).GetAwaiter().GetResult();
+
+            if (fieldsGuids.Contains(IntegrationPointFieldGuids.FieldMappingsGuid))
+            {
+                integrationPointFieldValues[IntegrationPointFieldGuids.FieldMappingsGuid] = GetFieldMap(artifactId);
+            }
+
+            if (fieldsGuids.Contains(IntegrationPointFieldGuids.DestinationConfigurationGuid))
+            {
+                integrationPointFieldValues[IntegrationPointFieldGuids.DestinationConfigurationGuid] = GetDestinationConfiguration(artifactId);
+            }
+
+            if (fieldsGuids.Contains(IntegrationPointFieldGuids.SourceConfigurationGuid))
+            {
+                integrationPointFieldValues[IntegrationPointFieldGuids.SourceConfigurationGuid] = _integrationPointRepository.GetSourceConfigurationAsync(artifactId).GetAwaiter().GetResult();
+            }
+
+            return integrationPointFieldValues;
+        }
+
         public List<IntegrationPointSlimDto> ReadAllSlim()
         {
             return _integrationPointRepository
@@ -773,7 +795,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 LastRun = rdo.LastRuntimeUTC,
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
-                JobHistory = rdo.JobHistory.ToList(),
+                JobHistory = rdo.JobHistory?.ToList(),
             };
         }
 

@@ -30,6 +30,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         IntegrationPointDto Read(int artifactID);
 
         /// <summary>
+        /// Retrieves an integration point with all fields including long text fields (fields mapping, source configuration, destination configuration)
+        /// </summary>
+        /// <param name="artifactID">Artifact id of the integration point.</param>
+        /// <param name="fieldsGuids">Integration Point Field Guids for which values will be returned.</param>
+        /// <returns>The integration model object of the integration point.</returns>
+        Dictionary<Guid, object> ReadWithSelectedFields(int artifactId, List<Guid> fieldsGuids);
+
+        /// <summary>
         /// Retrieves an integration point WITHOUT long text fields (fields mapping, source configuration, destination configuration)
         /// </summary>
         IntegrationPointSlimDto ReadSlim(int artifactID);

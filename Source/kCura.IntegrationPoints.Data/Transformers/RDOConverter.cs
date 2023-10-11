@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
             return rdo;
         }
 
-        private static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type propeType)
+        public static object ConvertFieldValueToExpectedFormat(FieldValuePair item, Type propeType)
         {
             object valueToSet = item?.Value;
 

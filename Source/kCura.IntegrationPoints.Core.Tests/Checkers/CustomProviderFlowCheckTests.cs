@@ -5,7 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Checkers;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -39,13 +39,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ShouldBeUsed_ShouldReturnTrue_WhenCriteriaAreMet(bool entityManagerFieldContainsLink, int artifactTypeId)
         {
             // Arrange
-            IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = entityManagerFieldContainsLink;
-            integrationPoint.DestinationConfiguration.ArtifactTypeId = artifactTypeId;
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
+            destinationConfiguration.EntityManagerFieldContainsLink = entityManagerFieldContainsLink;
+            destinationConfiguration.ArtifactTypeId = artifactTypeId;
             SetupNewCustomProviderToggle(true);
 
             // Act
-            bool result = _sut.ShouldBeUsed(integrationPoint);
+            bool result = _sut.ShouldBeUsed(destinationConfiguration);
 
             // Assert
             result.Should().BeTrue();
@@ -55,12 +55,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ShouldBeUsed_ShouldReturnFalse_WhenToggleIsDisabled()
         {
             // Arrange
-            IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = false;
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
+            destinationConfiguration.EntityManagerFieldContainsLink = false;
             SetupNewCustomProviderToggle(false);
 
             // Act
-            bool result = _sut.ShouldBeUsed(integrationPoint);
+            bool result = _sut.ShouldBeUsed(destinationConfiguration);
 
             // Assert
             result.Should().BeFalse();
@@ -70,13 +70,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ShouldBeUsed_ShouldReturnFalse_WhenManagersLinkingAndNonDocumentTransferType()
         {
             // Arrange
-            IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
-            integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink = true;
-            integrationPoint.DestinationConfiguration.ArtifactTypeId = 1000064;
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
+            destinationConfiguration.EntityManagerFieldContainsLink = true;
+            destinationConfiguration.ArtifactTypeId = 1000064;
             SetupNewCustomProviderToggle(true);
 
             // Act
-            bool result = _sut.ShouldBeUsed(integrationPoint);
+            bool result = _sut.ShouldBeUsed(destinationConfiguration);
 
             // Assert
             result.Should().BeFalse();
@@ -86,13 +86,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         public void ShouldBeUsed_ShouldReturnFalse_WhenExceptionThrown()
         {
             // Arrange
-            IntegrationPointDto integrationPoint = _fxt.Create<IntegrationPointDto>();
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
 
             _toggleProviderFake.Setup(x => x.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>())
                 .Throws<Exception>();
 
             // Act
-            bool result = _sut.ShouldBeUsed(integrationPoint);
+            bool result = _sut.ShouldBeUsed(destinationConfiguration);
 
             // Assert
             result.Should().BeFalse();

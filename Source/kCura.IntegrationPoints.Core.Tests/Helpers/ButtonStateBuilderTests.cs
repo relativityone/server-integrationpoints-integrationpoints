@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _managerFactory.CreateStateManager().Returns(_stateManager);
 
             _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
-            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<IntegrationPointDto>()).Returns(false);
+            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<DestinationConfiguration>()).Returns(false);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, "Pending")]

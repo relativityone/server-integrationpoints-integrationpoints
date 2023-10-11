@@ -1,7 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
 
@@ -18,13 +18,13 @@ namespace kCura.IntegrationPoints.Core.Checkers
             _log = log;
         }
 
-        public bool ShouldBeUsed(IntegrationPointDto integrationPoint)
+        public bool ShouldBeUsed(DestinationConfiguration destinationConfiguration)
         {
             try
             {
                 bool isToggleEnabled = _toggleProvider.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>();
-                bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
-                bool isDocumentFlow = integrationPoint.DestinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
+                bool isManagersLinkingEnabled = destinationConfiguration.EntityManagerFieldContainsLink;
+                bool isDocumentFlow = destinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
 
                 bool result;
                 if (isDocumentFlow)
