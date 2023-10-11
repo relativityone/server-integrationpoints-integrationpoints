@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _managerFactory.CreateStateManager().Returns(_stateManager);
 
             _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
-            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<DestinationConfiguration>()).Returns(false);
+            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<int>()).Returns(false);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, "Pending")]
@@ -200,13 +200,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             const int sourceProviderArtifactId = 210;
             const int destinationProviderArtifactId = 220;
 
-            IntegrationPointDto integrationPoint = new IntegrationPointDto
+            IntegrationPointSlimDto integrationPoint = new IntegrationPointSlimDto
             {
                 SourceProvider = sourceProviderArtifactId,
                 DestinationProvider = destinationProviderArtifactId,
             };
 
-            _integrationPointService.Read(_INTEGRATION_POINT_ID)
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ID)
                 .Returns(integrationPoint);
             _integrationPointService.GetSourceConfiguration(integrationPoint.ArtifactId)
                 .Returns(JsonConvert.SerializeObject(new { TypeOfExport = exportType }));

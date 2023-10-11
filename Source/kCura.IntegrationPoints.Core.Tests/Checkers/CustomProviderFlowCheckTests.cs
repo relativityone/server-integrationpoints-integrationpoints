@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
     internal class CustomProviderFlowCheckTests
     {
         private Mock<IRipToggleProvider> _toggleProviderFake;
+        private Mock<IIntegrationPointService> _integrationPointServiceFake;
         private IFixture _fxt;
         private CustomProviderFlowCheck _sut;
 
@@ -26,12 +28,35 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _fxt = FixtureFactory.Create();
 
             _toggleProviderFake = new Mock<IRipToggleProvider>();
+            _integrationPointServiceFake = new Mock<IIntegrationPointService>();
 
             Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new CustomProviderFlowCheck(
                 _toggleProviderFake.Object,
+                _integrationPointServiceFake.Object,
                 log.Object);
+        }
+
+        [TestCase(true, 10)]
+        [TestCase(false, 1000064)]
+        public void ShouldBeUsedByArtifactId_ShouldReturnTrue_WhenCriteriaAreMet(bool entityManagerFieldContainsLink, int artifactTypeId)
+        {
+            // Arrange
+            int integrationPointArtifactId = 1324;
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
+            destinationConfiguration.EntityManagerFieldContainsLink = entityManagerFieldContainsLink;
+            destinationConfiguration.ArtifactTypeId = artifactTypeId;
+            SetupNewCustomProviderToggle(true);
+
+            _integrationPointServiceFake.Setup(x => x.GetDestinationConfiguration(integrationPointArtifactId))
+                .Returns(destinationConfiguration);
+
+            // Act
+            bool result = _sut.ShouldBeUsed(integrationPointArtifactId);
+
+            // Assert
+            result.Should().BeTrue();
         }
 
         [TestCase(true, 10)]
