@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
@@ -10,12 +11,22 @@ namespace kCura.IntegrationPoints.Core.Checkers
     internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {
         private readonly IRipToggleProvider _toggleProvider;
+        private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
-        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IAPILog log)
+        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IIntegrationPointService integrationPointService, IAPILog log)
         {
             _toggleProvider = toggleProvider;
+            _integrationPointService = integrationPointService;
             _log = log;
+        }
+
+
+        public bool ShouldBeUsed(int integrationPointId)
+        {
+            DestinationConfiguration destinationConfiguration = _integrationPointService.GetDestinationConfiguration(integrationPointId);
+
+            return ShouldBeUsed(destinationConfiguration);
         }
 
         public bool ShouldBeUsed(DestinationConfiguration destinationConfiguration)
@@ -51,5 +62,6 @@ namespace kCura.IntegrationPoints.Core.Checkers
                 return false;
             }
         }
+
     }
 }

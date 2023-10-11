@@ -50,20 +50,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
         public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            var integrationPointFieldsGuids = new List<Guid>
-            {
-                IntegrationPointFieldGuids.DestinationConfigurationGuid,
-                IntegrationPointFieldGuids.SourceProviderGuid,
-                IntegrationPointFieldGuids.DestinationProviderGuid,
-            };
-
-            Dictionary<Guid, object> integrationPointFieldsValues = _integrationPointService.ReadWithSelectedFields(integrationPointArtifactId, integrationPointFieldsGuids);
+            IntegrationPointSlimDto integrationPointSlimDto = _integrationPointService.ReadSlim(integrationPointArtifactId);
 
             SourceConfiguration.ExportType exportType = GetExportType(integrationPointArtifactId);
 
             ProviderType providerType = _providerTypeService.GetProviderType(
-                (int)integrationPointFieldsValues[IntegrationPointFieldGuids.SourceProviderGuid],
-                (int)integrationPointFieldsValues[IntegrationPointFieldGuids.DestinationProviderGuid]);
+                integrationPointSlimDto.SourceProvider,
+                integrationPointSlimDto.DestinationProvider);
 
             CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPointArtifactId);
             bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
@@ -73,8 +66,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool isIApiV2CustomProviderWorkflow = providerType
                 .IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other)
-                                                  && _customProviderFlowCheck.ShouldBeUsed(
-                                                      (DestinationConfiguration)integrationPointFieldsValues[IntegrationPointFieldGuids.DestinationConfigurationGuid]);
+                                                  && _customProviderFlowCheck.ShouldBeUsed(integrationPointSlimDto.ArtifactId);
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
             exportType,
