@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Attributes;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
@@ -34,48 +32,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
         {
             return ReadAsync(integrationPointArtifactID, true);
-        }
-
-        public async Task<Dictionary<Guid, object>> ReadWithSelectedFieldsAsync(int integrationPointArtifactId, List<Guid> fieldsGuids)
-        {
-            List<FieldRef> fieldRefs = fieldsGuids.Select(fieldGuid => new FieldRef { Guid = fieldGuid }).ToList();
-
-            QueryRequest request = new QueryRequest
-            {
-                ObjectType = new ObjectTypeRef
-                {
-                    Guid = ObjectTypeGuids.IntegrationPointGuid
-                },
-                Fields = fieldRefs,
-                Condition = $"'ArtifactID' == {integrationPointArtifactId}"
-            };
-
-            List<RelativityObject> result = await _objectManager.QueryAsync(request).ConfigureAwait(false);
-
-            PropertyInfo[] properties = typeof(IntegrationPoint).GetProperties();
-
-            Dictionary<Guid, object> fieldsValues = result.Single().FieldValues
-                .Select(x =>
-                {
-                    Guid fieldGuid = x.Field.Guids.Single();
-                    return new
-                    {
-                        Key = fieldGuid, Value = RDOConverter
-                            .ConvertFieldValueToExpectedFormat(
-                                x,
-                                properties.Single(y => y.GetCustomAttribute<DynamicFieldAttribute>()?.FieldGuid == fieldGuid).PropertyType)
-                    };
-                })
-                .ToDictionary(x => x.Key, x => x.Value);
-
-            if (fieldsGuids.Contains(IntegrationPointFieldGuids.SecuredConfigurationGuid))
-            {
-                fieldsValues[IntegrationPointFieldGuids.SecuredConfigurationGuid] = await DecryptSecuredConfigurationAsync(
-                    integrationPointArtifactId,
-                    fieldsValues[IntegrationPointFieldGuids.SecuredConfigurationGuid].ToString()).ConfigureAwait(false);
-            }
-
-            return fieldsValues;
         }
 
         public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)

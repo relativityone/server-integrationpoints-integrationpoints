@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -26,7 +25,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -105,28 +103,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             dto.DestinationConfiguration = GetDestinationConfiguration(artifactID);
             dto.SourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(artifactID).GetAwaiter().GetResult();
             return dto;
-        }
-
-        public Dictionary<Guid, object> ReadWithSelectedFields(int artifactId, List<Guid> fieldsGuids)
-        {
-            Dictionary<Guid, object> integrationPointFieldValues = _integrationPointRepository.ReadWithSelectedFieldsAsync(artifactId, fieldsGuids).GetAwaiter().GetResult();
-
-            if (fieldsGuids.Contains(IntegrationPointFieldGuids.FieldMappingsGuid))
-            {
-                integrationPointFieldValues[IntegrationPointFieldGuids.FieldMappingsGuid] = GetFieldMap(artifactId);
-            }
-
-            if (fieldsGuids.Contains(IntegrationPointFieldGuids.DestinationConfigurationGuid))
-            {
-                integrationPointFieldValues[IntegrationPointFieldGuids.DestinationConfigurationGuid] = GetDestinationConfiguration(artifactId);
-            }
-
-            if (fieldsGuids.Contains(IntegrationPointFieldGuids.SourceConfigurationGuid))
-            {
-                integrationPointFieldValues[IntegrationPointFieldGuids.SourceConfigurationGuid] = _integrationPointRepository.GetSourceConfigurationAsync(artifactId).GetAwaiter().GetResult();
-            }
-
-            return integrationPointFieldValues;
         }
 
         public List<IntegrationPointSlimDto> ReadAllSlim()

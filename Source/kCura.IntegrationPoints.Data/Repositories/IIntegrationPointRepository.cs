@@ -8,8 +8,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
     {
         Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID);
 
-        Task<Dictionary<Guid, object>> ReadWithSelectedFieldsAsync(int integrationPointArtifactId, List<Guid> fieldsGuids);
-
         Task<string> GetFieldMappingAsync(int integrationPointArtifactID);
 
         Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID);
