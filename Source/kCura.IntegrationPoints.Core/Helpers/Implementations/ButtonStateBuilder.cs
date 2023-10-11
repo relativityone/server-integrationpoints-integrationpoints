@@ -63,9 +63,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             var jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             ChoiceRef lastJobHistoryStatus = jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);
 
-            bool isIApiV2CustomProviderWorkflow = providerType
-                .IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other)
-                                                  && _customProviderFlowCheck.ShouldBeUsed(integrationPointSlimDto.ArtifactId);
+            bool isIApiV2CustomProviderWorkflow = _customProviderFlowCheck.ShouldBeUsed(integrationPointSlimDto.ArtifactId, providerType);
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
             exportType,

@@ -1,7 +1,9 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
@@ -21,15 +23,13 @@ namespace kCura.IntegrationPoints.Core.Checkers
             _log = log;
         }
 
-
-        public bool ShouldBeUsed(int integrationPointId)
+        public bool ShouldBeUsed(int integrationPointId, ProviderType providerType)
         {
             DestinationConfiguration destinationConfiguration = _integrationPointService.GetDestinationConfiguration(integrationPointId);
-
-            return ShouldBeUsed(destinationConfiguration);
+            return ShouldBeUsed(destinationConfiguration, providerType);
         }
 
-        public bool ShouldBeUsed(DestinationConfiguration destinationConfiguration)
+        public bool ShouldBeUsed(DestinationConfiguration destinationConfiguration, ProviderType? providerType = null)
         {
             try
             {
@@ -45,6 +45,11 @@ namespace kCura.IntegrationPoints.Core.Checkers
                 else
                 {
                     result = isToggleEnabled && !isManagersLinkingEnabled;
+                }
+
+                if (providerType.HasValue)
+                {
+                    result = result && providerType.IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other);
                 }
 
                 _log.LogInformation(

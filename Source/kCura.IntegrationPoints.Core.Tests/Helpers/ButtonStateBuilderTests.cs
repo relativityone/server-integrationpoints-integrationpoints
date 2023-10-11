@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _managerFactory.CreateStateManager().Returns(_stateManager);
 
             _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
-            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<int>()).Returns(false);
+            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<int>(), Arg.Any<ProviderType>()).Returns(false);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, "Pending")]
@@ -163,8 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         {
             // Arrange
             bool expectedInProgressFlagValue = false;
-            SetupIntegrationPoint(ProviderType.Relativity, ExportType.SavedSearch,
-                new CalculationState());
+            SetupIntegrationPoint(ProviderType.Relativity, ExportType.SavedSearch, new CalculationState());
 
             _permissionValidator.Validate(_WORKSPACE_ID)
                 .Returns(new ValidationResult());

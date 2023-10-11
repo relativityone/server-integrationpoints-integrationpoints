@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
@@ -38,9 +39,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 log.Object);
         }
 
-        [TestCase(true, 10)]
-        [TestCase(false, 1000064)]
-        public void ShouldBeUsedByArtifactId_ShouldReturnTrue_WhenCriteriaAreMet(bool entityManagerFieldContainsLink, int artifactTypeId)
+        [TestCase(true, 10, ProviderType.FTP)]
+        [TestCase(false, 1000064, ProviderType.FTP)]
+        [TestCase(true, 10, ProviderType.LDAP)]
+        [TestCase(false, 1000064, ProviderType.LDAP)]
+        [TestCase(true, 10, ProviderType.Other)]
+        [TestCase(false, 1000064, ProviderType.Other)]
+        public void ShouldBeUsedWithArtifactId_ShouldReturnTrue_WhenCriteriaAreMet(bool entityManagerFieldContainsLink, int artifactTypeId, ProviderType providerType)
         {
             // Arrange
             int integrationPointArtifactId = 1324;
@@ -53,10 +58,36 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 .Returns(destinationConfiguration);
 
             // Act
-            bool result = _sut.ShouldBeUsed(integrationPointArtifactId);
+            bool result = _sut.ShouldBeUsed(integrationPointArtifactId, providerType);
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        [TestCase(true, 10, ProviderType.Relativity)]
+        [TestCase(false, 1000064, ProviderType.Relativity)]
+        [TestCase(true, 10, ProviderType.ImportLoadFile)]
+        [TestCase(false, 1000064, ProviderType.ImportLoadFile)]
+        [TestCase(true, 10, ProviderType.LoadFile)]
+        [TestCase(false, 1000064, ProviderType.LoadFile)]
+        [TestCase(true, 1000064, ProviderType.FTP)]
+        public void ShouldNotBeUsedWithArtifactId_ShouldReturnFalse_WhenCriteriaAreNotMet(bool entityManagerFieldContainsLink, int artifactTypeId, ProviderType providerType)
+        {
+            // Arrange
+            int integrationPointArtifactId = 1324;
+            DestinationConfiguration destinationConfiguration = _fxt.Create<DestinationConfiguration>();
+            destinationConfiguration.EntityManagerFieldContainsLink = entityManagerFieldContainsLink;
+            destinationConfiguration.ArtifactTypeId = artifactTypeId;
+            SetupNewCustomProviderToggle(true);
+
+            _integrationPointServiceFake.Setup(x => x.GetDestinationConfiguration(integrationPointArtifactId))
+                .Returns(destinationConfiguration);
+
+            // Act
+            bool result = _sut.ShouldBeUsed(integrationPointArtifactId, providerType);
+
+            // Assert
+            result.Should().BeFalse();
         }
 
         [TestCase(true, 10)]
