@@ -56,7 +56,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             {
                 customProviderJobDetails = new CustomProviderJobDetails
                 {
-                    BatchInstance = customProviderJobDetails?.BatchInstance ?? Guid.Empty,
                     JobHistoryID = jobHistoryId,
                     JobHistoryGuid = jobHistoryGuid
                 };
