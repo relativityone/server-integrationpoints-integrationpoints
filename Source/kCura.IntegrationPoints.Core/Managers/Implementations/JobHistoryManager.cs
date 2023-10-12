@@ -43,6 +43,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);
         }
 
+        public Guid GetLastJobHistoryGuid(int workspaceArtifactId, int integrationPointArtifactId)
+        {
+            IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
+            return jobHistoryRepository.GetLastJobHistoryGuid(integrationPointArtifactId);
+        }
+
         public StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId)
         {
             IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);

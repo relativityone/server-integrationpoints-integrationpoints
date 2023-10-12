@@ -366,57 +366,55 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
             _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", stoppableJobHistories);
 
-            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
-            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
+            IDictionary<Guid, List<Job>> jobsByJobHistoryGuid = _jobManager.GetJobsByJobHistoryGuid(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent JobHistoryGuid {@jobsByJobHistoryGuid}", jobsByJobHistoryGuid);
 
             StopSyncAppJobs(stoppableJobHistories);
 
             List<Exception> exceptions = new List<Exception>();
 
-            List<Data.JobHistory> processingJobHistories = stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
-            foreach (Data.JobHistory jobHistory in processingJobHistories)
-            {
-                try
-                {
-                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
+            Guid jobHistoryGuid = jobHistoryManager.GetLastJobHistoryGuid(workspaceArtifactId, integrationPointArtifactId);
 
-                    if (jobs.ContainsKey(batchInstance))
-                    {
-                        IList<long> jobIdsForGivenJobHistory = jobs[batchInstance].Select(x => x.JobId).ToList();
-                        _jobManager.StopJobs(jobIdsForGivenJobHistory);
-                        _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
-                    }
-                }
-                catch (Exception ex)
+            try
+            {
+                if (jobsByJobHistoryGuid.ContainsKey(jobHistoryGuid))
                 {
-                    exceptions.Add(ex);
-                    _logger.LogError(ex, "Error occurred when stopping Jobs for Processing JobHistory {jobHistoryId}", jobHistory.ArtifactId);
+                    IList<long> jobIdsForGivenJobHistory = jobsByJobHistoryGuid[jobHistoryGuid].Select(x => x.JobId).ToList();
+                    _jobManager.StopJobs(jobIdsForGivenJobHistory);
+                    _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryGuid}", jobIdsForGivenJobHistory, jobHistoryGuid);
+
+                    return;
                 }
             }
-
-            List<Data.JobHistory> pendingJobHistories = stoppableJobHistories.PendingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
-            foreach (Data.JobHistory jobHistory in pendingJobHistories)
+            catch (Exception ex)
             {
-                try
+                exceptions.Add(ex);
+                _logger.LogError(ex, "Error occurred when stopping Jobs for Processing JobHistory {jobHistoryGuid}", jobHistoryGuid);
+            }
+
+            IDictionary<Guid, List<Job>> jobsByBatchInstanceId = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobsByBatchInstanceId);
+
+            Data.JobHistory jobHistory = stoppableJobHistories.PendingJobHistory.SingleOrDefault(x => x.BatchInstance == jobHistoryGuid.ToString());
+
+            try
+            {
+                jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+                _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+
+                Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
+
+                if (jobsByBatchInstanceId.ContainsKey(batchInstance))
                 {
-                    jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-                    _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+                    jobsByBatchInstanceId[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
 
-                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
-
-                    if (jobs.ContainsKey(batchInstance))
-                    {
-                        jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
-
-                        _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
-                            jobs[batchInstance], jobHistory.ArtifactId);
-                    }
+                    _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",jobsByBatchInstanceId[batchInstance], jobHistory.ArtifactId);
                 }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                    _logger.LogError(ex, "Error occurred when deleteing Jobs and updating JobHistory {jobHistoryId} to Stopped", jobHistory.ArtifactId);
-                }
+            }
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+                _logger.LogError(ex, "Error occurred when deleting Jobs and updating JobHistory {jobHistoryId} to Stopped", jobHistory.ArtifactId);
             }
 
             if (exceptions.Any())

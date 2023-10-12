@@ -133,8 +133,8 @@ namespace kCura.IntegrationPoints.Core.Services
                 }
                 catch (Exception e)
                 {
-                    LogTaskParametersDeserializationError(e);
                     // in case of the serialization fails for whatever reasons.
+                    LogTaskParametersDeserializationError(e);
                 }
             }
             return results;
@@ -149,6 +149,43 @@ namespace kCura.IntegrationPoints.Core.Services
                 throw new Exception("Unable to find the batch instance id in the scheduled agent queue.");
             }
             return bacthedAgentJobs[batchId];
+        }
+
+
+        public IDictionary<Guid, List<Job>> GetJobsByJobHistoryGuid(long integrationPointId)
+        {
+            IDictionary<Guid, List<Job>> results = new Dictionary<Guid, List<Job>>();
+            IList<Job> jobs = _jobService.GetJobs(integrationPointId);
+
+            if (jobs == null)
+            {
+                return results;
+            }
+
+            const string jobHistoryGuidName = "JobHistoryGuid";
+
+            foreach (var job in jobs)
+            {
+                try
+                {
+                    Dictionary<string, object> jobDetails = _serializer.Deserialize<Dictionary<string, object>>(job.JobDetails);
+                    bool isJobHistoryGuidParsed = Guid.TryParse(jobDetails[jobHistoryGuidName]?.ToString(), out Guid jobHistoryGuid);
+                    if (results.ContainsKey(jobHistoryGuid))
+                    {
+                        results[jobHistoryGuid].Add(job);
+                    }
+                    else if (isJobHistoryGuidParsed)
+                    {
+                        results[jobHistoryGuid] = new List<Job> { job };
+                    }
+                }
+                catch (Exception e)
+                {
+                    // in case of the serialization fails for whatever reasons.
+                    LogTaskParametersDeserializationError(e);
+                }
+            }
+            return results;
         }
 
         public void StopJobs(IList<long> jobIds)

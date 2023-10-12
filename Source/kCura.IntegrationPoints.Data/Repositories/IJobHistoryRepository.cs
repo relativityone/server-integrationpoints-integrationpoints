@@ -21,6 +21,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
         ChoiceRef GetLastJobHistoryStatus(int integrationPointArtifactId);
 
         /// <summary>
+        /// Gets last finished Job History Guid for a given Integration Point
+        /// </summary>
+        /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
+        /// <returns>Status of the most recent Job History objects</returns>
+        Guid GetLastJobHistoryGuid(int integrationPointArtifactId);
+
+        /// <summary>
         /// We mark job as failed or validation failed. We change status.
         /// </summary>
         /// <param name="jobHistoryID">Integration Point job history id</param>
