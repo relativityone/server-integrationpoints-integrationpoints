@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Exceptions;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
@@ -25,6 +26,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.Telemetry.APM;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -250,7 +252,30 @@ namespace kCura.ScheduleQueue.AgentBase
                 {
                     Logger.ForContext("TransientJob", job.RemoveSensitiveData(), true).LogInformation("Handling Transient Job {jobId}", job.JobId);
 
-                    if (IsAzureADWorker(job))
+                    IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
+
+                    IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+
+                    Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
+
+                    if (!integrationPoint.SourceProvider.HasValue)
+                    {
+                        const string message = "Source Provider does not have value assigned";
+                        Logger.LogError(message);
+                        throw new ApplicationException(message);
+                    }
+
+                    if (!integrationPoint.DestinationProvider.HasValue)
+                    {
+                        const string message = "Destination Provider does not have value assigned";
+                        Logger.LogError(message);
+                        throw new ApplicationException(message);
+                    }
+
+                    SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
+                    DestinationProvider destinationProvider = objectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
+
+                    if (IsAzureADWorker(job, Guid.Parse(sourceProvider.ApplicationIdentifier)))
                     {
                         Logger.LogInformation("Job {jobId} is in unknown status. Because it's Azure AD Worker we'll unlock the job and pick it up agin.", job.JobId);
                         _jobService.UnlockJob(job);
@@ -259,7 +284,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                     Logger.LogError("Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
 
-                    SendJobInTransientStateMetric(job);
+                    SendJobInTransientStateMetric(job, sourceProvider, destinationProvider);
 
                     PreValidationResult validationResult = PreExecuteJobValidation(job);
                     if (!validationResult.ShouldExecute)
@@ -281,7 +306,7 @@ namespace kCura.ScheduleQueue.AgentBase
             }
         }
 
-        private bool IsAzureADWorker(Job job)
+        private bool IsAzureADWorker(Job job, Guid sourceProviderApplicationIdentifier)
         {
             try
             {
@@ -292,22 +317,9 @@ namespace kCura.ScheduleQueue.AgentBase
                     return false;
                 }
 
-                IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
+                Logger.LogInformation("Checking if {taskType} job is typeof AzureAD - {applicationIdentifier}", job.TaskType, sourceProviderApplicationIdentifier);
 
-                IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
-
-                Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
-
-                if (!integrationPoint.SourceProvider.HasValue)
-                {
-                    return false;
-                }
-
-                SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
-
-                Logger.LogInformation("Checking if {taskType} job is typeof AzureAD - {applicationIdentifier}", job.TaskType, sourceProvider.ApplicationIdentifier);
-
-                return Guid.Parse(sourceProvider.ApplicationIdentifier) == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5");
+                return sourceProviderApplicationIdentifier == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5");
             }
             catch (Exception ex)
             {
@@ -316,7 +328,7 @@ namespace kCura.ScheduleQueue.AgentBase
             }
         }
 
-        private void SendJobInTransientStateMetric(Job job)
+        private void SendJobInTransientStateMetric(Job job, SourceProvider sourceProvider, DestinationProvider destinationProvider)
         {
             Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
             {
@@ -329,8 +341,40 @@ namespace kCura.ScheduleQueue.AgentBase
                 { "LastHeartbeat", job.Heartbeat.ToString() }
             };
 
-            _apm.CountOperation("Relativity.IntegrationPoints.Performance.JobInTransientState", customData: jobInTransientStateCustomData)
+            ProviderType providerType = GetProviderType(sourceProvider.Identifier, destinationProvider.Identifier);
+
+            _apm.CountOperation($"IntegrationPoints.Performance.JobFailedCount.{providerType.ToString()}", customData: jobInTransientStateCustomData)
                 .Write();
+
+            Logger.LogInformation("JobInTransientState metric sent");
+        }
+
+        private ProviderType GetProviderType(string sourceProviderGuid, string destinationProviderGuid)
+        {
+            if (sourceProviderGuid.Equals(IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.FTP, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ProviderType.FTP;
+            }
+            if (sourceProviderGuid.Equals(IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.LDAP, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ProviderType.LDAP;
+            }
+            if (sourceProviderGuid.Equals(IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return ProviderType.ImportLoadFile;
+            }
+            if (sourceProviderGuid.Equals(IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (destinationProviderGuid.Equals(IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return ProviderType.Relativity;
+                }
+                if (destinationProviderGuid.Equals(Constants.IntegrationPoints.DestinationProviders.LOADFILE, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return ProviderType.LoadFile;
+                }
+            }
+            return ProviderType.Other;
         }
 
         private void RemoveInvalidJobFromQueue(PreValidationResult validationResult, Job job)
@@ -398,6 +442,7 @@ namespace kCura.ScheduleQueue.AgentBase
             try
             {
                 Job nextJob = GetNextQueueJob();
+
                 if (nextJob == null)
                 {
                     Logger.LogInformation("No active job found in Schedule Agent Queue table");
