@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 Condition = integrationPointCondition,
                 Fields = new[]
                 {
+                    new FieldRef { Guid = Guid.Parse(JobHistoryFieldGuids.IntegrationPoint) },
                     new FieldRef { Guid = Guid.Parse(JobHistoryFieldGuids.JobStatus) },
                 },
                 Sorts = new List<Sort>
