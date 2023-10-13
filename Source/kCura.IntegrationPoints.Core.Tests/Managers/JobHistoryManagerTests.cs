@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Helpers;
@@ -16,7 +14,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
@@ -173,80 +170,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             Assert.DoesNotThrow(() => _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
         }
 
-        [Test]
-        public void GetStoppableJobHistory_ShouldReturnStoppableJobHistory()
-        {
-            // Arrange
-            JobHistory[] pendingJobHistory = new[]
-            {
-                PrepareJobHistory(1, JobStatusChoices.JobHistoryPending),
-                PrepareJobHistory(3, JobStatusChoices.JobHistoryPending),
-            };
-
-            JobHistory[] processingJobHistory = new[]
-            {
-                PrepareJobHistory(2, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(5, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(6, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(4, JobStatusChoices.JobHistoryValidating),
-            };
-
-            var jobHistoryCollection = new List<JobHistory>
-            {
-                PrepareJobHistory(7, null),
-            };
-
-            jobHistoryCollection.AddRange(pendingJobHistory);
-            jobHistoryCollection.AddRange(processingJobHistory);
-
-            _jobHistoryRepositoryMock.Setup(x => x.GetStoppableJobHistoriesForIntegrationPoint(_INTEGRATION_POINT_ID))
-                .Returns(jobHistoryCollection);
-
-            // Act
-            StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            result.PendingJobHistory.ShouldAllBeEquivalentTo(pendingJobHistory);
-            result.ProcessingJobHistory.ShouldAllBeEquivalentTo(processingJobHistory);
-        }
-
-        [Test]
-        public void GetStoppableJobHistory_ShouldReturnEmptyJobHistory_WhenNonStoppableJobsFound()
-        {
-            // Arrange
-            var jobHistoryCollection = new List<JobHistory>
-            {
-                PrepareJobHistory(1, JobStatusChoices.JobHistoryCompleted),
-                PrepareJobHistory(2, JobStatusChoices.JobHistoryErrorJobFailed),
-                PrepareJobHistory(3, JobStatusChoices.JobHistorySuspended),
-                PrepareJobHistory(4, JobStatusChoices.JobHistoryStopped),
-                PrepareJobHistory(5, null),
-            };
-
-            _jobHistoryRepositoryMock.Setup(x => x.GetStoppableJobHistoriesForIntegrationPoint(_INTEGRATION_POINT_ID))
-                .Returns(jobHistoryCollection);
-
-            // Act
-            StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            result.PendingJobHistory.Should().BeEmpty();
-            result.ProcessingJobHistory.Should().BeEmpty();
-        }
-
         private bool ValidateErrorStatusField(FieldUpdateRequestDto[] fields, Guid expectedStatus)
         {
             FieldUpdateRequestDto statusField = fields.SingleOrDefault(x => x.FieldIdentifier == JobHistoryErrorFieldGuids.ErrorStatusGuid);
             return statusField?.NewValue is SingleChoiceReferenceDto errorStatusValue && errorStatusValue.ChoiceValueGuid == expectedStatus;
-        }
-
-        private JobHistory PrepareJobHistory(int jobHistoryId, ChoiceRef status)
-        {
-            return new JobHistory
-            {
-                ArtifactId = jobHistoryId,
-                JobStatus = status
-            };
         }
     }
 }

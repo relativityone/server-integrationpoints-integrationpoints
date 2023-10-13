@@ -49,37 +49,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             return jobHistoryRepository.GetLastJobHistory(integrationPointArtifactId);
         }
 
-        public StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId)
-        {
-            IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
-            IList<JobHistory> stoppableJobHistories = jobHistoryRepository.GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
-
-            IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
-                .Where(x => x.JobStatus != null)
-                .GroupBy(x => x.JobStatus?.Name)
-                .Select(x => new { Key = x.Key, Values = x.ToArray() })
-                .ToDictionary(x => x.Key, x => x.Values);
-
-            List<JobHistory> processingJobHistory = new List<JobHistory>();
-            if (jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name))
-            {
-                processingJobHistory.AddRange(jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]);
-            }
-
-            if (jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryValidating.Name))
-            {
-                processingJobHistory.AddRange(jobHistoriesByStatus[JobStatusChoices.JobHistoryValidating.Name]);
-            }
-
-            return new StoppableJobHistoryCollection
-            {
-                PendingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryPending.Name)
-                    ? jobHistoriesByStatus[JobStatusChoices.JobHistoryPending.Name]
-                    : Array.Empty<JobHistory>(),
-                ProcessingJobHistory = processingJobHistory.ToArray()
-            };
-        }
-
         public void SetErrorStatusesToExpired(int workspaceArtifactID, int jobHistoryArtifactID)
         {
             SetErrorStatusesToExpiredAsync(workspaceArtifactID, jobHistoryArtifactID).GetAwaiter().GetResult();
