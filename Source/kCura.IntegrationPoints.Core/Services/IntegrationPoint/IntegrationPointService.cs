@@ -348,7 +348,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             StopSyncAppJobs(stoppableJobHistories);
 
             ChoiceRef lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
-
             Guid jobHistoryGuid = jobHistoryManager.GetLastJobHistoryGuid(workspaceArtifactId, integrationPointArtifactId);
 
             try
@@ -497,12 +496,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void StopExecutingJob(int integrationPointArtifactId, Guid jobHistoryGuid)
         {
-            IDictionary<Guid, List<Job>> jobsByJobHistoryGuid = _jobManager.GetJobsByJobHistoryGuid(integrationPointArtifactId);
-            _logger.LogInformation("Jobs marked to stopping with correspondent JobHistoryGuid {@jobsByJobHistoryGuid}", jobsByJobHistoryGuid);
+            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByJobHistoryGuid(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent JobHistoryGuid {@jobsByJobHistoryGuid}", jobs);
 
-            if (jobsByJobHistoryGuid.ContainsKey(jobHistoryGuid))
+            if (jobs.ContainsKey(jobHistoryGuid))
             {
-                IList<long> jobIdsForGivenJobHistory = jobsByJobHistoryGuid[jobHistoryGuid].Select(x => x.JobId).ToList();
+                IList<long> jobIdsForGivenJobHistory = jobs[jobHistoryGuid].Select(x => x.JobId).ToList();
                 _jobManager.StopJobs(jobIdsForGivenJobHistory);
                 _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryGuid}", jobIdsForGivenJobHistory, jobHistoryGuid);
             }
@@ -510,8 +509,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void StopPendingJob(int integrationPointArtifactId, StoppableJobHistoryCollection stoppableJobHistories, Guid jobHistoryGuid)
         {
-            IDictionary<Guid, List<Job>> jobsByBatchInstanceId = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
-            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobsByBatchInstanceId);
+            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
 
             Data.JobHistory jobHistory = stoppableJobHistories.PendingJobHistory.SingleOrDefault(x => x.BatchInstance == jobHistoryGuid.ToString());
 
@@ -520,11 +519,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
 
-            if (jobsByBatchInstanceId.ContainsKey(batchInstance))
+            if (jobs.ContainsKey(batchInstance))
             {
-                jobsByBatchInstanceId[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
+                jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
 
-                _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped", jobsByBatchInstanceId[batchInstance], jobHistory.ArtifactId);
+                _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped", jobs[batchInstance], jobHistory.ArtifactId);
             }
         }
 
