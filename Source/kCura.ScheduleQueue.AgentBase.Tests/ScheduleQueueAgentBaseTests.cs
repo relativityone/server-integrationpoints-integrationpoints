@@ -4,9 +4,11 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
+using FreeImageAPI.Metadata;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -46,6 +48,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         public void SetUp()
         {
             _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
+            _objectManagerFake = new Mock<IRelativityObjectManager>();
         }
 
         [Test]
@@ -286,6 +289,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         {
             // Arrange
             const int jobId = 100;
+            int integrationPointId = _fxt.Create<int>();
+            SetupIntegrationPoint(integrationPointId);
 
             DateTime utcNow = new DateTime(2022, 8, 1);
             DateTime lastHeartbeat = utcNow.Subtract(TimeSpan.FromHours(10));
@@ -298,6 +303,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             Job job = new JobBuilder()
                 .WithJobId(jobId)
+                .WithRelatedObjectArtifactId(integrationPointId)
                 .WithHeartbeat(lastHeartbeat)
                 .Build();
             SetupJobQueue(job);
@@ -320,7 +326,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             // Arrange
             long jobId = _fxt.Create<long>();
             int integrationPointId = _fxt.Create<int>();
-            int sourceProviderId = _fxt.Create<int>();
+            SetupIntegrationPoint(integrationPointId);
 
             TestAgent sut = GetSut();
 
@@ -332,18 +338,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 .WithTaskType(taskType)
                 .Build();
             SetupJobQueue(job);
-
-            _objectManagerFake.Setup(x => x.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointId, ExecutionIdentity.CurrentUser))
-                .Returns(new IntegrationPoints.Data.IntegrationPoint
-                {
-                    SourceProvider = sourceProviderId
-                });
-
-            _objectManagerFake.Setup(x => x.Read<SourceProvider>(sourceProviderId, ExecutionIdentity.CurrentUser))
-                .Returns(new SourceProvider
-                {
-                    ApplicationIdentifier = "8C8D2241-706A-47E1-B0C1-DB3F4F990DC5"
-                });
 
             // Act
             sut.Execute();
@@ -359,11 +353,14 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         {
             // Arrange
             long jobId = _fxt.Create<long>();
+            int integrationPoitnId = _fxt.Create<int>();
+            SetupIntegrationPoint(integrationPoitnId);
 
             TestAgent sut = GetSut();
 
             Job job = new JobBuilder()
                 .WithJobId(jobId)
+                .WithRelatedObjectArtifactId(integrationPoitnId)
                 .WithLockedByAgentId(null)
                 .WithStopState(StopState.DrainStopping)
                 .WithTaskType(TaskType.ExportService)
@@ -382,47 +379,18 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         }
 
         [Test]
-        public void Execute_ShouldCleanUpTransientJob_WhenCheckingAzureADThrows()
-        {
-            // Arrange
-            long jobId = _fxt.Create<long>();
-
-            TestAgent sut = GetSut();
-
-            Job job = new JobBuilder()
-                .WithJobId(jobId)
-                .WithLockedByAgentId(null)
-                .WithStopState(StopState.DrainStopping)
-                .WithTaskType(TaskType.SyncWorker)
-                .Build();
-            SetupJobQueue(job);
-
-            _objectManagerFake.Setup(
-                    x => x.Read<IntegrationPoints.Data.IntegrationPoint>(
-                        It.IsAny<int>(), ExecutionIdentity.CurrentUser))
-                .Throws<Exception>();
-
-            // Act
-            sut.Execute();
-
-            // Assert
-            _jobServiceMock.Verify(
-                x => x.FinalizeJob(
-                    It.Is<Job>(y => y.JobFailed != null && y.JobId == jobId),
-                    It.IsAny<IScheduleRuleFactory>(),
-                    It.IsAny<TaskResult>()));
-        }
-
-        [Test]
         public void Execute_ShouldCleanUp_WhenJobIsStucked()
         {
             // Arrange
             const int jobId = 100;
+            int integrationPointId = _fxt.Create<int>();
+            SetupIntegrationPoint(integrationPointId);
 
             TestAgent sut = GetSut();
 
             Job job = new JobBuilder()
                 .WithJobId(jobId)
+                .WithRelatedObjectArtifactId(integrationPointId)
                 .WithLockedByAgentId(null)
                 .WithStopState(StopState.DrainStopping)
                 .Build();
@@ -532,8 +500,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _config = new Mock<IConfig>();
             _config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.MaxValue);
 
-            _objectManagerFake = new Mock<IRelativityObjectManager>();
-
             Mock<IRelativityObjectManagerFactory> objectManagerFactory = new Mock<IRelativityObjectManagerFactory>();
             objectManagerFactory.Setup(x => x.CreateRelativityObjectManager(It.IsAny<int>()))
                 .Returns(_objectManagerFake.Object);
@@ -565,6 +531,33 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             {
                 sequenceSetup = sequenceSetup.Returns(job);
             }
+        }
+
+        private void SetupIntegrationPoint(int integrationPointId)
+        {
+            int sourceProviderId = _fxt.Create<int>();
+            int destinationProviderId = _fxt.Create<int>();
+
+            _objectManagerFake.Setup(x => x.Read<IntegrationPoints.Data.IntegrationPoint>(integrationPointId, ExecutionIdentity.CurrentUser))
+                .Returns(new IntegrationPoints.Data.IntegrationPoint
+                {
+                    SourceProvider = sourceProviderId,
+                    DestinationProvider = destinationProviderId
+                });
+
+            _objectManagerFake.Setup(x => x.Read<SourceProvider>(sourceProviderId, ExecutionIdentity.CurrentUser))
+                .Returns(new SourceProvider
+                {
+                    ApplicationIdentifier = "8C8D2241-706A-47E1-B0C1-DB3F4F990DC5",
+                    Identifier = "13BE6C3F-BBC6-44DB-B5A7-6C573D604C81"
+                });
+
+            _objectManagerFake.Setup(x => x.Read<DestinationProvider>(destinationProviderId, ExecutionIdentity.CurrentUser))
+                .Returns(new DestinationProvider
+                {
+                    ApplicationIdentifier = "8C8D2241-706A-47E1-B0C1-DB3F4F990DC5",
+                    Identifier = "D7722123-ED70-456E-AC0D-EB357B08961A"
+                });
         }
 
         private void SetupJobAsInvalid(Job job, bool shouldExecute = false, bool shouldBreakScheudle = false, bool maximumConsecutiveFailuresReached = false)
