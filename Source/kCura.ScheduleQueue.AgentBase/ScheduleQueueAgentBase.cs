@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -252,28 +253,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 {
                     Logger.ForContext("TransientJob", job.RemoveSensitiveData(), true).LogInformation("Handling Transient Job {jobId}", job.JobId);
 
-                    IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
-
-                    IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
-
-                    Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
-
-                    if (!integrationPoint.SourceProvider.HasValue)
-                    {
-                        const string message = "Source Provider does not have value assigned";
-                        Logger.LogError(message);
-                        throw new ApplicationException(message);
-                    }
-
-                    if (!integrationPoint.DestinationProvider.HasValue)
-                    {
-                        const string message = "Destination Provider does not have value assigned";
-                        Logger.LogError(message);
-                        throw new ApplicationException(message);
-                    }
-
-                    SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
-                    DestinationProvider destinationProvider = objectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
+                    (SourceProvider sourceProvider, DestinationProvider destinationProvider) = GetProviders(job);
 
                     if (IsAzureADWorker(job, Guid.Parse(sourceProvider.ApplicationIdentifier)))
                     {
@@ -304,6 +284,34 @@ namespace kCura.ScheduleQueue.AgentBase
             {
                 Logger.LogError(ex, "Error occurred during cleaning invalid jobs from the queue.");
             }
+        }
+
+        private (SourceProvider, DestinationProvider) GetProviders(Job job)
+        {
+            IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
+
+            IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+
+            Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
+
+            if (!integrationPoint.SourceProvider.HasValue)
+            {
+                const string message = "Source Provider does not have value assigned";
+                Logger.LogError(message);
+                throw new ApplicationException(message);
+            }
+
+            if (!integrationPoint.DestinationProvider.HasValue)
+            {
+                const string message = "Destination Provider does not have value assigned";
+                Logger.LogError(message);
+                throw new ApplicationException(message);
+            }
+
+            SourceProvider sourceProvider = objectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
+            DestinationProvider destinationProvider = objectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
+
+            return (sourceProvider, destinationProvider);
         }
 
         private bool IsAzureADWorker(Job job, Guid sourceProviderApplicationIdentifier)
