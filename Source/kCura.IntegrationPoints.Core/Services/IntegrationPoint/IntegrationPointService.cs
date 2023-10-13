@@ -342,23 +342,25 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             CheckStopPermission(integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-            StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
-            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", stoppableJobHistories);
+            Data.JobHistory jobHistory = jobHistoryManager.GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
+            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", jobHistory);
 
-            StopSyncAppJobs(stoppableJobHistories);
+            if (FilterSyncAppJobHistory(jobHistory))
+            {
+                StopSyncAppJobs(jobHistory);
+                return;
+            }
 
-            ChoiceRef lastJobHistoryStatus = jobHistoryManager.GetLastJobHistoryStatus(workspaceArtifactId, integrationPointArtifactId);
-            Guid jobHistoryGuid = jobHistoryManager.GetLastJobHistoryGuid(workspaceArtifactId, integrationPointArtifactId);
-
+            Guid jobHistoryGuid = new Guid(jobHistory.BatchInstance);
             try
             {
-                if (!lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
+                if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
                 {
-                    StopExecutingJob(integrationPointArtifactId, jobHistoryGuid);
+                    StopPendingJob(integrationPointArtifactId, jobHistory, jobHistoryGuid);
                     return;
                 }
 
-                StopPendingJob(integrationPointArtifactId, stoppableJobHistories, jobHistoryGuid);
+                StopExecutingJob(integrationPointArtifactId, jobHistoryGuid);
             }
             catch (Exception ex)
             {
@@ -473,24 +475,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
+        private void StopSyncAppJobs(Data.JobHistory jobHistory)
         {
-            List<Data.JobHistory> syncAppJobHistories = stoppableJobHistories
-                .PendingJobHistory
-                .Concat(stoppableJobHistories.ProcessingJobHistory)
-                .Where(FilterSyncAppJobHistory)
-                .ToList();
-
-            foreach (Data.JobHistory syncAppJobHistory in syncAppJobHistories)
+            try
             {
-                try
-                {
-                    _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(syncAppJobHistory.JobID)).GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", syncAppJobHistory.JobID);
-                }
+                _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(jobHistory.JobID)).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", jobHistory.JobID);
             }
         }
 
@@ -507,12 +500,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void StopPendingJob(int integrationPointArtifactId, StoppableJobHistoryCollection stoppableJobHistories, Guid jobHistoryGuid)
+        private void StopPendingJob(int integrationPointArtifactId, Data.JobHistory jobHistory, Guid jobHistoryGuid)
         {
             IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
             _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
-
-            Data.JobHistory jobHistory = stoppableJobHistories.PendingJobHistory.SingleOrDefault(x => x.BatchInstance == jobHistoryGuid.ToString());
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
             _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);

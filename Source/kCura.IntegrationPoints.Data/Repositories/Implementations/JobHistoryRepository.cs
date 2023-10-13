@@ -68,18 +68,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return result.Select(x => x.JobStatus).FirstOrDefault();
         }
 
-        public Guid GetLastJobHistoryGuid(int integrationPointId)
+        public JobHistory GetLastJobHistory(int integrationPointId)
         {
             string integrationPointCondition = CreateIntegrationPointCondition(integrationPointId);
 
             var queryRequest = new QueryRequest
             {
                 Condition = integrationPointCondition,
-                Fields = new[]
-                {
-                    new FieldRef { Guid = JobHistoryFieldGuids.IntegrationPointGuid },
-                    new FieldRef { Guid = JobHistoryFieldGuids.BatchInstanceGuid },
-                },
                 Sorts = new List<Sort>
                 {
                     new Sort
@@ -90,8 +85,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 }
             };
 
-            IEnumerable<JobHistory> result = _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items;
-            return result.Select(x => new Guid(x.BatchInstance)).FirstOrDefault();
+            return _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items.Single();
         }
 
         public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)
