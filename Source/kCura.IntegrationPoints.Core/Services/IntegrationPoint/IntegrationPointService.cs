@@ -344,12 +344,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
             Data.JobHistory jobHistory = jobHistoryManager.GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
-            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", jobHistory);
 
             if (jobHistory == null)
             {
                 throw new NotFoundException($"Last Job History for workspaceArtifactId - {workspaceArtifactId}, integrationPointArtifactId - {integrationPointArtifactId}");
             }
+
+            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", jobHistory);
 
             if (FilterSyncAppJobHistory(jobHistory))
             {
