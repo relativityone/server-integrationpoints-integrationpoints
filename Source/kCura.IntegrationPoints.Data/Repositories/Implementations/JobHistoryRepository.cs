@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 }
             };
 
-            return _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items.Single();
+            return _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items.SingleOrDefault();
         }
 
         public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)

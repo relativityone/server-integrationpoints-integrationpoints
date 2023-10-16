@@ -17,7 +17,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class JobHistoryManagerTests : TestBase
     {
         private IJobHistoryManager _sut;
@@ -64,23 +65,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void GetLastJobHistoryArtifactId_GoldFlow()
         {
-            // ARRANGE
+            // Arrange
             int expectedLastTwoJobHistoryIds = 234242;
             _jobHistoryRepositoryMock
                 .Setup(x => x.GetLastJobHistoryArtifactId(_INTEGRATION_POINT_ID))
                 .Returns(expectedLastTwoJobHistoryIds);
 
-            // ACT
+            // Act
             int result = _sut.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
-            // ASSERT
+            // Assert
             Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
         }
 
         [Test]
         public void SetErrorStatusesToExpired_GoldFlow()
         {
-            // ARRANGE
+            // Arrange
             const int jobHistoryTypeId = 78;
             const int errorChoiceArtifactId = 98756;
             int[] itemLevelErrors = { 2, 3, 4 };
@@ -110,10 +111,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 .Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job))
                 .Returns(jobLevelErrors);
 
-            // ACT
+            // Act
             _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId);
 
-            // ASSERT
+            // Assert
             _massUpdateHelperMock.Verify(
                 x => x.UpdateArtifactsAsync(
                     itemLevelErrors,
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void SetErrorStatusesToExpired_UpdatesFail()
         {
-            // ARRANGE
+            // Arrange
             const int jobHistoryTypeId = 78;
             const int errorChoiceArtifactId = 98756;
             int[] itemLevelErrors = new[] { 2, 3, 4 };
@@ -166,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                     It.IsAny<IRepositoryWithMassUpdate>()))
                 .Throws<Exception>();
 
-            // ACT
+            // Act
             Assert.DoesNotThrow(() => _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
         }
 

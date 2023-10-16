@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Exceptions;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -344,6 +345,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
             Data.JobHistory jobHistory = jobHistoryManager.GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
             _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", jobHistory);
+
+            if (jobHistory == null)
+            {
+                throw new NotFoundException($"Last Job History for workspaceArtifactId - {workspaceArtifactId}, integrationPointArtifactId - {integrationPointArtifactId}")
+            }
 
             if (FilterSyncAppJobHistory(jobHistory))
             {
