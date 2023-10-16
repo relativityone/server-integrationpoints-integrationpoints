@@ -348,7 +348,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             if (jobHistory == null)
             {
-                throw new NotFoundException($"Last Job History for workspaceArtifactId - {workspaceArtifactId}, integrationPointArtifactId - {integrationPointArtifactId}")
+                throw new NotFoundException($"Last Job History for workspaceArtifactId - {workspaceArtifactId}, integrationPointArtifactId - {integrationPointArtifactId}");
             }
 
             if (FilterSyncAppJobHistory(jobHistory))
