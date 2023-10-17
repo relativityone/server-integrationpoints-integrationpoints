@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Managers
@@ -16,18 +18,18 @@ namespace kCura.IntegrationPoints.Core.Managers
         /// <summary>
         /// Gets last finished Job History status for a given Integration Point
         /// </summary>
-        /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
         /// <param name="workspaceArtifactId">Workspace artifact id</param>
+        /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
         /// <returns>Status of the most recent finished Job History objects</returns>
         ChoiceRef GetLastJobHistoryStatus(int workspaceArtifactId, int integrationPointArtifactId);
 
         /// <summary>
-        /// Gets the stoppable job histories for a given Integration Point.
+        /// Gets last finished Job History for a given Integration Point
         /// </summary>
-        /// <param name="workspaceArtifactId">The workspace artifact id.</param>
-        /// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
-        /// <returns>A StoppableJobCollection</returns>
-        Models.StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId);
+        /// <param name="workspaceArtifactId">Workspace artifact id</param>
+        /// <param name="integrationPointArtifactId">Integration Point artifact id</param>
+        /// <returns>The most recent Job History object</returns>
+        JobHistory GetLastJobHistory(int workspaceArtifactId, int integrationPointArtifactId);
 
         /// <summary>
         /// Set all associate job history errors to be expired

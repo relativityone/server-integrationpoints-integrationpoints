@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Exceptions;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -154,25 +155,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return ReadLongTextWithRetries<CalculationState>(_integrationPointRepository.GetCalculationStateAsync, artifactId);
         }
 
-        private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
-        {
-            return _retryHandler.Execute<T, RipSerializationException>(
-                () =>
-                {
-                    string longTextString = longTextAccessor(integrationPointId).GetAwaiter().GetResult();
-                    return Serializer.Deserialize<T>(longTextString);
-                },
-                exception =>
-                {
-                    _logger.LogWarning(
-                        exception,
-                        "Unable to deserialize {fieldType} for integration point: {integrationPointId}. LongText value: {longText}. Operation will be retried.",
-                        typeof(T),
-                        integrationPointId,
-                        exception.Value ?? string.Empty);
-                });
-        }
-
         public List<IntegrationPointSlimDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
         {
             List<Data.IntegrationPoint> rdos = _integrationPointRepository
@@ -262,16 +244,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 CreateRelativityError(
                     Constants.IntegrationPoints.UNABLE_TO_SAVE_INTEGRATION_POINT_VALIDATION_FAILED,
-                    string.Join(Environment.NewLine, validationException.ValidationResult.MessageTexts)
-                );
+                    string.Join(Environment.NewLine, validationException.ValidationResult.MessageTexts));
                 throw;
             }
             catch (Exception exception)
             {
                 CreateRelativityError(
                     Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-                    string.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace })
-                );
+                    string.Join(Environment.NewLine, new[] { exception.Message, exception.StackTrace }));
 
                 throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE, exception);
             }
@@ -363,67 +343,36 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             CheckStopPermission(integrationPointArtifactId);
 
             IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-            StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
-            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", stoppableJobHistories);
+            Data.JobHistory jobHistory = jobHistoryManager.GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
-            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
-
-            StopSyncAppJobs(stoppableJobHistories);
-
-            List<Exception> exceptions = new List<Exception>();
-
-            List<Data.JobHistory> processingJobHistories = stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
-            foreach (Data.JobHistory jobHistory in processingJobHistories)
+            if (jobHistory == null)
             {
-                try
-                {
-                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
-
-                    if (jobs.ContainsKey(batchInstance))
-                    {
-                        IList<long> jobIdsForGivenJobHistory = jobs[batchInstance].Select(x => x.JobId).ToList();
-                        _jobManager.StopJobs(jobIdsForGivenJobHistory);
-                        _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                    _logger.LogError(ex, "Error occurred when stopping Jobs for Processing JobHistory {jobHistoryId}", jobHistory.ArtifactId);
-                }
+                throw new NotFoundException($"Last Job History for workspaceArtifactId - {workspaceArtifactId}, integrationPointArtifactId - {integrationPointArtifactId}");
             }
 
-            List<Data.JobHistory> pendingJobHistories = stoppableJobHistories.PendingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
-            foreach (Data.JobHistory jobHistory in pendingJobHistories)
+            _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", jobHistory);
+
+            if (FilterSyncAppJobHistory(jobHistory))
             {
-                try
-                {
-                    jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-                    _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
-
-                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
-
-                    if (jobs.ContainsKey(batchInstance))
-                    {
-                        jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
-
-                        _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
-                            jobs[batchInstance], jobHistory.ArtifactId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    exceptions.Add(ex);
-                    _logger.LogError(ex, "Error occurred when deleteing Jobs and updating JobHistory {jobHistoryId} to Stopped", jobHistory.ArtifactId);
-                }
+                StopSyncAppJobs(jobHistory);
+                return;
             }
 
-            if (exceptions.Any())
+            Guid jobHistoryGuid = new Guid(jobHistory.BatchInstance);
+            try
             {
-                AggregateException stopActionException = new AggregateException(exceptions);
-                _logger.LogError(stopActionException, "Errors occurred when stopping Integration Point {integrationPointId}", integrationPointArtifactId);
-                throw stopActionException;
+                if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
+                {
+                    StopPendingJob(integrationPointArtifactId, jobHistory, jobHistoryGuid);
+                    return;
+                }
+
+                StopExecutingJob(integrationPointArtifactId, jobHistoryGuid);
+            }
+            catch (Exception ex)
+            {
+                string exceptionMessage = $"Errors occurred when stopping Integration Point integrationPointId - {integrationPointArtifactId}, jobHistoryGuid - {jobHistoryGuid}";
+                throw new Exception(exceptionMessage, ex);
             }
         }
 
@@ -457,6 +406,25 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
+        private T ReadLongTextWithRetries<T>(Func<int, Task<string>> longTextAccessor, int integrationPointId)
+        {
+            return _retryHandler.Execute<T, RipSerializationException>(
+                () =>
+                {
+                    string longTextString = longTextAccessor(integrationPointId).GetAwaiter().GetResult();
+                    return Serializer.Deserialize<T>(longTextString);
+                },
+                exception =>
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Unable to deserialize {fieldType} for integration point: {integrationPointId}. LongText value: {longText}. Operation will be retried.",
+                        typeof(T),
+                        integrationPointId,
+                        exception.Value ?? string.Empty);
+                });
+        }
+
         private void MarkSyncJobAsFailed(int jobHistoryId, int integrationPointId, Exception ex)
         {
             DateTime endTime = _dateTimeHelper.Now();
@@ -484,27 +452,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _integrationPointRepository.UpdateLastAndNextRunTime(integrationPointId, endTime, null);
         }
 
-        private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
-        {
-            List<Data.JobHistory> syncAppJobHistories = stoppableJobHistories
-                .PendingJobHistory
-                .Concat(stoppableJobHistories.ProcessingJobHistory)
-                .Where(FilterSyncAppJobHistory)
-                .ToList();
-
-            foreach (Data.JobHistory syncAppJobHistory in syncAppJobHistories)
-            {
-                try
-                {
-                    _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(syncAppJobHistory.JobID)).GetAwaiter().GetResult();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", syncAppJobHistory.JobID);
-                }
-            }
-        }
-
         private void CheckStopPermission(int integrationPointArtifactId)
         {
             IntegrationPointDto dto = Read(integrationPointArtifactId);
@@ -530,8 +477,51 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 CreateRelativityError(
                     Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-                    $"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, ex.Message)}");
+                    $"User is missing the following permissions:{Environment.NewLine}{string.Join(Environment.NewLine, ex.Message)}");
                 throw;
+            }
+        }
+
+        private void StopSyncAppJobs(Data.JobHistory jobHistory)
+        {
+            try
+            {
+                _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(jobHistory.JobID)).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", jobHistory.JobID);
+            }
+        }
+
+        private void StopExecutingJob(int integrationPointArtifactId, Guid jobHistoryGuid)
+        {
+            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByJobHistoryGuid(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent JobHistoryGuid {@jobsByJobHistoryGuid}", jobs);
+
+            if (jobs.ContainsKey(jobHistoryGuid))
+            {
+                IList<long> jobIdsForGivenJobHistory = jobs[jobHistoryGuid].Select(x => x.JobId).ToList();
+                _jobManager.StopJobs(jobIdsForGivenJobHistory);
+                _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryGuid}", jobIdsForGivenJobHistory, jobHistoryGuid);
+            }
+        }
+
+        private void StopPendingJob(int integrationPointArtifactId, Data.JobHistory jobHistory, Guid jobHistoryGuid)
+        {
+            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
+            _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
+
+            jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
+
+            Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
+
+            if (jobs.ContainsKey(batchInstance))
+            {
+                jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
+
+                _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped", jobs[batchInstance], jobHistory.ArtifactId);
             }
         }
 
@@ -543,8 +533,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             int workspaceArtifactId,
             int userId)
         {
-            _logger.LogInformation("Creating Job for Integration Point {integrationPointId} by user {userId}...",
-                integrationPoint.ArtifactId, userId);
+            _logger.LogInformation("Creating Job for Integration Point {integrationPointId} by user {userId}...", integrationPoint.ArtifactId, userId);
 
             Job job = null;
             lock (Lock)
@@ -563,8 +552,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private Data.JobHistory CreateJobHistory(IntegrationPointDto integrationPointDto, Guid batchInstance, ChoiceRef jobType, bool switchToAppendOverlayMode = false)
         {
-            _logger.LogInformation("Creating Job History for Integration Point {integrationPointId} with BatchInstance {batchInstance}...",
-                integrationPointDto.ArtifactId, batchInstance);
+            _logger.LogInformation("Creating Job History for Integration Point {integrationPointId} with BatchInstance {batchInstance}...", integrationPointDto.ArtifactId, batchInstance);
 
             Data.JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPointDto, batchInstance, jobType, null);
             AdjustOverwriteModeForRetry(jobHistory, switchToAppendOverlayMode);
@@ -575,8 +563,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception(Constants.IntegrationPoints.FAILED_TO_CREATE_JOB_HISTORY);
             }
 
-            _logger.LogInformation("Job History {jobHistoryId} was created for Integration Point {integrationPointId}.",
-                jobHistory.ArtifactId, integrationPointDto.ArtifactId);
+            _logger.LogInformation("Job History {jobHistoryId} was created for Integration Point {integrationPointId}.", jobHistory.ArtifactId, integrationPointDto.ArtifactId);
 
             return jobHistory;
         }

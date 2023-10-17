@@ -121,20 +121,12 @@ namespace kCura.IntegrationPoints.Core.Services
             {
                 try
                 {
-                    TaskParameters parameter = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-                    if (results.ContainsKey(parameter.BatchInstance))
-                    {
-                        results[parameter.BatchInstance].Add(job);
-                    }
-                    else
-                    {
-                        results[parameter.BatchInstance] = new List<Job> {job};
-                    }
+                    TryAddJobToResultsWithTaskParameters(job, results);
                 }
                 catch (Exception e)
                 {
-                    LogTaskParametersDeserializationError(e);
                     // in case of the serialization fails for whatever reasons.
+                    LogTaskParametersDeserializationError(e);
                 }
             }
             return results;
@@ -151,27 +143,55 @@ namespace kCura.IntegrationPoints.Core.Services
             return bacthedAgentJobs[batchId];
         }
 
+        public IDictionary<Guid, List<Job>> GetJobsByJobHistoryGuid(long integrationPointId)
+        {
+            IDictionary<Guid, List<Job>> results = new Dictionary<Guid, List<Job>>();
+            IList<Job> jobs = _jobService.GetJobs(integrationPointId);
+
+            if (jobs == null)
+            {
+                return results;
+            }
+
+            const string jobHistoryGuidName = "JobHistoryGuid";
+
+            foreach (var job in jobs)
+            {
+                try
+                {
+                    Dictionary<string, object> jobDetails = _serializer.Deserialize<Dictionary<string, object>>(job.JobDetails);
+
+                    bool isTaskParametersParsed = TryAddJobToResultsWithTaskParameters(job, results);
+
+                    if (isTaskParametersParsed)
+                    {
+                        continue;
+                    }
+
+                    bool isJobHistoryGuidParsed = Guid.TryParse(jobDetails[jobHistoryGuidName]?.ToString(), out Guid jobHistoryGuid);
+                    if (results.ContainsKey(jobHistoryGuid))
+                    {
+                        results[jobHistoryGuid].Add(job);
+                        continue;
+                    }
+
+                    if (isJobHistoryGuidParsed)
+                    {
+                        results[jobHistoryGuid] = new List<Job> { job };
+                    }
+                }
+                catch (Exception e)
+                {
+                    // in case of the serialization fails for whatever reasons.
+                    LogTaskParametersDeserializationError(e);
+                }
+            }
+            return results;
+        }
+
         public void StopJobs(IList<long> jobIds)
         {
             _jobService.UpdateStopState(jobIds, StopState.Stopping);
-        }
-
-        private Job CreateJobInternal(TaskParameters jobDetails, TaskType task, string correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
-        {
-            try
-            {
-                string serializedDetails = null;
-                if (jobDetails != null)
-                {
-                    serializedDetails = _serializer.Serialize(jobDetails);
-                }
-                return _jobService.CreateJob(workspaceId, integrationPointId, correlationId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
-            }
-            catch (AgentNotFoundException anfe)
-            {
-                LogCreatingJobError(anfe, task, workspaceId, integrationPointId);
-                throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
-            }
         }
 
         public void CreateJob(int workspaceID, int integrationPointID, string correlationId, TaskType task, string serializedDetails, long? rootJobId = null, long? parentJobId = null)
@@ -197,6 +217,43 @@ namespace kCura.IntegrationPoints.Core.Services
             }
 
             return rootJobId;
+        }
+
+        private Job CreateJobInternal(TaskParameters jobDetails, TaskType task, string correlationId, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobID = null)
+        {
+            try
+            {
+                string serializedDetails = null;
+                if (jobDetails != null)
+                {
+                    serializedDetails = _serializer.Serialize(jobDetails);
+                }
+                return _jobService.CreateJob(workspaceId, integrationPointId, correlationId, task.ToString(), DateTime.UtcNow, serializedDetails, userId, rootJobId, parentJobID);
+            }
+            catch (AgentNotFoundException anfe)
+            {
+                LogCreatingJobError(anfe, task, workspaceId, integrationPointId);
+                throw new Exception(ErrorMessages.NoAgentInstalled, anfe);
+            }
+        }
+
+        private bool TryAddJobToResultsWithTaskParameters(Job job, IDictionary<Guid, List<Job>> results)
+        {
+            TaskParameters parameter = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+            if (parameter.BatchInstance == Guid.Empty)
+            {
+                return false;
+            }
+            if (results.ContainsKey(parameter.BatchInstance))
+            {
+                results[parameter.BatchInstance].Add(job);
+            }
+            else
+            {
+                results[parameter.BatchInstance] = new List<Job> { job };
+            }
+
+            return true;
         }
 
         #region Logging

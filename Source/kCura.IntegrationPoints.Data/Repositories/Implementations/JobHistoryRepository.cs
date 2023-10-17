@@ -68,6 +68,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return result.Select(x => x.JobStatus).FirstOrDefault();
         }
 
+        public JobHistory GetLastJobHistory(int integrationPointId)
+        {
+            string integrationPointCondition = CreateIntegrationPointCondition(integrationPointId);
+
+            var queryRequest = new QueryRequest
+            {
+                Condition = integrationPointCondition,
+                Sorts = new List<Sort>
+                {
+                    new Sort
+                    {
+                        Direction = SortEnum.Descending,
+                        FieldIdentifier = new FieldRef { Name = "Artifact ID" }
+                    }
+                }
+            };
+
+            return _relativityObjectManager.Query<JobHistory>(queryRequest, 0, 1).Items.SingleOrDefault();
+        }
+
         public void MarkJobAsValidationFailed(int jobHistoryID, int integrationPointID, DateTime jobEndTime)
         {
             ChoiceRef status = new ChoiceRef
