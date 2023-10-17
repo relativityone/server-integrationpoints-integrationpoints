@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -27,19 +26,11 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
     public abstract class ScheduleQueueAgentBase : Agent.AgentBase
     {
-        private const int _MAX_MESSAGE_LENGTH = 10000;
-        private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
-        {
-            [LogCategory.Debug] = 20,
-            [LogCategory.Info] = 10
-        };
-
         private readonly Guid _agentGuid;
         private readonly Lazy<int> _agentId;
         private readonly Lazy<IAPILog> _loggerLazy;
@@ -222,6 +213,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
         protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
 
+        protected abstract void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint);
+
         protected int GetAgentID()
         {
             if (IsKubernetesMode)
@@ -253,7 +246,10 @@ namespace kCura.ScheduleQueue.AgentBase
                 {
                     Logger.ForContext("TransientJob", job.RemoveSensitiveData(), true).LogInformation("Handling Transient Job {jobId}", job.JobId);
 
-                    (SourceProvider sourceProvider, DestinationProvider destinationProvider) = GetProviders(job);
+                    IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
+                    IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
+
+                    (SourceProvider sourceProvider, DestinationProvider destinationProvider) = GetProviders(job, objectManager, integrationPoint);
 
                     if (IsAzureADWorker(job, Guid.Parse(sourceProvider.ApplicationIdentifier)))
                     {
@@ -264,7 +260,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                     Logger.LogError("Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
 
-                    SendJobInTransientStateMetric(job, sourceProvider, destinationProvider);
+                    SendMetricAboutJobInTransientState(job, sourceProvider, destinationProvider);
 
                     PreValidationResult validationResult = PreExecuteJobValidation(job);
                     if (!validationResult.ShouldExecute)
@@ -278,6 +274,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
                     TaskResult result = ProcessJob(job);
                     FinalizeJobExecution(job, result);
+
+                    SendNotificationEmailAboutJobInTransientState(job, objectManager, integrationPoint);
                 }
             }
             catch (Exception ex)
@@ -286,12 +284,8 @@ namespace kCura.ScheduleQueue.AgentBase
             }
         }
 
-        private (SourceProvider, DestinationProvider) GetProviders(Job job)
+        private (SourceProvider, DestinationProvider) GetProviders(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint)
         {
-            IRelativityObjectManager objectManager = _objectManagerFactory.CreateRelativityObjectManager(job.WorkspaceID);
-
-            IntegrationPoint integrationPoint = objectManager.Read<IntegrationPoint>(job.RelatedObjectArtifactID);
-
             Logger.LogInformation("SourceProvider was read from IntegrationPoint {integrationPointId} - SourceProviderId: {sourceProviderId}", job.RelatedObjectArtifactID, integrationPoint.SourceProvider);
 
             if (!integrationPoint.SourceProvider.HasValue)
@@ -336,7 +330,7 @@ namespace kCura.ScheduleQueue.AgentBase
             }
         }
 
-        private void SendJobInTransientStateMetric(Job job, SourceProvider sourceProvider, DestinationProvider destinationProvider)
+        private void SendMetricAboutJobInTransientState(Job job, SourceProvider sourceProvider, DestinationProvider destinationProvider)
         {
             Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
             {
@@ -353,8 +347,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
             _apm.CountOperation($"IntegrationPoints.Performance.JobFailedCount.{providerType.ToString()}", customData: jobInTransientStateCustomData)
                 .Write();
-
-            Logger.LogInformation("JobInTransientState metric sent");
         }
 
         private void RemoveInvalidJobFromQueue(PreValidationResult validationResult, Job job)

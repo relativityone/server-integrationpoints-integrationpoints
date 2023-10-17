@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -321,6 +322,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
             {
+            }
+
+            protected override void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager,
+                Data.IntegrationPoint integrationPoint)
+            {
+                
             }
         }
     }
