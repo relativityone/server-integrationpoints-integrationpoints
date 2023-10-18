@@ -213,7 +213,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
         protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
 
-        protected abstract void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint);
+        protected abstract void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint);
 
         protected int GetAgentID()
         {
@@ -275,7 +275,7 @@ namespace kCura.ScheduleQueue.AgentBase
                     TaskResult result = ProcessJob(job);
                     FinalizeJobExecution(job, result);
 
-                    SendNotificationEmailAboutJobInTransientState(job, objectManager, integrationPoint);
+                    SendEmailNotificationForCrashedJob(job, objectManager, integrationPoint);
                 }
             }
             catch (Exception ex)

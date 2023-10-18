@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                 throw new NotImplementedException();
             }
 
-            protected override void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager,
+            protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager,
                 Data.IntegrationPoint integrationPoint)
             {
                 throw new NotImplementedException();

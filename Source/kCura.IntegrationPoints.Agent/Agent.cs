@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
@@ -279,53 +280,10 @@ namespace kCura.IntegrationPoints.Agent
             });
         }
 
-        protected override void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint)
+        protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint)
         {
-            if (string.IsNullOrWhiteSpace(integrationPoint.EmailNotificationRecipients))
-            {
-                Logger.LogInformation("Notification email for crashed job will not be send because recipients list is empty");
-                return;
-            }
-
-            try
-            {
-                JobHistory jobHistory = objectManager.Query<JobHistory>(new QueryRequest()
-                {
-                    Condition = $"'{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{job.RelatedObjectArtifactID}] AND '{JobHistoryFields.JobStatus}' == CHOICE {JobStatusChoices.JobHistoryErrorJobFailedGuid}",
-                    Sorts = new[]
-                    {
-                        new Sort()
-                        {
-                            Direction = SortEnum.Descending,
-                            FieldIdentifier = new FieldRef()
-                            {
-                                Guid = JobHistoryFieldGuids.EndTimeUTCGuid
-                            }
-                        }
-                    }
-                }, 0, 1).Items.FirstOrDefault();
-
-                if (jobHistory != null)
-                {
-                    IKeplerServiceFactory serviceFactory = new ServiceFactory(Helper.GetServicesManager(), new DynamicProxyFactory(() => new StopwatchWrapper(), Logger), Logger);
-                    IIntegrationPointRdoService integrationPointRdoService = new IntegrationPointRdoService(serviceFactory, Logger);
-                    IDateTime dateTime = new DateTimeWrapper();
-                    CustomProvider.Services.JobHistory.IJobHistoryService jobHistoryService = new JobHistoryService(serviceFactory, dateTime, integrationPointRdoService, Logger);
-                    JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(serviceFactory, new DefaultGuidService(), dateTime, new RetryHandler(Logger), Logger);
-                    INotificationService notificationService = new NotificationService(jobHistoryService, serviceFactory, jobHistoryErrorService, Logger);
-
-                    Guid jobHistoryGuid = new Guid(jobHistory.BatchInstance);
-                    notificationService.PrepareAndSendEmailNotificationAsync(new ImportJobContext(job.WorkspaceID, job.JobId, jobHistoryGuid, jobHistory.ArtifactId), integrationPoint.EmailNotificationRecipients).GetAwaiter().GetResult();
-                }
-                else
-                {
-                    Logger.LogError("Cannot send notification email for crashed job because Job History has not been found");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Failed to send notification email for crashed job");
-            }
+            CrashedJobEmailSender crashedJobEmailSender = new CrashedJobEmailSender(Helper.GetServicesManager(), objectManager, Logger);
+            crashedJobEmailSender.SendEmailNotifications(job, integrationPoint);
         }
 
         protected void OnJobExecutionError(Job job, ITask task, Exception exception)

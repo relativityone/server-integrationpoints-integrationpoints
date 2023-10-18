@@ -629,7 +629,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             {
             }
 
-            protected override void SendNotificationEmailAboutJobInTransientState(Job job, IRelativityObjectManager objectManager,
+            protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager,
                 IntegrationPoints.Data.IntegrationPoint integrationPoint)
             {
                 
