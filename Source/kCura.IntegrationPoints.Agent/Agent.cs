@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Castle.Windsor;
@@ -7,24 +8,31 @@ using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Context;
+using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.IntegrationPointRdoService;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
+using kCura.IntegrationPoints.Agent.CustomProvider.Services.Notifications;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.RelativitySync;
@@ -36,10 +44,13 @@ using kCura.ScheduleQueue.Core.TimeMachine;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using Relativity.Services.Choice;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Telemetry.APM;
 using Choice = Relativity.Services.Objects.DataContracts.ChoiceRef;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using Component = Castle.MicroKernel.Registration.Component;
+using IJobHistoryService = kCura.IntegrationPoints.Core.Services.JobHistory.IJobHistoryService;
+using JobHistoryErrorService = kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError.JobHistoryErrorService;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -267,6 +278,12 @@ namespace kCura.IntegrationPoints.Agent
                 State = state,
                 Details = details
             });
+        }
+
+        protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager, IntegrationPoint integrationPoint)
+        {
+            CrashedJobEmailSender crashedJobEmailSender = new CrashedJobEmailSender(Helper.GetServicesManager(), objectManager, Logger);
+            crashedJobEmailSender.SendEmailNotifications(job, integrationPoint);
         }
 
         protected void OnJobExecutionError(Job job, ITask task, Exception exception)

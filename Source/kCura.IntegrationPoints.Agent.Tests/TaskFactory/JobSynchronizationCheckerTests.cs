@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.AgentBase;
@@ -214,6 +215,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             }
 
             protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager,
+                Data.IntegrationPoint integrationPoint)
             {
                 throw new NotImplementedException();
             }

@@ -629,6 +629,12 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             {
             }
 
+            protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager,
+                IntegrationPoints.Data.IntegrationPoint integrationPoint)
+            {
+                
+            }
+
             protected override IEnumerable<int> GetListOfResourceGroupIDs()
             {
                 return Enumerable.Empty<int>();
