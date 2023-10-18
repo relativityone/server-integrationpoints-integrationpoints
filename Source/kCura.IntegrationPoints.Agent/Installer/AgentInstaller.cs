@@ -37,6 +37,7 @@ using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
@@ -228,7 +229,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ICustomProviderTask>().ImplementedBy<CustomProviderTask>().LifestyleTransient());
             container.Register(Component.For<IImportApiRunnerFactory>().ImplementedBy<ImportApiRunnerFactory>().LifestyleTransient());
             container.Register(Component.For<IImportApiService>().ImplementedBy<ImportApiService>().LifestyleTransient());
-            container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
             container.Register(Component.For<IDocumentImportSettingsBuilder>().ImplementedBy<DocumentImportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<IRdoImportSettingsBuilder>().ImplementedBy<RdoImportSettingsBuilder>().LifestyleTransient());
             container.Register(Component.For<IItemLevelErrorHandler>().ImplementedBy<ItemLevelErrorHandler>().LifestyleTransient());

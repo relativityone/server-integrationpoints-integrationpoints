@@ -47,5 +47,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         /// <param name="batchId">The batch instance id of the scheduled agent jobs.</param>
         /// <returns>A List of scheduled agent jobs.</returns>
         IList<Job> GetJobsByBatchInstanceId(long integrationPointId, Guid batchId);
+
+        /// <summary>
+        /// Gets scheduled agent jobs as a dictionary where the key is the job history's Guid and the value is a list of scheduled agent job dtos.
+        /// </summary>
+        /// <param name="integrationPointId">The artifact id of the Integration Point object.</param>
+        /// <returns>A dictionary of Job History Guid and its agent job DTOs.</returns>
+        IDictionary<Guid, List<Job>> GetJobsByJobHistoryGuid(long integrationPointId);
     }
 }

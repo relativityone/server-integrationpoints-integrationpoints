@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
@@ -86,6 +87,7 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>().LifestyleTransient());
             container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>().LifestyleTransient());
             container.Register(Component.For<IButtonStateBuilder>().ImplementedBy<ButtonStateBuilder>().LifestyleTransient());
+            container.Register(Component.For<ICustomProviderFlowCheck>().ImplementedBy<CustomProviderFlowCheck>().LifestyleTransient());
 
             container.Register(Component.For<ObjectTypeService>().ImplementedBy<ObjectTypeService>().LifestyleTransient());
             container.Register(Component.For<IPluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());

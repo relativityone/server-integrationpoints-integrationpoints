@@ -6,8 +6,11 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
-using Relativity.Services.Objects;
 using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
@@ -30,6 +33,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
         public void Setup()
         {
             _objectTypeManager = new Mock<IObjectTypeManager>();
+            _objectTypeManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<int>())).ReturnsAsync(new ObjectTypeResponse
+            {
+                ParentObjectType = new Securable<ObjectTypeIdentifier>
+                {
+                    Value = new ObjectTypeIdentifier
+                    {
+                        ArtifactTypeID = 0
+                    }
+                }
+            });
             _objectManager = new Mock<IObjectManager>();
 
             _artifactGuidManager = new Mock<IArtifactGuidManager>();
@@ -70,12 +83,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
         {
             // Arrange
             const int progressObjectTypeId = 222;
-            const int batchObjectTypeId = 222;
-            const int configurationObjectTypeId = 222;
+            const int batchObjectTypeId = 223;
+            const int configurationObjectTypeId = 224;
 
             _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(progressObjectTypeId);
-            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(batchObjectTypeId);
-            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(configurationObjectTypeId);
+            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _batchObjectType)).ReturnsAsync(batchObjectTypeId);
+            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _syncConfigurationObjectType)).ReturnsAsync(configurationObjectTypeId);
 
             // Act
             await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false);

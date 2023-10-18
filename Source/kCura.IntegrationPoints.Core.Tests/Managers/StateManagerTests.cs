@@ -11,12 +11,16 @@ using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfigur
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class StateManagerTests : TestBase
     {
+        private bool _isIApiV2CustomProviderWorkflow;
+
         [SetUp]
         public override void SetUp()
         {
+            _isIApiV2CustomProviderWorkflow = false;
             _instance = new StateManager();
         }
 
@@ -39,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -70,7 +75,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert Enable
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -103,7 +109,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -136,7 +143,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -169,7 +177,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -202,7 +211,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -240,7 +250,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -254,6 +265,77 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
             Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
             Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
+
+        [TestCase("Pending", ProviderType.FTP, true, true)]
+        [TestCase("Validating", ProviderType.FTP, true, true)]
+        [TestCase("Processing", ProviderType.FTP, true, true)]
+        [TestCase("Pending", ProviderType.LDAP, true, true)]
+        [TestCase("Validating", ProviderType.LDAP, true, true)]
+        [TestCase("Processing", ProviderType.LDAP, true, true)]
+        [TestCase("Pending", ProviderType.Other, true, true)]
+        [TestCase("Validating", ProviderType.Other, true, true)]
+        [TestCase("Processing", ProviderType.Other, true, true)]
+        [TestCase("Pending", ProviderType.Relativity, true, true)]
+        [TestCase("Validating", ProviderType.Relativity, true, true)]
+        [TestCase("Processing", ProviderType.Relativity, true, true)]
+        [TestCase("Pending", ProviderType.LoadFile, true, true)]
+        [TestCase("Validating", ProviderType.LoadFile, true, true)]
+        [TestCase("Processing", ProviderType.LoadFile, true, true)]
+        [TestCase("Pending", ProviderType.FTP, false, true)]
+        [TestCase("Validating", ProviderType.FTP, false, false)]
+        [TestCase("Processing", ProviderType.FTP, false, false)]
+        [TestCase("Pending", ProviderType.LDAP, false, true)]
+        [TestCase("Validating", ProviderType.LDAP, false, false)]
+        [TestCase("Processing", ProviderType.LDAP, false, false)]
+        [TestCase("Pending", ProviderType.Other, false, true)]
+        [TestCase("Validating", ProviderType.Other, false, false)]
+        [TestCase("Processing", ProviderType.Other, false, false)]
+        [TestCase("Pending", ProviderType.Relativity, false, true)]
+        [TestCase("Validating", ProviderType.Relativity, false, true)]
+        [TestCase("Processing", ProviderType.Relativity, false, true)]
+        [TestCase("Pending", ProviderType.LoadFile, false, true)]
+        [TestCase("Validating", ProviderType.LoadFile, false, true)]
+        [TestCase("Processing", ProviderType.LoadFile, false, true)]
+        public void StopButtonEnabledShouldBeProperlySet_WhenJobIsPendingOrExecuting(
+            string lastJobHistoryStatus,
+            ProviderType providerType,
+            bool isIApiV2CustomProviderWorkflow,
+            bool expectedStopButtonVisibilityValue)
+        {
+            // Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
+            bool isCalculating = false;
+
+            ChoiceRef lastJobHistoryStatusChoice;
+
+            switch (lastJobHistoryStatus)
+            {
+                case "Validating":
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryValidating;
+                    break;
+                case "Processing":
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryProcessing;
+                    break;
+                default:
+                    lastJobHistoryStatusChoice = JobStatusChoices.JobHistoryPending;
+                    break;
+            }
+
+            // Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(
+                exportType,
+                providerType,
+                hasViewPermissions,
+                hasProfileAddPermission,
+                isCalculating,
+                lastJobHistoryStatusChoice,
+                isIApiV2CustomProviderWorkflow);
+
+            // Assert
+            Assert.IsTrue(buttonStates.StopButtonEnabled == expectedStopButtonVisibilityValue);
         }
 
         [TestCase(ProviderType.Relativity, ExportType.ProductionSet, true)]
@@ -274,7 +356,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             buttonStates.RetryErrorsButtonVisible.Should().Be(expectedRetryErrorsVisibility);
@@ -299,7 +382,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 hasViewPermissions,
                 hasProfileAddPermission,
                 isCalculating,
-                lastJobHistoryStatus);
+                lastJobHistoryStatus,
+                _isIApiV2CustomProviderWorkflow);
 
             // Assert
             buttonStates.CalculateStatisticsButtonEnabled.Should().Be(calculateStatsButtonEnabled);

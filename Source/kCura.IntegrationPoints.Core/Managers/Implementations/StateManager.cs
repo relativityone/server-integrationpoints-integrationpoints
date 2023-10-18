@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Models;
+﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -17,12 +16,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasErrorViewPermissions,
             bool hasProfileAddPermission,
             bool calculationInProgress,
-            ChoiceRef lastJobHistoryStatus)
+            ChoiceRef lastJobHistoryStatus,
+            bool isIApiV2CustomProviderWorkflow)
         {
             bool runButtonEnabled = IsRunButtonEnable(lastJobHistoryStatus);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasErrorViewPermissions, lastJobHistoryStatus);
             bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, lastJobHistoryStatus);
-            bool stopButtonEnabled = IsStopButtonEnabled(providerType, exportType, lastJobHistoryStatus);
+            bool stopButtonEnabled = IsStopButtonEnabled(providerType, exportType, lastJobHistoryStatus, isIApiV2CustomProviderWorkflow);
             bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
             bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType, exportType);
             bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                    && lastJobHistoryStatus.EqualsToAnyChoice(JobStatusChoices.JobHistoryCompletedWithErrors);
         }
 
-        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus)
+        private bool IsStopButtonEnabled(ProviderType providerType, ExportType exportType, ChoiceRef lastJobHistoryStatus, bool isIApiV2CustomProviderWorkflow)
         {
             if (lastJobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending))
             {
@@ -89,8 +89,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 JobStatusChoices.JobHistoryProcessing);
 
             return isValidatingOrProcessing
-                   && providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
-                   && exportType != ExportType.ProductionSet;
+                   && exportType != ExportType.ProductionSet
+                   && (providerType.IsIn(ProviderType.Relativity, ProviderType.LoadFile)
+                       || isIApiV2CustomProviderWorkflow);
         }
 
         private bool IsViewErrorsLinkVisible(ProviderType providerType, bool hasErrorViewPermissions)

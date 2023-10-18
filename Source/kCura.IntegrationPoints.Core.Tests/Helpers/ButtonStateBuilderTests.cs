@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private IStateManager _stateManager;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
+        private ICustomProviderFlowCheck _customProviderFlowCheck;
 
         [SetUp]
         public override void SetUp()
@@ -51,6 +54,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             _managerFactory = Substitute.For<IManagerFactory>();
             _managerFactory.CreateStateManager().Returns(_stateManager);
+
+            _customProviderFlowCheck = Substitute.For<ICustomProviderFlowCheck>();
+            _customProviderFlowCheck.ShouldBeUsed(Arg.Any<int>(), Arg.Any<ProviderType>()).Returns(false);
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, "Pending")]
@@ -97,7 +103,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(hasErrorViewPermission),
                     Arg.Is(hasAddProfilePermission),
                     Arg.Any<bool>(),
-                    Arg.Is(lastJobHistoryStatus));
+                    Arg.Is(lastJobHistoryStatus),
+                    Arg.Any<bool>());
         }
 
         private ChoiceRef GetJobHistoryStatusByName(string statusName)
@@ -147,7 +154,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<ChoiceRef>());
+                    Arg.Any<ChoiceRef>(),
+                    Arg.Any<bool>());
         }
 
         [Test]
@@ -155,8 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         {
             // Arrange
             bool expectedInProgressFlagValue = false;
-            SetupIntegrationPoint(ProviderType.Relativity, ExportType.SavedSearch,
-                new CalculationState());
+            SetupIntegrationPoint(ProviderType.Relativity, ExportType.SavedSearch, new CalculationState());
 
             _permissionValidator.Validate(_WORKSPACE_ID)
                 .Returns(new ValidationResult());
@@ -180,7 +187,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedInProgressFlagValue),
-                    Arg.Any<ChoiceRef>());
+                    Arg.Any<ChoiceRef>(),
+                    Arg.Any<bool>());
         }
 
         private void SetupIntegrationPoint(
@@ -216,6 +224,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 _repositoryFactory,
                 _integrationPointService,
                 _permissionValidator,
+                _customProviderFlowCheck,
                 _managerFactory);
         }
     }

@@ -210,8 +210,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             if (decryptSecuredConfiguration)
             {
-                string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPoint).ConfigureAwait(false);
-                integrationPoint.SecuredConfiguration = decryptedConfiguration ?? integrationPoint.SecuredConfiguration;
+                integrationPoint.SecuredConfiguration = await DecryptSecuredConfigurationAsync(integrationPoint.ArtifactId, integrationPoint.SecuredConfiguration).ConfigureAwait(false);
             }
 
             return integrationPoint;
@@ -295,18 +294,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        private async Task<string> DecryptSecuredConfigurationAsync(int workspaceID, IntegrationPoint integrationPoint)
+        private async Task<string> DecryptSecuredConfigurationAsync(int integrationPointArtifactId, string securedConfiguration)
         {
-            string secretID = integrationPoint.SecuredConfiguration;
-            if (string.IsNullOrWhiteSpace(secretID))
+            string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPointArtifactId, securedConfiguration).ConfigureAwait(false);
+            return decryptedConfiguration ?? securedConfiguration;
+        }
+
+        private async Task<string> DecryptSecuredConfigurationAsync(int workspaceID, int integrationPointArtifactId, string securedConfiguration)
+        {
+            if (string.IsNullOrWhiteSpace(securedConfiguration))
             {
                 return null;
             }
 
             SecretPath secretPath = GetSecretPathOrGenerateNewOne(
                 workspaceID,
-                integrationPoint.ArtifactId,
-                secretID
+                integrationPointArtifactId,
+                securedConfiguration
             );
             Dictionary<string, string> secretData = await _secretsRepository
                 .DecryptAsync(secretPath)
