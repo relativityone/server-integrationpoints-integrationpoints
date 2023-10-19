@@ -23,5 +23,17 @@ namespace kCura.ScheduleQueue.Core.Helpers
             var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
             return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
         }
+
+        public static int DayOfWeekToIndex(DayOfWeek dayOfWeek)
+        {
+            int dayOfWeekIndex = (int)dayOfWeek;
+
+            if (dayOfWeekIndex == 0)
+            {
+                return 7;
+            }
+
+            return dayOfWeekIndex;
+        }
     }
 }

@@ -129,12 +129,17 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         public override DateTime? GetFirstUtcRunDateTime()
         {
-            if (StartDate == null)
+            if (!StartDate.HasValue)
             {
                 throw new ArgumentNullException("StartDate should be set to start job scheduling.");
             }
 
             DateTime startDateTimeInTimeZone = StartDate.Value.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
+            if (Interval == ScheduleInterval.Weekly)
+            {
+                startDateTimeInTimeZone = CalculateFirstDateTimeForWeeklyWorkflow(startDateTimeInTimeZone);
+            }
+
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
             DateTime startDateTimeUtc = startDateTimeInTimeZone.Subtract(timeZone.BaseUtcOffset);
 
@@ -201,9 +206,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
             DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
 
-            if (dtAdjustmentStart >= lastNextRunDateTimeInTimeZone && dtAdjustmentEnd < lastNextRunDateTimeInTimeZone)
+            if (dtAdjustmentStart >= nextRunDateTimeInTimeZone && dtAdjustmentEnd < nextRunDateTimeInTimeZone)
             {
-                return AddDateTime(lastNextUtcRunDateTime).Subtract(adjustment.DaylightDelta);
+                return AddDateTime(lastNextUtcRunDateTime.Subtract(adjustment.DaylightDelta));
             }
             return AddDateTime(lastNextUtcRunDateTime);
         }
@@ -222,7 +227,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                     return dateTime.AddDays(1);
 
                 case ScheduleInterval.Weekly:
-                    return dateTime.AddDays(1);
+                    return CalculateNextDateTimeForWeeklyWorkflow(dateTime);
 
                 case ScheduleInterval.Monthly:
                     return dateTime.AddMonths(1);
@@ -275,6 +280,57 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                     transitionTime.TimeOfDay.Hour,
                     transitionTime.TimeOfDay.Minute,
                     transitionTime.TimeOfDay.Second);
+            }
+        }
+
+        private DateTime CalculateFirstDateTimeForWeeklyWorkflow(DateTime dateTime)
+        {
+            ValidateWeeklyWorkflow();
+
+            int dayOfWeek = DaysOfWeekConverter.DayOfWeekToIndex(dateTime.DayOfWeek);
+            List<int> selectedDaysOfWeek = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.Value).Select(x => DaysOfWeekConverter.DayOfWeekToIndex(x)).ToList();
+
+            if (dayOfWeek >= selectedDaysOfWeek.Max())
+            {
+                int daysOfWeekDifference = dayOfWeek - selectedDaysOfWeek.Min();
+                return dateTime.AddDays(7 - daysOfWeekDifference);
+            }
+            
+            int nextDatDayOfWeek = selectedDaysOfWeek.First(x => x > dayOfWeek);
+            int todayAndNextDayOfWeekDifference = nextDatDayOfWeek - dayOfWeek;
+
+            return dateTime.AddDays(todayAndNextDayOfWeekDifference);
+        }
+
+        private DateTime CalculateNextDateTimeForWeeklyWorkflow(DateTime dateTime)
+        {
+            ValidateWeeklyWorkflow();
+
+            int dayOfWeek = DaysOfWeekConverter.DayOfWeekToIndex(dateTime.DayOfWeek);
+            List<int> selectedDaysOfWeek = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.Value).Select(x => DaysOfWeekConverter.DayOfWeekToIndex(x)).ToList();
+
+            if (dayOfWeek >= selectedDaysOfWeek.Max())
+            {
+                int daysOfWeekDifference = dayOfWeek - selectedDaysOfWeek.Min();
+                return dateTime.AddDays((Reoccur.Value * 7) - daysOfWeekDifference);
+            }
+            
+            int nextDatDayOfWeek = selectedDaysOfWeek.First(x => x > dayOfWeek);
+            int todayAndNextDayOfWeekDifference = nextDatDayOfWeek - dayOfWeek;
+
+            return dateTime.AddDays(todayAndNextDayOfWeekDifference);
+        }
+
+        private void ValidateWeeklyWorkflow()
+        {
+            if (!DaysToRun.HasValue)
+            {
+                throw new ArgumentNullException("Days of a week not specified for scheduler.");
+            }
+
+            if (!Reoccur.HasValue)
+            {
+                throw new ArgumentNullException("Reoccur not specified for scheduler.");
             }
         }
 
