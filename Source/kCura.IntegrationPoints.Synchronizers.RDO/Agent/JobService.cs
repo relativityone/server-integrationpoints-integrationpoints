@@ -115,7 +115,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     BatchInstance = newJobCorrelationID
                 };
                 string jobDetails = _serializer.Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, newJobCorrelationID.ToString(), job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(
+                    job.JobId,
+                    job.WorkspaceID,
+                    job.RelatedObjectArtifactID,
+                    newJobCorrelationID.ToString(),
+                    job.TaskType,
+                    scheduleRule,
+                    jobDetails,
+                    job.SubmittedBy,
+                    job.RootJobId,
+                    job.ParentJobId,
+                    job.NextRunTime);
             }
             else
             {
@@ -152,7 +163,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 #if TIME_MACHINE
                 scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
 #endif
-                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
+                nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
             }
 
             _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
@@ -162,11 +173,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
             string correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
-            long? rootJobID, long? parentJobID)
+            long? rootJobID, long? parentJobID, DateTime lastNextRunDateTime)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
 
-            DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
+            DateTime? nextRunTime = scheduleRule.GetNextUtcRunDateTime(lastNextRunDateTime);
             if (nextRunTime.HasValue)
             {
                 DataProvider.CreateNewAndDeleteOldScheduledJob(
@@ -204,7 +215,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 #if TIME_MACHINE
             scheduleRule.TimeService = new TimeMachineService(workspaceID);
 #endif
-            DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
+            DateTime? nextRunTime = scheduleRule.GetFirstUtcRunDateTime();
             if (nextRunTime.HasValue)
             {
                 DataRow row = DataProvider.CreateScheduledJob(

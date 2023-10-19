@@ -200,13 +200,13 @@ namespace kCura.ScheduleQueue.Core.Tests
             // Arrange
             Job job = GetMockJob();
             IScheduleRule rule = Substitute.For<IScheduleRule>();
-            rule.GetNextUTCRunDateTime().Returns(_nextRunTime);
+            rule.GetNextUtcRunDateTime(Arg.Any<DateTime>()).Returns(_nextRunTime);
 
             IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRule(rule);
 
             JobService sut = PrepareSut();
 
-            TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
+            TaskResult taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
 
             // Act
             FinalizeJobResult result = sut.FinalizeJob(job, scheduleRuleFactory, taskResult);
@@ -531,7 +531,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         private static IScheduleRule CreateScheduleRuleReturning(DateTime? dateTime, int numberOfContinuouslyFailedScheduledJobs = 0)
         {
             IScheduleRule scheduleRule = Substitute.For<IScheduleRule>();
-            scheduleRule.GetNextUTCRunDateTime().Returns(dateTime);
+            scheduleRule.GetNextUtcRunDateTime(Arg.Any<DateTime>()).Returns(dateTime);
             scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs().Returns(numberOfContinuouslyFailedScheduledJobs);
             return scheduleRule;
         }

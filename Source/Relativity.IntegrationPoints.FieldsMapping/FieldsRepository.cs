@@ -37,7 +37,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
             QueryRequest queryRequest = PrepareFieldsQueryRequest($"'ArtifactID' IN [{string.Join(",", artifactIds)}]");
 
-            _logger.LogInformation("GetFieldsByArtifactsIdAsync queryRequest - {@queryRequest}, workspaceId - {workspaceId}", queryRequest, workspaceId);
             IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
             return fieldObjects.Select(FieldConvert.ToDocumentFieldInfo);

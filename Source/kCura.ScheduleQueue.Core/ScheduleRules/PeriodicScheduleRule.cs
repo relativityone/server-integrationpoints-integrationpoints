@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -83,47 +84,198 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             TimeZoneId = timeZoneId;
         }
 
-        public override DateTime? GetNextUTCRunDateTime()
+        //public override DateTime? GetNextUtcRunDateTime()
+        //{
+        //    EndDateHelperBase endDateHelper;
+
+        //    TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null
+        //        ? TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ?? TimeZoneInfo.Local
+        //        : TimeZoneInfo.Local;
+
+        //    DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
+
+        //    // current client local date/time is required for correct calculation of DST change
+        //    DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
+        //    TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
+        //    DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
+
+        //    // Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
+        //    if (TimeZoneOffsetInMinute == null)
+        //    {
+        //        endDateHelper = new LocalEndDate(TimeService);
+        //        endDateHelper.EndDate = EndDate;
+        //        endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
+        //        endDateHelper.TimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(TimeService.UtcNow.TimeOfDay.Ticks);
+
+        //        return GetNextRunTimeByInterval(Interval, endDateHelper,
+        //            DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+        //    }
+
+        //    DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
+        //    int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
+
+        //    endDateHelper = new UtcEndDate(TimeService);
+        //    endDateHelper.EndDate = EndDate?.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault(TimeService.UtcNow.TimeOfDay).TotalMinutes)
+        //            .AddMinutes(-clientUtcOffset.TotalMinutes);
+        //    endDateHelper.StartDate = clientTimeUtc.Date > endDateHelper.Time.Date ? clientTimeUtc.Date : endDateHelper.Time.Date;
+        //    endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks % TimeSpan.FromDays(1).Ticks;
+
+        //    DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
+        //        daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+
+        //    return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
+        //    clientUtcOffset);
+        //}
+
+        public override DateTime? GetFirstUtcRunDateTime()
         {
-            EndDateHelperBase endDateHelper;
-
-            TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null
-                ? TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ?? TimeZoneInfo.Local
-                : TimeZoneInfo.Local;
-
-            DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-
-            // current client local date/time is required for correct calculation of DST change
-            DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
-            TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
-            DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
-
-            // Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
-            if (TimeZoneOffsetInMinute == null)
+            if (StartDate == null)
             {
-                endDateHelper = new LocalEndDate(TimeService);
-                endDateHelper.EndDate = EndDate;
-                endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-                endDateHelper.TimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(TimeService.UtcNow.TimeOfDay.Ticks);
-
-                return GetNextRunTimeByInterval(Interval, endDateHelper,
-                    DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+                throw new ArgumentNullException("StartDate should be set to start job scheduling.");
             }
 
-            DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
-            int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
+            DateTime startDateTimeInTimeZone = StartDate.Value.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            DateTime startDateTimeUtc = startDateTimeInTimeZone.Subtract(timeZone.BaseUtcOffset);
 
-            endDateHelper = new UtcEndDate(TimeService);
-            endDateHelper.EndDate = EndDate?.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault(TimeService.UtcNow.TimeOfDay).TotalMinutes)
-                    .AddMinutes(-clientUtcOffset.TotalMinutes);
-            endDateHelper.StartDate = clientTimeUtc.Date > endDateHelper.Time.Date ? clientTimeUtc.Date : endDateHelper.Time.Date;
-            endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks % TimeSpan.FromDays(1).Ticks;
+            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
 
-            DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
-                daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
+            if (adjustments.Length == 0)
+            {
+                return startDateTimeUtc;
+            }
 
-            return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
-            clientUtcOffset);
+            int year = startDateTimeUtc.Year;
+            TimeZoneInfo.AdjustmentRule adjustment = adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
+
+            if (adjustment == null)
+            {
+                return startDateTimeUtc;
+            }
+
+            DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
+            DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
+
+            if (dtAdjustmentStart <= startDateTimeInTimeZone || dtAdjustmentEnd > startDateTimeInTimeZone)
+            {
+                return startDateTimeUtc.Subtract(adjustment.DaylightDelta);
+            }
+
+            return startDateTimeUtc;
+        }
+
+        public override DateTime? GetNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
+        {
+            DateTime nextUtcRunDateTime = CalculateNextUtcRunDateTime(lastNextUtcRunDateTime);
+
+            if (EndDate != null && EndDate < new DateTime(nextUtcRunDateTime.Year, nextUtcRunDateTime.Month, nextUtcRunDateTime.Day))
+            {
+                return null;
+            }
+
+            return nextUtcRunDateTime;
+        }
+
+        private DateTime CalculateNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
+        {
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
+
+            DateTime lastNextRunDateTimeInTimeZone = lastNextUtcRunDateTime.Add(timeZone.BaseUtcOffset);
+
+            if (adjustments.Length == 0)
+            {
+                return AddDateTime(lastNextUtcRunDateTime);
+            }
+
+            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
+
+            int year = nextRunDateTimeInTimeZone.Year;
+            TimeZoneInfo.AdjustmentRule adjustment = adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
+
+            if (adjustment == null)
+            {
+                return AddDateTime(lastNextUtcRunDateTime);
+            }
+
+            DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
+            DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
+
+            if (dtAdjustmentStart >= lastNextRunDateTimeInTimeZone && dtAdjustmentEnd < lastNextRunDateTimeInTimeZone)
+            {
+                return AddDateTime(lastNextUtcRunDateTime).Subtract(adjustment.DaylightDelta);
+            }
+            return AddDateTime(lastNextUtcRunDateTime);
+        }
+
+        private DateTime AddDateTime(DateTime dateTime)
+        {
+            switch (Interval)
+            {
+                case ScheduleInterval.Immediate:
+                    return dateTime.AddMinutes(3);
+
+                case ScheduleInterval.Hourly:
+                    return dateTime.AddHours(1);
+
+                case ScheduleInterval.Daily:
+                    return dateTime.AddDays(1);
+
+                case ScheduleInterval.Weekly:
+                    return dateTime.AddDays(1);
+
+                case ScheduleInterval.Monthly:
+                    return dateTime.AddMonths(1);
+                default:
+                    return dateTime;
+            }
+        }
+
+        private static DateTime GetAdjustmentDate(TimeZoneInfo.TransitionTime transitionTime, int year)
+        {
+            if (transitionTime.IsFixedDateRule)
+            {
+                return new DateTime(year, transitionTime.Month, transitionTime.Day);
+            }
+            else
+            {
+                // For non-fixed date rules, get local calendar
+                Calendar cal = CultureInfo.CurrentCulture.Calendar;
+
+                // Get first day of week for transition
+                // For example, the 3rd week starts no earlier than the 15th of the month
+                int startOfWeek = (transitionTime.Week * 7) - 6;
+
+                // What day of the week does the month start on?
+                int firstDayOfWeek = (int)cal.GetDayOfWeek(new DateTime(year, transitionTime.Month, 1));
+
+                // Determine how much start date has to be adjusted
+                int transitionDay;
+                int changeDayOfWeek = (int)transitionTime.DayOfWeek;
+
+                if (firstDayOfWeek <= changeDayOfWeek)
+                {
+                    transitionDay = startOfWeek + (changeDayOfWeek - firstDayOfWeek);
+                }
+                else
+                {
+                    transitionDay = startOfWeek + (7 - firstDayOfWeek + changeDayOfWeek);
+                }
+
+                // Adjust for months with no fifth week
+                if (transitionDay > cal.GetDaysInMonth(year, transitionTime.Month))
+                {
+                    transitionDay -= 7;
+                }
+
+                return new DateTime(
+                    year,
+                    transitionTime.Month,
+                    transitionDay,
+                    transitionTime.TimeOfDay.Hour,
+                    transitionTime.TimeOfDay.Minute,
+                    transitionTime.TimeOfDay.Second);
+            }
         }
 
         public override int GetNumberOfContinuouslyFailedScheduledJobs()

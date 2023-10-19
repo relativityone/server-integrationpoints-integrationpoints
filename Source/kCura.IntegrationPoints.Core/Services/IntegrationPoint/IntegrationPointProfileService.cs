@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (profile.EnableScheduler.GetValueOrDefault(false))
             {
                 profile.ScheduleRule = rule.ToSerializedString();
-                profile.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
+                profile.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
             }
             else
             {

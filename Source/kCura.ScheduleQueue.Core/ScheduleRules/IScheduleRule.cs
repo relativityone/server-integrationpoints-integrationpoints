@@ -8,7 +8,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         string Description { get; }
 
-        DateTime? GetNextUTCRunDateTime();
+        DateTime? GetNextUtcRunDateTime(DateTime lastNextRunTimeUtc);
+
+        DateTime? GetFirstUtcRunDateTime();
 
         string ToSerializedString();
 

@@ -832,7 +832,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (integrationPointRdo.EnableScheduler.GetValueOrDefault(false))
             {
                 integrationPointRdo.ScheduleRule = rule.ToSerializedString();
-                integrationPointRdo.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
+                integrationPointRdo.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
             }
             else
             {

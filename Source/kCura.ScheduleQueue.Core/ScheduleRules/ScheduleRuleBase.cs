@@ -56,7 +56,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             }
         }
 
-        public abstract DateTime? GetNextUTCRunDateTime();
+        public abstract DateTime? GetNextUtcRunDateTime(DateTime lastNextRunTimeUtc);
+
+        public abstract DateTime? GetFirstUtcRunDateTime();
 
         public abstract int GetNumberOfContinuouslyFailedScheduledJobs();
 
