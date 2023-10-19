@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
@@ -1225,57 +1226,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void SampleTest()
         {
-            DateTime dateTime = DateTime.Parse("12/01/2024 10:30 AM");
-            string timeZoneId = "AUS Eastern Standard Time";
-
-            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
-            var utcOffset = timeZone.BaseUtcOffset;
-
-            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
-
-            int year = dateTime.Year;
-
-            TimeZoneInfo.AdjustmentRule adjustment = adjustments
-                .FirstOrDefault(
-                    adj => adj.DateStart <= dateTime && adj.DateEnd >= dateTime);
-
-            DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
-            DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
-
-            var isDaylightSavingTime = timeZone.IsDaylightSavingTime(dateTime);
-        }
-
-        private static DateTime GetAdjustmentDate(TimeZoneInfo.TransitionTime transitionTime, int year)
-        {
-            if (transitionTime.IsFixedDateRule)
-            {
-                return new DateTime(year, transitionTime.Month, transitionTime.Day);
-            }
-            else
-            {
-                // For non-fixed date rules, get local calendar
-                Calendar cal = CultureInfo.CurrentCulture.Calendar;
-                // Get first day of week for transition
-                // For example, the 3rd week starts no earlier than the 15th of the month
-                int startOfWeek = transitionTime.Week * 7 - 6;
-                // What day of the week does the month start on?
-                int firstDayOfWeek = (int)cal.GetDayOfWeek(new DateTime(year, transitionTime.Month, 1));
-                // Determine how much start date has to be adjusted
-                int transitionDay;
-                int changeDayOfWeek = (int)transitionTime.DayOfWeek;
-
-                if (firstDayOfWeek <= changeDayOfWeek)
-                    transitionDay = startOfWeek + (changeDayOfWeek - firstDayOfWeek);
-                else
-                    transitionDay = startOfWeek + (7 - firstDayOfWeek + changeDayOfWeek);
-
-                // Adjust for months with no fifth week
-                if (transitionDay > cal.GetDaysInMonth(year, transitionTime.Month))
-                    transitionDay -= 7;
-
-                return new DateTime(year, transitionTime.Month, transitionDay, transitionTime.TimeOfDay.Hour,
-                    transitionTime.TimeOfDay.Minute, transitionTime.TimeOfDay.Second);
-            }
+            int diff = DaysOfWeekConverter.DayOfWeekToIndex(DayOfWeek.Sunday) - DaysOfWeekConverter.DayOfWeekToIndex(DayOfWeek.Monday);
         }
     }
 
