@@ -84,48 +84,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             TimeZoneId = timeZoneId;
         }
 
-        //public override DateTime? GetNextUtcRunDateTime()
-        //{
-        //    EndDateHelperBase endDateHelper;
-
-        //    TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null
-        //        ? TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ?? TimeZoneInfo.Local
-        //        : TimeZoneInfo.Local;
-
-        //    DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-
-        //    // current client local date/time is required for correct calculation of DST change
-        //    DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
-        //    TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
-        //    DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
-
-        //    // Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
-        //    if (TimeZoneOffsetInMinute == null)
-        //    {
-        //        endDateHelper = new LocalEndDate(TimeService);
-        //        endDateHelper.EndDate = EndDate;
-        //        endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-        //        endDateHelper.TimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(TimeService.UtcNow.TimeOfDay.Ticks);
-
-        //        return GetNextRunTimeByInterval(Interval, endDateHelper,
-        //            DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
-        //    }
-
-        //    DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
-        //    int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
-
-        //    endDateHelper = new UtcEndDate(TimeService);
-        //    endDateHelper.EndDate = EndDate?.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault(TimeService.UtcNow.TimeOfDay).TotalMinutes)
-        //            .AddMinutes(-clientUtcOffset.TotalMinutes);
-        //    endDateHelper.StartDate = clientTimeUtc.Date > endDateHelper.Time.Date ? clientTimeUtc.Date : endDateHelper.Time.Date;
-        //    endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks % TimeSpan.FromDays(1).Ticks;
-
-        //    DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
-        //        daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
-
-        //    return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
-        //    clientUtcOffset);
-        //}
+        // !!! HANDLE EXCEPTIONS SOMEHOW IN HERE OR IN CALLERS BECAUSE IT COULD LEAD TO CREATION OF MULTIPLE SUBJOBS IE. FOR EXPORT LOAD FILE
 
         public override DateTime? GetFirstUtcRunDateTime()
         {
@@ -138,6 +97,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             if (Interval == ScheduleInterval.Weekly)
             {
                 startDateTimeInTimeZone = CalculateFirstDateTimeForWeeklyWorkflow(startDateTimeInTimeZone);
+            }
+
+            if (Interval == ScheduleInterval.Monthly)
+            {
+                startDateTimeInTimeZone = CalculateFirstDateTimeForMonthlyWorkflow(startDateTimeInTimeZone);
             }
 
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
@@ -230,7 +194,8 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                     return CalculateNextDateTimeForWeeklyWorkflow(dateTime);
 
                 case ScheduleInterval.Monthly:
-                    return dateTime.AddMonths(1);
+                    ValidateMonthlyWorkflow();
+                    return dateTime.AddMonths(Reoccur.Value);
                 default:
                     return dateTime;
             }
@@ -302,6 +267,26 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return dateTime.AddDays(todayAndNextDayOfWeekDifference);
         }
 
+        private DateTime CalculateFirstDateTimeForMonthlyWorkflow(DateTime dateTime)
+        {
+            ValidateMonthlyWorkflow();
+
+            DateTime scheduledDateTime = new DateTime(
+                dateTime.Year,
+                dateTime.Month,
+                DayOfMonth.Value,
+                dateTime.Hour,
+                dateTime.Minute,
+                dateTime.Second);
+
+            if (dateTime > scheduledDateTime)
+            {
+                return scheduledDateTime.AddMonths(Reoccur.Value);
+            }
+
+            return scheduledDateTime;
+        }
+
         private DateTime CalculateNextDateTimeForWeeklyWorkflow(DateTime dateTime)
         {
             ValidateWeeklyWorkflow();
@@ -324,6 +309,19 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         private void ValidateWeeklyWorkflow()
         {
             if (!DaysToRun.HasValue)
+            {
+                throw new ArgumentNullException("Days of a week not specified for scheduler.");
+            }
+
+            if (!Reoccur.HasValue)
+            {
+                throw new ArgumentNullException("Reoccur not specified for scheduler.");
+            }
+        }
+
+        private void ValidateMonthlyWorkflow()
+        {
+            if (!DayOfMonth.HasValue)
             {
                 throw new ArgumentNullException("Days of a week not specified for scheduler.");
             }
