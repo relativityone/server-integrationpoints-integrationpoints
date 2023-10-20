@@ -3,6 +3,18 @@
 ### Changed
 
 -[REL-873166](https://jira.kcura.com/browse/REL-873166) -Intermittent error on regression environments when navigating to certain pages integration point - Backported [REL-785057](https://jira.kcura.com/browse/REL-785057) [RIP] Error page is displayed when user clicks on Job ID
+## [23013.2.1002] - 10-06-2023
+
+### Changed
+
+- [REL-875582](https://jira.kcura.com/browse/REL-875582) - Server - Incident - Error while loading LDAP provider - Backported [REL-872003](https://jira.kcura.com/browse/REL-872003) ticket from server 2022 release
+
+## [23013.2.1001] - 10-06-2023
+
+### Changed
+
+- [REL-873991](https://jira.kcura.com/browse/REL-873991) - RIP Job History entries disappear after editing and saving integration point - Backported [REL-833766](https://jira.kcura.com/browse/REL-833766) ticket from server 2022 release
+- Bumped the patch version based on [server-versioning-statergy](https://github.com/relativityone/server-adr/blob/5dd2dd1b1ce0592cdead2dba5127e4b622c4a9ff/00013-server-versioning-strategy.md)
 
 ## [23013.2.4] - 09-11-2023
 
