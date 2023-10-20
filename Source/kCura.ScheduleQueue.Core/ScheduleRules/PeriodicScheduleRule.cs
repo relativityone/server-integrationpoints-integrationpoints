@@ -201,6 +201,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         private DateTime CalculateFirstDateTimeForWeeklyWorkflow(DateTime dateTime)
         {
+            ValidateWeeklyWorkflow();
             int dayOfWeek = DaysOfWeekConverter.DayOfWeekToIndex(dateTime.DayOfWeek);
             List<int> selectedDaysOfWeek = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.GetValueOrDefault()).Select(x => DaysOfWeekConverter.DayOfWeekToIndex(x)).ToList();
 
@@ -219,11 +220,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         private DateTime CalculateFirstDateTimeForMonthlyWorkflow(DateTime dateTime)
         {
             ValidateMonthlyWorkflow();
-
+            int lastDayOfMonth = DateTime.DaysInMonth(dateTime.Year, dateTime.Month);
+            int dayOfMonth = DayOfMonth.GetValueOrDefault() >= lastDayOfMonth ? lastDayOfMonth : DayOfMonth.GetValueOrDefault();
             DateTime scheduledDateTime = new DateTime(
                 dateTime.Year,
                 dateTime.Month,
-                DayOfMonth.GetValueOrDefault(),
+                dayOfMonth,
                 dateTime.Hour,
                 dateTime.Minute,
                 dateTime.Second);
@@ -238,7 +240,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         private DateTime CalculateNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
         {
-
             ValidateSchedule();
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
 
@@ -277,8 +278,8 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
                     ? adjustment.DaylightTransitionEnd
                     : adjustment.DaylightTransitionStart;
 
-            DateTime dstAdjustmentStart = GetAdjustmentDate(transitionTimeStart, year);
-            DateTime dstAdjustmentEnd = GetAdjustmentDate(transitionTimeEnd, year);
+            DateTime dstAdjustmentStart = GetAdjustmentDateTime(transitionTimeStart, year);
+            DateTime dstAdjustmentEnd = GetAdjustmentDateTime(transitionTimeEnd, year);
 
             bool isInDstTime = isDstTimeZoneSplitsInYear
                 ? dstAdjustmentStart <= startDateTimeInTimeZone || dstAdjustmentEnd > startDateTimeInTimeZone
@@ -292,7 +293,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return dateTimeUtc;
         }
 
-        private static DateTime GetAdjustmentDate(TimeZoneInfo.TransitionTime transitionTime, int year)
+        private static DateTime GetAdjustmentDateTime(TimeZoneInfo.TransitionTime transitionTime, int year)
         {
             if (transitionTime.IsFixedDateRule)
             {
