@@ -531,7 +531,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         private static IScheduleRule CreateScheduleRuleReturning(DateTime? dateTime, int numberOfContinuouslyFailedScheduledJobs = 0)
         {
             IScheduleRule scheduleRule = Substitute.For<IScheduleRule>();
-            scheduleRule.GetNextUtcRunDateTime(Arg.Any<DateTime>()).Returns(dateTime);
+            scheduleRule.GetFirstUtcRunDateTime().Returns(dateTime);
             scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs().Returns(numberOfContinuouslyFailedScheduledJobs);
             return scheduleRule;
         }

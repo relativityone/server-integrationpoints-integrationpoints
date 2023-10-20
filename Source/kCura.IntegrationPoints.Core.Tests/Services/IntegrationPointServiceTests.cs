@@ -811,8 +811,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         {
             // Arrange
             IntegrationPointDto dtoToSave = CloneIntegrationPoint(_integrationPointDto);
+            PeriodicScheduleRule scheduleRule = _fxt.Build<PeriodicScheduleRule>()
+                .With(x => x.TimeZoneId, "AUS Central Standard Time")
+                .Create();
 
-            dtoToSave.Scheduler = new Scheduler(true, string.Empty);
+            dtoToSave.Scheduler = new Scheduler(true, new XMLSerializer().Serialize(scheduleRule));
 
             // Act
             int artifactId = _sut.SaveIntegrationPoint(dtoToSave);
