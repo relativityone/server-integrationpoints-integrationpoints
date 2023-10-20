@@ -184,48 +184,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
             DateTime startDateTimeUtc = startDateTimeInTimeZone.Subtract(timeZone.BaseUtcOffset);
 
-            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
-
-            if (adjustments.Length == 0)
-            {
-                return startDateTimeUtc;
-            }
-
-            int year = startDateTimeUtc.Year;
-            TimeZoneInfo.AdjustmentRule adjustment = adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
-
-            if (adjustment == null)
-            {
-                return startDateTimeUtc;
-            }
-
-            DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
-            DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
-
-            if (dtAdjustmentStart <= startDateTimeInTimeZone || dtAdjustmentEnd > startDateTimeInTimeZone)
-            {
-                return startDateTimeUtc.Subtract(adjustment.DaylightDelta);
-            }
-
-            return startDateTimeUtc;
-        }
-
-        private void ValidateSchedule()
-        {
-            if (!StartDate.HasValue)
-            {
-                throw new ArgumentNullException("Start Date should be set to schedule a job.");
-            }
-
-            if (!LocalTimeOfDay.HasValue)
-            {
-                throw new ArgumentNullException("Local Time of day should be set to schedule a job.");
-            }
-
-            if (string.IsNullOrEmpty(TimeZoneId))
-            {
-                throw new ArgumentNullException("Time Zone should be set to schedule a job.");
-            }
+            return CalculateDateTimeWithDstShift(timeZone, startDateTimeUtc, startDateTimeInTimeZone);
         }
 
         public override DateTime? GetNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
@@ -281,35 +240,56 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         {
 
             ValidateSchedule();
-
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
-            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
 
             DateTime lastNextRunDateTimeInTimeZone = lastNextUtcRunDateTime.Add(timeZone.BaseUtcOffset);
+            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
+
+            DateTime lastRunDateTimeWithDstShift = CalculateDateTimeWithDstShift(timeZone, lastNextUtcRunDateTime, nextRunDateTimeInTimeZone);
+
+            return AddDateTime(lastRunDateTimeWithDstShift);
+        }
+
+        private static DateTime CalculateDateTimeWithDstShift(TimeZoneInfo timeZone, DateTime dateTimeUtc, DateTime startDateTimeInTimeZone)
+        {
+            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
 
             if (adjustments.Length == 0)
             {
-                return AddDateTime(lastNextUtcRunDateTime);
+                return dateTimeUtc;
             }
 
-            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
-
-            int year = nextRunDateTimeInTimeZone.Year;
+            int year = dateTimeUtc.Year;
             TimeZoneInfo.AdjustmentRule adjustment = adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
 
             if (adjustment == null)
             {
-                return AddDateTime(lastNextUtcRunDateTime);
+                return dateTimeUtc;
             }
 
-            DateTime dtAdjustmentStart = GetAdjustmentDate(adjustment.DaylightTransitionStart, year);
-            DateTime dtAdjustmentEnd = GetAdjustmentDate(adjustment.DaylightTransitionEnd, year);
+            bool isDstTimeZoneSplitsInYear = adjustment.DaylightTransitionStart.Month > adjustment.DaylightTransitionEnd.Month;
 
-            if (dtAdjustmentStart >= nextRunDateTimeInTimeZone && dtAdjustmentEnd < nextRunDateTimeInTimeZone)
+            TimeZoneInfo.TransitionTime transitionTimeStart = isDstTimeZoneSplitsInYear
+                    ? adjustment.DaylightTransitionStart
+                    : adjustment.DaylightTransitionEnd;
+
+            TimeZoneInfo.TransitionTime transitionTimeEnd = isDstTimeZoneSplitsInYear
+                    ? adjustment.DaylightTransitionEnd
+                    : adjustment.DaylightTransitionStart;
+
+            DateTime dstAdjustmentStart = GetAdjustmentDate(transitionTimeStart, year);
+            DateTime dstAdjustmentEnd = GetAdjustmentDate(transitionTimeEnd, year);
+
+            bool isInDstTime = isDstTimeZoneSplitsInYear
+                ? dstAdjustmentStart <= startDateTimeInTimeZone || dstAdjustmentEnd > startDateTimeInTimeZone
+                : dstAdjustmentStart >= startDateTimeInTimeZone && dstAdjustmentEnd <= startDateTimeInTimeZone;
+
+            if (isInDstTime)
             {
-                return AddDateTime(lastNextUtcRunDateTime.Subtract(adjustment.DaylightDelta));
+                return dateTimeUtc.Subtract(adjustment.DaylightDelta);
             }
-            return AddDateTime(lastNextUtcRunDateTime);
+
+            return dateTimeUtc;
         }
 
         private static DateTime GetAdjustmentDate(TimeZoneInfo.TransitionTime transitionTime, int year)
@@ -389,6 +369,24 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             int todayAndNextDayOfWeekDifference = nextDatDayOfWeek - dayOfWeek;
 
             return dateTime.AddDays(todayAndNextDayOfWeekDifference);
+        }
+
+        private void ValidateSchedule()
+        {
+            if (!StartDate.HasValue)
+            {
+                throw new ArgumentNullException("Start Date should be set to schedule a job.");
+            }
+
+            if (!LocalTimeOfDay.HasValue)
+            {
+                throw new ArgumentNullException("Local Time of day should be set to schedule a job.");
+            }
+
+            if (string.IsNullOrEmpty(TimeZoneId))
+            {
+                throw new ArgumentNullException("Time Zone should be set to schedule a job.");
+            }
         }
 
         private void ValidateWeeklyWorkflow()
