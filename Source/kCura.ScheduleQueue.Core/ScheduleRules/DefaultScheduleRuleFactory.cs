@@ -6,7 +6,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
     public class DefaultScheduleRuleFactory : IScheduleRuleFactory
     {
-        private readonly ITimeService _timeService;
+        private readonly ITimeService _timeService; // DON'T FORGET TO REMOVE IT
 
         public DefaultScheduleRuleFactory(ITimeService timeService = null)
         {
@@ -30,7 +30,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             if (scheduleRuleType.StartsWith(Const._PERIODIC_SCHEDULE_RULE_TYPE, StringComparison.InvariantCultureIgnoreCase))
             {
                 rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
-                rule.TimeService = _timeService;
                 if (rule != null)
                 {
                     return rule;

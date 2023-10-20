@@ -7,9 +7,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         None = 0,
         Daily = 1,
         Weekly = 2,
-        Monthly = 3,
-        Hourly = 4,
-        Immediate = 5
+        Monthly = 3
     }
 
     [Flags]

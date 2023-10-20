@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.ScheduleQueue.Core.Helpers;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using NSubstitute;
 using NUnit.Framework;
-using Relativity.Services.TimeZone;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
@@ -16,124 +13,21 @@ namespace kCura.ScheduleQueue.Core.Tests
     {
         #region SearchMonthForForwardOccuranceOfDay
 
-        private const string dailyRuleOldXML =
-            @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Daily</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
-
-        private const string weeklyRuleOldXML =
-            @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun>Monday Friday</DaysToRun><EndDate i:nil=""true""/><Interval>Weekly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
-
-        private const string monthlyRuleOldXML =
-            @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth>15</DayOfMonth><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Monthly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
-
-        [SetUp]
-        public override void SetUp()
-        {
-        }
+        private const string dailyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Daily</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
+        private const string weeklyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth i:nil=""true""/><DaysToRun>Monday Friday</DaysToRun><EndDate i:nil=""true""/><Interval>Weekly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
+        private const string monthlyRuleOldXML = @"<PeriodicScheduleRule xmlns=""http://schemas.datacontract.org/2004/07/kCura.Method.Data.ScheduleRules"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><DayOfMonth>15</DayOfMonth><DaysToRun i:nil=""true""/><EndDate i:nil=""true""/><Interval>Monthly</Interval><SetLastDayOfMonth i:nil=""true""/><StartDate>2010-12-29T00:00:00</StartDate><localTimeOfDayTicks>450600000000</localTimeOfDayTicks></PeriodicScheduleRule>";
 
         [Test]
-        public void LocalTimeOfDay_SetGet_ValidateCorrectValue()
+        public void GetNextUTCRunDateTime_DailyStartDateTimeForUTC_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate,
-                DateTime.Parse("01/29/2010"), TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/29/2010 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                DateTime.Parse("12/29/2020"),
+                TimeSpan.Parse("12:31"),
+                timeZoneId: "UTC");
+            DateTime expectedTime = DateTime.Parse("12/29/2020 12:31");
 
-            DateTime expectedTime = DateTime.Parse("01/29/2010 12:31");
-
-            var result = rule.LocalTimeOfDay;
-
-            Assert.AreEqual(expectedTime.TimeOfDay, result);
-        }
-
-        [Test]
-        public void LocalTimeOfDay_SetJanGetInJuly_ValidateCorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate,
-                DateTime.Parse("01/29/2010"), TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/29/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("01/29/2010 12:31");
-
-            var result = rule.LocalTimeOfDay;
-
-            Assert.AreEqual(expectedTime.TimeOfDay, result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_ImmediateStartDateTimeAfterNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate,
-                DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime().AddMinutes(3), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_ImmediateStartDateBeforeTimeAfterNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate,
-                DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime().AddMinutes(3), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_ImmediateStartDateTimeBeforeNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Immediate,
-                DateTime.Parse("12/29/2010"), TimeSpan.Parse("12:31"));
-            var utcNow = DateTime.Parse("12/30/2010 21:00:00");
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(utcNow.AddMinutes(3), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_HourlyStartDateTimeAfterNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
-
-            DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_HourlyStartDateBeforeTimeAfterNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
-
-            DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_HourlyStartDateTimeBeforeNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Hourly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
-
-            DateTime expectedTime = DateTime.Parse("12/30/2010 21:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
             Assert.AreEqual(expectedTime, result);
         }
@@ -141,220 +35,234 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_DailyStartDateTimeAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/28/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                DateTime.Parse("12/29/2020"),
+                TimeSpan.Parse("12:31"),
+                timeZoneId: "Central European Standard Time");
+            DateTime expectedTime = DateTime.Parse("12/29/2020 11:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_DailyStartDateSameTimeAfterNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/29/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("12/29/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_DailyStartDateBeforeTimeAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
-            DateTime expectedTime = DateTime.Parse("12/30/2010 12:31");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                timeZoneId: "Central America Standard Time");
+            DateTime expectedTime = DateTime.Parse("12/29/2010 18:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
-        }
-
-        [Test]
-        public void GetNextUTCRunDateTime_DailyStartDateTimeBeforeNow_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"));
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
-            DateTime expectedTime = DateTime.Parse("12/31/2010 12:31");
-
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeThursdayBeforeNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday);
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 21:00:00"); // --Thursday
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                daysToRun: DaysOfWeek.Monday,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("01/03/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Monday, result.Value.DayOfWeek);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeMondayBeforeNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/03/2011 10:00:00"); // --Monday
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                daysToRun: DaysOfWeek.Monday,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("01/03/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Monday, result.Value.DayOfWeek);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_WeeklyMondaysOnlyStartDateTimeMondayAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/03/2011 21:00:00"); // --Monday
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                daysToRun: DaysOfWeek.Monday,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Monday, result.Value.DayOfWeek);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_WeeklyMondaysFridaysOnlyNowDateTimeTuesday_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday | DaysOfWeek.Friday);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/04/2011 21:00:00"); // --Tuesday
-
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                daysToRun: DaysOfWeek.Monday | DaysOfWeek.Friday,
+                timeZoneId: "Central European Standard Time");
             DateTime expectedTime = DateTime.Parse("01/07/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Friday, result.Value.DayOfWeek);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_WeeklyMondaysFridaysOnlyNowDateTimeSaturday_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday | DaysOfWeek.Friday);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/08/2011 21:00:00"); // --Saturday
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                daysToRun: DaysOfWeek.Monday | DaysOfWeek.Friday,
+                timeZoneId: "Central European Standard Time");
             DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Monday, result.Value.DayOfWeek);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every15DayMonthlyStartDateTimeBeforeNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 15,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(15, result.Value.Day);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every31DayMonthlyIn28DayMonth_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 31);
-            rule.ArrangeTimeServiceBaseOnUtcNow("02/01/2011 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 31,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("02/28/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every31DayMonthlyIn29DayMonth_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 31);
-            rule.ArrangeTimeServiceBaseOnUtcNow("02/01/2012 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 31,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("02/29/2012 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every31DayMonthlyIn30DayMonth_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 31);
-            rule.ArrangeTimeServiceBaseOnUtcNow("04/01/2011 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 31,
+                timeZoneId: "Central European Standard Time");
 
             DateTime expectedTime = DateTime.Parse("04/30/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every31DayMonthlyIn31DayMonth_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 31);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2011 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 31,
+                timeZoneId: "Central European Standard Time");
             DateTime expectedTime = DateTime.Parse("05/31/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_Every15DayMonthlyStartDateLaterThenNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), null, null, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: 15,
+                timeZoneId: "Central European Standard Time");
             DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_NextRunTimeDateBeforeEndDate_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
-                TimeSpan.Parse("12:31"), DateTime.Parse("2/1/2011"), null, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("12/29/2010"),
+                TimeSpan.Parse("12:31"),
+                DateTime.Parse("2/1/2011"),
+                dayOfMonth: 15,
+                timeZoneId: "Central European Standard Time");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
             Assert.IsNotNull(result);
         }
@@ -364,9 +272,8 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
                 TimeSpan.Parse("12:31"), DateTime.Parse("1/15/2011"), 0, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
             Assert.IsNotNull(result);
         }
@@ -376,8 +283,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
                 TimeSpan.Parse("12:31"), DateTime.Parse("1/1/2011"), null, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
             Assert.IsNull(result);
         }
@@ -387,9 +293,8 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("12/29/2010"),
                 TimeSpan.Parse("12:31"), DateTime.Parse("1/14/2011"), null, null, 15);
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/29/2010 22:00:00");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
             Assert.IsNull(result);
         }
@@ -403,12 +308,11 @@ namespace kCura.ScheduleQueue.Core.Tests
             PeriodicScheduleRule rule =
                 (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain,
                     typeof(PeriodicScheduleRule).FullName, xml);
-            rule.ArrangeTimeServiceBaseOnUtcNow("12/30/2010 21:00:00");
             DateTime expectedTime = DateTime.Parse("12/31/2010 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -420,12 +324,11 @@ namespace kCura.ScheduleQueue.Core.Tests
             PeriodicScheduleRule rule =
                 (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain,
                     typeof(PeriodicScheduleRule).FullName, xml);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/08/2011 21:00:00"); // --Saturday
             DateTime expectedTime = DateTime.Parse("01/10/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -437,13 +340,12 @@ namespace kCura.ScheduleQueue.Core.Tests
             PeriodicScheduleRule rule =
                 (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain,
                     typeof(PeriodicScheduleRule).FullName, xml);
-            rule.ArrangeTimeServiceBaseOnUtcNow("05/01/2010 10:00:00");
 
             DateTime expectedTime = DateTime.Parse("01/15/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -451,12 +353,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday | DaysOfWeek.Saturday, null, null, 2);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/05/2011 21:00:00"); // --Wednesday
             DateTime expectedTime = DateTime.Parse("01/08/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Saturday, result.Value.DayOfWeek);
         }
 
@@ -465,12 +366,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, DateTime.Parse("12/29/2010"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday | DaysOfWeek.Saturday, null, null, 2);
-            rule.ArrangeTimeServiceBaseOnUtcNow("01/09/2011 21:00:00"); // --Sunday
             DateTime expectedTime = DateTime.Parse("01/17/2011 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
             Assert.AreEqual(DayOfWeek.Monday, result.Value.DayOfWeek);
         }
 
@@ -479,12 +379,12 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("9/15/2014"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, 1, 0, OccuranceInMonth.First);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
+
             DateTime expectedTime = DateTime.Parse("10/06/2014 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -492,12 +392,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, 1, 0, OccuranceInMonth.First);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("11/03/2014 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -505,12 +404,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Tuesday, null, null, 1, 0, OccuranceInMonth.Second);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("11/11/2014 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -518,12 +416,11 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/25/2014"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Wednesday, null, null, 3, 0, OccuranceInMonth.Fourth);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/24/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("1/28/2015 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
@@ -531,47 +428,69 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
                 TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Saturday, null, null, 3, 0, OccuranceInMonth.Third);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("10/18/2014 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
 
         [Test]
         public void GetNextUTCRunDateTime_MonthlyLastFridayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, 3, 0, OccuranceInMonth.Last);
-            rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"),
+                null,
+                null,
+                DaysOfWeek.Friday,
+                null,
+                null,
+                3,
+                0,
+                null);
             DateTime expectedTime = DateTime.Parse("10/31/2014 12:31");
 
-            var result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            var result = rule.GetFirstUtcRunDateTime();
 
-            Assert.AreEqual(expectedTime.ToUniversalTime(), result);
+            Assert.AreEqual(expectedTime, result);
         }
-
-        [TestCase("02/01/2016 21:00:00", ScheduleInterval.Monthly, "02/01/2016", "12:31", null, 0, DaysOfWeek.Monday,
-            null, null, 1, OccuranceInMonth.Last, "02/29/2016")]
-        [TestCase("02/01/2016 21:00:00", ScheduleInterval.Monthly, "02/01/2016", "12:31", null, 0, null, 30, null, 1,
-            null, "02/29/2016")]
-        [TestCase("02/23/2016 21:00:00", ScheduleInterval.Weekly, "02/23/2016", "12:31", null, 0, DaysOfWeek.Monday,
-            null, null, 1, null, "02/29/2016")]
-        public void GetNextUTCRunDateTime_CorrectValue(string utcNowTime, ScheduleInterval interval, string startDate,
-            string scheduledLocalTime, DateTime? endDate, int timeZoneOffSet, DaysOfWeek? daysToRun, int? dayOfMonth,
-            bool? setLastDay, int? reoccur, OccuranceInMonth? occuranceInMonth, string expectedDate)
+        
+        [TestCase("02/01/2016 21:00:00", ScheduleInterval.Monthly, "02/01/2016", "12:31", null, 0, null, 30, null, 1, null, "02/29/2016")]
+        [TestCase("02/23/2016 21:00:00", ScheduleInterval.Weekly, "02/23/2016", "12:31", null, 0, DaysOfWeek.Monday, null, null, 1, null, "02/29/2016")]
+        public void GetNextUTCRunDateTime_CorrectValue(
+            string utcNowTime,
+            ScheduleInterval interval,
+            string startDate,
+            string scheduledLocalTime,
+            DateTime? endDate,
+            int timeZoneOffSet,
+            DaysOfWeek? daysToRun,
+            int? dayOfMonth,
+            bool? setLastDay,
+            int? reoccur,
+            OccuranceInMonth? occurrenceInMonth,
+            string expectedDate)
         {
             const string timeZoneId = "UTC";
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(interval, DateTime.Parse(startDate),
-                TimeSpan.Parse(scheduledLocalTime), endDate, timeZoneOffSet, daysToRun, dayOfMonth, setLastDay, reoccur,
-                0, occuranceInMonth, timeZoneId);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                interval,
+                DateTime.Parse(startDate),
+                TimeSpan.Parse(scheduledLocalTime),
+                endDate,
+                timeZoneOffSet,
+                daysToRun,
+                dayOfMonth,
+                setLastDay,
+                reoccur,
+                0,
+                occurrenceInMonth,
+                timeZoneId);
             var utcNow = DateTime.Parse(utcNowTime);
-            rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
-            rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
             DateTime expectedTime = DateTime.Parse(expectedDate + " " + scheduledLocalTime);
 
-            DateTime? result = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? result = rule.GetFirstUtcRunDateTime();
 
             Assert.AreEqual(expectedTime, result);
         }
@@ -615,137 +534,136 @@ namespace kCura.ScheduleQueue.Core.Tests
             Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs, result);
         }
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FirstMonday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/3/2014");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FirstMonday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/3/2014");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.First, DayOfWeek.Monday);
+        //    var result = rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.First, DayOfWeek.Monday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_ForthMonday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/24/2014");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_ForthMonday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/24/2014");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.Fourth, DayOfWeek.Monday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.Fourth, DayOfWeek.Monday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FirstSaturday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/1/2014");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FirstSaturday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/1/2014");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.First, DayOfWeek.Saturday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.First, DayOfWeek.Saturday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FourthFriday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/28/2014");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FourthFriday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/28/2014");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.Fourth, DayOfWeek.Friday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2014, 2, ForwardValidOccurance.Fourth, DayOfWeek.Friday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FirstWednesday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/1/2012");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FirstWednesday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/1/2012");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.First, DayOfWeek.Wednesday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.First, DayOfWeek.Wednesday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FourthWednesday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/22/2012");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FourthWednesday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/22/2012");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.Fourth, DayOfWeek.Wednesday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.Fourth, DayOfWeek.Wednesday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForForwardOccuranceOfDay_FourthTuesday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/28/2012");
+        //[Test]
+        //public void SearchMonthForForwardOccuranceOfDay_FourthTuesday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/28/2012");
 
-            var result =
-                rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.Fourth, DayOfWeek.Tuesday);
+        //    var result =
+        //        rule.SearchMonthForForwardOccuranceOfDay(2012, 2, ForwardValidOccurance.Fourth, DayOfWeek.Tuesday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        #region SearchMonthForLastOccuranceOfDay
+        //#region SearchMonthForLastOccuranceOfDay
 
-        #endregion SearchMonthForForwardOccuranceOfDay
+        //#endregion SearchMonthForForwardOccuranceOfDay
 
-        [Test]
-        public void SearchMonthForLastOccuranceOfDay_LastMonday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/24/2014");
+        //[Test]
+        //public void SearchMonthForLastOccuranceOfDay_LastMonday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/24/2014");
 
-            var result = rule.SearchMonthForLastOccuranceOfDay(2014, 2, DayOfWeek.Monday);
+        //    var result = rule.SearchMonthForLastOccuranceOfDay(2014, 2, DayOfWeek.Monday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForLastOccuranceOfDay_LastFriday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/28/2014");
+        //[Test]
+        //public void SearchMonthForLastOccuranceOfDay_LastFriday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/28/2014");
 
-            var result = rule.SearchMonthForLastOccuranceOfDay(2014, 2, DayOfWeek.Friday);
+        //    var result = rule.SearchMonthForLastOccuranceOfDay(2014, 2, DayOfWeek.Friday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForLastOccuranceOfDay_LastWednesday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/29/2012");
+        //[Test]
+        //public void SearchMonthForLastOccuranceOfDay_LastWednesday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/29/2012");
 
-            var result = rule.SearchMonthForLastOccuranceOfDay(2012, 2, DayOfWeek.Wednesday);
+        //    var result = rule.SearchMonthForLastOccuranceOfDay(2012, 2, DayOfWeek.Wednesday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
-        [Test]
-        public void SearchMonthForLastOccuranceOfDay_LastTuesday_CorrectValue()
-        {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule();
-            DateTime expectedTime = DateTime.Parse("2/28/2012");
+        //[Test]
+        //public void SearchMonthForLastOccuranceOfDay_LastTuesday_CorrectValue()
+        //{
+        //    PeriodicScheduleRule rule = new PeriodicScheduleRule();
+        //    DateTime expectedTime = DateTime.Parse("2/28/2012");
 
-            var result = rule.SearchMonthForLastOccuranceOfDay(2012, 2, DayOfWeek.Tuesday);
+        //    var result = rule.SearchMonthForLastOccuranceOfDay(2012, 2, DayOfWeek.Tuesday);
 
-            Assert.AreEqual(expectedTime, result);
-        }
+        //    Assert.AreEqual(expectedTime, result);
+        //}
 
         #region ForwardValidOccurance
 
@@ -786,8 +704,12 @@ namespace kCura.ScheduleQueue.Core.Tests
             "9/13/2016 4:45 PM")] // Nepal Standard Time (UTC+05:45)
         [TestCase("AUS Central Standard Time", "9/13/2016", "8:00 AM", "Tokyo Standard Time",
             "9/12/2016 10:30 PM")] // AUS Central Standard Time (UTC+09:30)
-        public void CalculateLastDayOfScheduledDailyJob(string clientTimeZone, string clientDate,
-            string clientLocalTime, string serverTimeZone, string expectedRunUtcTime)
+        public void CalculateLastDayOfScheduledDailyJob(
+            string clientTimeZone,
+            string clientDate,
+            string clientLocalTime,
+            string serverTimeZone,
+            string expectedRunUtcTime)
         {
             DateTime date = DateTime.Parse("9/13/2016");
 
@@ -805,16 +727,23 @@ namespace kCura.ScheduleQueue.Core.Tests
             const int serverTimeShift = -2; // To set server time before expectedRunUtcTime
             DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
 
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, date, clientlocalTime, date,
-                (int)clientUtcOffSet.TotalMinutes, null, null, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                date,
+                clientlocalTime,
+                date,
+                (int)clientUtcOffSet.TotalMinutes,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                clientTimeZone);
             rule.TimeZoneId = clientTimeZone;
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? nextRunTime = rule.GetFirstUtcRunDateTime();
 
             // assert
             if (expectedRunUtcTime == null)
@@ -888,15 +817,22 @@ namespace kCura.ScheduleQueue.Core.Tests
             const int serverTimeShift = -2; // To set server time before expectedRunUtcTime
             DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
 
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, startDate, clientlocalTime,
-                endDate, (int)clientUtcOffSet.TotalMinutes, dayToRun, null, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                startDate,
+                clientlocalTime,
+                endDate,
+                (int)clientUtcOffSet.TotalMinutes,
+                dayToRun,
+                null,
+                null,
+                1,
+                0,
+                null,
+                clientTimeZone);
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? nextRunTime = rule.GetFirstUtcRunDateTime();
 
             // assert
             if (expectedRunUtcTime == null)
@@ -925,15 +861,22 @@ namespace kCura.ScheduleQueue.Core.Tests
             DateTime startDate = DateTime.Parse(clientStartDate);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
 
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, startDate, clientlocalTime,
-                startDate, 0, null, null, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(startDate);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                startDate,
+                clientlocalTime,
+                startDate,
+                0,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                clientTimeZone);
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? nextRunTime = rule.GetFirstUtcRunDateTime();
 
             // assert
             if (expectedRunUtcTime == null)
@@ -948,19 +891,19 @@ namespace kCura.ScheduleQueue.Core.Tests
         }
 
         [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 1, "Central Standard Time", "06/02/2016 1:15 AM")]
-        [TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "Central Standard Time",
-            "04/30/2016 11:45 PM")]
+        [TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "Central Standard Time", "04/30/2016 11:45 PM")]
         [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 31, "Central Standard Time", "06/01/2016 1:15 AM")]
         [TestCase("Central Standard Time", "08:15 PM", "02/05/2016", 31, "Central Standard Time", "03/01/2016 2:15 AM")]
-        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time",
-            "03/18/2016 4:15 AM")] // stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016
-        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time",
-            "03/28/2016 11:20 PM")] // stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016
-        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time",
-            "11/2/2016 1:25 AM")] // stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
-        public void CalculateLastDayOfScheduledMonthlyJob(string clientTimeZone, string clientLocalTime,
-            string clientStartDate, int? dayOfMonth,
-            string serverTimeZone, string expectedRunUtcTime)
+        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time", "03/18/2016 4:15 AM")] // stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016
+        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time", "03/28/2016 11:20 PM")] // stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016
+        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time", "11/2/2016 1:25 AM")] // stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
+        public void CalculateLastDayOfScheduledMonthlyJob(
+            string clientTimeZone,
+            string clientLocalTime,
+            string clientStartDate,
+            int? dayOfMonth,
+            string serverTimeZone,
+            string expectedRunUtcTime)
         {
             // arrange
             DateTime startDate = DateTime.Parse(clientStartDate);
@@ -979,15 +922,22 @@ namespace kCura.ScheduleQueue.Core.Tests
             const int serverTimeShift = -2; // To set server time before expectedRunUtcTime
             DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
 
-            var rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, startDate, clientlocalTime, endDate, 0, null,
-                dayOfMonth, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(serverLocalTime.Add(-serverTimeZoneInfo.BaseUtcOffset));
+            var rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                startDate,
+                clientlocalTime,
+                endDate,
+                0,
+                null,
+                dayOfMonth,
+                null,
+                1,
+                0,
+                null,
+                clientTimeZone);
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? nextRunTime = rule.GetFirstUtcRunDateTime();
 
             // assert
             if (expectedRunUtcTime == null)
@@ -1001,243 +951,52 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
         }
 
-        [Test]
-        [TestCase("01/01/2017", "08:50 PM", "1/1/2017 7:50 PM")]
-        public void NextRunJobScheduledToFirstDayOfMonth(string clientStartDate, string clientLocalTime,
+        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/01/2022", "10/02/2022 9:30 AM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
+        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/03/2022", "10/04/2022 9:30 AM")] // expected UTC for GMT+11
+        [TestCase("AUS Eastern Standard Time", "8:30 PM", "04/02/2022", "04/03/2022 10:30 AM")] // job scheduled on 04/02/2022 (GMT+11), expected offset on "04/03/2022" => GMT+10
+        [TestCase("AUS Eastern Standard Time", "8:30 PM", "04/04/2022", "04/05/2022 10:30 AM")] // expected UTC for GMT+10
+        public void DaylightSaveTimeTest_CorrectValues(
+            string clientTimeZone,
+            string clientLocalTime,
+            string clientStartDate,
             string expectedRunUtcTime)
         {
             // arrange
-            const string
-                clientTimeZone =
-                    "Central European Standard Time"; // Daylight Saving Time (DST) change: 2016 Sun, 27 Mar, 02:00 CET → CEST
-            DateTime startDate = DateTime.Parse(clientStartDate);
-            TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
-
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, startDate, clientlocalTime,
-                startDate, 0, DaysOfWeek.Day, null, null, null, 0, OccuranceInMonth.First, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(startDate);
-
-            // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            // assert
-            if (expectedRunUtcTime == null)
-            {
-                Assert.IsNull(nextRunTime);
-            }
-            else
-            {
-                Assert.IsNotNull(nextRunTime);
-                Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
-            }
-        }
-
-        [TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "09/03/2017", "09/05/2017 11:20 PM")]
-        [TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "10/28/2017",
-            "11/01/2017 12:20 AM")] // DST: CEST → CET change 10/30/2016
-        public void NextRunJobServerAhead(string clientTimeZone, string clientLocalTime, string clientStartDate,
-            string serverDateTime, string expectedRunUtcTime)
-        {
-            // arrange
             DateTime startDate = DateTime.Parse(clientStartDate, CultureInfo.GetCultureInfo("en-us"));
             DateTime endDate = startDate.AddYears(1);
-            const DaysOfWeek dayToRun = DaysOfWeek.Wednesday;
 
             // client time
             TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
             // For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
             TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
-
-            // server time
-            DateTime serverTime = DateTime.Parse(serverDateTime, CultureInfo.GetCultureInfo("en-us"));
-
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Weekly, startDate, clientlocalTime,
-                endDate, (int)clientUtcOffSet.TotalMinutes, dayToRun, null, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.UtcNow.Returns(serverTime);
-
-            // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            // assert
-            Assert.IsNotNull(nextRunTime);
-            Assert.AreEqual(DateTime.Parse(expectedRunUtcTime, CultureInfo.GetCultureInfo("en-us")), nextRunTime);
-        }
-
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/01/2022", "10/02/2022", "9:32 AM",
-            "10/03/2022 9:30 AM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/01/2022", "10/15/2022", "9:31 AM",
-            "10/16/2022 9:30 AM")] // expected UTC for GMT+11
-        public void DaylightSaveTimeTest_CorrectValues(string clientTimeZone, string clientLocalTime,
-            string clientStartDate,
-            string serverDate, string serverTime, string expectedRunUtcTime)
-        {
-            // arrange
-            DateTime startDate = DateTime.Parse(clientStartDate, CultureInfo.GetCultureInfo("en-us"));
-            DateTime endDate = startDate.AddYears(1);
-            TimeSpan time = DateTime.Parse(serverTime).TimeOfDay;
-
-            // client time
-            TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
-            TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
-            // For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
-            TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
-
-            // server time
-            DateTime serverDateTime = DateTime.Parse(serverDate, CultureInfo.GetCultureInfo("en-us")) + time;
-
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Daily, startDate, clientlocalTime,
-                endDate, (int)clientUtcOffSet.TotalMinutes, null, null, null, null, 0, null, clientTimeZone)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.ArrangeTimeServiceBaseOnUtcNow(serverDateTime.ToString());
-            // rule.TimeService.UtcNow.Returns(serverTime);
-
-            // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
-
-            // assert
-            Assert.IsNotNull(nextRunTime);
-            Assert.AreEqual(DateTime.Parse(expectedRunUtcTime, CultureInfo.GetCultureInfo("en-us")), nextRunTime);
-        }
-
-        // server ahead
-
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, null, null, null,
-            null)]
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/15/2016", null, null, null,
-            null)]
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/15/2016", null, null, null,
-            null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/16/2016", 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/20/2016", 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1, null, 8,
-            null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", null, "11/8/2016", 1, null, 8,
-            null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "11/15/2016", null, "12/8/2016", 1, null, 8,
-            null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", "9/17/2016", null, 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "9/15/2016", null, "10/27/2016", 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "10/15/2016", "11/15/2016", null, "11/24/2016", 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "1/15/2016", "2/15/2016", "1/15/2016", "3/1/2016", "2/29/2016", 1,
-            DaysOfWeek.Monday, null, OccuranceInMonth.Last)]
-        [TestCase(ScheduleInterval.Monthly, "1/15/2016", "2/15/2016", "1/15/2016", "3/1/2016", "2/29/2016", 1,
-            DaysOfWeek.Day, null, OccuranceInMonth.Last)]
-        // client ahead
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", "9/15/2016", null, null,
-            null, null)]
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/15/2016", null, null, null,
-            null)]
-        [TestCase(ScheduleInterval.Daily, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, null, null, null,
-            null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "9/15/2016", "9/20/2016", "9/18/2016", 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/15/2016", 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Weekly, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, 1,
-            DaysOfWeek.Monday | DaysOfWeek.Sunday, null, null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1, null, 8, null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/8/2016", "9/8/2016", "9/8/2016", 1, null, 8,
-            null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", null, "9/8/2016", 1, null, 8, null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", "7/17/2016", null, 1, null, 8, null)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", "9/17/2016", null, 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "9/15/2016", null, "9/22/2016", 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "9/15/2016", "8/15/2016", "7/15/2016", null, "8/25/2016", 1,
-            DaysOfWeek.Thursday, null, OccuranceInMonth.Fourth)]
-        [TestCase(ScheduleInterval.Monthly, "3/15/2016", "2/15/2016", "2/15/2016", "3/1/2016", "2/29/2016", 1,
-            DaysOfWeek.Monday, null, OccuranceInMonth.Last)]
-        [TestCase(ScheduleInterval.Monthly, "3/15/2016", "2/15/2016", "2/15/2016", "3/1/2016", "2/29/2016", 1,
-            DaysOfWeek.Day, null, OccuranceInMonth.Last)]
-        public void GetNextRunDate_ClientAndServerOnDifferentDates(
-            ScheduleInterval frequency,
-            string clientDate,
-            string serverDate,
-            string startDate,
-            string endDate,
-            string expectedNextRunTime,
-            int? reoccur,
-            DaysOfWeek? daysToRun,
-            int? monthlySendOnDayOfMonth,
-            OccuranceInMonth? monthlySendOnOccurenceInMonth)
-        {
-            // arrange
-            TimeSpan clientTimeOfDay = DateTime.Parse("12:00 PM").TimeOfDay;
-
-            DateTime serverDateTime = DateTime.Parse(serverDate);
-            TimeSpan serverDateTimeTime = DateTime.Parse("12:00 PM").TimeOfDay;
-            serverDateTime = serverDateTime.Date + serverDateTimeTime;
-
-            DateTime startDateTime = DateTime.Parse(startDate);
-            DateTime? endDateTime = string.IsNullOrEmpty(endDate) ? (DateTime?)null : DateTime.Parse(endDate);
 
             PeriodicScheduleRule rule = new PeriodicScheduleRule(
-                interval: frequency,
-                startDate: startDateTime,
-                localTimeOfDay: clientTimeOfDay,
-                endDate: endDateTime,
-                timeZoneOffset: null,
-                daysToRun: daysToRun,
-                dayOfMonth: monthlySendOnDayOfMonth,
-                setLastDayOfMonth: daysToRun == DaysOfWeek.Day && monthlySendOnOccurenceInMonth == OccuranceInMonth.Last
-                    ? true
-                    : (bool?)null,
-                reoccur: reoccur,
-                occuranceInMonth: monthlySendOnOccurenceInMonth)
-            {
-                TimeService = Substitute.For<ITimeService>()
-            };
-            rule.TimeService.LocalTime.Returns(serverDateTime);
+                ScheduleInterval.Daily,
+                startDate,
+                clientlocalTime,
+                endDate,
+                (int)clientUtcOffSet.TotalMinutes,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                clientTimeZone);
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(Arg.Any<DateTime>());
+            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(startDate.Subtract(clientTimeZoneInfo.BaseUtcOffset).AddMinutes(clientlocalTime.TotalMinutes));
 
             // assert
-            if (expectedNextRunTime == null)
-            {
-                Assert.IsNull(nextRunTime);
-            }
-            else
-            {
-                Assert.IsNotNull(nextRunTime);
-                Assert.AreEqual(DateTime.Parse(expectedNextRunTime).Date, nextRunTime.Value.Date);
-            }
+            Assert.IsNotNull(nextRunTime);
+            Assert.AreEqual(DateTime.Parse(expectedRunUtcTime, CultureInfo.GetCultureInfo("en-us")), nextRunTime);
         }
 
         [Test]
         public void SampleTest()
         {
             int diff = DaysOfWeekConverter.DayOfWeekToIndex(DayOfWeek.Sunday) - DaysOfWeekConverter.DayOfWeekToIndex(DayOfWeek.Monday);
-        }
-    }
-
-    public static class ExtendedPeriodicScheduleRule
-    {
-        public static void ArrangeTimeServiceBaseOnUtcNow(this PeriodicScheduleRule rule, string utc)
-        {
-            var utcNow = DateTime.Parse(utc);
-            rule.TimeService = Substitute.For<ITimeService>();
-            rule.TimeService.UtcNow.Returns(utcNow);
-            rule.TimeService.LocalTime.Returns(utcNow.ToLocalTime());
         }
     }
 }

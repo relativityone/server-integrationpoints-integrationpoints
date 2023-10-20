@@ -43,23 +43,29 @@ namespace kCura.IntegrationPoints.Core.Models
                         break;
                     case ScheduleInterval.Weekly:
                         SendOn =
-                            JsonConvert.SerializeObject(new Weekly
+                            JsonConvert.SerializeObject(
+                                new Weekly
                             {
                                 SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ?
                                     new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } :
                                     DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
 
-                            }, Formatting.None, JSONHelper.GetDefaultSettings());
+                            },
+                                Formatting.None,
+                                JSONHelper.GetDefaultSettings());
                         break;
                     case ScheduleInterval.Monthly:
                         var type = rule.OccuranceInMonth.HasValue ? MonthlyType.Month : MonthlyType.Days;
-                        SendOn = JsonConvert.SerializeObject(new Monthly
+                        SendOn = JsonConvert.SerializeObject(
+                            new Monthly
                         {
                             MonthChoice = type,
                             SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
                             SelectedDayOfTheMonth = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
                             SelectedType = rule.OccuranceInMonth
-                        }, Formatting.None, JSONHelper.GetDefaultSettings());
+                        },
+                            Formatting.None,
+                            JSONHelper.GetDefaultSettings());
 
                         break;
                 }

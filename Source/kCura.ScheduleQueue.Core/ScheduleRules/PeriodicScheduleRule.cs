@@ -334,12 +334,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         {
             switch (Interval)
             {
-                case ScheduleInterval.Immediate:
-                    return dateTime.AddMinutes(3);
-
-                case ScheduleInterval.Hourly:
-                    return dateTime.AddHours(1);
-
                 case ScheduleInterval.Daily:
                     return dateTime.AddDays(1);
 
