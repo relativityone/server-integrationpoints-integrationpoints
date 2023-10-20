@@ -1,3 +1,9 @@
+## [23013.2.1002] - 10-06-2023
+
+### Changed
+
+- [REL-875582](https://jira.kcura.com/browse/REL-875582) - Server - Incident - Error while loading LDAP provider - Backported [REL-872003](https://jira.kcura.com/browse/REL-872003) ticket from server 2022 release
+
 ## [23013.2.1001] - 10-06-2023
 
 ### Changed
