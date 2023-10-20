@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			var sourceProvidersList = new List<Data.SourceProvider> { _sourceProviderToDelete };
 			_sourceProviderRepositoryMock
-				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>(), It.IsAny<ExecutionIdentity>()))
 				.Returns(Task.FromResult(sourceProvidersList));
 		}
 
@@ -69,7 +69,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			_sourceProviderRepositoryMock.Verify(x =>
 				x.Delete(
-					It.Is<Data.SourceProvider>(y => y.ArtifactId == _sourceProviderToDelete.ArtifactId)
+					It.Is<Data.SourceProvider>(y => y.ArtifactId == _sourceProviderToDelete.ArtifactId),
+					It.IsAny<ExecutionIdentity>()
 				)
 			);
 		}
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 			// arrange
 			var exceptionToThrow = new InvalidOperationException();
 			_sourceProviderRepositoryMock
-				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>(), It.IsAny<ExecutionIdentity>()))
 				.Throws(exceptionToThrow);
 
 			// act
