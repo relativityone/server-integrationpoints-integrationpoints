@@ -12,60 +12,65 @@ namespace kCura.IntegrationPoints.Common.Logger
     {
         private readonly IInstanceSettingsBundle _instanceSettingsBundle;
         private readonly IRipAppVersionProvider _ripAppVersionProvider;
-        private readonly IAPILog _internalLogger;
-        private ILogger _serilogLogger;
+        private readonly IAPILog _fallbackLogger;
+        private ILogger _baseLogger;
 
-        public SerilogLoggerInstrumentationService(IInstanceSettingsBundle instanceSettingsBundle, IRipAppVersionProvider ripAppVersionProvider, IAPILog internalLogger)
+        private object _baseLoggerLocker = new object();
+
+        public SerilogLoggerInstrumentationService(IInstanceSettingsBundle instanceSettingsBundle, IRipAppVersionProvider ripAppVersionProvider, IAPILog fallbackLogger)
         {
             _instanceSettingsBundle = instanceSettingsBundle;
             _ripAppVersionProvider = ripAppVersionProvider;
-            _internalLogger = internalLogger;
+            _fallbackLogger = fallbackLogger;
         }
 
         public void Dispose()
         {
-            var disposable = _serilogLogger as IDisposable;
+            var disposable = _baseLogger as IDisposable;
             disposable?.Dispose();
-            _serilogLogger = null;
+            _baseLogger = null;
         }
 
-        public ILogger GetLogger()
+        public ILogger GetLogger<T>()
         {
             try
             {
-                InitLoggerOnce();
+                InitBaseLoggerOnce();
             }
             catch (Exception ex)
             {
-                _internalLogger.LogWarning("Unable to instrument Serilog Logger.", ex);
-                _serilogLogger = Serilog.Core.Logger.None;
+                _fallbackLogger.LogWarning("Unable to instrument Serilog Logger.", ex);
+                _baseLogger = Serilog.Core.Logger.None;
             }
 
-            return _serilogLogger;
+            return _baseLogger.ForContext<T>();
         }
 
-        private void InitLoggerOnce()
+        private void InitBaseLoggerOnce()
         {
-            if (_serilogLogger == null)
+            lock (_baseLoggerLocker)
             {
-                _serilogLogger = CreateLogger();
+                if (_baseLogger == null)
+                {
+                    _baseLogger = CreateBaseLogger();
+                }
             }
         }
 
-        private ILogger CreateLogger()
+        private ILogger CreateBaseLogger()
         {
             string apikey = GetRelEyeToken();
             if (string.IsNullOrEmpty(apikey))
             {
-                _internalLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeToken is not defined.");
+                _fallbackLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeToken is not defined.");
                 return Serilog.Core.Logger.None;
             }
 
             string otlpEndpoint = GetRelEyeUriLogs();
             if (string.IsNullOrEmpty(apikey))
             {
-                _internalLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeUriLogs is not defined.");
-                _serilogLogger = Serilog.Core.Logger.None;
+                _fallbackLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeUriLogs is not defined.");
+                _baseLogger = Serilog.Core.Logger.None;
                 return Serilog.Core.Logger.None;
             }
 
@@ -87,7 +92,7 @@ namespace kCura.IntegrationPoints.Common.Logger
                 .Enrich.WithProperty(RelEye.Names.R1TeamID, RelEye.Values.R1TeamID)
                 .Enrich.FromLogContext()
                 .CreateLogger();
-            _internalLogger.LogInformation("SerilogLogger.OpenTelemetry properly initialized.");
+            _fallbackLogger.LogInformation("SerilogLogger.OpenTelemetry properly initialized.");
             return serilogLogger;
         }
 

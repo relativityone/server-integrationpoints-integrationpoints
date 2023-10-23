@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel;
+﻿using Castle.Facilities.TypedFactory;
+using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -14,21 +15,23 @@ namespace kCura.IntegrationPoints.Core.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component
-                .For<IInstanceSettingsBundle>()
+            container.Register(Component.For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
                 .LifestyleTransient());
-            container.Register(Component.For<IAPILog>()
-                .UsingFactoryMethod(CreateLogger)
-                .IsFallback().LifestyleSingleton());
             container.Register(Component.For<IRipAppVersionProvider>()
                 .ImplementedBy<RipAppVersionProvider>()
+                .IsFallback().LifestyleSingleton());
+
+            container.Register(Component.For<IAPILog>()
+                .UsingFactoryMethod(CreateLogger)
                 .IsFallback().LifestyleSingleton());
             container.Register(Component.For<ISerilogLoggerInstrumentationService>()
                 .ImplementedBy<SerilogLoggerInstrumentationService>()
                 .IsFallback().LifestyleSingleton());
             container.Register(Component.For(typeof(ILogger<>))
-                .ImplementedBy(typeof(Logger<>)));
+                .ImplementedBy(typeof(Logger<>))
+                .LifestyleTransient());
+
             container.Register(Component.For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
                 .IsFallback().LifestyleSingleton());

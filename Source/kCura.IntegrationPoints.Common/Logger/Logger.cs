@@ -11,15 +11,15 @@ namespace kCura.IntegrationPoints.Common
     /// <typeparam name="T">The SourceContext type.</typeparam>
     public class Logger<T> : ILogger<T>
     {
-        private readonly ISerilogLoggerInstrumentationService _serilogLoggerInstrumentationService;
+        private readonly ISerilogLoggerInstrumentationService _serilogLoggerFactory;
         private readonly IAPILog _logger;
         private readonly ILogger _serilogLogger;
 
-        public Logger(IAPILog logger, ISerilogLoggerInstrumentationService serilogLogger)
+        public Logger(IAPILog logger, ISerilogLoggerInstrumentationService serilogLoggerFactory)
         {
             _logger = logger.ForContext<T>();
-            _serilogLoggerInstrumentationService = serilogLogger;
-            _serilogLogger = _serilogLoggerInstrumentationService.GetLogger();
+            _serilogLoggerFactory = serilogLoggerFactory;
+            _serilogLogger = serilogLoggerFactory.GetLogger<T>();
         }
 
         /// <inheritdoc/>
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Common
         /// <inheritdoc/>
         public ILogger<TContext> ForContext<TContext>()
         {
-            return new Logger<TContext>(_logger, _serilogLoggerInstrumentationService);
+            return new Logger<TContext>(_logger, _serilogLoggerFactory);
         }
     }
 }

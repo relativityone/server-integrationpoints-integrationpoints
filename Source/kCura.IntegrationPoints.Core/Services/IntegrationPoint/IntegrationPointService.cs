@@ -194,6 +194,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     dto.HasErrors = false;
                 }
 
+                dto.ConfigurationLastModifiedOn = _dateTimeHelper.Now();
+
                 IList<ChoiceRef> choices = ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
                 PeriodicScheduleRule rule = ConvertModelToScheduleRule(dto);
 
@@ -758,7 +760,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 LastRun = rdo.LastRuntimeUTC,
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
-                JobHistory = rdo.JobHistory?.ToList(),
+                JobHistory = rdo.JobHistory.ToList(),
+                ConfigurationLastModifiedOn = rdo.ConfigurationLastModifiedOn,
             };
         }
 
@@ -810,6 +813,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 EmailNotificationRecipients =
                     string.Join("; ", (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
                 LastRuntimeUTC = dto.LastRun,
+                ConfigurationLastModifiedOn = dto.ConfigurationLastModifiedOn,
                 SecuredConfiguration = dto.SecuredConfiguration,
                 JobHistory = dto.JobHistory?.ToArray(),
             };

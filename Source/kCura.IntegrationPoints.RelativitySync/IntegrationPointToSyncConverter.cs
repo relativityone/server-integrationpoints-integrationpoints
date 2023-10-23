@@ -19,7 +19,6 @@ using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -192,7 +191,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             SourceConfiguration sourceConfiguration,
             DestinationConfiguration destinationConfiguration)
         {
-            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(destinationConfiguration, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
+            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(destinationConfiguration, job.WorkspaceId, job.IntegrationPointDto).ConfigureAwait(false);
 
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
@@ -236,7 +235,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, int integrationPointId)
+        private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, IntegrationPointDto integrationPoint)
         {
             if (!_toggleProvider.IsEnabled<EnableSmartOverwriteFeatureToggle>())
             {
@@ -248,8 +247,17 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return null;
             }
 
-            DateTime? date = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId).ConfigureAwait(false);
-            return date;
+            DateTime? lastRunUtc = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+
+            if (integrationPoint.ConfigurationLastModifiedOn > lastRunUtc)
+            {
+                _logger.LogWarning($"Skipping SmartOverwrite flow due to Integration Point change ({integrationPoint.ConfigurationLastModifiedOn}) detected since last job run ({lastRunUtc})");
+                return null;
+            }
+
+            _logger.LogInformation($"Last Integration Point update {integrationPoint.ConfigurationLastModifiedOn} allows to run job in SmartOverwrite mode (last run: {lastRunUtc})");
+
+            return lastRunUtc;
         }
 
         private async Task<int> CreateNonDocumentSyncConfigurationAsync(
