@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private static void RegisterLoggingClasses(WindsorContainer windsorContainer)
         {
             windsorContainer.Register(Component.For<IAPILog>().Instance(Substitute.For<IAPILog>()).LifestyleSingleton());
-            windsorContainer.Register(Component.For<ISerilogLoggerInstrumentationService>().Instance(Substitute.For<ISerilogLoggerInstrumentationService>()).LifestyleSingleton());
+            windsorContainer.Register(Component.For<Serilog.ILogger>().Instance(Substitute.For<Serilog.ILogger>()).LifestyleSingleton());
             windsorContainer.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
             windsorContainer.Register(Component.For<IDiagnosticLog>().Instance(Substitute.For<IDiagnosticLog>()).LifestyleSingleton());
         }

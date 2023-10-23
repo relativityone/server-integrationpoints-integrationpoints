@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.RelativitySync;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Folder;
@@ -127,7 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             Container.Register(Component.For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(k => Helper.GetInstanceSettingBundle()));
             Container.Register(Component.For<IRipAppVersionProvider>().ImplementedBy<RipAppVersionProvider>().LifestyleSingleton());
-            Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
+            Container.Register(Component.For<Serilog.ILogger>().Instance(Substitute.For<Serilog.ILogger>()).LifestyleSingleton());
             Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
 
             Container.Register(Component.For<IServiceContextHelper>()
