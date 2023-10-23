@@ -4,8 +4,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
     public interface IScheduleRule
     {
-        string Description { get; }
-
         DateTime? GetNextUtcRunDateTime(DateTime lastNextRunTimeUtc);
 
         DateTime? GetFirstUtcRunDateTime();

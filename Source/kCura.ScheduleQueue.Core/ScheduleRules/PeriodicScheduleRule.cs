@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using kCura.ScheduleQueue.Core.Helpers;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
@@ -57,64 +56,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         // * For example: if we want to run job always at 12:00pm local time, when converting and storing from CST to UTC in January it will be 6:00pm(UTC). Converting back to local in January it will be 12:00pm(CST) (UTC-6) local, but in July it would be 1:00pm(CST) (UTC-5) due to DST.
         [DataMember]
         private long? localTimeOfDayTicks { get; set; }
-
-        public override string Description
-        {
-            get
-            {
-                var returnValue = new StringBuilder();
-
-                if (StartDate.HasValue)
-                {
-                    returnValue.Append(string.Format("Recurring job. Scheduled as: starting on {0}", StartDate.Value.ToString("d")));
-                }
-
-                if (EndDate.HasValue)
-                {
-                    returnValue.Append(string.Format(", ending on {0}", EndDate.Value.ToString("d")));
-                }
-                switch (Interval)
-                {
-                    case ScheduleInterval.Daily:
-                        returnValue.Append(string.Format(", run this job every day"));
-                        break;
-
-                    case ScheduleInterval.Weekly:
-                        returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} week(s)", Reoccur.Value) : "week"));
-                        if (DaysToRun.HasValue)
-                        {
-                            returnValue.Append(string.Format(" on {0}", DaysOfWeekToString(DaysToRun.Value)));
-                        }
-                        break;
-
-                    case ScheduleInterval.Monthly:
-                        returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} month(s)", Reoccur.Value) : "month"));
-                        if (DayOfMonth.HasValue)
-                        {
-                            returnValue.Append(string.Format(" on {0} day", DayOfMonth.Value));
-                        }
-                        else if (OccuranceInMonth.HasValue)
-                        {
-                            returnValue.Append(string.Format(" the {0} {1} of the month", OccuranceInMonth.Value.ToString(), DaysOfWeekToString(DaysToRun.Value)));
-                        }
-                        break;
-
-                    case ScheduleInterval.None:
-                        returnValue.Append(", run this job once");
-                        break;
-
-                    default:
-                        throw new NotImplementedException(
-                            "Scheduling rule does not exist on this object, this only supports Daily, Weekly, Monthly");
-                }
-
-                if (localTimeOfDayTicks.HasValue)
-                {
-                    returnValue.Append(string.Format(" at {0} local server time.", DateTime.Now.Date.AddTicks(localTimeOfDayTicks.Value).ToString("t")));
-                }
-                return returnValue.ToString();
-            }
-        }
 
         public PeriodicScheduleRule()
         {
@@ -208,7 +149,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             if (dayOfWeek >= selectedDaysOfWeek.Max())
             {
                 int daysOfWeekDifference = dayOfWeek - selectedDaysOfWeek.Min();
-                return dateTime.AddDays(7 - daysOfWeekDifference);
+                return dateTime.AddDays((Reoccur.GetValueOrDefault() * 7) - daysOfWeekDifference);
             }
 
             int nextDatDayOfWeek = selectedDaysOfWeek.First(x => x > dayOfWeek);
@@ -393,7 +334,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
             if (!Reoccur.HasValue)
             {
-                throw new ArgumentNullException("Reoccur not specified for scheduler.");
+                Reoccur = 1;
             }
         }
 
@@ -406,7 +347,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
             if (!Reoccur.HasValue)
             {
-                throw new ArgumentNullException("Reoccur not specified for scheduler.");
+                Reoccur = 1;
             }
         }
     }

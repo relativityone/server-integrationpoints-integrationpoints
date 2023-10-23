@@ -59,8 +59,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         public abstract void ResetConsecutiveFailedScheduledJobsCount();
 
-        public abstract string Description { get; }
-
         public string ToSerializedString()
         {
             return Serializer.Serialize(this);
