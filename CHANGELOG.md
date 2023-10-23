@@ -1,3 +1,9 @@
+## [23013.2.1004] - 10-06-2023
+
+### Changed
+
+- [REL-866456](https://jira.kcura.com/browse/REL-866456) - Revved latest package for Relativity.DataTransfer.Legacy.SDK
+
 ## [23013.2.1003] - 10-06-2023
 
 ### Changed

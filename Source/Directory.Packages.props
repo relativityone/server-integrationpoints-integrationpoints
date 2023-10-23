@@ -48,9 +48,9 @@
     <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
-    <RelativityDataExchangeClientSDK>2.9.2</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>2.9.1001</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
-    <RelativityDataTransferLegacySDK>0.4.0</RelativityDataTransferLegacySDK>
+    <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsSDK>1.3.0</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0</RelativityIntegrationPointsServicesInterfacesPrivate>
@@ -68,7 +68,7 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.12.3</RelativitySync>
+    <RelativitySync>0.12.1001</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -76,7 +76,7 @@
     <RelativityTestingFrameworkApi>10.3.0</RelativityTestingFrameworkApi>
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
-    <RelativityTransferClient>7.7.0</RelativityTransferClient>
+    <RelativityTransferClient>7.7.1001</RelativityTransferClient>
     <Toggles>1.10.8</Toggles>
     <SeleniumSupport>3.141.0</SeleniumSupport>
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
