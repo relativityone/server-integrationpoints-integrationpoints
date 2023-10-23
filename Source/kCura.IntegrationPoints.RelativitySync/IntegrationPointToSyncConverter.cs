@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,7 +17,6 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
@@ -35,7 +35,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
         private readonly IRipToggleProvider _toggleProvider;
-        private readonly IAPILog _logger;
+        private readonly ISyncFieldMapConverter _syncFieldMapConverter;
+        private readonly ILogger<IntegrationPointToSyncConverter> _logger;
 
         public IntegrationPointToSyncConverter(
             ISerializer serializer,
@@ -43,14 +44,16 @@ namespace kCura.IntegrationPoints.RelativitySync
             IJobHistorySyncService jobHistorySyncService,
             ISyncOperationsWrapper syncOperations,
             IRipToggleProvider toggleProvider,
-            IAPILog logger)
+            ISyncFieldMapConverter syncFieldMapConverter,
+            ILogger<IntegrationPointToSyncConverter> logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
-            _logger = logger;
             _toggleProvider = toggleProvider;
+            _syncFieldMapConverter = syncFieldMapConverter;
+            _logger = logger;
         }
 
         public async Task<int> CreateSyncConfigurationAsync(int workspaceId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
@@ -82,8 +85,8 @@ namespace kCura.IntegrationPoints.RelativitySync
             DestinationConfiguration destinationConfiguration = job.IntegrationPointDto.DestinationConfiguration;
 
             _logger
-                .ForContext("DestinationConfiguration", destinationConfiguration, true)
-                .ForContext("SourceConfiguration", sourceConfiguration, true)
+                .EnrichWithProperty("DestinationConfiguration", destinationConfiguration)
+                .EnrichWithProperty("SourceConfiguration", sourceConfiguration)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
             ISyncContext syncContext = new SyncContext(
@@ -294,7 +297,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private void PrepareFieldsMappingAction(List<FieldMap> integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
         {
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
+            List<SyncFieldMap> fieldsMapping = _syncFieldMapConverter.ConvertToSyncFieldMap(integrationPointsFieldsMapping);
 
             foreach (SyncFieldMap fieldsMap in fieldsMapping)
             {

@@ -86,6 +86,14 @@ namespace kCura.IntegrationPoints.Common
         /// <param name="propertyValues">params for each brace'd item in the messageTemplate.</param>
         void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues);
 
+        /// <summary>
+        /// Adds the value object with the propertyName to the log information.
+        /// </summary>
+        /// <param name="propertyName">The property name to display in the log.</param>
+        /// <param name="value">The object to deserialize and add to the log.</param>
+        /// <returns>The enriched instance of logger.</returns>
+        ILogger<T> EnrichWithProperty(string propertyName, object value);
+
         /// <summary>Returns the logger with the full name of Type T added to the log information.</summary>
         /// <typeparam name="TContext">The logger owner type, helpful to set proper SourceContext field in logs.</typeparam>
         ILogger<TContext> ForContext<TContext>();

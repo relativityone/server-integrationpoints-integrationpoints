@@ -1,5 +1,4 @@
-﻿using Castle.Facilities.TypedFactory;
-using Castle.MicroKernel;
+﻿using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -28,6 +27,9 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<ISerilogLoggerInstrumentationService>()
                 .ImplementedBy<SerilogLoggerInstrumentationService>()
                 .IsFallback().LifestyleSingleton());
+            container.Register(Component.For<Serilog.ILogger>()
+                .UsingFactoryMethod(CreateSerilogLogger)
+                .IsFallback().LifestyleSingleton());
             container.Register(Component.For(typeof(ILogger<>))
                 .ImplementedBy(typeof(Logger<>))
                 .LifestyleTransient());
@@ -40,6 +42,11 @@ namespace kCura.IntegrationPoints.Core.Installers
         private IAPILog CreateLogger(IKernel kernel)
         {
             return kernel.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+        }
+
+        private Serilog.ILogger CreateSerilogLogger(IKernel kernel)
+        {
+            return kernel.Resolve<ISerilogLoggerInstrumentationService>().GetLogger();
         }
     }
 }

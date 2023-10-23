@@ -13,9 +13,9 @@ namespace kCura.IntegrationPoints.Common.Logger
         private readonly IInstanceSettingsBundle _instanceSettingsBundle;
         private readonly IRipAppVersionProvider _ripAppVersionProvider;
         private readonly IAPILog _fallbackLogger;
-        private ILogger _baseLogger;
+        private ILogger _serilogLogger;
 
-        private object _baseLoggerLocker = new object();
+        private object _serilogLoggerLocker = new object();
 
         public SerilogLoggerInstrumentationService(IInstanceSettingsBundle instanceSettingsBundle, IRipAppVersionProvider ripAppVersionProvider, IAPILog fallbackLogger)
         {
@@ -26,33 +26,32 @@ namespace kCura.IntegrationPoints.Common.Logger
 
         public void Dispose()
         {
-            var disposable = _baseLogger as IDisposable;
+            var disposable = _serilogLogger as IDisposable;
             disposable?.Dispose();
-            _baseLogger = null;
+            _serilogLogger = null;
         }
 
-        public ILogger GetLogger<T>()
+        public ILogger GetLogger()
         {
-            try
-            {
-                InitBaseLoggerOnce();
-            }
-            catch (Exception ex)
-            {
-                _fallbackLogger.LogWarning("Unable to instrument Serilog Logger.", ex);
-                _baseLogger = Serilog.Core.Logger.None;
-            }
-
-            return _baseLogger.ForContext<T>();
+            EnsureSerilogLogger();
+            return _serilogLogger;
         }
 
-        private void InitBaseLoggerOnce()
+        private void EnsureSerilogLogger()
         {
-            lock (_baseLoggerLocker)
+            lock (_serilogLoggerLocker)
             {
-                if (_baseLogger == null)
+                if (_serilogLogger == null)
                 {
-                    _baseLogger = CreateBaseLogger();
+                    try
+                    {
+                        _serilogLogger = CreateBaseLogger();
+                    }
+                    catch (Exception ex)
+                    {
+                        _fallbackLogger.LogWarning("Unable to instrument Serilog Logger.", ex);
+                        _serilogLogger = Serilog.Core.Logger.None;
+                    }
                 }
             }
         }
@@ -70,7 +69,7 @@ namespace kCura.IntegrationPoints.Common.Logger
             if (string.IsNullOrEmpty(apikey))
             {
                 _fallbackLogger.LogWarning("Serilog Logger cannot be initialized because ReleyeUriLogs is not defined.");
-                _baseLogger = Serilog.Core.Logger.None;
+                _serilogLogger = Serilog.Core.Logger.None;
                 return Serilog.Core.Logger.None;
             }
 

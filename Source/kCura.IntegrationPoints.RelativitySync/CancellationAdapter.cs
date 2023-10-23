@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.Sync;
+using Relativity.Sync.Logging;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -19,22 +19,19 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IManagerFactory _managerFactory;
         private readonly IJobService _jobService;
         private readonly IJobHistoryService _jobHistoryService;
-        private readonly IAPILog _log;
 
         public CancellationAdapter(
             IWindsorContainer container,
             IExtendedJob job,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IJobHistoryService jobHistoryService,
-            IAPILog log)
+            IJobHistoryService jobHistoryService)
         {
             _container = container;
             _job = job;
             _managerFactory = managerFactory;
             _jobService = jobService;
             _jobHistoryService = jobHistoryService;
-            _log = log;
         }
 
         public CompositeCancellationToken GetCancellationToken(Action drainStopTokenCallback = null)
@@ -57,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 drainStopTokenSource.Token.Register(drainStopTokenCallback);
             }
 
-            return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token, _log);
+            return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token, new EmptyLogger());
         }
     }
 }
