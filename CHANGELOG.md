@@ -1,3 +1,8 @@
+## [23013.2.1003] - 10-06-2023
+
+### Changed
+
+-[REL-873166](https://jira.kcura.com/browse/REL-873166) -Intermittent error on regression environments when navigating to certain pages integration point - Backported [REL-785057](https://jira.kcura.com/browse/REL-785057) [RIP] Error page is displayed when user clicks on Job ID
 ## [23013.2.1002] - 10-06-2023
 
 ### Changed
