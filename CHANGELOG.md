@@ -1,6 +1,12 @@
 # Changelog for Relativity Sync
 All notable changes to this project will be documented in this file.
 
+## [0.13.0] - 10-23-2023
+
+ ### Changed
+
+ - Prepared branch for the next official Relativity 2024 release.
+
 ## [0.12.1001] - 10-06-2023
 ### Changed
 
