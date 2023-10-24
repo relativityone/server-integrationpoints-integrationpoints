@@ -128,8 +128,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             Container.Register(Component.For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(k => Helper.GetInstanceSettingBundle()));
             Container.Register(Component.For<IRipAppVersionProvider>().ImplementedBy<RipAppVersionProvider>().LifestyleSingleton());
-            Container.Register(Component.For<Serilog.ILogger>().Instance(Substitute.For<Serilog.ILogger>()).LifestyleSingleton());
-            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(LoggerFake<>)));
 
             Container.Register(Component.For<IServiceContextHelper>()
                 .UsingFactoryMethod(k =>
