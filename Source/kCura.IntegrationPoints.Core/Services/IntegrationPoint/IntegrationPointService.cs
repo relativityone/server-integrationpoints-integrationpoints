@@ -761,6 +761,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
+                PromoteEligible = rdo.PromoteEligible.GetValueOrDefault(false),
                 ConfigurationLastModifiedOn = rdo.ConfigurationLastModifiedOn,
             };
         }
@@ -782,6 +783,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 LastRun = rdo.LastRuntimeUTC,
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
+                PromoteEligible = rdo.PromoteEligible.GetValueOrDefault(false),
                 JobHistory = rdo.JobHistory.ToList(),
             };
         }
@@ -810,6 +812,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
                 HasErrors = dto.HasErrors,
+                PromoteEligible = dto.PromoteEligible,
                 EmailNotificationRecipients =
                     string.Join("; ", (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
                 LastRuntimeUTC = dto.LastRun,

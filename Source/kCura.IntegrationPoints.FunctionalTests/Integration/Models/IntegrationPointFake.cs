@@ -50,9 +50,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public string Name { get; set; }
 
-        public string SecuredConfigurationDecrypted { get; set; }
+        public string CalculationState { get; set; }
 
         public DateTime? ConfigurationLastModifiedOn { get; set; }
+
+        public string SecuredConfigurationDecrypted { get; set; }
 
         public IntegrationPointFake() : base("IntegrationPoint")
         {
@@ -298,6 +300,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                     {
                         Field = new Field()
                         {
+                            Name = "CalculationState",
+                            Guids = new List<Guid>()
+                            {
+                                new Guid("e64163ea-a58c-4a90-af30-dd190069210d")
+                            }
+                        },
+                        Value = CalculationState
+                    },
+                    new FieldValuePair()
+                    {
+                        Field = new Field()
+                        {
                             Name = "Configuration Last Modified On",
                             Guids = new List<Guid>()
                             {
@@ -335,6 +349,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 SecuredConfiguration = SecuredConfiguration,
                 PromoteEligible = PromoteEligible,
                 Name = Name,
+                CalculationState = CalculationState,
                 ConfigurationLastModifiedOn = ConfigurationLastModifiedOn,
             };
         }
