@@ -4,16 +4,12 @@ using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistoryError;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Kepler;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Utils;
 using Relativity.API;
-using Relativity.Services.Interfaces.Workspace;
-using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace kCura.IntegrationPoints.Agent.Sync
 {
@@ -80,7 +76,7 @@ namespace kCura.IntegrationPoints.Agent.Sync
             Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
 
             int? jobHistoryId = await ReadJobHistoryAsync(job.WorkspaceID, batchInstanceId).ConfigureAwait(false)
-                ?? await CreateScheduledJobHistoryAsync(job.WorkspaceID, batchInstanceId, integrationPoint).ConfigureAwait(false);
+                ?? await _jobHistoryService.CreateScheduledJobHistoryAsync(job.WorkspaceID, batchInstanceId, integrationPoint).ConfigureAwait(false);
 
             return jobHistoryId.Value;
         }
@@ -96,40 +92,6 @@ namespace kCura.IntegrationPoints.Agent.Sync
             }
 
             return null;
-        }
-
-        private async Task<int?> CreateScheduledJobHistoryAsync(int workspaceId, Guid batchInstanceId, IntegrationPointDto integrationPoint)
-        {
-            string destinationWorkspaceName = await FormatDestinationWorkspaceName(
-                    integrationPoint.DestinationConfiguration.CaseArtifactId)
-                .ConfigureAwait(false);
-
-            int jobHistoryId = await _jobHistoryService.CreateJobHistoryAsync(workspaceId, new JobHistory
-            {
-                Name = integrationPoint.Name,
-                IntegrationPoint = new[] { integrationPoint.ArtifactId },
-                BatchInstance = batchInstanceId.ToString(),
-                JobType = JobTypeChoices.JobHistoryScheduledRun,
-                JobStatus = JobStatusChoices.JobHistoryPending,
-                Overwrite = integrationPoint.SelectedOverwrite,
-                DestinationInstance = FederatedInstanceManager.LocalInstance.Name,
-                DestinationWorkspace = destinationWorkspaceName,
-                StartTimeUTC = _dateTime.UtcNow
-            });
-
-            _log.LogInformation("JobHistory for BatchInstanceId {batchInstanceId} was created - {jobHistoryId}.", batchInstanceId, jobHistoryId);
-
-            return jobHistoryId;
-        }
-
-        private async Task<string> FormatDestinationWorkspaceName(int destinationWorkspaceId)
-        {
-            using (IWorkspaceManager workspaceManager = await _keplerService.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
-            {
-                WorkspaceResponse workspace = await workspaceManager.ReadAsync(destinationWorkspaceId).ConfigureAwait(false);
-
-                return WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(workspace.Name, workspace.ArtifactID);
-            }
         }
     }
 }

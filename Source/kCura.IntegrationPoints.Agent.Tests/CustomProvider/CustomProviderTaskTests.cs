@@ -261,7 +261,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
 
         private void SetupJobDetails()
         {
-            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
+            _jobDetailsService.Setup(x => x.GetJobDetailsAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IntegrationPointDto>()))
                 .Returns(() => Task.FromResult(_jobDetails));
 
             _jobDetailsService.Setup(x => x.UpdateJobDetailsAsync(It.IsAny<Job>(), It.IsAny<CustomProviderJobDetails>()))
