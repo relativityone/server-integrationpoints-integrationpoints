@@ -2,29 +2,40 @@
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.CustomProvider
+namespace kCura.IntegrationPoints.Core.Checkers
 {
     internal class CustomProviderFlowCheck : ICustomProviderFlowCheck
     {
         private readonly IRipToggleProvider _toggleProvider;
+        private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
-        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IAPILog log)
+        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IIntegrationPointService integrationPointService, IAPILog log)
         {
             _toggleProvider = toggleProvider;
+            _integrationPointService = integrationPointService;
             _log = log;
         }
 
-        public bool ShouldBeUsed(IntegrationPointDto integrationPoint)
+        public bool ShouldBeUsed(int integrationPointId, ProviderType providerType)
+        {
+            DestinationConfiguration destinationConfiguration = _integrationPointService.GetDestinationConfiguration(integrationPointId);
+            return ShouldBeUsed(destinationConfiguration, providerType);
+        }
+
+        public bool ShouldBeUsed(DestinationConfiguration destinationConfiguration, ProviderType? providerType = null)
         {
             try
             {
                 bool isToggleEnabled = _toggleProvider.IsEnabled<EnableImportApiV2ForCustomProvidersToggle>();
-                bool isManagersLinkingEnabled = integrationPoint.DestinationConfiguration.EntityManagerFieldContainsLink;
-                bool isDocumentFlow = integrationPoint.DestinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
+                bool isManagersLinkingEnabled = destinationConfiguration.EntityManagerFieldContainsLink;
+                bool isDocumentFlow = destinationConfiguration.ArtifactTypeId == (int)ArtifactType.Document;
 
                 bool result;
                 if (isDocumentFlow)
@@ -34,6 +45,11 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 else
                 {
                     result = isToggleEnabled && !isManagersLinkingEnabled;
+                }
+
+                if (providerType.HasValue)
+                {
+                    result = result && providerType.IsIn(ProviderType.FTP, ProviderType.LDAP, ProviderType.Other);
                 }
 
                 _log.LogInformation(
@@ -51,5 +67,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 return false;
             }
         }
+
     }
 }

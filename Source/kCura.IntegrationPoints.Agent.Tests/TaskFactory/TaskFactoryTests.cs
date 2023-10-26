@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Channels;
 using AutoFixture;
 using Castle.Windsor;
 using FluentAssertions;
@@ -15,10 +14,12 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Toggles;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Storage;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _newCustomProviderCheckFake = new Mock<ICustomProviderFlowCheck>();
             _newCustomProviderCheckFake.Setup(
                     x => x.ShouldBeUsed(
-                        It.IsAny<IntegrationPointDto>()))
+                        It.IsAny<DestinationConfiguration>(), null))
                 .Returns(true);
 
             _relativitySyncCheckerFake = new Mock<IRelativitySyncConstrainsChecker>();
@@ -228,7 +229,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var agentBase = new TestAgentBase(Guid.NewGuid());
 
-            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsed(It.IsAny<IntegrationPointDto>()))
+            _newCustomProviderCheckFake.Setup(x => x.ShouldBeUsed(It.IsAny<DestinationConfiguration>(), null))
                 .Returns(true);
 
             _containerFake.Setup(x => x.Resolve<ICustomProviderTask>()).Returns(expectedTask);
@@ -321,6 +322,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
             {
+            }
+
+            protected override void SendEmailNotificationForCrashedJob(Job job, IRelativityObjectManager objectManager,
+                Data.IntegrationPoint integrationPoint)
+            {
+                
             }
         }
     }

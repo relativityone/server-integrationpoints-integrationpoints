@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Helpers;
@@ -16,11 +14,11 @@ using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class JobHistoryManagerTests : TestBase
     {
         private IJobHistoryManager _sut;
@@ -67,23 +65,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void GetLastJobHistoryArtifactId_GoldFlow()
         {
-            // ARRANGE
+            // Arrange
             int expectedLastTwoJobHistoryIds = 234242;
             _jobHistoryRepositoryMock
                 .Setup(x => x.GetLastJobHistoryArtifactId(_INTEGRATION_POINT_ID))
                 .Returns(expectedLastTwoJobHistoryIds);
 
-            // ACT
+            // Act
             int result = _sut.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
-            // ASSERT
+            // Assert
             Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
         }
 
         [Test]
         public void SetErrorStatusesToExpired_GoldFlow()
         {
-            // ARRANGE
+            // Arrange
             const int jobHistoryTypeId = 78;
             const int errorChoiceArtifactId = 98756;
             int[] itemLevelErrors = { 2, 3, 4 };
@@ -113,10 +111,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 .Setup(x => x.RetrieveJobHistoryErrorArtifactIds(jobHistoryTypeId, JobHistoryErrorDTO.Choices.ErrorType.Values.Job))
                 .Returns(jobLevelErrors);
 
-            // ACT
+            // Act
             _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId);
 
-            // ASSERT
+            // Assert
             _massUpdateHelperMock.Verify(
                 x => x.UpdateArtifactsAsync(
                     itemLevelErrors,
@@ -134,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         [Test]
         public void SetErrorStatusesToExpired_UpdatesFail()
         {
-            // ARRANGE
+            // Arrange
             const int jobHistoryTypeId = 78;
             const int errorChoiceArtifactId = 98756;
             int[] itemLevelErrors = new[] { 2, 3, 4 };
@@ -169,84 +167,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                     It.IsAny<IRepositoryWithMassUpdate>()))
                 .Throws<Exception>();
 
-            // ACT
+            // Act
             Assert.DoesNotThrow(() => _sut.SetErrorStatusesToExpired(_WORKSPACE_ID, jobHistoryTypeId));
-        }
-
-        [Test]
-        public void GetStoppableJobHistory_ShouldReturnStoppableJobHistory()
-        {
-            // Arrange
-            JobHistory[] pendingJobHistory = new[]
-            {
-                PrepareJobHistory(1, JobStatusChoices.JobHistoryPending),
-                PrepareJobHistory(3, JobStatusChoices.JobHistoryPending),
-            };
-
-            JobHistory[] processingJobHistory = new[]
-            {
-                PrepareJobHistory(2, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(5, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(6, JobStatusChoices.JobHistoryProcessing),
-                PrepareJobHistory(4, JobStatusChoices.JobHistoryValidating),
-            };
-
-            var jobHistoryCollection = new List<JobHistory>
-            {
-                PrepareJobHistory(7, null),
-            };
-
-            jobHistoryCollection.AddRange(pendingJobHistory);
-            jobHistoryCollection.AddRange(processingJobHistory);
-
-            _jobHistoryRepositoryMock.Setup(x => x.GetStoppableJobHistoriesForIntegrationPoint(_INTEGRATION_POINT_ID))
-                .Returns(jobHistoryCollection);
-
-            // Act
-            StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            result.PendingJobHistory.ShouldAllBeEquivalentTo(pendingJobHistory);
-            result.ProcessingJobHistory.ShouldAllBeEquivalentTo(processingJobHistory);
-        }
-
-        [Test]
-        public void GetStoppableJobHistory_ShouldReturnEmptyJobHistory_WhenNonStoppableJobsFound()
-        {
-            // Arrange
-            var jobHistoryCollection = new List<JobHistory>
-            {
-                PrepareJobHistory(1, JobStatusChoices.JobHistoryCompleted),
-                PrepareJobHistory(2, JobStatusChoices.JobHistoryErrorJobFailed),
-                PrepareJobHistory(3, JobStatusChoices.JobHistorySuspended),
-                PrepareJobHistory(4, JobStatusChoices.JobHistoryStopped),
-                PrepareJobHistory(5, null),
-            };
-
-            _jobHistoryRepositoryMock.Setup(x => x.GetStoppableJobHistoriesForIntegrationPoint(_INTEGRATION_POINT_ID))
-                .Returns(jobHistoryCollection);
-
-            // Act
-            StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
-
-            // Assert
-            result.PendingJobHistory.Should().BeEmpty();
-            result.ProcessingJobHistory.Should().BeEmpty();
         }
 
         private bool ValidateErrorStatusField(FieldUpdateRequestDto[] fields, Guid expectedStatus)
         {
             FieldUpdateRequestDto statusField = fields.SingleOrDefault(x => x.FieldIdentifier == JobHistoryErrorFieldGuids.ErrorStatusGuid);
             return statusField?.NewValue is SingleChoiceReferenceDto errorStatusValue && errorStatusValue.ChoiceValueGuid == expectedStatus;
-        }
-
-        private JobHistory PrepareJobHistory(int jobHistoryId, ChoiceRef status)
-        {
-            return new JobHistory
-            {
-                ArtifactId = jobHistoryId,
-                JobStatus = status
-            };
         }
     }
 }

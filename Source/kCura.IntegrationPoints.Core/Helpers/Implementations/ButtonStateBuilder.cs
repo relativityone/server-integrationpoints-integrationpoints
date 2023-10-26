@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
@@ -12,6 +13,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Services.Choice;
 
@@ -24,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IIntegrationPointService _integrationPointService;
         private readonly IViewErrorsPermissionValidator _viewErrorsPermissionValidator;
+        private readonly ICustomProviderFlowCheck _customProviderFlowCheck;
         private readonly IStateManager _stateManager;
 
         public ButtonStateBuilder(
@@ -32,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IRepositoryFactory repositoryFactory,
             IIntegrationPointService integrationPointService,
             IViewErrorsPermissionValidator viewErrorsPermissionValidator,
+            ICustomProviderFlowCheck customProviderFlowCheck,
             IManagerFactory managerFactory)
         {
             _serializer = serializer;
@@ -39,32 +43,37 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _repositoryFactory = repositoryFactory;
             _integrationPointService = integrationPointService;
             _viewErrorsPermissionValidator = viewErrorsPermissionValidator;
+            _customProviderFlowCheck = customProviderFlowCheck;
             _stateManager = managerFactory.CreateStateManager();
         }
 
         public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactId);
+            IntegrationPointSlimDto integrationPointSlimDto = _integrationPointService.ReadSlim(integrationPointArtifactId);
 
-            SourceConfiguration.ExportType exportType = GetExportType(integrationPoint.ArtifactId);
+            SourceConfiguration.ExportType exportType = GetExportType(integrationPointSlimDto.ArtifactId);
 
             ProviderType providerType = _providerTypeService.GetProviderType(
-                integrationPoint.SourceProvider,
-                integrationPoint.DestinationProvider);
+                integrationPointSlimDto.SourceProvider,
+                integrationPointSlimDto.DestinationProvider);
 
-            CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPoint.ArtifactId);
+            CalculationState calculationState = _integrationPointService.GetCalculationState(integrationPointSlimDto.ArtifactId);
             bool calculationInProgress = calculationState?.Status == CalculationStatus.InProgress;
 
             var jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
             ChoiceRef lastJobHistoryStatus = jobHistoryRepository.GetLastJobHistoryStatus(integrationPointArtifactId);
 
+            bool isIApiV2CustomProviderWorkflow = _customProviderFlowCheck.ShouldBeUsed(integrationPointSlimDto.ArtifactId, providerType);
+
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
-                exportType,
-                providerType,
-                HasErrorViewPermissions(workspaceArtifactId),
-                HasProfileAddPermission(workspaceArtifactId),
-                calculationInProgress,
-                lastJobHistoryStatus);
+            exportType,
+            providerType,
+            HasErrorViewPermissions(workspaceArtifactId),
+            HasProfileAddPermission(workspaceArtifactId),
+            calculationInProgress,
+            lastJobHistoryStatus,
+            isIApiV2CustomProviderWorkflow
+            );
 
             return buttonState;
         }

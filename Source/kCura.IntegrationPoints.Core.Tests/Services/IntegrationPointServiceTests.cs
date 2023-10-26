@@ -268,168 +268,115 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             VerifyJobShouldNotBeCreated();
         }
 
-        [Test]
-        public void MarkIntegrationPointToStopJobs_GoldFlow()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void MarkIntegrationPointToStopJobs_GoldFlow(bool isJobProcessing)
         {
             // Arrange
-            const int numberOfPendingJobs = 2;
-            const int numberOfProcessingJobs = 3;
+            Guid jobHistoryGuid = Guid.NewGuid();
+            ChoiceRef jobHistoryStatus = JobStatusChoices.JobHistoryPending;
 
-            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
-                .CreateMany(numberOfPendingJobs)
-                .ToArray();
+            if (isJobProcessing)
+            {
+                jobHistoryStatus = JobStatusChoices.JobHistoryProcessing;
+            }
 
-            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
-                .CreateMany(numberOfProcessingJobs)
-                .ToArray();
+            Data.JobHistory jobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => jobHistoryGuid.ToString())
+                .With(x => x.JobStatus, jobHistoryStatus)
+                .Create();
 
-            _jobHistoryManagerFake.Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(new StoppableJobHistoryCollection
-                {
-                    PendingJobHistory = pendingJobHistory,
-                    ProcessingJobHistory = processingJobHistory
-                });
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistory(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns(jobHistory);
 
-            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
+            Dictionary<Guid, List<Job>> jobs = new[] { jobHistory }
                 .ToDictionary(
                     x => Guid.Parse(x.BatchInstance),
                     x => new List<Job> { _fxt.Create<Job>() });
 
             _jobManagerMock.Setup(x => x.GetJobsByBatchInstanceId(_integrationPointDto.ArtifactId))
-                .Returns(pendingJobs.Concat(processingJobs).ToDictionary(x => x.Key, x => x.Value));
+                .Returns(jobs.ToDictionary(x => x.Key, x => x.Value));
+
+            _jobManagerMock.Setup(x => x.GetJobsByJobHistoryGuid(_integrationPointDto.ArtifactId))
+                .Returns(jobs.ToDictionary(x => x.Key, x => x.Value));
 
             // Act
             _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPointDto.ArtifactId);
 
             // Assert
-            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
+            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(isJobProcessing ? 1 : 0));
 
             _jobHistoryServiceMock.Verify(
                 x => x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
-                Times.Exactly(numberOfPendingJobs));
+                Times.Exactly(isJobProcessing ? 0 : 1));
 
-            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(numberOfPendingJobs));
+            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(isJobProcessing ? 0 : 1));
         }
 
         [Test]
         public void MarkIntegrationPointToStopJobs_ShouldStopOnlySyncAppJobs()
         {
             // Arrange
-            const int numberOfPendingJobs = 2;
-            const int numberOfProcessingJobs = 3;
-            const int numberOfSyncAppJobs = 4;
+            Guid jobHistoryGuid = Guid.NewGuid();
 
-            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
-                .CreateMany(numberOfPendingJobs)
-                .ToArray();
-
-            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
-                .CreateMany(numberOfProcessingJobs)
-                .ToArray();
-
-            Data.JobHistory[] syncJobHistory = _fxt.Build<Data.JobHistory>()
+            Data.JobHistory jobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => jobHistoryGuid.ToString())
                 .With(x => x.JobID, () => Guid.NewGuid().ToString())
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .CreateMany(numberOfSyncAppJobs)
-                .ToArray();
+                .Create();
 
-            _jobHistoryManagerFake
-                .Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPoint.ArtifactId))
-                .Returns(new StoppableJobHistoryCollection
-                {
-                    PendingJobHistory = pendingJobHistory,
-                    ProcessingJobHistory = processingJobHistory.Concat(syncJobHistory).ToArray()
-                });
-
-            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> syncJobs = syncJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            _jobManagerMock
-                .Setup(x => x.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId))
-                .Returns(pendingJobs.Concat(processingJobs).Concat(syncJobs).ToDictionary(x => x.Key, x => x.Value));
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistory(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns(jobHistory);
 
             // Act
             _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPoint.ArtifactId);
 
             // Assert
-            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
+            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(0));
 
             _jobHistoryServiceMock.Verify(
                 x => x.UpdateRdoWithoutDocuments(
                     It.Is<Data.JobHistory>(
                         y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
-                Times.Exactly(numberOfPendingJobs));
+                Times.Exactly(0));
 
-            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(numberOfPendingJobs));
+            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(0));
 
-            _relativitySyncAppIntegrationMock.Verify(x => x.CancelJobAsync(It.IsAny<Guid>()), Times.Exactly(numberOfSyncAppJobs));
+            _relativitySyncAppIntegrationMock.Verify(x => x.CancelJobAsync(It.IsAny<Guid>()), Times.Exactly(1));
         }
 
-        [Test]
-        public void MarkIntegrationPointToStopJobs_ShouldThrowAndAggregateProcessingAndPendingExceptions()
+        [TestCase(false)]
+        [TestCase(true)]
+        public void MarkIntegrationPointToStopJobs_ShouldThrowAndAggregateProcessingAndPendingExceptions(bool isJobProcessing)
         {
             // Arrange
-            const int numberOfPendingJobs = 2;
-            const int numberOfProcessingJobs = 3;
+            Guid jobHistoryGuid = Guid.NewGuid();
+            ChoiceRef jobHistoryStatus = JobStatusChoices.JobHistoryPending;
 
-            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
-                .CreateMany(numberOfPendingJobs)
-                .ToArray();
+            if (isJobProcessing)
+            {
+                jobHistoryStatus = JobStatusChoices.JobHistoryProcessing;
+            }
 
-            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
-                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
-                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
-                .CreateMany(numberOfProcessingJobs)
-                .ToArray();
+            Data.JobHistory jobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => jobHistoryGuid.ToString())
+                .With(x => x.JobStatus, jobHistoryStatus)
+                .Create();
 
-            _jobHistoryManagerFake.Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
-                .Returns(new StoppableJobHistoryCollection
-                {
-                    PendingJobHistory = pendingJobHistory,
-                    ProcessingJobHistory = processingJobHistory
-                });
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistory(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+                .Returns(jobHistory);
 
-            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
-                .ToDictionary(
-                    x => Guid.Parse(x.BatchInstance),
-                    x => new List<Job> { _fxt.Create<Job>() });
-
-            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
+            Dictionary<Guid, List<Job>> jobs = new[] { jobHistory }
                 .ToDictionary(
                     x => Guid.Parse(x.BatchInstance),
                     x => new List<Job> { _fxt.Create<Job>() });
 
             _jobManagerMock.Setup(x => x.GetJobsByBatchInstanceId(_integrationPointDto.ArtifactId))
-                .Returns(pendingJobs.Concat(processingJobs).ToDictionary(x => x.Key, x => x.Value));
+                .Returns(jobs.ToDictionary(x => x.Key, x => x.Value));
+
+            _jobManagerMock.Setup(x => x.GetJobsByJobHistoryGuid(_integrationPointDto.ArtifactId))
+                .Returns(jobs.ToDictionary(x => x.Key, x => x.Value));
 
             _jobManagerMock.Setup(x => x.StopJobs(It.IsAny<IList<long>>()))
                 .Throws<EntryPointNotFoundException>();
@@ -441,14 +388,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             Action action = () => _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPointDto.ArtifactId);
 
             // Assert
-            action.ShouldThrow<AggregateException>()
-                .Where(x =>
-                    x.InnerExceptions.Any(y => y is EntryPointNotFoundException) &&
-                    x.InnerExceptions.Any(y => y is ArgumentException));
+            action.ShouldThrow<Exception>();
 
-            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
+            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(isJobProcessing ? 1 : 0));
 
-            _jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.IsAny<Data.JobHistory>()), Times.Exactly(numberOfPendingJobs));
+            _jobHistoryServiceMock.Verify(x => x.UpdateRdoWithoutDocuments(It.IsAny<Data.JobHistory>()), Times.Exactly(isJobProcessing ? 0 : 1));
         }
 
         [Test]
