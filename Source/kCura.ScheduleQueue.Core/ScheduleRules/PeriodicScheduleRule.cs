@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using kCura.ScheduleQueue.Core.Helpers;
+using Relativity.Services.TimeZone;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
@@ -185,49 +186,36 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             }
 
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
-
             DateTime lastNextRunDateTimeInTimeZone = lastNextUtcRunDateTime.Add(timeZone.BaseUtcOffset);
-            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
 
+            if (timeZone.IsDaylightSavingTime(lastNextRunDateTimeInTimeZone))
+            {
+                TimeZoneInfo.AdjustmentRule adjustment = GetAdjustmentRule(lastNextRunDateTimeInTimeZone, timeZone.GetAdjustmentRules());
+                lastNextRunDateTimeInTimeZone = lastNextRunDateTimeInTimeZone.Add(adjustment.DaylightDelta);
+                lastNextUtcRunDateTime = lastNextUtcRunDateTime.Add(adjustment.DaylightDelta);
+            }
+
+            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
             DateTime lastRunDateTimeWithDstShift = CalculateDateTimeWithDstShift(timeZone, lastNextUtcRunDateTime, nextRunDateTimeInTimeZone);
 
             return AddDateTime(lastRunDateTimeWithDstShift);
         }
 
-        private static DateTime CalculateDateTimeWithDstShift(TimeZoneInfo timeZone, DateTime dateTimeUtc, DateTime startDateTimeInTimeZone)
+        private static DateTime CalculateDateTimeWithDstShift(TimeZoneInfo timeZone, DateTime dateTimeUtc, DateTime dateTimeInTimeZone)
         {
             TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
-
             if (adjustments.Length == 0)
             {
                 return dateTimeUtc;
             }
 
-            int year = dateTimeUtc.Year;
-            TimeZoneInfo.AdjustmentRule adjustment = adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
-
+            TimeZoneInfo.AdjustmentRule adjustment = GetAdjustmentRule(dateTimeInTimeZone, adjustments);
             if (adjustment == null)
             {
                 return dateTimeUtc;
             }
 
-            bool isDstTimeZoneSplitsInYear = adjustment.DaylightTransitionStart.Month > adjustment.DaylightTransitionEnd.Month;
-
-            TimeZoneInfo.TransitionTime transitionTimeStart = isDstTimeZoneSplitsInYear
-                    ? adjustment.DaylightTransitionStart
-                    : adjustment.DaylightTransitionEnd;
-
-            TimeZoneInfo.TransitionTime transitionTimeEnd = isDstTimeZoneSplitsInYear
-                    ? adjustment.DaylightTransitionEnd
-                    : adjustment.DaylightTransitionStart;
-
-            DateTime dstAdjustmentStart = GetAdjustmentDateTime(transitionTimeStart, year);
-            DateTime dstAdjustmentEnd = GetAdjustmentDateTime(transitionTimeEnd, year);
-
-            bool isInDstTime = isDstTimeZoneSplitsInYear
-                ? dstAdjustmentStart <= startDateTimeInTimeZone || dstAdjustmentEnd > startDateTimeInTimeZone
-                : dstAdjustmentStart >= startDateTimeInTimeZone && dstAdjustmentEnd <= startDateTimeInTimeZone;
-
+            bool isInDstTime = timeZone.IsDaylightSavingTime(dateTimeInTimeZone);
             if (isInDstTime)
             {
                 return dateTimeUtc.Subtract(adjustment.DaylightDelta);
@@ -236,41 +224,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return dateTimeUtc;
         }
 
-        private static DateTime GetAdjustmentDateTime(TimeZoneInfo.TransitionTime transitionTime, int year)
+        private static TimeZoneInfo.AdjustmentRule GetAdjustmentRule(DateTime startDateTimeInTimeZone, TimeZoneInfo.AdjustmentRule[] adjustments)
         {
-            if (transitionTime.IsFixedDateRule)
-            {
-                return new DateTime(year, transitionTime.Month, transitionTime.Day);
-            }
-
-            Calendar cal = CultureInfo.CurrentCulture.Calendar;
-            int startOfWeek = (transitionTime.Week * 7) - 6;
-            int firstDayOfWeek = (int)cal.GetDayOfWeek(new DateTime(year, transitionTime.Month, 1));
-
-            int transitionDay;
-            int changeDayOfWeek = (int)transitionTime.DayOfWeek;
-
-            if (firstDayOfWeek <= changeDayOfWeek)
-            {
-                transitionDay = startOfWeek + (changeDayOfWeek - firstDayOfWeek);
-            }
-            else
-            {
-                transitionDay = startOfWeek + (7 - firstDayOfWeek + changeDayOfWeek);
-            }
-
-            if (transitionDay > cal.GetDaysInMonth(year, transitionTime.Month))
-            {
-                transitionDay -= 7;
-            }
-
-            return new DateTime(
-                year,
-                transitionTime.Month,
-                transitionDay,
-                transitionTime.TimeOfDay.Hour,
-                transitionTime.TimeOfDay.Minute,
-                transitionTime.TimeOfDay.Second);
+            int year = startDateTimeInTimeZone.Year;
+            TimeZoneInfo.AdjustmentRule adjustment =
+                adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
+            return adjustment;
         }
 
         private DateTime AddDateTime(DateTime dateTime)

@@ -106,9 +106,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
             await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
             // Assert
-            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, _PROGRESS_OBJECT_TYPE_ID), Times.Once());
-            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, _BATCH_OBJECT_TYPE_ID), Times.Once());
-            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, _CONFIGURATION_OBJECT_TYPE_ID), Times.Once());
+            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, progressObjectTypeId), Times.Once());
+            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, batchObjectTypeId), Times.Once());
+            _objectTypeManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, configurationObjectTypeId), Times.Once());
         }
 
         [Test]

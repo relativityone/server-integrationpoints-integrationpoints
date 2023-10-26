@@ -382,13 +382,14 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
         }
 
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/01/2022", "10/02/2022 9:30 AM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "10/03/2022", "10/04/2022 9:30 AM")] // expected UTC for GMT+11
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "04/02/2022", "04/03/2022 10:30 AM")] // job scheduled on 04/02/2022 (GMT+11), expected offset on "04/03/2022" => GMT+10
-        [TestCase("AUS Eastern Standard Time", "8:30 PM", "04/04/2022", "04/05/2022 10:30 AM")] // expected UTC for GMT+10
+        [TestCase("AUS Eastern Standard Time", "10:30 AM", "10/01/2022", "10/02/2022 9:30 AM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
+        [TestCase("AUS Eastern Standard Time", "9:30 AM", "10/03/2022", "10/04/2022 9:30 AM")] // expected UTC for GMT+11
+        [TestCase("AUS Eastern Standard Time", "9:30 PM", "04/01/2022", "04/02/2022 10:30 PM")] // job scheduled on 04/01/2022 (GMT+11), expected offset on "04/02/2022" => GMT+10
+        [TestCase("AUS Eastern Standard Time", "10:30 AM", "04/04/2022", "04/05/2022 10:30 AM")] // expected UTC for GMT+10
+        [TestCase("AUS Eastern Standard Time", "01:30 AM", "10/19/2024", "10/20/2024 01:30 AM")] // expected UTC for GMT+11
         public void GetNextUtcRunDateTime_DaylightSaveTime(
             string clientTimeZone,
-            string clientLocalTime,
+            string clientUtcTime,
             string clientStartDate,
             string expectedRunUtcTime)
         {
@@ -398,7 +399,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             // client time
             TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
-            TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
+            TimeSpan clientlocalTime = DateTime.Parse(clientUtcTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
 
             // For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
             TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
@@ -418,7 +419,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 clientTimeZone);
 
             // act
-            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(startDate.Subtract(clientTimeZoneInfo.BaseUtcOffset).AddMinutes(clientlocalTime.TotalMinutes));
+            DateTime? nextRunTime = rule.GetNextUtcRunDateTime(startDate.AddMinutes(clientlocalTime.TotalMinutes));
 
             // assert
             Assert.IsNotNull(nextRunTime);
