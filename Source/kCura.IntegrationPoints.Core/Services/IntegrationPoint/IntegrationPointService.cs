@@ -832,7 +832,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (integrationPointRdo.EnableScheduler.GetValueOrDefault(false))
             {
                 integrationPointRdo.ScheduleRule = rule.ToSerializedString();
-                integrationPointRdo.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
+                try
+                {
+                    integrationPointRdo.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to get first scheduled runtime for integration point {integrationPointId}", integrationPointRdo.ArtifactId);
+                    integrationPointRdo.NextScheduledRuntimeUTC = null;
+                }
             }
             else
             {

@@ -105,11 +105,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             FailedScheduledJobsCount = 0;
         }
 
-        // !!! HANDLE EXCEPTIONS SOMEHOW IN HERE OR IN CALLERS BECAUSE IT COULD LEAD TO CREATION OF MULTIPLE SUBJOBS IE. FOR EXPORT LOAD FILE
-
         public override DateTime? GetFirstUtcRunDateTime()
         {
-            ValidateSchedule();
+            ValidateGetFirstUtcRunDateTime();
 
             DateTime startDateTimeInTimeZone = StartDate.GetValueOrDefault().AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
             if (Interval == ScheduleInterval.Weekly)
@@ -181,7 +179,11 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         private DateTime CalculateNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
         {
-            ValidateSchedule();
+            if (string.IsNullOrEmpty(TimeZoneId))
+            {
+                throw new ArgumentNullException("Time Zone should be set to schedule a job.");
+            }
+
             TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
 
             DateTime lastNextRunDateTimeInTimeZone = lastNextUtcRunDateTime.Add(timeZone.BaseUtcOffset);
@@ -307,7 +309,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return dateTime.AddDays(todayAndNextDayOfWeekDifference);
         }
 
-        private void ValidateSchedule()
+        private void ValidateGetFirstUtcRunDateTime()
         {
             if (!StartDate.HasValue)
             {

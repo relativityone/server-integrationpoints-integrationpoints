@@ -294,7 +294,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (profile.EnableScheduler.GetValueOrDefault(false))
             {
                 profile.ScheduleRule = rule.ToSerializedString();
-                profile.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
+                try
+                {
+                    profile.NextScheduledRuntimeUTC = rule.GetFirstUtcRunDateTime();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to get first scheduled runtime for integration point profile {profileId}", profile.ArtifactId);
+                    profile.NextScheduledRuntimeUTC = null;
+                }
             }
             else
             {

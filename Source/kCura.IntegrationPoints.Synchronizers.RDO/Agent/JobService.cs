@@ -160,10 +160,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             DateTime? nextUtcRunDateTime = null;
             if (scheduleRule != null)
             {
-#if TIME_MACHINE
-                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
-#endif
-                nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
+                try
+                {
+                    nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
+                }
+                catch (Exception e)
+                {
+                    _log.LogError(e, "Unable to get next scheduled runtime for job {JobId}", job.JobId);
+                }
             }
 
             _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
@@ -171,13 +175,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            string correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
-            long? rootJobID, long? parentJobID, DateTime lastNextRunDateTime)
+        public void CreateNewAndDeleteOldScheduledJob(
+            long oldJobId,
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string correlationID,
+            string taskType,
+            IScheduleRule scheduleRule,
+            string jobDetails,
+            int submittedBy,
+            long? rootJobID,
+            long? parentJobID,
+            DateTime lastNextRunDateTime)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
 
-            DateTime? nextRunTime = scheduleRule.GetNextUtcRunDateTime(lastNextRunDateTime);
+            DateTime? nextRunTime = null;
+            if (scheduleRule != null)
+            {
+                try
+                {
+                    nextRunTime = scheduleRule.GetNextUtcRunDateTime(lastNextRunDateTime);
+                }
+                catch (Exception e)
+                {
+                    _log.LogError(e, "Unable to get next scheduled runtime for job {JobId}", oldJobId);
+                }
+            }
             if (nextRunTime.HasValue)
             {
                 DataProvider.CreateNewAndDeleteOldScheduledJob(
@@ -205,17 +229,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
-            IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
+        public Job CreateJob(
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string correlationID,
+            string taskType,
+            IScheduleRule scheduleRule,
+            string jobDetails,
+            int SubmittedBy,
+            long? rootJobID,
+            long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
             AgentService.CreateQueueTableOnce();
 
             Job job;
-#if TIME_MACHINE
-            scheduleRule.TimeService = new TimeMachineService(workspaceID);
-#endif
-            DateTime? nextRunTime = scheduleRule.GetFirstUtcRunDateTime();
+            DateTime? nextRunTime = null;
+            try
+            {
+                nextRunTime = scheduleRule.GetFirstUtcRunDateTime();
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Unable to get first scheduled runtime for parent job Id {parentJobID}", parentJobID);
+            }
             if (nextRunTime.HasValue)
             {
                 DataRow row = DataProvider.CreateScheduledJob(
