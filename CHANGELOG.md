@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 
  - Prepared branch for the next official Relativity 2024 release.
 
+## [0.12.1002] - 10-26-2023
+### Changed
+
+- Updated Relativity.DataExchange.Client.SDK version to 2.9.1001 in .csproj files.
+
 ## [0.12.1001] - 10-06-2023
 ### Changed
 
