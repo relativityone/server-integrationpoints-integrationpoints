@@ -448,15 +448,92 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
         }
 
+        [TestCase("12/29/2023", "UTC", "12/29/2023 12:31")]
+        [TestCase("12/29/2023", "Central European Standard Time", "12/29/2023 11:31")]
+        [TestCase("12/29/2023", "Central America Standard Time", "12/29/2023 18:31")]
+        [TestCase("05/29/2023", "AUS Central Standard Time", "05/29/2023 03:01")]
+        public void GetNextUtcRunDateTime_Daily(string startDateTime, string timeZoneId, string expectedDateTime)
+        {
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
+                DateTime.Parse(startDateTime),
+                TimeSpan.Parse("12:31"),
+                timeZoneId: timeZoneId);
+            DateTime expectedTime = DateTime.Parse(expectedDateTime);
+            DateTime lastNextUtcRunDateTime = expectedTime.AddDays(-1);
 
+            DateTime? result = rule.GetNextUtcRunDateTime(lastNextUtcRunDateTime);
+
+            Assert.AreEqual(expectedTime, result);
+        }
+
+        [TestCase("12/29/2023", "12/29/2023 12:31", DaysOfWeek.Monday, "UTC", 1, "01/01/2024 12:31", DayOfWeek.Monday)]
+        [TestCase("12/29/2023", "12/29/2023 11:31", DaysOfWeek.Monday, "Central European Standard Time", 1, "01/01/2024 11:31", DayOfWeek.Monday)]
+        [TestCase("12/29/2023", "12/29/2023 18:31", DaysOfWeek.Monday, "Central America Standard Time", 1, "01/01/2024 18:31", DayOfWeek.Monday)]
+        [TestCase("05/29/2023", "05/29/2023 03:01", DaysOfWeek.Monday, "AUS Central Standard Time", 1, "06/05/2023 03:01", DayOfWeek.Monday)]
+        [TestCase("05/29/2023", "05/29/2023 03:01", DaysOfWeek.Wednesday, "AUS Central Standard Time", 1, "05/31/2023 03:01", DayOfWeek.Wednesday)]
+        [TestCase("05/29/2023", "05/29/2023 03:01", DaysOfWeek.Monday | DaysOfWeek.Wednesday, "AUS Central Standard Time", 1, "05/31/2023 03:01", DayOfWeek.Wednesday)]
+        [TestCase("12/29/2023", "12/29/2023 11:31", DaysOfWeek.Monday, "Central European Standard Time", 2, "01/08/2024 11:31", DayOfWeek.Monday)]
+        [TestCase("05/29/2023", "05/29/2023 03:01", DaysOfWeek.Monday, "AUS Central Standard Time", 2, "06/12/2023 03:01", DayOfWeek.Monday)]
+        public void GetNextUtcRunDateTime_Weekly(string startDateTime, string lastNextUtcRun, DaysOfWeek daysOfWeek, string timeZoneId, int reOccur, string expectedDateTime, DayOfWeek expectedDayOfWeek)
+        {
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Weekly,
+                DateTime.Parse(startDateTime),
+                TimeSpan.Parse("12:31"),
+                daysToRun: daysOfWeek,
+                timeZoneId: timeZoneId,
+                reoccur: reOccur);
+
+            DateTime expectedTime = DateTime.Parse(expectedDateTime);
+            DateTime? result = rule.GetNextUtcRunDateTime(DateTime.Parse(lastNextUtcRun));
+
+            Assert.AreEqual(expectedTime, result);
+            Assert.AreEqual(expectedDayOfWeek, result.Value.DayOfWeek);
+        }
+
+        [TestCase("12/29/2023", 15, "UTC", 1, "01/15/2024 12:31")]
+        [TestCase("12/29/2023", 15, "Central European Standard Time", 1, "01/15/2024 11:31")]
+        [TestCase("12/29/2023", 15, "Central America Standard Time", 1, "01/15/2024 18:31")]
+        [TestCase("05/29/2023", 15, "AUS Central Standard Time", 1, "06/15/2023 03:01")]
+        [TestCase("05/10/2023", 15, "AUS Central Standard Time", 1, "05/15/2023 03:01")]
+        [TestCase("05/10/2023", 15, "AUS Central Standard Time", 2, "05/15/2023 03:01")]
+        [TestCase("12/29/2023", 15, "Central America Standard Time", 2, "02/15/2024 18:31")]
+        public void GetNextUtcRunDateTime_Monthly(string startDateTime, int dayOfMonth, string timeZoneId, int reOccur, string expectedDateTime)
+        {
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse(startDateTime),
+                TimeSpan.Parse("12:31"),
+                dayOfMonth: dayOfMonth,
+                timeZoneId: timeZoneId,
+                reoccur: reOccur);
+
+            DateTime expectedTime = DateTime.Parse(expectedDateTime);
+            DateTime lastNextUtcRunDateTime = expectedTime.AddMonths(-reOccur);
+
+            DateTime? result = rule.GetNextUtcRunDateTime(lastNextUtcRunDateTime);
+
+            Assert.AreEqual(expectedTime, result);
+            Assert.AreEqual(dayOfMonth, result.Value.Day);
+        }
 
         [Test]
         public void IncrementConsecutiveFailedScheduledJobsCount_True_UpdatesCounter()
         {
             int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
-                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"),
+                null,
+                null,
+                DaysOfWeek.Friday,
+                null,
+                null,
+                null,
+                numberOfContinuouslyFailedScheduledJobs,
+                OccuranceInMonth.Last);
 
             rule.IncrementConsecutiveFailedScheduledJobsCount();
 
@@ -467,9 +544,18 @@ namespace kCura.ScheduleQueue.Core.Tests
         public void ResetConsecutiveFailedScheduledJobsCount_False_ResetsCounter()
         {
             int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
-                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"),
+                null,
+                null,
+                DaysOfWeek.Friday,
+                null,
+                null,
+                null,
+                numberOfContinuouslyFailedScheduledJobs,
+                OccuranceInMonth.Last);
 
             rule.ResetConsecutiveFailedScheduledJobsCount();
 
@@ -480,8 +566,16 @@ namespace kCura.ScheduleQueue.Core.Tests
         public void GetNumberOfContinuouslyFailedScheduledJobs_ReturnsCorrectValue()
         {
             int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
+                DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"),
+                null,
+                null,
+                DaysOfWeek.Friday,
+                null,
+                null,
+                null,
                 numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
 
             int result = rule.GetNumberOfContinuouslyFailedScheduledJobs();
