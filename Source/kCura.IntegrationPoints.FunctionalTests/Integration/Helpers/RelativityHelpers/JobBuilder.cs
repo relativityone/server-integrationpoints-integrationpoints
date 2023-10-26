@@ -55,6 +55,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return this;
         }
 
+        public JobBuilder WithNextUtcRunDateTime(DateTime nextUtcRunDateTime)
+        {
+            _job.NextRunTime = nextUtcRunDateTime;
+
+            return this;
+        }
+
         public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
         {
             _job.JobDetailsHelper.BatchParameters = new LoadFileTaskParameters

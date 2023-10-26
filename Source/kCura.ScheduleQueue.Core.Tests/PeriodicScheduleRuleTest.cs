@@ -170,73 +170,13 @@ namespace kCura.ScheduleQueue.Core.Tests
             Assert.AreEqual(expectedTime, result);
         }
 
-        [Test]
-        public void IncrementConsecutiveFailedScheduledJobsCount_True_UpdatesCounter()
-        {
-            int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
-                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
-
-            rule.IncrementConsecutiveFailedScheduledJobsCount();
-
-            Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs + 1, rule.FailedScheduledJobsCount);
-        }
-
-        [Test]
-        public void ResetConsecutiveFailedScheduledJobsCount_False_ResetsCounter()
-        {
-            int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
-                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
-
-            rule.ResetConsecutiveFailedScheduledJobsCount();
-
-            Assert.AreEqual(0, rule.FailedScheduledJobsCount);
-        }
-
-        [Test]
-        public void GetNumberOfContinuouslyFailedScheduledJobs_ReturnsCorrectValue()
-        {
-            int numberOfContinuouslyFailedScheduledJobs = 11;
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
-                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
-                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
-
-            int result = rule.GetNumberOfContinuouslyFailedScheduledJobs();
-
-            Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs, result);
-        }
-
-        [Test]
-        public void ForwardValidOccuranceMap()
-        {
-            Assert.AreEqual((int)OccuranceInMonth.First, (int)ForwardValidOccurance.First);
-            Assert.AreEqual((int)OccuranceInMonth.Second, (int)ForwardValidOccurance.Second);
-            Assert.AreEqual((int)OccuranceInMonth.Third, (int)ForwardValidOccurance.Third);
-            Assert.AreEqual((int)OccuranceInMonth.Fourth, (int)ForwardValidOccurance.Fourth);
-        }
-
-        [Test]
-        public void DaysOfWeekMap()
-        {
-            Assert.AreEqual(DayOfWeek.Monday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Monday]);
-            Assert.AreEqual(DayOfWeek.Tuesday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Tuesday]);
-            Assert.AreEqual(DayOfWeek.Wednesday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Wednesday]);
-            Assert.AreEqual(DayOfWeek.Thursday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Thursday]);
-            Assert.AreEqual(DayOfWeek.Friday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Friday]);
-            Assert.AreEqual(DayOfWeek.Saturday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Saturday]);
-            Assert.AreEqual(DayOfWeek.Sunday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Sunday]);
-        }
-
         [TestCase("Tokyo Standard Time","12:30 PM", "9/13/2016 3:30 AM")]
         [TestCase("Central Standard Time",  "12:30 PM", "9/13/2016 5:30 PM")]
         [TestCase("Tokyo Standard Time",  "7:30 AM", "9/12/2016 10:30 PM")]
         [TestCase("Central Standard Time", "11:30 PM", "9/14/2016 4:30 AM")]
         [TestCase("Nepal Standard Time",  "10:30 PM", "9/13/2016 4:45 PM")] // Nepal Standard Time (UTC+05:45)
         [TestCase("AUS Central Standard Time", "8:00 AM", "9/12/2016 10:30 PM")] // AUS Central Standard Time (UTC+09:30)
-        public void CalculateLastDayOfScheduledDailyJob(
+        public void GetFirstUtcRunDateTime_CalculateLastDayOfScheduledDailyJob(
             string clientTimeZone,
             string clientLocalTime,
             string expectedRunUtcTime)
@@ -248,7 +188,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
 
-            // For tesat purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
+            // For tests purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
             TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
 
             PeriodicScheduleRule rule = new PeriodicScheduleRule(
@@ -304,7 +244,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", "03/17/2016 4:15 AM")] // stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016
         [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", "03/29/2016 11:20 PM")] // stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016
         [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", "11/2/2016 1:25 AM")] // stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
-        public void CalculateLastDayOfScheduledWeeklyJob(
+        public void GetFirstUtcRunDateTime_CalculateLastDayOfScheduledWeeklyJob(
             string clientTimeZone,
             string clientLocalTime,
             string clientStartDate,
@@ -318,6 +258,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             // client time
             TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
+
             // For tests purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
             TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
 
@@ -350,28 +291,37 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
         }
 
-        [TestCase("10/27/2016", "2:25 AM", "10/27/2016 12:25 AM")]
-        [TestCase("10/27/2016", "2:00 AM", "10/27/2016 12:00 AM")]
-        [TestCase("10/27/2016", "3:25 AM", "10/27/2016 1:25 AM")]
-        [TestCase("10/27/2016", "3:00 AM", "10/27/2016 1:00 AM")]
-        public void GetFirstUtcRunDateTime_JobScheduledToMissingHourDueToDst(string clientStartDate, string clientLocalTime, string expectedRunUtcTime)
+        [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 1, "06/02/2016 1:15 AM")]
+        [TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "04/30/2016 11:45 PM")]
+        [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 31, "06/01/2016 1:15 AM")]
+        [TestCase("Central Standard Time", "08:15 PM", "02/05/2016", 31, "03/01/2016 2:15 AM")]
+        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "03/18/2016 4:15 AM")] // stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016
+        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "03/28/2016 11:20 PM")] // stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016
+        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "11/2/2016 1:25 AM")] // stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
+        public void GetFirstUtcRunDateTime_CalculateLastDayOfScheduledMonthlyJob(
+            string clientTimeZone,
+            string clientLocalTime,
+            string clientStartDate,
+            int? dayOfMonth,
+            string expectedRunUtcTime)
         {
             // arrange
-            const string clientTimeZone =
-                    "Central European Standard Time"; // Daylight Saving Time (DST) change: 2016 Sun, 27 Mar, 02:00 CET → CEST
             DateTime startDate = DateTime.Parse(clientStartDate);
+            DateTime endDate = startDate.AddYears(1);
+
+            // client time
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
 
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(
-                ScheduleInterval.Daily,
+            var rule = new PeriodicScheduleRule(
+                ScheduleInterval.Monthly,
                 startDate,
                 clientlocalTime,
-                startDate,
+                endDate,
                 0,
                 null,
+                dayOfMonth,
                 null,
-                null,
-                null,
+                1,
                 0,
                 null,
                 clientTimeZone);
@@ -391,48 +341,28 @@ namespace kCura.ScheduleQueue.Core.Tests
             }
         }
 
-        [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 1, "Central Standard Time", "06/02/2016 1:15 AM")]
-        [TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "Central Standard Time", "04/30/2016 11:45 PM")]
-        [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 31, "Central Standard Time", "06/01/2016 1:15 AM")]
-        [TestCase("Central Standard Time", "08:15 PM", "02/05/2016", 31, "Central Standard Time", "03/01/2016 2:15 AM")]
-        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time", "03/18/2016 4:15 AM")] // stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016
-        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time", "03/28/2016 11:20 PM")] // stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016
-        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time", "11/2/2016 1:25 AM")] // stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
-        public void GetFirstUtcRunDateTime_CalculateLastDayOfScheduledMonthlyJob(
-            string clientTimeZone,
-            string clientLocalTime,
-            string clientStartDate,
-            int? dayOfMonth,
-            string serverTimeZone,
-            string expectedRunUtcTime)
+        [TestCase("10/27/2016", "2:25 AM", "10/27/2016 12:25 AM")]
+        [TestCase("10/27/2016", "2:00 AM", "10/27/2016 12:00 AM")]
+        [TestCase("10/27/2016", "3:25 AM", "10/27/2016 1:25 AM")]
+        [TestCase("10/27/2016", "3:00 AM", "10/27/2016 1:00 AM")]
+        public void GetFirstUtcRunDateTime_JobScheduledToMissingHourDueToDst(string clientStartDate, string clientLocalTime, string expectedRunUtcTime)
         {
             // arrange
+            const string clientTimeZone =
+                "Central European Standard Time"; // Daylight Saving Time (DST) change: 2016 Sun, 27 Mar, 02:00 CET → CEST
             DateTime startDate = DateTime.Parse(clientStartDate);
-            DateTime endDate = startDate.AddYears(1);
-
-            // client time
-            TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime).TimeOfDay;
-            DateTime clientTime = startDate.Add(clientlocalTime);
-            // For tests purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
-            TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
 
-            // server time
-            TimeZoneInfo serverTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(serverTimeZone);
-            TimeSpan serverClientOffSet = clientUtcOffSet.Add(serverTimeZoneInfo.BaseUtcOffset);
-            const int serverTimeShift = -2; // To set server time before expectedRunUtcTime
-            DateTime serverLocalTime = clientTime.Add(serverClientOffSet).AddHours(serverTimeShift);
-
-            var rule = new PeriodicScheduleRule(
-                ScheduleInterval.Monthly,
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(
+                ScheduleInterval.Daily,
                 startDate,
                 clientlocalTime,
-                endDate,
+                startDate,
                 0,
                 null,
-                dayOfMonth,
                 null,
-                1,
+                null,
+                null,
                 0,
                 null,
                 clientTimeZone);
@@ -515,6 +445,68 @@ namespace kCura.ScheduleQueue.Core.Tests
             {
                 Assert.AreEqual(DateTime.Parse(expectedDateTime, CultureInfo.GetCultureInfo("en-us")), result);
             }
+        }
+
+
+
+        [Test]
+        public void IncrementConsecutiveFailedScheduledJobsCount_True_UpdatesCounter()
+        {
+            int numberOfContinuouslyFailedScheduledJobs = 11;
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
+                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
+
+            rule.IncrementConsecutiveFailedScheduledJobsCount();
+
+            Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs + 1, rule.FailedScheduledJobsCount);
+        }
+
+        [Test]
+        public void ResetConsecutiveFailedScheduledJobsCount_False_ResetsCounter()
+        {
+            int numberOfContinuouslyFailedScheduledJobs = 11;
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
+                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
+
+            rule.ResetConsecutiveFailedScheduledJobsCount();
+
+            Assert.AreEqual(0, rule.FailedScheduledJobsCount);
+        }
+
+        [Test]
+        public void GetNumberOfContinuouslyFailedScheduledJobs_ReturnsCorrectValue()
+        {
+            int numberOfContinuouslyFailedScheduledJobs = 11;
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"),
+                TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null,
+                numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
+
+            int result = rule.GetNumberOfContinuouslyFailedScheduledJobs();
+
+            Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs, result);
+        }
+
+        [Test]
+        public void ForwardValidOccuranceMap()
+        {
+            Assert.AreEqual((int)OccuranceInMonth.First, (int)ForwardValidOccurance.First);
+            Assert.AreEqual((int)OccuranceInMonth.Second, (int)ForwardValidOccurance.Second);
+            Assert.AreEqual((int)OccuranceInMonth.Third, (int)ForwardValidOccurance.Third);
+            Assert.AreEqual((int)OccuranceInMonth.Fourth, (int)ForwardValidOccurance.Fourth);
+        }
+
+        [Test]
+        public void DaysOfWeekMap()
+        {
+            Assert.AreEqual(DayOfWeek.Monday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Monday]);
+            Assert.AreEqual(DayOfWeek.Tuesday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Tuesday]);
+            Assert.AreEqual(DayOfWeek.Wednesday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Wednesday]);
+            Assert.AreEqual(DayOfWeek.Thursday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Thursday]);
+            Assert.AreEqual(DayOfWeek.Friday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Friday]);
+            Assert.AreEqual(DayOfWeek.Saturday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Saturday]);
+            Assert.AreEqual(DayOfWeek.Sunday, PeriodicScheduleRule.DaysOfWeekMap[DaysOfWeek.Sunday]);
         }
     }
 }

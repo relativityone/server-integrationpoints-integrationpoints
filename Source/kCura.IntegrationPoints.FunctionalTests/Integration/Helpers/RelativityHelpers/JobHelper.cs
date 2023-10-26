@@ -30,10 +30,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
             return ScheduleJob(job);
         }
 
-        public JobTest ScheduleJobWithScheduleRule(WorkspaceFake workspace, ScheduleRuleTest rule)
+        public JobTest ScheduleJobWithScheduleRule(WorkspaceFake workspace, ScheduleRuleTest rule, DateTime? nextUtcRunDateTime = null)
         {
             JobTest job = CreateBasicJob(workspace)
                 .WithScheduleRule(rule)
+                .WithNextUtcRunDateTime(nextUtcRunDateTime.GetValueOrDefault())
                 .Build();
 
             return ScheduleJob(job);
