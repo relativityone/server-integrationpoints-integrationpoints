@@ -399,6 +399,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             // client time
             TimeZoneInfo clientTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(clientTimeZone);
             TimeSpan clientlocalTime = DateTime.Parse(clientLocalTime, CultureInfo.GetCultureInfo("en-us")).TimeOfDay;
+
             // For test purpose, flip the offset because the browsers have this offset value negated and RIP takes that into account.
             TimeSpan clientUtcOffSet = -clientTimeZoneInfo.BaseUtcOffset;
 

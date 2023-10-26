@@ -147,7 +147,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             RegisterRelativityApiServices();
             RegisterScheduleAgentBase();
 
-            Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory(Container.Resolve<ITimeService>())));
+            Container.Install(new AgentInstaller(Helper, new DefaultScheduleRuleFactory()));
             Container.Install(new QueryInstallers());
             Container.Install(new KeywordInstaller());
             Container.Install(new ServicesInstaller());
@@ -199,7 +199,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         private void RegisterScheduleAgentBase()
         {
-            Container.Register(Component.For<ITimeService>().UsingFactoryMethod(() => new FakeTimeService(Context)));
             Container.Register(Component.For<IDateTime>().UsingFactoryMethod(() => new FakeDateTimeWrapper(Context)));
         }
 

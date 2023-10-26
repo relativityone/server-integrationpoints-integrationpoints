@@ -6,13 +6,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
     public class DefaultScheduleRuleFactory : IScheduleRuleFactory
     {
-        private readonly ITimeService _timeService; // DON'T FORGET TO REMOVE IT
-
-        public DefaultScheduleRuleFactory(ITimeService timeService = null)
-        {
-            _timeService = timeService;
-        }
-
         public IScheduleRule Deserialize(Job job)
         {
             string scheduleRuleType = job.ScheduleRuleType;
