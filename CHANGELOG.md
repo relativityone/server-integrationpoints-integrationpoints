@@ -1,7 +1,7 @@
 # Changelog for Relativity Sync
 All notable changes to this project will be documented in this file.
 
-## [0.13.0] - 10-23-2023
+## [1.0.0] - 10-23-2023
 
  ### Changed
 
