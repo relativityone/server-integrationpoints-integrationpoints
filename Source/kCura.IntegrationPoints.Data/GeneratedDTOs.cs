@@ -407,6 +407,20 @@ namespace kCura.IntegrationPoints.Data
             }
         }
 
+        [DynamicField(IntegrationPointFields.ConfigurationLastModifiedOn, IntegrationPointFieldGuids.ConfigurationLastModifiedOn, FieldTypes.Date)]
+        public DateTime? ConfigurationLastModifiedOn
+        {
+            get
+            {
+                return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.ConfigurationLastModifiedOn));
+            }
+
+            set
+            {
+                SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.ConfigurationLastModifiedOn), value);
+            }
+        }
+
         private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
 
         public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata

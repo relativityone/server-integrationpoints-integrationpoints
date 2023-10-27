@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.IntegrationPoints.Common.Logger;
 using Relativity.API;
 using Serilog;
 
@@ -11,15 +10,13 @@ namespace kCura.IntegrationPoints.Common
     /// <typeparam name="T">The SourceContext type.</typeparam>
     public class Logger<T> : ILogger<T>
     {
-        private readonly ISerilogLoggerInstrumentationService _serilogLoggerInstrumentationService;
         private readonly IAPILog _logger;
         private readonly ILogger _serilogLogger;
 
-        public Logger(IAPILog logger, ISerilogLoggerInstrumentationService serilogLogger)
+        public Logger(IAPILog logger, ILogger serilogLogger)
         {
             _logger = logger.ForContext<T>();
-            _serilogLoggerInstrumentationService = serilogLogger;
-            _serilogLogger = _serilogLoggerInstrumentationService.GetLogger();
+            _serilogLogger = serilogLogger.ForContext<T>();
         }
 
         /// <inheritdoc/>
@@ -107,9 +104,18 @@ namespace kCura.IntegrationPoints.Common
         }
 
         /// <inheritdoc/>
+        public ILogger<T> EnrichWithProperty(string propertyName, object value)
+        {
+            bool destructureObjects = !(value is ValueType);
+            return new Logger<T>(
+                _logger.ForContext(propertyName, value, destructureObjects),
+                _serilogLogger.ForContext(propertyName, value, destructureObjects));
+        }
+
+        /// <inheritdoc/>
         public ILogger<TContext> ForContext<TContext>()
         {
-            return new Logger<TContext>(_logger, _serilogLoggerInstrumentationService);
+            return new Logger<TContext>(_logger, _serilogLogger);
         }
     }
 }

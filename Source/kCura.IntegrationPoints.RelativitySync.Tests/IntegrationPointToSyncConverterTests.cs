@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -14,7 +15,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
@@ -24,7 +24,8 @@ using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class IntegrationPointToSyncConverterTests
     {
         private IntegrationPointToSyncConverter _sut;
@@ -37,7 +38,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ISerializer> _serializerFake;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
-        private Mock<IRipToggleProvider> _toggleProviderFake;
 
         private SourceConfiguration _sourceConfiguration;
         private DestinationConfiguration _destinationConfiguration;
@@ -68,8 +68,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             jobHistorySyncService.Setup(x => x.GetLastJobHistoryWithErrorsAsync(_SOURCE_WORKSPACE_ID, _INTEGRATION_POINT_ID))
                 .ReturnsAsync(new RelativityObject { ArtifactID = _JOB_HISTORY_TO_RETRY });
 
-            Mock<IAPILog> log = new Mock<IAPILog>();
-            log.Setup(x => x.ForContext(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<bool>()))
+            var log = new Mock<ILogger<IntegrationPointToSyncConverter>>();
+            log.Setup(x => x.EnrichWithProperty(It.IsAny<string>(), It.IsAny<object>()))
                 .Returns(log.Object);
 
             ISyncOperationsWrapper syncOperations = SetupSyncOperations();
@@ -77,14 +77,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateNativeDestinationConfiguration();
             _sourceConfiguration = CreateSourceConfiguration();
 
-            _toggleProviderFake = new Mock<IRipToggleProvider>();
+            var toggleProviderFake = new Mock<IRipToggleProvider>();
+            var syncFieldMapConverterMock = new Mock<ISyncFieldMapConverter>();
 
             _sut = new IntegrationPointToSyncConverter(
                 _serializerFake.Object,
                 _jobHistoryServiceFake.Object,
                 jobHistorySyncService.Object,
                 syncOperations,
-                _toggleProviderFake.Object,
+                toggleProviderFake.Object,
+                syncFieldMapConverterMock.Object,
                 log.Object);
         }
 

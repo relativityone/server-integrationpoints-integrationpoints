@@ -14,8 +14,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     /// <inheritdoc />
     public class IntegrationPointFake : RdoFakeBase
     {
-        public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
-
         public DateTime? NextScheduledRuntimeUTC { get; set; }
 
         public DateTime? LastRuntimeUTC { get; set; }
@@ -51,6 +49,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public bool? PromoteEligible { get; set; }
 
         public string Name { get; set; }
+
+        public string CalculationState { get; set; }
+
+        public DateTime? ConfigurationLastModifiedOn { get; set; }
 
         public string SecuredConfigurationDecrypted { get; set; }
 
@@ -109,7 +111,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                             Name = "Field Mappings",
                             Guids = new List<Guid>()
                             {
-                                FieldsMappingGuid
+                                new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7")
                             }
                         },
                         Value = FieldMappings
@@ -294,6 +296,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                         },
                         Value = Name
                     },
+                    new FieldValuePair()
+                    {
+                        Field = new Field()
+                        {
+                            Name = "CalculationState",
+                            Guids = new List<Guid>()
+                            {
+                                new Guid("e64163ea-a58c-4a90-af30-dd190069210d")
+                            }
+                        },
+                        Value = CalculationState
+                    },
+                    new FieldValuePair()
+                    {
+                        Field = new Field()
+                        {
+                            Name = "Configuration Last Modified On",
+                            Guids = new List<Guid>()
+                            {
+                                new Guid("ebcc3312-8c14-4b07-a02e-62b5e5f08702")
+                            }
+                        },
+                        Value = ConfigurationLastModifiedOn
+                    },
                 }
             };
         }
@@ -322,7 +348,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Type = Type,
                 SecuredConfiguration = SecuredConfiguration,
                 PromoteEligible = PromoteEligible,
-                Name = Name
+                Name = Name,
+                CalculationState = CalculationState,
+                ConfigurationLastModifiedOn = ConfigurationLastModifiedOn,
             };
         }
 
@@ -347,6 +375,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
+                ConfigurationLastModifiedOn = rdo.ConfigurationLastModifiedOn,
                 FieldMappings = JsonConvert.DeserializeObject<List<FieldMap>>(rdo.FieldMappings),
             };
         }

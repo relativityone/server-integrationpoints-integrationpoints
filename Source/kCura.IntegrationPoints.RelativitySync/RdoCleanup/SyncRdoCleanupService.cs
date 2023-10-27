@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
@@ -17,9 +18,9 @@ namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
         private readonly Guid _syncConfigurationObjectType = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
         private readonly Guid _syncStatisticsObjectType = new Guid("C931E60E-8EF8-4ACE-8C9F-06A97BCAF1BF");
         private readonly IServicesMgr _servicesMgr;
-        private readonly IAPILog _logger;
+        private readonly ILogger<SyncRdoCleanupService> _logger;
 
-        public SyncRdoCleanupService(IServicesMgr servicesMgr, IAPILog logger)
+        public SyncRdoCleanupService(IServicesMgr servicesMgr, ILogger<SyncRdoCleanupService> logger)
         {
             _servicesMgr = servicesMgr;
             _logger = logger;

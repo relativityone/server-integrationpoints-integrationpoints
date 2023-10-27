@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             container.Register(Component.For<IIntegrationPointToSyncConverter, IIntegrationPointToSyncAppConverter>().ImplementedBy<IntegrationPointToSyncConverter>().LifestyleTransient());
             container.Register(Component.For<ISyncOperationsWrapper>().ImplementedBy<SyncOperationsWrapper>().LifestyleTransient().Named(nameof(SyncOperationsWrapper)));
             container.Register(Component.For<IJobHistorySyncService>().ImplementedBy<JobHistorySyncService>().LifestyleTransient());
+            container.Register(Component.For<ISyncFieldMapConverter>().ImplementedBy<SyncFieldMapConverter>().LifestyleTransient());
         }
     }
 }

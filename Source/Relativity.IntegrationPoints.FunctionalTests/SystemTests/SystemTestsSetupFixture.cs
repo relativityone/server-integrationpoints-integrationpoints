@@ -13,7 +13,6 @@ using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.Common.Logger;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Factories;
@@ -25,6 +24,7 @@ using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.RelativitySync;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Workspace;
@@ -139,8 +139,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
             Container.Register(Component.For<IRipAppVersionProvider>()
                 .ImplementedBy<RipAppVersionProvider>()
                 .LifestyleSingleton());
-            Container.Register(Component.For<ISerilogLoggerInstrumentationService>().ImplementedBy<SerilogLoggerInstrumentationService>());
-            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(Logger<>)));
+            Container.Register(Component.For(typeof(ILogger<>)).ImplementedBy(typeof(LoggerFake<>)));
             Container.Register(Component.For<IServiceContextHelper>()
                 .UsingFactoryMethod(k =>
                 {
