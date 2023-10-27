@@ -82,15 +82,17 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         {
             _logger.LogInformation("Running custom provider JobID: {jobId}.", job.JobId);
 
-            CustomProviderJobDetails jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails, job.CorrelationID).ConfigureAwait(false);
-            ImportJobContext importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, Guid.Parse(job.CorrelationID), jobDetails.JobHistoryID);
             IntegrationPointDto integrationPointDto = null;
-
-            await _jobHistoryService.TryUpdateStartTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
+            CustomProviderJobDetails jobDetails = null;
+            ImportJobContext importJobContext = null;
 
             try
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
+                jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails, job.CorrelationID, integrationPointDto).ConfigureAwait(false);
+                importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, Guid.Parse(job.CorrelationID), jobDetails.JobHistoryID);
+
+                await _jobHistoryService.TryUpdateStartTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
 
                 LogIntegrationPointConfiguration(integrationPointDto);
 

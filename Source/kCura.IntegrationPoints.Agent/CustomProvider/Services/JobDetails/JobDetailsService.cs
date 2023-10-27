@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             _logger = logger;
         }
 
-        public async Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails, string correlationID)
+        public async Task<CustomProviderJobDetails> GetJobDetailsAsync(int workspaceId, string jobDetails, string correlationID, IntegrationPointDto integrationPoint)
         {
             Guid jobHistoryGuid = Guid.Parse(correlationID);
 
@@ -44,7 +45,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobDetails
             try
             {
                 Data.JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryByGuidAsync(workspaceId, jobHistoryGuid).ConfigureAwait(false);
-                jobHistoryId = jobHistory.ArtifactId;
+
+                jobHistoryId = jobHistory == null ?
+                    await _jobHistoryService.CreateScheduledJobHistoryAsync(workspaceId, jobHistoryGuid, integrationPoint).ConfigureAwait(false)
+                    : jobHistory.ArtifactId;
             }
             catch (Exception ex)
             {
