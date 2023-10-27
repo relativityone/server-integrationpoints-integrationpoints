@@ -68,7 +68,7 @@
     <PackageReference Include="LanguageExt.Core" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
-    <PackageReference Include="Relativity.API" VersionOverride="17.7.0" />
+    <PackageReference Include="Relativity.API"/>
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
