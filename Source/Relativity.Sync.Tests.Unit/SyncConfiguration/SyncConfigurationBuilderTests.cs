@@ -363,7 +363,64 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             action.Should().ThrowAsync<InvalidSyncConfigurationException>();
         }
 
-        private static IEnumerable<TestCaseData> RdoOptionsMembers()
+		[Test]
+		public void SyncConfigurationRootBuilderBase_ExecutingApplicationVersion_LatestVersioning()
+		{
+			// Arrange
+			RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+			const int rdoType = 69;
+			const int destinationRdoType = 420;
+            string expectedExecutingApplicationVersion = "23013.2.2.";
+			Version version = new Version(23013, 2, 2, 250);
+		    SyncContext syncContext = new SyncContext(_sourceWorkspaceId, _destinationWorkspaceId, _jobHistoryId, string.Empty, version);
+			
+            // Act
+			SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions, syncContext)
+				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(0, rdoType, destinationRdoType));
+
+			// Assert
+			builder.SyncConfiguration.ExecutingApplicationVersion.Should().Be(expectedExecutingApplicationVersion);
+		}
+
+		[Test]
+		public void SyncConfigurationRootBuilderBase_ExecutingApplicationVersion_PreviousVersioning()
+		{
+			// Arrange
+			RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+			const int rdoType = 69;
+			const int destinationRdoType = 420;
+			string expectedExecutingApplicationVersion = "13.2.2.250";
+			Version version = new Version(13, 2, 2, 250);
+			SyncContext syncContext = new SyncContext(_sourceWorkspaceId, _destinationWorkspaceId, _jobHistoryId, string.Empty, version);
+
+			// Act
+			SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions, syncContext)
+				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(0, rdoType, destinationRdoType));
+
+			// Assert
+			builder.SyncConfiguration.ExecutingApplicationVersion.Should().Be(expectedExecutingApplicationVersion);
+		}
+
+		[Test]
+		public void SyncConfigurationRootBuilderBase_ExecutingApplicationVersion_MajorMinorVersions()
+		{
+			// Arrange
+			RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+			const int rdoType = 69;
+			const int destinationRdoType = 420;
+			string expectedExecutingApplicationVersion = "13.2";
+			Version version = new Version(13, 2);
+			SyncContext syncContext = new SyncContext(_sourceWorkspaceId, _destinationWorkspaceId, _jobHistoryId, string.Empty, version);
+
+			// Act
+			SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions, syncContext)
+				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(0, rdoType, destinationRdoType));
+
+			// Assert
+			builder.SyncConfiguration.ExecutingApplicationVersion.Should().Be(expectedExecutingApplicationVersion);
+		}
+
+		private static IEnumerable<TestCaseData> RdoOptionsMembers()
         {
             var properties = typeof(RdoOptions).GetProperties()
                 .SelectMany(x =>
@@ -379,5 +436,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 })
                 .ToArray();
         }
-    }
+
+		
+	}
 }

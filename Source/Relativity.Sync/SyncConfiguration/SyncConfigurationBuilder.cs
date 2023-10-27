@@ -36,7 +36,13 @@ namespace Relativity.Sync.SyncConfiguration
             return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer, _logger);
         }
 
-        private void ValidateInput(RdoOptions rdoOptions)
+		public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions, SyncContext syncContext)
+		{
+			ValidateInput(rdoOptions);
+			return new SyncJobConfigurationBuilder(syncContext, _servicesMgr, rdoOptions, _serializer, _logger);
+		}
+
+		private void ValidateInput(RdoOptions rdoOptions)
         {
             ValidateJobHistoryGuids(rdoOptions.JobHistory);
             ValidateJobHistoryStatusGuids(rdoOptions.JobHistoryStatus);
