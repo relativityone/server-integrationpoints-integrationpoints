@@ -119,6 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.HasErrors, _integrationPoint.HasErrors)
                 .With(x => x.LogErrors, _integrationPoint.LogErrors)
                 .With(x => x.PromoteEligible, _integrationPoint.PromoteEligible)
+                .With(x => x.ConfigurationLastModifiedOn, _integrationPoint.ConfigurationLastModifiedOn)
                 .Create();
 
             _contextFake = _fxt.Freeze<Mock<ICaseServiceContext>>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 {
@@ -8,6 +9,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
         Task<Data.JobHistory> ReadJobHistoryByGuidAsync(int workspaceId, Guid jobHistoryGuid);
 
         Task<int> CreateJobHistoryAsync(int workspaceId, Data.JobHistory jobHistory);
+
+        Task<int> CreateScheduledJobHistoryAsync(int workspaceId, Guid jobHistoryId, IntegrationPointDto integrationPoint);
 
         Task TryUpdateStartTimeAsync(int workspaceId, int jobHistoryId);
 

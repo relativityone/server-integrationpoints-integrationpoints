@@ -10,5 +10,7 @@ namespace kCura.IntegrationPoints.Core.Models
         public bool? HasErrors { get; set; }
 
         public List<int> JobHistory { get; set; }
+
+        public DateTime? ConfigurationLastModifiedOn { get; set; }
     }
 }

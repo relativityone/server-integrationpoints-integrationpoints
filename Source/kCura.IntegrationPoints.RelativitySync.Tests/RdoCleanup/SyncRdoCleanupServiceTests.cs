@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.RelativitySync.RdoCleanup;
 using Moq;
 using NUnit.Framework;
@@ -31,7 +32,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
         private Mock<IArtifactGuidManager> _artifactGuidManager;
         private Mock<IObjectTypeManager> _objectTypeManager;
         private Mock<IObjectManager> _objectManager;
-        private Mock<IAPILog> _loggerFake;
         private SyncRdoCleanupService _sut;
 
         [SetUp]
@@ -69,8 +69,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
 
             _objectManager.Setup(x => x.DeleteAsync(It.IsAny<int>(), It.IsAny<MassDeleteByCriteriaRequest>())).ReturnsAsync(new MassDeleteResult());
 
-            _loggerFake = new Mock<IAPILog>();
-            _sut = new SyncRdoCleanupService(_servicesMgrMock.Object, _loggerFake.Object);
+            var loggerFake = new Mock<ILogger<SyncRdoCleanupService>>();
+            _sut = new SyncRdoCleanupService(_servicesMgrMock.Object, loggerFake.Object);
         }
 
         [Test]

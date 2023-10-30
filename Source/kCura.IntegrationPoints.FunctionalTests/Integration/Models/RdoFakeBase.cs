@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Autofac;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -49,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         {
             string SanitizeFieldName(string name)
             {
-                return name.Replace(" ", "").ToLowerInvariant();
+                return Regex.Replace(name, "[ ()]", string.Empty).ToLowerInvariant();
             }
 
             if (!type.IsAssignableTo<RdoFakeBase>())
@@ -83,7 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                         continue;
                     }
 
-                    prop.SetValue(this, Sanitize(fieldValuePair.Value));
+                    prop.SetValue(this, ConvertValueToPropertyType(fieldValuePair.Value, prop.PropertyType));
                 }
                 catch (Exception)
                 {
@@ -119,7 +120,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             }
         }
 
-        protected object Sanitize(object value)
+        protected object ConvertValueToPropertyType(object value, Type propertyType)
         {
             if (value is Relativity.Services.Objects.DataContracts.ChoiceRef choiceRef)
             {
@@ -127,6 +128,51 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 {
                     ArtifactID = choiceRef.ArtifactID,
                     Guids = choiceRef.Guid.HasValue ? new List<Guid> {choiceRef.Guid.Value} : new List<Guid>()
+                };
+            }
+
+            if (value is RelativityObjectValue objectValue)
+            {
+                return objectValue.ArtifactID;
+            }
+
+            if (value is RelativityObjectValue[] objectValues)
+            {
+                return objectValues.Select(x => x.ArtifactID).ToArray();
+            }
+
+            if (propertyType == typeof(int) || propertyType == typeof(int?))
+            {
+                return value != null
+                    ? Convert.ToInt32(value)
+                    : (int?)null;
+            }
+
+            if (propertyType == typeof(long) || propertyType == typeof(long?))
+            {
+                return value != null
+                    ? Convert.ToInt64(value)
+                    : (long?)null;
+            }
+
+            if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
+            {
+                return value != null
+                    ? Convert.ToDateTime(value)
+                    : (DateTime?)null;
+            }
+
+            return value;
+        }
+
+        protected object Sanitize(object value)
+        {
+            if (value is Relativity.Services.Objects.DataContracts.ChoiceRef choiceRef)
+            {
+                return new ChoiceRef
+                {
+                    ArtifactID = choiceRef.ArtifactID,
+                    Guids = choiceRef.Guid.HasValue ? new List<Guid> { choiceRef.Guid.Value } : new List<Guid>()
                 };
             }
 

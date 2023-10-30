@@ -281,7 +281,7 @@ var ExportSourceViewModel = function (state, savedSearchService) {
 			});
 
 			var viewPromiseDone = function(result) {
-				self.Cache.ViewsResult = result[0];
+				self.Cache.ViewsResult = result;
 				self.UpdateViews(currentViewId);
 				self.InitializeLocationSelector();
 			};
@@ -293,7 +293,9 @@ var ExportSourceViewModel = function (state, savedSearchService) {
 			else if (typeof (self.Cache.ViewsResult) === 'undefined') {
 				var currentViewId = self.ViewId();
 
-				IP.data.deferred().all([viewsPromise]).then(viewPromiseDone);
+				IP.data.deferred().all([viewsPromise]).then(function (responses) {
+					viewPromiseDone(responses[0])
+				});
 			} else {
 				self.UpdateViews();
 			}

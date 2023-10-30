@@ -14,21 +14,26 @@ namespace kCura.IntegrationPoints.Core.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component
-                .For<IInstanceSettingsBundle>()
+            container.Register(Component.For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
                 .LifestyleTransient());
-            container.Register(Component.For<IAPILog>()
-                .UsingFactoryMethod(CreateLogger)
-                .IsFallback().LifestyleSingleton());
             container.Register(Component.For<IRipAppVersionProvider>()
                 .ImplementedBy<RipAppVersionProvider>()
+                .IsFallback().LifestyleSingleton());
+
+            container.Register(Component.For<IAPILog>()
+                .UsingFactoryMethod(CreateLogger)
                 .IsFallback().LifestyleSingleton());
             container.Register(Component.For<ISerilogLoggerInstrumentationService>()
                 .ImplementedBy<SerilogLoggerInstrumentationService>()
                 .IsFallback().LifestyleSingleton());
+            container.Register(Component.For<Serilog.ILogger>()
+                .UsingFactoryMethod(CreateSerilogLogger)
+                .IsFallback().LifestyleSingleton());
             container.Register(Component.For(typeof(ILogger<>))
-                .ImplementedBy(typeof(Logger<>)));
+                .ImplementedBy(typeof(Logger<>))
+                .LifestyleTransient());
+
             container.Register(Component.For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
                 .IsFallback().LifestyleSingleton());
@@ -37,6 +42,11 @@ namespace kCura.IntegrationPoints.Core.Installers
         private IAPILog CreateLogger(IKernel kernel)
         {
             return kernel.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+        }
+
+        private Serilog.ILogger CreateSerilogLogger(IKernel kernel)
+        {
+            return kernel.Resolve<ISerilogLoggerInstrumentationService>().GetLogger();
         }
     }
 }

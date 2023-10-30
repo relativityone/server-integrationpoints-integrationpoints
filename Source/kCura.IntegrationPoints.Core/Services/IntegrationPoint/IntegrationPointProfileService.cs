@@ -262,6 +262,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
+                PromoteEligible = profile.PromoteEligible.GetValueOrDefault(false),
             };
         }
 
@@ -285,6 +286,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
+                PromoteEligible = dto.PromoteEligible,
                 EmailNotificationRecipients = string.Join("; ",
                     (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => x.Trim())

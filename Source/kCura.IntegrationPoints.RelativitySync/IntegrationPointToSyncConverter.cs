@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,10 +17,8 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -36,7 +35,8 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
         private readonly IRipToggleProvider _toggleProvider;
-        private readonly IAPILog _logger;
+        private readonly ISyncFieldMapConverter _syncFieldMapConverter;
+        private readonly ILogger<IntegrationPointToSyncConverter> _logger;
 
         public IntegrationPointToSyncConverter(
             ISerializer serializer,
@@ -44,14 +44,16 @@ namespace kCura.IntegrationPoints.RelativitySync
             IJobHistorySyncService jobHistorySyncService,
             ISyncOperationsWrapper syncOperations,
             IRipToggleProvider toggleProvider,
-            IAPILog logger)
+            ISyncFieldMapConverter syncFieldMapConverter,
+            ILogger<IntegrationPointToSyncConverter> logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
-            _logger = logger;
             _toggleProvider = toggleProvider;
+            _syncFieldMapConverter = syncFieldMapConverter;
+            _logger = logger;
         }
 
         public async Task<int> CreateSyncConfigurationAsync(int workspaceId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
@@ -83,8 +85,8 @@ namespace kCura.IntegrationPoints.RelativitySync
             DestinationConfiguration destinationConfiguration = job.IntegrationPointDto.DestinationConfiguration;
 
             _logger
-                .ForContext("DestinationConfiguration", destinationConfiguration, true)
-                .ForContext("SourceConfiguration", sourceConfiguration, true)
+                .EnrichWithProperty("DestinationConfiguration", destinationConfiguration)
+                .EnrichWithProperty("SourceConfiguration", sourceConfiguration)
                 .LogInformation("Read Integration Point Configuration {integrationPointId}", job.IntegrationPointId);
 
             ISyncContext syncContext = new SyncContext(
@@ -192,7 +194,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             SourceConfiguration sourceConfiguration,
             DestinationConfiguration destinationConfiguration)
         {
-            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(destinationConfiguration, job.WorkspaceId, job.IntegrationPointId).ConfigureAwait(false);
+            DateTime? smartOverwriteDate = await GetSmartOverwriteDateAsync(destinationConfiguration, job.WorkspaceId, job.IntegrationPointDto).ConfigureAwait(false);
 
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
@@ -236,7 +238,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, int integrationPointId)
+        private async Task<DateTime?> GetSmartOverwriteDateAsync(DestinationConfiguration destinationConfiguration, int workspaceId, IntegrationPointDto integrationPoint)
         {
             if (!_toggleProvider.IsEnabled<EnableSmartOverwriteFeatureToggle>())
             {
@@ -248,8 +250,17 @@ namespace kCura.IntegrationPoints.RelativitySync
                 return null;
             }
 
-            DateTime? date = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPointId).ConfigureAwait(false);
-            return date;
+            DateTime? lastRunUtc = await _jobHistorySyncService.GetLastCompletedJobHistoryForRunDateAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+
+            if (integrationPoint.ConfigurationLastModifiedOn > lastRunUtc)
+            {
+                _logger.LogWarning($"Skipping SmartOverwrite flow due to Integration Point change ({integrationPoint.ConfigurationLastModifiedOn}) detected since last job run ({lastRunUtc})");
+                return null;
+            }
+
+            _logger.LogInformation($"Last Integration Point update {integrationPoint.ConfigurationLastModifiedOn} allows to run job in SmartOverwrite mode (last run: {lastRunUtc})");
+
+            return lastRunUtc;
         }
 
         private async Task<int> CreateNonDocumentSyncConfigurationAsync(
@@ -286,7 +297,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private void PrepareFieldsMappingAction(List<FieldMap> integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
         {
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
+            List<SyncFieldMap> fieldsMapping = _syncFieldMapConverter.ConvertToSyncFieldMap(integrationPointsFieldsMapping);
 
             foreach (SyncFieldMap fieldsMap in fieldsMapping)
             {
