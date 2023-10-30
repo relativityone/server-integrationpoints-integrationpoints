@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 using kCura.ScheduleQueue.Core.Helpers;
-using Relativity.Services.TimeZone;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
 {

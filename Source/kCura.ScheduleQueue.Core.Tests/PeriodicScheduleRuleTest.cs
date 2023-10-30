@@ -384,9 +384,11 @@ namespace kCura.ScheduleQueue.Core.Tests
 
         [TestCase("AUS Eastern Standard Time", "10:30 AM", "10/01/2022", "10/02/2022 9:30 AM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
         [TestCase("AUS Eastern Standard Time", "9:30 AM", "10/03/2022", "10/04/2022 9:30 AM")] // expected UTC for GMT+11
-        [TestCase("AUS Eastern Standard Time", "9:30 PM", "04/01/2022", "04/02/2022 10:30 PM")] // job scheduled on 04/01/2022 (GMT+11), expected offset on "04/02/2022" => GMT+10
+        [TestCase("AUS Eastern Standard Time", "9:30 PM", "04/01/2022", "04/02/2022 10:30 PM")] // job scheduled on 04/02/2022 (GMT+11), expected offset on "04/03/2022" => GMT+10
         [TestCase("AUS Eastern Standard Time", "10:30 AM", "04/04/2022", "04/05/2022 10:30 AM")] // expected UTC for GMT+10
         [TestCase("AUS Eastern Standard Time", "01:30 AM", "10/19/2024", "10/20/2024 01:30 AM")] // expected UTC for GMT+11
+        [TestCase("AUS Eastern Standard Time", "04:30 PM", "10/01/2022", "10/02/2022 3:30 PM")] // job scheduled on 10/1/2022 (GMT+10), expected offset on 10/03/2022 => GMT+11
+        [TestCase("AUS Eastern Standard Time", "3:30 PM", "04/02/2022", "04/03/2022 04:30 PM")] // job scheduled on 04/02/2022 (GMT+11), expected offset on "04/03/2022" => GMT+10
         public void GetNextUtcRunDateTime_DaylightSaveTime(
             string clientTimeZone,
             string clientUtcTime,

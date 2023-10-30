@@ -46,10 +46,9 @@ namespace kCura.IntegrationPoints.Core.Models
                             JsonConvert.SerializeObject(
                                 new Weekly
                             {
-                                SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ?
-                                    new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } :
-                                    DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
-
+                                SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day
+                                    ? new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } 
+                                    : DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
                             },
                                 Formatting.None,
                                 JSONHelper.GetDefaultSettings());
