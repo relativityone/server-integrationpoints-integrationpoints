@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
+using kCura.ScheduleQueue.Core.Exceptions;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -398,7 +399,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 if (exceptions.Any())
                 {
-                    throw new AggregateException(exceptions);
+                    AggregateException exception = new AggregateException(exceptions);
+                    job.MarkJobAsFailed(exception, true, false);
+                    throw exception;
                 }
 
                 LogJobPostExecuteSuccesfulEnd(job);
@@ -503,7 +506,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IntegrationPointDto.LastRun = DateTime.UtcNow;
             if (job.ScheduleRule != null)
             {
-                IntegrationPointDto.NextRun = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
+                try
+                {
+                    IntegrationPointDto.NextRun = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
+                }
+                catch (ScheduleRunTimeGenerationException)
+                {
+                    IntegrationPointService.UpdateLastAndNextRunTime(
+                        IntegrationPointDto.ArtifactId,
+                        IntegrationPointDto.LastRun,
+                        null);
+                    throw;
+                }
             }
 
             IntegrationPointService.UpdateLastAndNextRunTime(

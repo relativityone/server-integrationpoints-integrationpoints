@@ -19,21 +19,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IKubernetesMode _kubernetesMode;
         private readonly IAPILog _log;
         private readonly ISerializer _serializer;
+        private readonly IAgentService _agentService;
+        private readonly IJobServiceDataProvider _dataProvider;
 
         public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
         {
             _kubernetesMode = kubernetesMode;
-            AgentService = agentService;
+            _agentService = agentService;
             _log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
-            DataProvider = dataProvider;
+            _dataProvider = dataProvider;
             _serializer = new RipJsonSerializer(_log);
         }
 
-        public AgentTypeInformation AgentTypeInformation => AgentService.AgentTypeInformation;
-
-        private IAgentService AgentService { get; }
-
-        private IJobServiceDataProvider DataProvider { get; }
+        public AgentTypeInformation AgentTypeInformation => _agentService.AgentTypeInformation;
 
         public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID, long? rootJobId = null)
         {
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
             if (_kubernetesMode.IsEnabled())
             {
-                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
+                row = _dataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
             }
             else
             {
@@ -53,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                                                         " Please validate EnableKubernetesMode toggle value, current value: False");
                 }
 
-                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
+                row = _dataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
                 _log.LogInformation("Retrieved following row: {@row}", row);
             }
 
@@ -81,8 +79,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             LogOnFinalizeJob(job.JobId, job.JobDetails, taskResult);
 
             var result = new FinalizeJobResult();
-
-            DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
+            DateTime? nextUtcRunDateTime = null;
+            try
+            {
+                nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Unable to get next scheduled runtime for job {@job}", job);
+            }
 
             IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
 
@@ -154,14 +159,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             DateTime? nextUtcRunDateTime = null;
             if (scheduleRule != null)
             {
-                try
-                {
-                    nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
-                }
-                catch (Exception e)
-                {
-                    _log.LogError(e, "Unable to get next scheduled runtime for job {JobId}", job.JobId);
-                }
+                nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
             }
 
             _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
@@ -181,7 +179,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
             Job job;
             DateTime? nextRunTime = null;
@@ -195,7 +193,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
             if (nextRunTime.HasValue)
             {
-                DataRow row = DataProvider.CreateScheduledJob(
+                DataRow row = _dataProvider.CreateScheduledJob(
                     workspaceID,
                     relatedObjectArtifactID,
                     correlationID,
@@ -238,9 +236,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
 
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            DataRow row = DataProvider.CreateScheduledJob(
+            DataRow row = _dataProvider.CreateScheduledJob(
                 workspaceID,
                 relatedObjectArtifactID,
                 correlationId,
@@ -259,14 +257,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public void DeleteJob(long jobID)
         {
-            DataProvider.DeleteJob(jobID);
+            _dataProvider.DeleteJob(jobID);
         }
 
         public Job GetJob(long jobID)
         {
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            DataRow row = DataProvider.GetJob(jobID);
+            DataRow row = _dataProvider.GetJob(jobID);
             return CreateJob(row);
         }
 
@@ -278,9 +276,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
         {
             LogOnGetScheduledJob(workspaceID, relatedObjectArtifactID, taskTypes);
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            using (DataTable dataTable = DataProvider.GetJobs(workspaceID, relatedObjectArtifactID, taskTypes))
+            using (DataTable dataTable = _dataProvider.GetJobs(workspaceID, relatedObjectArtifactID, taskTypes))
             {
                 return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
             }
@@ -288,9 +286,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public IEnumerable<Job> GetAllScheduledJobs()
         {
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            using (DataTable dataTable = DataProvider.GetAllJobs())
+            using (DataTable dataTable = _dataProvider.GetAllJobs())
             {
                 return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
             }
@@ -303,7 +301,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 return;
             }
 
-            int count = DataProvider.UpdateStopState(jobIds, state);
+            int count = _dataProvider.UpdateStopState(jobIds, state);
             if (count == 0)
             {
                 LogOnUpdateJobStopStateError(state, jobIds);
@@ -316,7 +314,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         public IList<Job> GetJobs(long integrationPointId)
         {
             LogOnGetJobs(integrationPointId);
-            using (DataTable data = DataProvider.GetJobsByIntegrationPointId(integrationPointId))
+            using (DataTable data = _dataProvider.GetJobsByIntegrationPointId(integrationPointId))
             {
                 return data.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
             }
@@ -330,18 +328,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
 
             LogUpdateJobDetails(job);
-            DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
+            _dataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
         }
 
         public void FinalizeDrainStoppedJob(Job job)
         {
-            DataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
+            _dataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
             _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
         public void UnlockJob(Job job)
         {
-            DataProvider.UnlockJob(job.JobId, StopState.None);
+            _dataProvider.UnlockJob(job.JobId, StopState.None);
             _log.LogInformation("Unlocking Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
@@ -356,18 +354,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             DateTime? nextRunTime = null;
             if (scheduleRule != null)
             {
-                try
-                {
-                    nextRunTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
-                }
-                catch (Exception e)
-                {
-                    _log.LogError(e, "Unable to get next scheduled runtime for job {JobId}", job.JobId);
-                }
+                nextRunTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
             }
             if (nextRunTime.HasValue)
             {
-                DataProvider.CreateNewAndDeleteOldScheduledJob(
+                _dataProvider.CreateNewAndDeleteOldScheduledJob(
                     job.JobId,
                     job.WorkspaceID,
                     job.RelatedObjectArtifactID,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using kCura.ScheduleQueue.Core.Exceptions;
 using kCura.ScheduleQueue.Core.Helpers;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
@@ -127,7 +128,15 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         public override DateTime? GetNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
         {
-            DateTime nextUtcRunDateTime = CalculateNextUtcRunDateTime(lastNextUtcRunDateTime);
+            DateTime nextUtcRunDateTime;
+            try
+            {
+                nextUtcRunDateTime = CalculateNextUtcRunDateTime(lastNextUtcRunDateTime);
+            }
+            catch (Exception ex)
+            {
+                throw new ScheduleRunTimeGenerationException("Failed to calculate next run date time.", ex);
+            }
 
             if (EndDate.HasValue && EndDate < new DateTime(nextUtcRunDateTime.Year, nextUtcRunDateTime.Month, nextUtcRunDateTime.Day))
             {

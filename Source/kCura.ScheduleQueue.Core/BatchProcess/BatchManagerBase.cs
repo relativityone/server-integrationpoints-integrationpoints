@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.ScheduleQueue.Core.Exceptions;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess
@@ -116,6 +117,10 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
             {
                 LogRaisePostExecute(job);
                 RaiseJobPostExecute(job, taskResult, items);
+                if (job.JobFailed.Exception != null && job.JobFailed.Exception.GetType() == typeof(ScheduleRunTimeGenerationException))
+                {
+                    throw job.JobFailed.Exception;
+                }
             }
         }
 
