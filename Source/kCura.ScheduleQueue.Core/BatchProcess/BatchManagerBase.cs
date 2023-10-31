@@ -117,7 +117,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
             {
                 LogRaisePostExecute(job);
                 RaiseJobPostExecute(job, taskResult, items);
-                if (job.JobFailed.Exception != null && job.JobFailed.Exception.GetType() == typeof(ScheduleRunTimeGenerationException))
+                if (job?.JobFailed?.Exception != null && job.JobFailed.Exception.GetType() == typeof(ScheduleRunTimeGenerationException))
                 {
                     throw job.JobFailed.Exception;
                 }
