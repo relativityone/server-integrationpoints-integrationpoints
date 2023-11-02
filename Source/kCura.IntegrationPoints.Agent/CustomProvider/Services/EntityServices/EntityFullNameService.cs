@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
@@ -27,8 +28,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             FieldEntry firstNameField = destinationFieldNameToFieldMapDictionary[EntityFieldNames.FirstName].FieldMap.SourceField;
             FieldEntry lastNameField = destinationFieldNameToFieldMapDictionary[EntityFieldNames.LastName].FieldMap.SourceField;
 
-            string firstName = reader[firstNameField.ActualName]?.ToString() ?? string.Empty;
-            string lastName = reader[lastNameField.ActualName]?.ToString() ?? string.Empty;
+            string firstName = reader[firstNameField.FieldIdentifier]?.ToString() ?? string.Empty;
+            string lastName = reader[lastNameField.FieldIdentifier]?.ToString() ?? string.Empty;
 
             string fullName = FormatFullName(firstName, lastName);
 
@@ -53,16 +54,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
             return shouldHandleFullName;
         }
 
-        public async Task EnrichFieldMapWithFullNameAsync(IntegrationPointInfo integrationPoint)
+        public async Task EnrichFieldMapWithFullNameAsync(List<IndexedFieldMap> fieldMap, int destinationWorkspaceArtifactId)
         {
-            _logger.LogInformation("Enriching Fields Mapping with Full Name field...");
-
-            int fullNameArtifactId = await _entityFullNameObjectManagerService.GetFullNameArtifactId(integrationPoint.DestinationConfiguration.CaseArtifactId).ConfigureAwait(false);
+            int fullNameArtifactId = await _entityFullNameObjectManagerService.GetFullNameArtifactId(destinationWorkspaceArtifactId).ConfigureAwait(false);
 
             var fullNameField = new FieldEntry
             {
                 DisplayName = EntityFieldNames.FullName,
-                IsIdentifier = true,
+                IsIdentifier = false,
                 IsRequired = false,
                 FieldIdentifier = fullNameArtifactId.ToString()
             };
@@ -74,9 +73,9 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
                 DestinationField = fullNameField
             };
 
-            IndexedFieldMap indexedFullNameFieldMap = new IndexedFieldMap(fullNameFieldMap, FieldMapType.EntityFullName, integrationPoint.FieldMap.Count);
+            IndexedFieldMap indexedFullNameFieldMap = new IndexedFieldMap(fullNameFieldMap, FieldMapType.EntityFullName, fieldMap.Count);
 
-            integrationPoint.FieldMap.Add(indexedFullNameFieldMap);
+            fieldMap.Add(indexedFullNameFieldMap);
         }
 
         private static string FormatFullName(string firstName, string lastName)

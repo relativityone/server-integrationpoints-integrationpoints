@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.DocumentFlow;
 using kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.ImportApiService;
@@ -58,16 +59,18 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.ImportStage.RdoFlow
         private async Task<RdoImportConfiguration> CreateConfigurationAsync(IntegrationPointInfo integrationPoint)
         {
             IndexedFieldMap overlyIdentifierField;
+
             if (await _entityFullNameService.ShouldHandleFullNameAsync(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap).ConfigureAwait(false))
             {
-                await _entityFullNameService.EnrichFieldMapWithFullNameAsync(integrationPoint).ConfigureAwait(false);
-
+                await _entityFullNameService.EnrichFieldMapWithFullNameAsync(integrationPoint.FieldMap, integrationPoint.DestinationConfiguration.CaseArtifactId).ConfigureAwait(false);
                 overlyIdentifierField = integrationPoint.FieldMap.FirstOrDefault(x => x.DestinationFieldName == EntityFieldNames.FullName);
             }
             else
             {
                 overlyIdentifierField = integrationPoint.FieldMap.FirstOrDefault(x => x.DestinationFieldName == integrationPoint.DestinationConfiguration.OverlayIdentifier);
             }
+
+            _logger.LogInformation("Configuring import job with fields mapping: {@fieldMap}", integrationPoint.FieldMap);
 
             RdoImportConfiguration configuration = _importSettingsBuilder.Build(integrationPoint.DestinationConfiguration, integrationPoint.FieldMap, overlyIdentifierField);
 

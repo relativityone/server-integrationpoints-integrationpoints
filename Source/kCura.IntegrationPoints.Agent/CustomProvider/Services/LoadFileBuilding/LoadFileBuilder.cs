@@ -40,9 +40,15 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     .OrderBy(x => x.ColumnIndex)
                     .ToDictionary(x => x.DestinationFieldName);
 
-                IEnumerable<FieldEntry> fields = integrationPointInfo.FieldMap.Select(x => x.FieldMap.SourceField);
+                IEnumerable<FieldEntry> fields = integrationPointInfo
+                    .FieldMap
+                    .Where(x => x.FieldMapType == FieldMapType.Normal)
+                    .Select(x => x.FieldMap.SourceField);
+
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointInfo.SourceConfiguration, integrationPointInfo.SecuredConfiguration);
                 IList<string> entryIds = await _relativityStorageService.ReadAllLinesAsync(batch.IDsFilePath).ConfigureAwait(false);
+
+                _logger.LogInformation("Fields to retrieve from sourceprovider: {@fields}", fields);
 
                 using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIds, providerConfig))
                 using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch).ConfigureAwait(false))
@@ -76,8 +82,16 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     switch (field.FieldMapType)
                     {
                         case FieldMapType.Normal:
-                            string value = sourceProviderDataReader[field.FieldMap.SourceField.ActualName]?.ToString() ?? string.Empty;
-                            rowValues.Add(value);
+                            try
+                            {
+                                string value = sourceProviderDataReader[field.FieldMap.SourceField.FieldIdentifier]?.ToString() ?? string.Empty;
+                                rowValues.Add(value);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Failed to retrieve field value from Source Provider: {fieldName}", field.FieldMap.SourceField.FieldIdentifier);
+                                throw;
+                            }
                             break;
                         case FieldMapType.EntityFullName:
                             string fullName = _entityFullNameService.FormatFullName(destinationFieldNameToFieldMapDictionary, sourceProviderDataReader);
@@ -87,6 +101,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                 }
 
                 string line = FormatLine(settings, rowValues);
+                _logger.LogInformation("Writing load file line with {numberOfValues} values: {line}", rowValues.Count, line);
                 await dataFileWriter.WriteLineAsync(line).ConfigureAwait(false);
             }
         }

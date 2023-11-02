@@ -121,19 +121,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                     It.IsAny<CustomProviderDestinationConfiguration>(),
                     It.IsAny<List<IndexedFieldMap>>()))
                 .ReturnsAsync(true);
-            _entityFullNameServiceMock.Setup(x => x.EnrichFieldMapWithFullNameAsync(integrationPointInfo))
-                .Returns((IntegrationPointInfo integrationPoint) =>
+            _entityFullNameServiceMock
+                .Setup(x => x.EnrichFieldMapWithFullNameAsync(It.IsAny<List<IndexedFieldMap>>(), It.IsAny<int>()))
+                .Returns((List<IndexedFieldMap> fieldMap, int destinationWorkspaceArtifactId) =>
                 {
                     FieldMap fieldEntry = _fxt.Create<FieldMap>();
 
+                    fieldEntry.DestinationField.FieldIdentifier = EntityFieldNames.FullName;
                     fieldEntry.DestinationField.DisplayName = EntityFieldNames.FullName;
 
                     IndexedFieldMap fullNameField = new IndexedFieldMap(
                         fieldEntry, FieldMapType.Normal, 0);
 
-                    integrationPoint.FieldMap.Add(fullNameField);
+                    fieldMap.Add(fullNameField);
 
-                    return Task.FromResult(integrationPoint);
+                    return Task.CompletedTask;
                 });
 
             var overlayIdentifier = integrationPointInfo.FieldMap.Last();

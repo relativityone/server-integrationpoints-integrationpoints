@@ -122,10 +122,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             {
                 SourceField = new FieldEntry()
                 {
+                    FieldIdentifier = EntityFieldNames.FullName,
                     DisplayName = EntityFieldNames.FullName
                 },
                 DestinationField = new FieldEntry()
                 {
+                    FieldIdentifier = EntityFieldNames.FullName,
                     DisplayName = EntityFieldNames.FullName
                 }
             }, FieldMapType.EntityFullName, fieldMap.Count);
@@ -171,10 +173,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
                 {
                     SourceField = new FieldEntry
                     {
+                        FieldIdentifier = fieldsNames[i],
                         DisplayName = fieldsNames[i]
                     },
                     DestinationField = new FieldEntry
                     {
+                        FieldIdentifier = fieldsNames[i],
                         DisplayName = fieldsNames[i]
                     }
                 };
