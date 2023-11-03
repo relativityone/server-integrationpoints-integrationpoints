@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices
     {
         Task<bool> ShouldHandleFullNameAsync(CustomProviderDestinationConfiguration configuration, List<IndexedFieldMap> fieldsMap);
 
-        Task EnrichFieldMapWithFullNameAsync(IntegrationPointInfo integrationPoint);
+        Task EnrichFieldMapWithFullNameAsync(List<IndexedFieldMap> fieldMap, int destinationWorkspaceArtifactId);
 
         string FormatFullName(Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary, IDataReader reader);
     }

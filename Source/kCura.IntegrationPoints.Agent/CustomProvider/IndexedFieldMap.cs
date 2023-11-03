@@ -7,13 +7,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
     /// </summary>
     public class IndexedFieldMap
     {
-        public IndexedFieldMap(FieldMap fieldMap, FieldMapType fieldMapType, int columnIndex)
-        {
-            FieldMap = fieldMap;
-            FieldMapType = fieldMapType;
-            ColumnIndex = columnIndex;
-        }
-
         public FieldMap FieldMap { get; }
 
         public int ColumnIndex { get; }
@@ -21,5 +14,12 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
         public string DestinationFieldName => FieldMap.DestinationField.DisplayName;
 
         public FieldMapType FieldMapType { get; }
+
+        public IndexedFieldMap(FieldMap fieldMap, FieldMapType fieldMapType, int columnIndex)
+        {
+            FieldMap = fieldMap;
+            FieldMapType = fieldMapType;
+            ColumnIndex = columnIndex;
+        }
     }
 }
