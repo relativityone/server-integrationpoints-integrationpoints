@@ -86,6 +86,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
             catch (Exception ex)
             {
+                job.MarkJobAsFailed(ex, true, false);
                 _log.LogError(ex, "Unable to get next scheduled runtime for job {@job}", job);
             }
 
