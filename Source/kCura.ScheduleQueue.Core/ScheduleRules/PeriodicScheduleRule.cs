@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
+using kCura.ScheduleQueue.Core.Exceptions;
 using kCura.ScheduleQueue.Core.Helpers;
 
 namespace kCura.ScheduleQueue.Core.ScheduleRules
@@ -10,11 +10,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
     [DataContract]
     public class PeriodicScheduleRule : ScheduleRuleBase
     {
-        // * Due to Daylight Saving Time (DST) we have to store TimeToRun in local format
-        // * For example: if we want to run job always at 12:00pm local time, when converting and storing from CST to UTC in January it will be 6:00pm(UTC). Converting back to local in January it will be 12:00pm(CST) (UTC-6) local, but in July it would be 1:00pm(CST) (UTC-5) due to DST.
-        [DataMember]
-        private long? localTimeOfDayTicks { get; set; }
-
         [DataMember]
         public ScheduleInterval Interval { get; set; }
 
@@ -48,25 +43,37 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         [DataMember]
         public OccuranceInMonth? OccuranceInMonth { get; set; }
 
-        ///<summary>
-        ///LocalTimeOfDay must have Local to Server Time
-        ///</summary>
+        /// <summary>
+        /// LocalTimeOfDay must have Local to Server Time
+        /// </summary>
         public TimeSpan? LocalTimeOfDay
         {
             get { return localTimeOfDayTicks.HasValue ? new DateTime(localTimeOfDayTicks.Value, DateTimeKind.Local).TimeOfDay : (TimeSpan?)null; }
             set { localTimeOfDayTicks = value.Value.Ticks; }
         }
 
+        // * Due to Daylight Saving Time (DST) we have to store TimeToRun in local format
+        // * For example: if we want to run job always at 12:00pm local time, when converting and storing from CST to UTC in January it will be 6:00pm(UTC). Converting back to local in January it will be 12:00pm(CST) (UTC-6) local, but in July it would be 1:00pm(CST) (UTC-5) due to DST.
+        [DataMember]
+        private long? localTimeOfDayTicks { get; set; }
+
         public PeriodicScheduleRule()
-            : base()
         {
         }
 
         public PeriodicScheduleRule(
-            ScheduleInterval interval, DateTime startDate, TimeSpan localTimeOfDay,
-            DateTime? endDate = null, int? timeZoneOffset = null, DaysOfWeek? daysToRun = null,
-            int? dayOfMonth = null, bool? setLastDayOfMonth = null,
-            int? reoccur = null, int failedScheduledJobsCount = 0, OccuranceInMonth? occuranceInMonth = null, string timeZoneId = null)
+            ScheduleInterval interval,
+            DateTime startDate,
+            TimeSpan localTimeOfDay,
+            DateTime? endDate = null,
+            int? timeZoneOffset = null,
+            DaysOfWeek? daysToRun = null,
+            int? dayOfMonth = null,
+            bool? setLastDayOfMonth = null,
+            int? reoccur = null,
+            int failedScheduledJobsCount = 0,
+            OccuranceInMonth? occuranceInMonth = null,
+            string timeZoneId = null)
             : this()
         {
             Interval = interval;
@@ -81,49 +88,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             TimeZoneOffsetInMinute = timeZoneOffset;
             OccuranceInMonth = occuranceInMonth;
             TimeZoneId = timeZoneId;
-        }
-
-        public override DateTime? GetNextUTCRunDateTime()
-        {
-            EndDateHelperBase endDateHelper;
-
-            TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null
-                ? TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ?? TimeZoneInfo.Local
-                : TimeZoneInfo.Local;
-
-            DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-
-            // current client local date/time is required for correct calculation of DST change
-            DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
-            TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
-            DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
-
-            // Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
-            if (TimeZoneOffsetInMinute == null)
-            {
-                endDateHelper = new LocalEndDate(TimeService);
-                endDateHelper.EndDate = EndDate;
-                endDateHelper.StartDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
-                endDateHelper.TimeOfDayTick = localTimeOfDayTicks ?? localTimeOfDayTicks.GetValueOrDefault(TimeService.UtcNow.TimeOfDay.Ticks);
-
-                return GetNextRunTimeByInterval(Interval, endDateHelper,
-                    DaysToRun, DayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
-            }
-
-            DaysOfWeek? daysToRunUtc = AdjustDaysShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
-            int? dayOfMonth = AdjustDayOfMonthsShiftBetweenLocalAndUtc(clientTimeLocal, clientTimeUtc);
-
-            endDateHelper = new UtcEndDate(TimeService);
-            endDateHelper.EndDate = EndDate?.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault(TimeService.UtcNow.TimeOfDay).TotalMinutes)
-                    .AddMinutes(-clientUtcOffset.TotalMinutes);
-            endDateHelper.StartDate = clientTimeUtc.Date > endDateHelper.Time.Date ? clientTimeUtc.Date : endDateHelper.Time.Date;
-            endDateHelper.TimeOfDayTick = clientTimeUtc.Ticks % TimeSpan.FromDays(1).Ticks;
-
-            DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
-                daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
-
-            return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
-            clientUtcOffset);
         }
 
         public override int GetNumberOfContinuouslyFailedScheduledJobs()
@@ -141,170 +105,217 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             FailedScheduledJobsCount = 0;
         }
 
-        /// <summary>
-        /// Adjust nextRunTime to Daylight Saving Time / Standard Time
-        /// </summary>
-        /// <returns>Adjusted nextRunTime to DST or Standard</returns>
-        private DateTime? AdjustToDaylightSavingOrStandardTime(DateTime? nextRunTimeUtc, TimeZoneInfo clientTimeZoneInfo,
-            TimeSpan clientUtcOffset)
+        public override DateTime? GetFirstUtcRunDateTime()
         {
-            if (nextRunTimeUtc == null || LocalTimeOfDay == null) { return nextRunTimeUtc; }
+            ValidateGetFirstUtcRunDateTime();
 
-            TimeSpan nextRunTimeUtcOffSet = clientTimeZoneInfo.GetUtcOffset((DateTime) nextRunTimeUtc);
-            nextRunTimeUtc = nextRunTimeUtc.Value.AddMinutes(clientUtcOffset.TotalMinutes - nextRunTimeUtcOffSet.TotalMinutes);
-            return nextRunTimeUtc;
+            DateTime startDateTimeInTimeZone = StartDate.GetValueOrDefault().AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
+            if (Interval == ScheduleInterval.Weekly)
+            {
+                startDateTimeInTimeZone = CalculateFirstDateTimeForWeeklyWorkflow(startDateTimeInTimeZone);
+            }
+
+            if (Interval == ScheduleInterval.Monthly)
+            {
+                startDateTimeInTimeZone = CalculateFirstDateTimeForMonthlyWorkflow(startDateTimeInTimeZone);
+            }
+
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            DateTime startDateTimeUtc = startDateTimeInTimeZone.Subtract(timeZone.BaseUtcOffset);
+
+            return CalculateDateTimeWithDstShift(timeZone, startDateTimeUtc, startDateTimeInTimeZone);
         }
 
-        private int? AdjustDayOfMonthsShiftBetweenLocalAndUtc(DateTime clientTime, DateTime clientTimeUtc)
+        public override DateTime? GetNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
         {
-            if (StartDate == null || LocalTimeOfDay == null || DayOfMonth == null)
+            DateTime nextUtcRunDateTime;
+            try
             {
-                return DayOfMonth;
+                nextUtcRunDateTime = CalculateNextUtcRunDateTime(lastNextUtcRunDateTime);
+            }
+            catch (Exception ex)
+            {
+                throw new ScheduleRunTimeGenerationException("Failed to calculate next run date time.", ex);
             }
 
-            int? dayOfMonth = DayOfMonth;
-
-            if (clientTime.DayOfWeek == clientTimeUtc.AddDays(-1).DayOfWeek)
+            if (EndDate.HasValue && EndDate < new DateTime(nextUtcRunDateTime.Year, nextUtcRunDateTime.Month, nextUtcRunDateTime.Day))
             {
-                dayOfMonth = GetNextDayOfMonth(DayOfMonth);
-            }
-            if (clientTime.DayOfWeek == clientTimeUtc.AddDays(1).DayOfWeek)
-            {
-                dayOfMonth = GetPreviousDayOfMonth(DayOfMonth);
+                return null;
             }
 
-            return dayOfMonth;
+            return nextUtcRunDateTime;
         }
 
-        private static int? GetNextDayOfMonth(int? dayOfMonth)
+        private DateTime CalculateFirstDateTimeForWeeklyWorkflow(DateTime dateTime)
         {
-            const int firstDaysInMonth = 1;
-            const int lastDaysInMonth = 31;
-            int? nextDay = dayOfMonth + 1;
+            ValidateWeeklyWorkflow();
+            int dayOfWeek = DaysOfWeekConverter.DayOfWeekToIndex(dateTime.DayOfWeek);
+            List<int> selectedDaysOfWeek = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.GetValueOrDefault()).Select(x => DaysOfWeekConverter.DayOfWeekToIndex(x)).ToList();
 
-            return nextDay > lastDaysInMonth ? firstDaysInMonth : nextDay;
-        }
-
-        private static int? GetPreviousDayOfMonth(int? dayOfMonth)
-        {
-            const int firstDaysInMonth = 1;
-            const int lastDaysInMonth = 31;
-            int? nextDay = dayOfMonth - 1;
-
-            return nextDay < firstDaysInMonth ? lastDaysInMonth : nextDay;
-        }
-
-        /// <summary>
-        /// Shift days of week if are not corresponding between local and UTC
-        /// </summary>
-        /// <returns></returns>
-        private DaysOfWeek? AdjustDaysShiftBetweenLocalAndUtc(DateTime clientTime, DateTime clientTimeUtc)
-        {
-            if (StartDate == null || LocalTimeOfDay == null || DaysToRun == null || DaysToRun == DaysOfWeek.Day || DaysToRun == DaysOfWeek.All)
+            if (dayOfWeek >= selectedDaysOfWeek.Max())
             {
-                return DaysToRun;
+                int daysOfWeekDifference = dayOfWeek - selectedDaysOfWeek.Min();
+                return dateTime.AddDays((Reoccur.GetValueOrDefault() * 7) - daysOfWeekDifference);
             }
 
-            List<DayOfWeek> selectedDays = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.GetValueOrDefault());
-            List<DayOfWeek> adjustedDays = new List<DayOfWeek>();
+            int nextDatDayOfWeek = selectedDaysOfWeek.First(x => x > dayOfWeek);
+            int todayAndNextDayOfWeekDifference = nextDatDayOfWeek - dayOfWeek;
 
-            foreach (DayOfWeek dayToRun in selectedDays)
-            {
-                adjustedDays.Add(ShiftDayBetweenLocalAndUtc(dayToRun, clientTime, clientTimeUtc));
-            }
-
-            return DaysOfWeekConverter.FromDayOfWeek(adjustedDays);
+            return dateTime.AddDays(todayAndNextDayOfWeekDifference);
         }
 
-        private DayOfWeek ShiftDayBetweenLocalAndUtc(DayOfWeek dayToRun, DateTime clientTime, DateTime clientTimeUtc)
+        private DateTime CalculateFirstDateTimeForMonthlyWorkflow(DateTime dateTime)
         {
-            if (clientTime.DayOfWeek  == clientTimeUtc.AddDays(-1).DayOfWeek)
+            ValidateMonthlyWorkflow();
+            int lastDayOfMonth = DateTime.DaysInMonth(dateTime.Year, dateTime.Month);
+            int dayOfMonth = DayOfMonth.GetValueOrDefault() >= lastDayOfMonth ? lastDayOfMonth : DayOfMonth.GetValueOrDefault();
+            DateTime scheduledDateTime = new DateTime(
+                dateTime.Year,
+                dateTime.Month,
+                dayOfMonth,
+                dateTime.Hour,
+                dateTime.Minute,
+                dateTime.Second);
+
+            if (dateTime > scheduledDateTime)
             {
-                return GetNextWeekday(dayToRun);
-            }
-            if (clientTime.DayOfWeek == clientTimeUtc.AddDays(1).DayOfWeek)
-            {
-                return GetPreviousWeekday(dayToRun);
+                return scheduledDateTime.AddMonths(Reoccur.GetValueOrDefault());
             }
 
-            return dayToRun;
+            return scheduledDateTime;
         }
 
-        private static DayOfWeek GetNextWeekday(DayOfWeek day)
+        private DateTime CalculateNextUtcRunDateTime(DateTime lastNextUtcRunDateTime)
         {
-            DateTime result = DateTime.Now;
-            while (result.DayOfWeek != day)
+            if (string.IsNullOrEmpty(TimeZoneId))
             {
-                result = result.AddDays(1);
+                throw new ArgumentNullException("Time Zone should be set to schedule a job.");
             }
-            return result.AddDays(1).DayOfWeek;
+
+            TimeZoneInfo timeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+            DateTime lastNextRunDateTimeInTimeZone = lastNextUtcRunDateTime.Add(timeZone.BaseUtcOffset);
+
+            if (timeZone.IsDaylightSavingTime(lastNextRunDateTimeInTimeZone))
+            {
+                TimeZoneInfo.AdjustmentRule adjustment = GetAdjustmentRule(lastNextRunDateTimeInTimeZone, timeZone.GetAdjustmentRules());
+                lastNextRunDateTimeInTimeZone = lastNextRunDateTimeInTimeZone.Add(adjustment.DaylightDelta);
+                lastNextUtcRunDateTime = lastNextUtcRunDateTime.Add(adjustment.DaylightDelta);
+            }
+
+            DateTime nextRunDateTimeInTimeZone = AddDateTime(lastNextRunDateTimeInTimeZone);
+            DateTime lastRunDateTimeWithDstShift = CalculateDateTimeWithDstShift(timeZone, lastNextUtcRunDateTime, nextRunDateTimeInTimeZone);
+
+            return AddDateTime(lastRunDateTimeWithDstShift);
         }
 
-        private static DayOfWeek GetPreviousWeekday(DayOfWeek day)
+        private static DateTime CalculateDateTimeWithDstShift(TimeZoneInfo timeZone, DateTime dateTimeUtc, DateTime dateTimeInTimeZone)
         {
-            DateTime result = DateTime.Now;
-            while (result.DayOfWeek != day)
+            TimeZoneInfo.AdjustmentRule[] adjustments = timeZone.GetAdjustmentRules();
+            if (adjustments.Length == 0)
             {
-                result = result.AddDays(1);
+                return dateTimeUtc;
             }
-            return result.AddDays(-1).DayOfWeek;
+
+            TimeZoneInfo.AdjustmentRule adjustment = GetAdjustmentRule(dateTimeInTimeZone, adjustments);
+            if (adjustment == null)
+            {
+                return dateTimeUtc;
+            }
+
+            bool isInDstTime = timeZone.IsDaylightSavingTime(dateTimeInTimeZone);
+            if (isInDstTime)
+            {
+                return dateTimeUtc.Subtract(adjustment.DaylightDelta);
+            }
+
+            return dateTimeUtc;
         }
 
-        public override string Description
+        private static TimeZoneInfo.AdjustmentRule GetAdjustmentRule(DateTime startDateTimeInTimeZone, TimeZoneInfo.AdjustmentRule[] adjustments)
         {
-            get
+            int year = startDateTimeInTimeZone.Year;
+            TimeZoneInfo.AdjustmentRule adjustment =
+                adjustments.FirstOrDefault(adj => adj.DateStart.Year <= year && adj.DateEnd.Year >= year);
+            return adjustment;
+        }
+
+        private DateTime AddDateTime(DateTime dateTime)
+        {
+            switch (Interval)
             {
-                var returnValue = new StringBuilder();
+                case ScheduleInterval.Daily:
+                    return dateTime.AddDays(1);
 
-                if (StartDate.HasValue)
-                {
-                    returnValue.Append(string.Format("Recurring job. Scheduled as: starting on {0}", StartDate.Value.ToString("d")));
-                }
+                case ScheduleInterval.Weekly:
+                    return CalculateNextDateTimeForWeeklyWorkflow(dateTime);
 
-                if (EndDate.HasValue)
-                {
-                    returnValue.Append(string.Format(", ending on {0}", EndDate.Value.ToString("d")));
-                }
-                switch (Interval)
-                {
-                    case ScheduleInterval.Daily:
-                        returnValue.Append(string.Format(", run this job every day"));
-                        break;
+                case ScheduleInterval.Monthly:
+                    ValidateMonthlyWorkflow();
+                    return dateTime.AddMonths(Reoccur.GetValueOrDefault());
+                default:
+                    return dateTime;
+            }
+        }
 
-                    case ScheduleInterval.Weekly:
-                        returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} week(s)", Reoccur.Value) : "week"));
-                        if (DaysToRun.HasValue)
-                        {
-                            returnValue.Append(string.Format(" on {0}", DaysOfWeekToString(DaysToRun.Value)));
-                        }
-                        break;
+        private DateTime CalculateNextDateTimeForWeeklyWorkflow(DateTime dateTime)
+        {
+            ValidateWeeklyWorkflow();
+            int dayOfWeek = DaysOfWeekConverter.DayOfWeekToIndex(dateTime.DayOfWeek);
+            List<int> selectedDaysOfWeek = DaysOfWeekConverter.FromDaysOfWeek(DaysToRun.GetValueOrDefault()).Select(x => DaysOfWeekConverter.DayOfWeekToIndex(x)).ToList();
 
-                    case ScheduleInterval.Monthly:
-                        returnValue.Append(string.Format(", run this job every {0}", Reoccur.HasValue && Reoccur.Value > 1 ? string.Format("{0} month(s)", Reoccur.Value) : "month"));
-                        if (DayOfMonth.HasValue)
-                        {
-                            returnValue.Append(string.Format(" on {0} day", DayOfMonth.Value));
-                        }
-                        else if (OccuranceInMonth.HasValue)
-                        {
-                            returnValue.Append(string.Format(" the {0} {1} of the month", OccuranceInMonth.Value.ToString(), DaysOfWeekToString(DaysToRun.Value)));
-                        }
-                        break;
+            if (dayOfWeek >= selectedDaysOfWeek.Max())
+            {
+                int daysOfWeekDifference = dayOfWeek - selectedDaysOfWeek.Min();
+                return dateTime.AddDays((Reoccur.GetValueOrDefault() * 7) - daysOfWeekDifference);
+            }
 
-                    case ScheduleInterval.None:
-                        returnValue.Append(", run this job once");
-                        break;
+            int nextDatDayOfWeek = selectedDaysOfWeek.First(x => x > dayOfWeek);
+            int todayAndNextDayOfWeekDifference = nextDatDayOfWeek - dayOfWeek;
 
-                    default:
-                        throw new NotImplementedException(
-                            "Scheduling rule does not exist on this object, this only supports Daily, Weekly, Monthly");
-                }
+            return dateTime.AddDays(todayAndNextDayOfWeekDifference);
+        }
 
-                if (localTimeOfDayTicks.HasValue)
-                {
-                    returnValue.Append(string.Format(" at {0} local server time.", DateTime.Now.Date.AddTicks(localTimeOfDayTicks.Value).ToString("t")));
-                }
-                return returnValue.ToString();
+        private void ValidateGetFirstUtcRunDateTime()
+        {
+            if (!StartDate.HasValue)
+            {
+                throw new ArgumentNullException("Start Date should be set to schedule a job.");
+            }
+
+            if (!LocalTimeOfDay.HasValue)
+            {
+                throw new ArgumentNullException("Local Time of day should be set to schedule a job.");
+            }
+
+            if (string.IsNullOrEmpty(TimeZoneId))
+            {
+                throw new ArgumentNullException("Time Zone should be set to schedule a job.");
+            }
+        }
+
+        private void ValidateWeeklyWorkflow()
+        {
+            if (!DaysToRun.HasValue)
+            {
+                throw new ArgumentNullException("Days of a week not specified for scheduler.");
+            }
+
+            if (!Reoccur.HasValue)
+            {
+                Reoccur = 1;
+            }
+        }
+
+        private void ValidateMonthlyWorkflow()
+        {
+            if (!DayOfMonth.HasValue)
+            {
+                throw new ArgumentNullException("Days of a month not specified for scheduler.");
+            }
+
+            if (!Reoccur.HasValue)
+            {
+                Reoccur = 1;
             }
         }
     }

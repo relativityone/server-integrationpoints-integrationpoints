@@ -19,21 +19,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IKubernetesMode _kubernetesMode;
         private readonly IAPILog _log;
         private readonly ISerializer _serializer;
+        private readonly IAgentService _agentService;
+        private readonly IJobServiceDataProvider _dataProvider;
 
         public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
         {
             _kubernetesMode = kubernetesMode;
-            AgentService = agentService;
+            _agentService = agentService;
             _log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
-            DataProvider = dataProvider;
+            _dataProvider = dataProvider;
             _serializer = new RipJsonSerializer(_log);
         }
 
-        protected IJobServiceDataProvider DataProvider { get; set; }
-
-        public IAgentService AgentService { get; }
-
-        public AgentTypeInformation AgentTypeInformation => AgentService.AgentTypeInformation;
+        public AgentTypeInformation AgentTypeInformation => _agentService.AgentTypeInformation;
 
         public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID, long? rootJobId = null)
         {
@@ -41,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
             if (_kubernetesMode.IsEnabled())
             {
-                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
+                row = _dataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
             }
             else
             {
@@ -53,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                                                         " Please validate EnableKubernetesMode toggle value, current value: False");
                 }
 
-                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
+                row = _dataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
                 _log.LogInformation("Retrieved following row: {@row}", row);
             }
 
@@ -81,8 +79,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             LogOnFinalizeJob(job.JobId, job.JobDetails, taskResult);
 
             var result = new FinalizeJobResult();
-
-            DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
+            DateTime? nextUtcRunDateTime = null;
+            try
+            {
+                nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
+            }
+            catch (Exception ex)
+            {
+                job.MarkJobAsFailed(ex, true, false);
+                _log.LogError(ex, "Unable to get next scheduled runtime for job {@job}", job);
+            }
 
             IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
 
@@ -104,22 +110,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     "Job {jobId} was scheduled with following details: " +
                     "NextRunTime - {nextRunTime} " +
                     "ScheduleRule - {scheduleRule}" +
-                    "CorrelationID - {correlationID}",
+                    "CorrelationID - {correlationId}",
                     job.JobId,
                     nextUtcRunDateTime,
                     job.ScheduleRule,
                     newJobCorrelationID);
 
-                TaskParameters taskParameters = new TaskParameters()
+                TaskParameters taskParameters = new TaskParameters
                 {
                     BatchInstance = newJobCorrelationID
                 };
                 string jobDetails = _serializer.Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, newJobCorrelationID.ToString(), job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(
+                    job,
+                    newJobCorrelationID.ToString(),
+                    scheduleRule,
+                    jobDetails);
             }
             else
             {
-                _log.LogInformation("Deleting job {jobId} from the queue - ShouldBreakSchedule {shouldBreakSchedule}, IsScheduled {isScheduledJob}",
+                _log.LogInformation(
+                    "Deleting job {jobId} from the queue - ShouldBreakSchedule {shouldBreakSchedule}, IsScheduled {isScheduledJob}",
                     job.JobId,
                     job.JobFailed?.ShouldBreakSchedule,
                     nextUtcRunDateTime.HasValue);
@@ -149,10 +160,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             DateTime? nextUtcRunDateTime = null;
             if (scheduleRule != null)
             {
-#if TIME_MACHINE
-                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
-#endif
-                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
+                nextUtcRunDateTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
             }
 
             _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
@@ -160,54 +168,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return nextUtcRunDateTime;
         }
 
-        public void CreateNewAndDeleteOldScheduledJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            string correlationID, string taskType, IScheduleRule scheduleRule, string jobDetails, int submittedBy,
-            long? rootJobID, long? parentJobID)
-        {
-            LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, submittedBy);
-
-            DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
-            if (nextRunTime.HasValue)
-            {
-                DataProvider.CreateNewAndDeleteOldScheduledJob(
-                    oldJobId,
-                    workspaceID,
-                    relatedObjectArtifactID,
-                    correlationID,
-                    taskType,
-                    nextRunTime.Value,
-                    AgentTypeInformation.AgentTypeID,
-                    scheduleRule.GetType().AssemblyQualifiedName,
-                    scheduleRule.ToSerializedString(),
-                    jobDetails,
-                    0,
-                    submittedBy,
-                    rootJobID,
-                    parentJobID);
-            }
-            else
-            {
-                throw new IntegrationPointsException($"Try to create new scheduled job without any rule specified. Previous Job Id: {oldJobId}");
-            }
-
-            LogOnCreatedScheduledJobBasedOnOldJob(oldJobId, workspaceID, relatedObjectArtifactID,
-                taskType, submittedBy, rootJobID, parentJobID, nextRunTime);
-        }
-
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationID, string taskType,
-            IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
+        public Job CreateJob(
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string correlationID,
+            string taskType,
+            IScheduleRule scheduleRule,
+            string jobDetails,
+            int SubmittedBy,
+            long? rootJobID,
+            long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
             Job job;
-#if TIME_MACHINE
-            scheduleRule.TimeService = new TimeMachineService(workspaceID);
-#endif
-            DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime();
+            DateTime? nextRunTime = null;
+            try
+            {
+                nextRunTime = scheduleRule.GetFirstUtcRunDateTime();
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Unable to get first scheduled runtime for parent job Id {parentJobID}", parentJobID);
+            }
             if (nextRunTime.HasValue)
             {
-                DataRow row = DataProvider.CreateScheduledJob(
+                DataRow row = _dataProvider.CreateScheduledJob(
                     workspaceID,
                     relatedObjectArtifactID,
                     correlationID,
@@ -237,14 +224,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return job;
         }
 
-        public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string correlationId, string taskType,
-            DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
+        public Job CreateJob(
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string correlationId,
+            string taskType,
+            DateTime nextRunTime,
+            string jobDetails,
+            int SubmittedBy,
+            long? rootJobID,
+            long? parentJobID)
         {
             LogOnCreateJob(workspaceID, relatedObjectArtifactID, taskType, SubmittedBy);
 
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            DataRow row = DataProvider.CreateScheduledJob(
+            DataRow row = _dataProvider.CreateScheduledJob(
                 workspaceID,
                 relatedObjectArtifactID,
                 correlationId,
@@ -263,15 +258,129 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public void DeleteJob(long jobID)
         {
-            DataProvider.DeleteJob(jobID);
+            _dataProvider.DeleteJob(jobID);
         }
 
         public Job GetJob(long jobID)
         {
-            AgentService.CreateQueueTableOnce();
+            _agentService.CreateQueueTableOnce();
 
-            DataRow row = DataProvider.GetJob(jobID);
+            DataRow row = _dataProvider.GetJob(jobID);
             return CreateJob(row);
+        }
+
+        public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
+        {
+            return GetScheduledJobs(workspaceID, relatedObjectArtifactID, new List<string> { taskName }).FirstOrDefault();
+        }
+
+        public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
+        {
+            LogOnGetScheduledJob(workspaceID, relatedObjectArtifactID, taskTypes);
+            _agentService.CreateQueueTableOnce();
+
+            using (DataTable dataTable = _dataProvider.GetJobs(workspaceID, relatedObjectArtifactID, taskTypes))
+            {
+                return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
+            }
+        }
+
+        public IEnumerable<Job> GetAllScheduledJobs()
+        {
+            _agentService.CreateQueueTableOnce();
+
+            using (DataTable dataTable = _dataProvider.GetAllJobs())
+            {
+                return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
+            }
+        }
+
+        public void UpdateStopState(IList<long> jobIds, StopState state)
+        {
+            if (!jobIds.Any())
+            {
+                return;
+            }
+
+            int count = _dataProvider.UpdateStopState(jobIds, state);
+            if (count == 0)
+            {
+                LogOnUpdateJobStopStateError(state, jobIds);
+                throw new InvalidOperationException("Invalid operation. Job state failed to update.");
+            }
+
+            LogCompletedUpdatedJobStopState(jobIds, state, count);
+        }
+
+        public IList<Job> GetJobs(long integrationPointId)
+        {
+            LogOnGetJobs(integrationPointId);
+            using (DataTable data = _dataProvider.GetJobsByIntegrationPointId(integrationPointId))
+            {
+                return data.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
+            }
+        }
+
+        public void UpdateJobDetails(Job job)
+        {
+            if (job == null)
+            {
+                throw new ArgumentNullException(nameof(job));
+            }
+
+            LogUpdateJobDetails(job);
+            _dataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
+        }
+
+        public void FinalizeDrainStoppedJob(Job job)
+        {
+            _dataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
+            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
+        }
+
+        public void UnlockJob(Job job)
+        {
+            _dataProvider.UnlockJob(job.JobId, StopState.None);
+            _log.LogInformation("Unlocking Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
+        }
+
+        private void CreateNewAndDeleteOldScheduledJob(
+            Job job,
+            string correlationId,
+            IScheduleRule scheduleRule,
+            string jobDetails)
+        {
+            LogOnCreateJob(job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, job.SubmittedBy);
+
+            DateTime? nextRunTime = null;
+            if (scheduleRule != null)
+            {
+                nextRunTime = scheduleRule.GetNextUtcRunDateTime(job.NextRunTime);
+            }
+            if (nextRunTime.HasValue)
+            {
+                _dataProvider.CreateNewAndDeleteOldScheduledJob(
+                    job.JobId,
+                    job.WorkspaceID,
+                    job.RelatedObjectArtifactID,
+                    correlationId,
+                    job.TaskType,
+                    nextRunTime.Value,
+                    AgentTypeInformation.AgentTypeID,
+                    scheduleRule.GetType().AssemblyQualifiedName,
+                    scheduleRule.ToSerializedString(),
+                    jobDetails,
+                    0,
+                    job.SubmittedBy,
+                    job.RootJobId,
+                    job.ParentJobId);
+            }
+            else
+            {
+                throw new IntegrationPointsException($"Try to create new scheduled job without any rule specified. Previous Job Id: {job.JobId}");
+            }
+
+            LogOnCreatedScheduledJobBasedOnOldJob(job, nextRunTime);
         }
 
         private Job CreateJob(DataRow row)
@@ -289,81 +398,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return job;
         }
 
-        public Job GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, string taskName)
-        {
-            return GetScheduledJobs(workspaceID, relatedObjectArtifactID, new List<string> { taskName }).FirstOrDefault();
-        }
-
-        public IEnumerable<Job> GetScheduledJobs(int workspaceID, int relatedObjectArtifactID, List<string> taskTypes)
-        {
-            LogOnGetScheduledJob(workspaceID, relatedObjectArtifactID, taskTypes);
-            AgentService.CreateQueueTableOnce();
-
-            using (DataTable dataTable = DataProvider.GetJobs(workspaceID, relatedObjectArtifactID, taskTypes))
-            {
-                return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
-            }
-        }
-
-        public IEnumerable<Job> GetAllScheduledJobs()
-        {
-            AgentService.CreateQueueTableOnce();
-
-            using (DataTable dataTable = DataProvider.GetAllJobs())
-            {
-                return dataTable.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
-            }
-        }
-
-        public void UpdateStopState(IList<long> jobIds, StopState state)
-        {
-            if (!jobIds.Any())
-            {
-                return;
-            }
-
-            int count = DataProvider.UpdateStopState(jobIds, state);
-            if (count == 0)
-            {
-                LogOnUpdateJobStopStateError(state, jobIds);
-                throw new InvalidOperationException("Invalid operation. Job state failed to update.");
-            }
-
-            LogCompletedUpdatedJobStopState(jobIds, state, count);
-        }
-
-        public IList<Job> GetJobs(long integrationPointId)
-        {
-            LogOnGetJobs(integrationPointId);
-            using (DataTable data = DataProvider.GetJobsByIntegrationPointId(integrationPointId))
-            {
-                return data.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
-            }
-        }
-
-        public void UpdateJobDetails(Job job)
-        {
-            if (job == null)
-            {
-                throw new ArgumentNullException(nameof(job));
-            }
-
-            LogUpdateJobDetails(job);
-            DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
-        }
-
-        public void FinalizeDrainStoppedJob(Job job)
-        {
-            DataProvider.UnlockJob(job.JobId, StopState.DrainStopped);
-            _log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
-        }
-
-        public void UnlockJob(Job job)
-        {
-            DataProvider.UnlockJob(job.JobId, StopState.None);
-            _log.LogInformation("Unlocking Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.RemoveSensitiveData());
-        }
-
         #region Logging
 
         private void LogJobInformation(Job job, int agentId)
@@ -376,40 +410,41 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _log.LogInformation("Attempting to update JobDetails for job with ID: {jobId} - JobInfo: {@jobInfo}", job.JobId, job.RemoveSensitiveData());
         }
 
-        public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
+        private void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
         {
-            _log.LogInformation("Attempting to finalize job with ID: ({jobid}) in {TypeName}. Exceptions: {Exceptions}",
-                jobJobId, nameof(JobService), JsonConvert.SerializeObject(taskResult.Exceptions));
+            _log.LogInformation(
+                "Attempting to finalize job with ID: ({jobid}) in {TypeName}. Exceptions: {Exceptions}",
+                jobJobId,
+                nameof(JobService),
+                JsonConvert.SerializeObject(taskResult.Exceptions));
         }
 
-        public void LogOnUnlockJobs(int agentId)
+        private void LogOnCreateJob(int workspaceId, int relatedObjectArtifactId, string taskType, int submittedBy)
         {
-            _log.LogInformation("Attempting to unlock scheduled jobs for Agent with ID: ({agentId} in {TypeName})", agentId, nameof(JobService));
-        }
-
-        public void LogOnCreateJob(int workspaceId, int relatedObjectArtifactId, string taskType, int submittedBy)
-        {
-            _log.LogInformation("Attempting to create Job in {service} " +
+            _log.LogInformation(
+                "Attempting to create Job in {service} " +
                                 "WorkspaceID: {workspaceId} " +
                                 "RelatedObjectArtifactID: {relatedObjectArtifactId} " +
                                 "Task types: {taskType} " +
                                 "Submitted by: {submittedBy}",
-                nameof(JobService), workspaceId, relatedObjectArtifactId, taskType, submittedBy);
+                nameof(JobService),
+                workspaceId,
+                relatedObjectArtifactId,
+                taskType,
+                submittedBy);
         }
 
-        public void LogOnGetJob(long jobId)
-        {
-            _log.LogInformation("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
-        }
-
-        public void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)
+        private void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)
         {
             _log.LogInformation(
                 "Attempting to get scheduledJobs in {TypeName}. WorkspaceId: ({WorkspaceId}), RelatedObjectArtifactID: ({RelatedObjectArtifactID}). Task types: {TaskTypes}",
-                nameof(JobService), workspaceId, relatedObjectArtifactID, string.Join(",", taskTypes));
+                nameof(JobService),
+                workspaceId,
+                relatedObjectArtifactID,
+                string.Join(",", taskTypes));
         }
 
-        public void LogOnUpdateJobStopStateError(StopState state, IList<long> jobIds)
+        private void LogOnUpdateJobStopStateError(StopState state, IList<long> jobIds)
         {
             _log.LogError(
                 "An error occured during update of stop states of jobs with IDs ({jobIds}) to state {state} in {TypeName}",
@@ -418,14 +453,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private void LogCompletedUpdatedJobStopState(IList<long> jobIds, StopState state, int updatedCount)
         {
-            _log.LogInformation("Jobs {count} count have been updated with StopState {stopState}. Updated Jobs: {jobs}. AllJobsWereUpdated: {wereAllUpdated}",
-                updatedCount, state, string.Join(",", jobIds), jobIds?.Count == updatedCount);
+            _log.LogInformation(
+                "Jobs {count} count have been updated with StopState {stopState}. Updated Jobs: {jobs}. AllJobsWereUpdated: {wereAllUpdated}",
+                updatedCount,
+                state,
+                string.Join(",", jobIds),
+                jobIds.Count == updatedCount);
         }
 
-        public void LogOnGetJobs(long integrationPointId)
+        private void LogOnGetJobs(long integrationPointId)
         {
             _log.LogInformation(
-                "Attempting to retrieve jobs for Integration Point with ID: {integrationPointID} in {TypeName}", integrationPointId,
+                "Attempting to retrieve jobs for Integration Point with ID: {integrationPointID} in {TypeName}",
+                integrationPointId,
                 nameof(JobService));
         }
 
@@ -434,19 +474,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _log.LogInformation("Scheduled Job has been created:\n {job}", job.ToString());
         }
 
-        private void LogOnCreatedScheduledJobBasedOnOldJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,
-            string taskType, int submittedBy, long? rootJobID, long? parentJobID, DateTime? nextRunTime)
+        private void LogOnCreatedScheduledJobBasedOnOldJob(
+            Job job,
+            DateTime? nextRunTime)
         {
-            _log.LogInformation("New scheduled job has been created based on OldJobId {oldJobId} with parameters:" +
+            _log.LogInformation(
+                "New scheduled job has been created based on OldJobId {oldJobId} with parameters:" +
                                 "WorkspaceId: {workspaceId}, " +
-                                "Integration Point: {relatedObjectArtifactId}, " +
+                                "RelatedObjectId: {relatedObjectArtifactId}, " +
                                 "TaskType: {taskType}, " +
                                 "NextRunTime: {nextRunTime}, " +
                                 "SubmitedBy: {submitedBy}, " +
                                 "RootJobId: {rootJobId}, " +
                                 "ParentJobId: {parentJobId}",
-                                oldJobId, workspaceID, relatedObjectArtifactID, taskType,
-                                nextRunTime, submittedBy, rootJobID, parentJobID);
+                job.JobId,
+                job.WorkspaceID,
+                job.RelatedObjectArtifactID,
+                job.TaskType,
+                nextRunTime,
+                job.SubmittedBy,
+                job.RootJobId,
+                job.ParentJobId);
         }
 
         #endregion

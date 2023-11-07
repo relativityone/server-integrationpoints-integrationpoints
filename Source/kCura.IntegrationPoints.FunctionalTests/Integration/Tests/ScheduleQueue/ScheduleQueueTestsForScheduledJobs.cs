@@ -39,7 +39,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             DateTime endDateTime = startDateTime;
 
             ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
-            PrepareJob(rule);
+            PrepareJob(rule, startDateTime);
 
             FakeAgent sut = PrepareSut();
 
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             DateTime expectedNextRunTime = startDateTime.AddDays(1);
 
             ScheduleRuleTest rule = ScheduleRuleTest.CreateDailyRule(startDateTime, endDateTime, TimeZoneInfo.Utc);
-            JobTest job = PrepareJob(rule);
+            JobTest job = PrepareJob(rule, startDateTime);
 
             FakeAgent sut = PrepareSut();
 
@@ -87,7 +87,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             DateTime expectedNextRunTime = startDateTime.AddDays(7);
 
             ScheduleRuleTest rule = ScheduleRuleTest.CreateWeeklyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, dayOfWeek);
-            JobTest job = PrepareJob(rule);
+            JobTest job = PrepareJob(rule, startDateTime);
 
             FakeAgent sut = PrepareSut();
 
@@ -109,9 +109,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             DateTime expectedNextRunTime = new DateTime(startDateTime.Year, startDateTime.Month + 1, 1);
 
-            ScheduleRuleTest rule = ScheduleRuleTest.CreateMonthlyRule(startDateTime, endDateTime,
-                TimeZoneInfo.Utc, dayOfMonth: 1);
-            JobTest job = PrepareJob(rule);
+            ScheduleRuleTest rule = ScheduleRuleTest.CreateMonthlyRule(startDateTime, endDateTime, TimeZoneInfo.Utc, dayOfMonth: 1);
+            JobTest job = PrepareJob(rule, expectedNextRunTime.AddMonths(-1));
 
             FakeAgent sut = PrepareSut();
 
@@ -143,9 +142,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             return fakeAgent;
         }
 
-        private JobTest PrepareJob(ScheduleRuleTest rule)
+        private JobTest PrepareJob(ScheduleRuleTest rule, DateTime nextUtcRunDateTime)
         {
-            return FakeRelativityInstance.Helpers.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule);
+            return FakeRelativityInstance.Helpers.JobHelper.ScheduleJobWithScheduleRule(SourceWorkspace, rule, nextUtcRunDateTime);
         }
 
         private DaysOfWeek ConvertToInternalDaysOfWeek(DayOfWeek dayOfWeek)

@@ -173,11 +173,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             // Arrange
             const string integrationPointName = "Adler Sieben";
             IntegrationPointProfileFake integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(SourceWorkspace);
+            integrationPointProfile.EnableScheduler = false;
             PrepareMocks();
 
             // Act
-            IntegrationPointModel integrationPointModel = await _sut
-                .CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, integrationPointName).ConfigureAwait(false);
+            IntegrationPointModel integrationPointModel = await _sut.CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, integrationPointName).ConfigureAwait(false);
 
             // Assert
             IntegrationPointDesiredState desiredState = new IntegrationPointDesiredState(integrationPointProfile)

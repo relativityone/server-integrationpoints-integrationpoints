@@ -6,13 +6,6 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
     public class DefaultScheduleRuleFactory : IScheduleRuleFactory
     {
-        private readonly ITimeService _timeService;
-
-        public DefaultScheduleRuleFactory(ITimeService timeService = null)
-        {
-            _timeService = timeService;
-        }
-
         public IScheduleRule Deserialize(Job job)
         {
             string scheduleRuleType = job.ScheduleRuleType;
@@ -27,10 +20,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             ISerializer defaultSerializer = new XMLSerializerFactory();
 
             // Periodic Schedule Rule
-            if (scheduleRuleType.StartsWith(Const._PERIODIC_SCHEDULE_RULE_TYPE, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.IsNullOrEmpty(scheduleRuleType) && scheduleRuleType.StartsWith(Const._PERIODIC_SCHEDULE_RULE_TYPE, StringComparison.InvariantCultureIgnoreCase))
             {
                 rule = Deserialize<PeriodicScheduleRule>(serializedString, defaultSerializer);
-                rule.TimeService = _timeService;
                 if (rule != null)
                 {
                     return rule;
@@ -47,12 +39,12 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return null;
         }
 
-        public IScheduleRule DeserializeWithNoType(Job job)
+        private IScheduleRule DeserializeWithNoType(Job job)
         {
             IScheduleRule rule;
             try
             {
-                rule = (IScheduleRule) SerializerHelper.DeserializeUsingTypeName(AppDomain.CurrentDomain, job.ScheduleRuleType, job.ScheduleRule);
+                rule = (IScheduleRule)SerializerHelper.DeserializeUsingTypeName(AppDomain.CurrentDomain, job.ScheduleRuleType, job.ScheduleRule);
             }
             catch (Exception)
             {
@@ -61,7 +53,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return rule;
         }
 
-        public IScheduleRule Deserialize<T>(string serializedString, ISerializer serializer)
+        private IScheduleRule Deserialize<T>(string serializedString, ISerializer serializer)
         {
             IScheduleRule rule;
             try

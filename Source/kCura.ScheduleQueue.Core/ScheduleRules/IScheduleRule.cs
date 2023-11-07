@@ -4,11 +4,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 {
     public interface IScheduleRule
     {
-        ITimeService TimeService { get; set; }
+        DateTime? GetNextUtcRunDateTime(DateTime lastNextRunTimeUtc);
 
-        string Description { get; }
-
-        DateTime? GetNextUTCRunDateTime();
+        DateTime? GetFirstUtcRunDateTime();
 
         string ToSerializedString();
 

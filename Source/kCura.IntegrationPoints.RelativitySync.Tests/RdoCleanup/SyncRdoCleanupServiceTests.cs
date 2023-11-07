@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common;
@@ -19,10 +20,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
     [TestFixture]
     public class SyncRdoCleanupServiceTests
     {
+        private const int _PROGRESS_OBJECT_TYPE_ID = 111;
+        private const int _BATCH_OBJECT_TYPE_ID = 222;
+        private const int _CONFIGURATION_OBJECT_TYPE_ID = 333;
+        private const int _WORKSPACE_ID = 11111;
+
         private readonly Guid _progressObjectType = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
         private readonly Guid _batchObjectType = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
         private readonly Guid _syncConfigurationObjectType = new Guid("3BE3DE56-839F-4F0E-8446-E1691ED5FD57");
-        private const int _WORKSPACE_ID = 11111;
         private Mock<IServicesMgr> _servicesMgrMock;
         private Mock<IArtifactGuidManager> _artifactGuidManager;
         private Mock<IObjectTypeManager> _objectTypeManager;
@@ -49,6 +54,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
             _artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(true);
             _artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _batchObjectType)).ReturnsAsync(true);
             _artifactGuidManager.Setup(x => x.GuidExistsAsync(_WORKSPACE_ID, _syncConfigurationObjectType)).ReturnsAsync(true);
+            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _progressObjectType)).ReturnsAsync(_PROGRESS_OBJECT_TYPE_ID);
+            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _batchObjectType)).ReturnsAsync(_BATCH_OBJECT_TYPE_ID);
+            _artifactGuidManager.Setup(x => x.ReadSingleArtifactIdAsync(_WORKSPACE_ID, _syncConfigurationObjectType)).ReturnsAsync(_CONFIGURATION_OBJECT_TYPE_ID);
+
+            var objectTypeResponse = new ObjectTypeResponse { ParentObjectType = new Securable<ObjectTypeIdentifier> { Value = new ObjectTypeIdentifier() } };
+            _objectTypeManager = new Mock<IObjectTypeManager>();
+            _objectTypeManager.Setup(x => x.ReadAsync(_WORKSPACE_ID, It.IsAny<int>())).ReturnsAsync(objectTypeResponse);
 
             _servicesMgrMock = new Mock<IServicesMgr>();
             _servicesMgrMock.Setup(x => x.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System)).Returns(_artifactGuidManager.Object);
@@ -70,12 +82,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.RdoCleanup
             await _sut.DeleteSyncRdosAsync(_WORKSPACE_ID).ConfigureAwait(false);
 
             // Assert
-            _objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request =>
-                request.ObjectIdentificationCriteria.ObjectType.Guid == _progressObjectType)), Times.Once);
-            _objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request =>
-                request.ObjectIdentificationCriteria.ObjectType.Guid == _batchObjectType)), Times.Once);
-            _objectManager.Verify(x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request =>
-                request.ObjectIdentificationCriteria.ObjectType.Guid == _syncConfigurationObjectType)), Times.Once);
+            _objectManager.Verify(
+                x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => request.ObjectIdentificationCriteria.ObjectType.Guid == _progressObjectType)), Times.Once);
+            _objectManager.Verify(
+                x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => request.ObjectIdentificationCriteria.ObjectType.Guid == _batchObjectType)), Times.Once);
+            _objectManager.Verify(
+                x => x.DeleteAsync(_WORKSPACE_ID, It.Is<MassDeleteByCriteriaRequest>(request => request.ObjectIdentificationCriteria.ObjectType.Guid == _syncConfigurationObjectType)), Times.Once);
         }
 
         [Test]
