@@ -82,7 +82,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			_sourceProviderRepositoryMock.Verify(z =>
 				z.Create(
-					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider))
+					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider)),
+					It.IsAny<ExecutionIdentity>()
 				)
 			);
 		}
@@ -104,26 +105,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			_sourceProviderRepositoryMock.Verify(z =>
 				z.Update(
-					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(expectedSourceProvider, actualSourceProvider))
+					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(expectedSourceProvider, actualSourceProvider)),
+					It.IsAny<ExecutionIdentity>()
 				)
 			);
-		}
-
-		[Test]
-		public async Task ShouldReturnErrorWhenCannotLoadProvider()
-		{
-			// arrange
-			string exceptionMessage = "Provider not valid";
-			var exceptionToThrow = new InvalidOperationException(exceptionMessage);
-
-			SetupDataProviderFactoryFactory(exceptionToThrow);
-
-			// act
-			Either<string, Unit> result = await _sut.InstallProvidersAsync(_sourceProvidersToCreate).ConfigureAwait(false);
-
-			// assert
-			string expectedErrorMessage = $"Error while loading '{_sourceProviderToCreate.Name}' provider: {exceptionMessage}";
-			result.Should().BeLeft(expectedErrorMessage, "because cannot load provider");
 		}
 
 		[Test]
@@ -145,7 +130,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 
 			_sourceProviderRepositoryMock.Verify(z =>
 				z.Create(
-					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider))
+					It.Is<Data.SourceProvider>(actualSourceProvider => AssertAreEqual(_sourceProviderToCreate, actualSourceProvider)),
+					It.IsAny<ExecutionIdentity>()
 				)
 			);
 		}
@@ -174,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 			// arrange
 			var exceptionToThrow = new InvalidOperationException("Cannot get installed providers");
 			_sourceProviderRepositoryMock
-				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>(), It.IsAny<ExecutionIdentity>()) )
 				.Throws(exceptionToThrow);
 
 			// act
@@ -200,7 +186,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 		{
 			// arrange
 			const int numberOfDuplicates = 2;
-			_sourceProviderRepositoryMock.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+			_sourceProviderRepositoryMock.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(
 					Enumerable
 						.Repeat(_existingProviderApplicationGuid, numberOfDuplicates)
@@ -260,7 +246,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 				.ToList();
 
 			_sourceProviderRepositoryMock
-				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>()))
+				.Setup(x => x.GetSourceProviderRdoByApplicationIdentifierAsync(It.IsAny<Guid>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(sourceProviders);
 		}
 

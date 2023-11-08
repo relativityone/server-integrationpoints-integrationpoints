@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -21,13 +22,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _relativityObjectManager = relativityObjectManager;
         }
 
-        public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
+        public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(
+            string sourceProviderGuidIdentifier,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             QueryRequest query = _artifactIdByGuid.Create(sourceProviderGuidIdentifier);
 
             try
             {
-                List<RelativityObject> queryResults = _relativityObjectManager.Query(query);
+                List<RelativityObject> queryResults = _relativityObjectManager.Query(query, executionIdentity);
                 return queryResults.Single().ArtifactID;
             }
             catch (Exception e)
@@ -36,7 +39,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        public Task<List<SourceProvider>> GetSourceProviderRdoByApplicationIdentifierAsync(Guid appGuid)
+        public Task<List<SourceProvider>> GetSourceProviderRdoByApplicationIdentifierAsync(
+            Guid appGuid,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             var request = new QueryRequest
             {
@@ -48,7 +53,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 Condition = $"'{SourceProviderFields.ApplicationIdentifier}' == '{appGuid}'"
             };
 
-            return _relativityObjectManager.QueryAsync<SourceProvider>(request);
+            return _relativityObjectManager.QueryAsync<SourceProvider>(request, executionIdentity: executionIdentity);
         }
     }
 }

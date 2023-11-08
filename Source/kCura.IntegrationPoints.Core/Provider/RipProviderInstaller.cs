@@ -94,32 +94,9 @@ namespace kCura.IntegrationPoints.Core.Provider
             global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
             return UpdateApplicationGuidIfMissing(provider)
-                .Bind(providerWithAppGuid => ValidateProvider(dataProviderFactory, providerWithAppGuid))
                 .BindAsync(AddOrUpdateProviderAsync);
         }
-
-        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> ValidateProvider(
-            IDataProviderFactory dataProviderFactory,
-            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
-        {
-            return TryLoadingProvider(dataProviderFactory, provider);
-        }
-
-        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider> TryLoadingProvider(
-            IDataProviderFactory dataProviderFactory,
-            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
-        {
-            try
-            {
-                dataProviderFactory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
-                return provider;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while loading {provider}", provider?.Name);
-                return $"Error while loading '{provider?.Name}' provider: {ex.Message}";
-            }
-        }
+        
 
         private async Task<Either<string, Unit>> AddOrUpdateProviderAsync(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
         {
@@ -136,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Provider
         private async Task<List<SourceProvider>> GetInstalledRdoProvidersAsync(Guid applicationGuid)
         {
 	        List<SourceProvider> installedSourceProviders = await _sourceProviderRepository
-                .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
+                .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid, ExecutionIdentity.System)
                 .ConfigureAwait(false);
 
             List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();

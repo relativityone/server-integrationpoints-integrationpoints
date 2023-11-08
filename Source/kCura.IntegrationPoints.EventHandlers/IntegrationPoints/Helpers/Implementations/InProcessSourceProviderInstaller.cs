@@ -47,12 +47,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return Task.CompletedTask;
 		}
 
-		private static Either<string, Unit> InstallProviders(
+		private Either<string, Unit> InstallProviders(
 			IRipProviderInstaller providerInstaller,
 			IEnumerable<global::Relativity.IntegrationPoints.Contracts.SourceProvider> sourceProviders)
 		{
-			return providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
-		}
+            try
+            {
+                return providerInstaller.InstallProvidersAsync(sourceProviders).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+				_logger.LogError(ex, "Failed to install Source Providers.");
+				throw;
+            }
+        }
 
 		private Either<string, IRipProviderInstaller> GetProviderInstaller(int workspaceID)
 		{

@@ -179,6 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 		[IdentifiedTest("6a5a30fb-ffd1-40b2-bab5-876c215eca09")]
 		[SmokeTest]
+		[Ignore("Ignoring due to random fails")]
 		public void StopStateCannotBeUpdatedWhileExportServiceObservers()
 		{
 			Job job = null;

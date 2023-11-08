@@ -100,7 +100,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         {
             _destinationProviderRepositoryMock.Verify(x =>
                 x.Create(
-                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName))
+                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName)), 
+                    It.IsAny<ExecutionIdentity>()
                 )
             );
         }
@@ -109,7 +110,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         {
             _destinationProviderRepositoryMock.Verify(x =>
                 x.Update(
-                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName))
+                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName)),
+                    It.IsAny<ExecutionIdentity>()
                 )
             );
         }
