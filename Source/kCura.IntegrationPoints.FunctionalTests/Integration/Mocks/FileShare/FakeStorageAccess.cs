@@ -154,6 +154,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
+        public Task EnsureEndpointConnectedAsync(string path, EnsureEndpointConnectedOptions ensureEndpointConnectedOptions = null, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public StorageInterface GetResolvedPathStorageInterface(string path)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task ReadAllBytesToAsync(string path, Stream destinationStream, ReadAllBytesToOptions readAllBytesToOptions = null, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task ReadAllTextToAsync(string path, TextWriter textWriter, ReadAllTextToOptions readAllTextToOptions = null, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public StorageAccessKind StorageAccessKind { get; }
     }
 }
