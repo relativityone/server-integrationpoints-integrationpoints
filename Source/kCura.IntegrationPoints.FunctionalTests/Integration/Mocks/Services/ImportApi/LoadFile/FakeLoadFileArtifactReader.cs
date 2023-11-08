@@ -29,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
             throw new NotImplementedException();
         }
 
-        public long CountRecords()
+        public long? CountRecords()
         {
             return _numberOfRecords;
         }

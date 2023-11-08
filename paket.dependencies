@@ -118,7 +118,7 @@ nuget Relativity 52.3.29
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.Services.Interfaces.Private ~> 14.1.2
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.OutsideIn 2022.7.0 content: none             //Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2023.10.0 content: none             //Relativity.DataExchange.Client.SDK
 nuget FluentAssertions 4.19.4
 nuget Polly 5.9
 nuget Moq 4.5.3
@@ -147,6 +147,7 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
+nuget Relativity.DataExchange.Client.SDK 1.20.41-REL-889368-bump-tapi
 nuget Relativity.Sync 1.1.87
 
 //RIP packages
