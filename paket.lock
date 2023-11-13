@@ -85,7 +85,8 @@ NUGET
     kCura.FreeImage (3.17.0.1)
     kCura.Injection (14.0.0)
     kCura.LongPath (1.0.20)
-    kCura.OutsideIn.FI.Win32 (2020.7.0) - content: none
+    kCura.OutsideIn.FI.Win32 (2023.13.0) - content: none
+      Relativity.Logging.Interfaces (>= 3000.0.1)
     LanguageExt.Core (3.1.15)
       Microsoft.CSharp (>= 4.5)
       System.Reflection.Emit (>= 4.3)
@@ -252,7 +253,7 @@ NUGET
       Relativity.OAuth2Client.Interfaces (>= 1.0)
     Relativity.OAuth2Client.Interfaces (1.5.3)
     Relativity.ObjectManager (12.1.171.20)
-    Relativity.OutsideIn (2023.10.0) - content: none
+    Relativity.OutsideIn (2023.13.0) - content: none
       Relativity.Logging (>= 2019.5.1)
     Relativity.Platform.Agent.WorkloadDiscovery.SDK (0.2.1)
     Relativity.Productions.Services.Interfaces (11.1.0)
@@ -276,7 +277,7 @@ NUGET
       Relativity.API (>= 17.7)
       Relativity.Services.Interfaces.Helpers (>= 13.7.1)
       Relativity.Storage (>= 1.11.1)
-    Relativity.Sync.Services.Interfaces (1.1.87)
+    Relativity.Sync.Services.Interfaces (1.1.89)
       Relativity.Kepler (>= 2.18)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (3003.1.0)
@@ -524,13 +525,13 @@ NUGET
       Relativity.Kepler (>= 2.18)
     Relativity.Kepler.Client.SDK (2.14.4)
       Relativity.Kepler (>= 2.14.4)
-    Relativity.Logging (3000.4.0)
+    Relativity.Logging (3000.4.0) - content: none
     Relativity.OAuth2Client (1.5.3)
       Newtonsoft.Json (>= 6.0.8)
       Relativity.OAuth2Client.Interfaces (>= 1.0)
     Relativity.OAuth2Client.Interfaces (1.5.3)
     Relativity.ObjectManager (12.1.171.20)
-    Relativity.OutsideIn (2023.10.0)
+    Relativity.OutsideIn (2023.13.0) - content: none
       Relativity.Logging (>= 2019.5.1)
     Relativity.Services.DataContracts (13.5.0)
     Relativity.Services.Interfaces (13.5.0)
@@ -552,7 +553,7 @@ NUGET
       Relativity.API (>= 17.7)
       Relativity.Services.Interfaces.Helpers (>= 13.7.1)
       Relativity.Storage (>= 1.11.1)
-    Relativity.Sync (1.1.87)
+    Relativity.Sync (1.1.89)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
@@ -889,7 +890,7 @@ NUGET
       Relativity.OAuth2Client.Interfaces (>= 1.0)
     Relativity.OAuth2Client.Interfaces (1.5.3)
     Relativity.ObjectManager (12.1.171.20)
-    Relativity.OutsideIn (2023.10.0) - content: none
+    Relativity.OutsideIn (2023.13.0) - content: none
       Relativity.Logging (>= 2019.5.1)
     Relativity.Platform.Agent.WorkloadDiscovery.SDK (0.1.3)
     Relativity.Services.DataContracts (13.5.0)
@@ -912,7 +913,7 @@ NUGET
       Relativity.API (>= 17.7)
       Relativity.Services.Interfaces.Helpers (>= 13.7.1)
       Relativity.Storage (>= 1.11.1)
-    Relativity.Sync (1.1.87)
+    Relativity.Sync (1.1.89)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
