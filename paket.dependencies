@@ -38,8 +38,8 @@ nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 nuget Relativity.Platform.Agent.WorkloadDiscovery.SDK
 nuget Relativity.Productions.Services.Interfaces 11.1.0
-nuget Relativity.Storage 1.9.0
-nuget Relativity.Storage.Extensions 1.9.0
+nuget Relativity.Storage 1.11.1
+nuget Relativity.Storage.Extensions 1.11.1
 nuget Relativity.Telemetry.APM 2019.1.1
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
 nuget Relativity.Telemetry.Services.Interface 3003.0.2
@@ -48,14 +48,14 @@ nuget Relativity.AutomatedWorkflows.SDK 1.2.1
 nuget Relativity.HostingBridge.SDK 0.2.0
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.20.27
+nuget Relativity.DataExchange.Client.SDK 1.20.41-REL-889368-bump-tapi
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.58
 nuget Relativity.Import.SDK
-nuget Relativity.Transfer.Client 8.0.0-pre.70
+nuget Relativity.Transfer.Client 8.0.0-pre.84
 
 //Relativity transient packages
-nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
-nuget Relativity.OutsideIn 2022.7.0 content: none             //Relativity.DataExchange.Client.SDK
+nuget kCura.OutsideIn.FI.Win32 2023.13.0 content: none 		//Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2023.13.0 content: none             //Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget SSH.NET 2020.0.1
@@ -102,7 +102,7 @@ nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
 
 // Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 1.1.58
+nuget Relativity.Sync.Services.Interfaces 1.1.89
 
 group Tests
 framework: auto-detect
@@ -118,7 +118,7 @@ nuget Relativity 52.3.29
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.Services.Interfaces.Private ~> 14.1.2
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.OutsideIn 2022.7.0 content: none             //Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2023.13.0 content: none             //Relativity.DataExchange.Client.SDK
 nuget FluentAssertions 4.19.4
 nuget Polly 5.9
 nuget Moq 4.5.3
@@ -147,7 +147,8 @@ nuget Relativity.HostingBridge.SDK 0.2.0
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 1.1.58
+nuget Relativity.DataExchange.Client.SDK 1.20.41-REL-889368-bump-tapi
+nuget Relativity.Sync 1.1.89
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -160,7 +161,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 1.1.58
+nuget Relativity.Sync 1.1.89
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
@@ -174,3 +175,4 @@ nuget Relativity.Telemetry.APM 2019.1.1
 nuget SystemWrapper.Interfaces 0.25.0.186
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
+nuget Relativity.OutsideIn 2023.13.0 content: none             //Relativity.DataExchange.Client.SDK

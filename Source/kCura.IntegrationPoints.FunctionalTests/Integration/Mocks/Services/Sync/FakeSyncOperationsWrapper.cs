@@ -27,8 +27,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
         {
             _syncJob.Setup(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()))
                 .Returns(async (CompositeCancellationToken token) => await action(token).ConfigureAwait(false));
-            _syncJob.Setup(x => x.ExecuteAsync(It.IsAny<IProgress<SyncJobState>>(), It.IsAny<CompositeCancellationToken>()))
-                .Returns(async (IProgress<SyncJobState> progress, CompositeCancellationToken token) => await action(token).ConfigureAwait(false));
+            _syncJob.Setup(x => x.ExecuteAsync(It.IsAny<CompositeCancellationToken>()))
+                .Returns(async (CompositeCancellationToken token) => await action(token).ConfigureAwait(false));
         }
 
         public IRelativityServices CreateRelativityServices()
