@@ -122,6 +122,22 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         }
 
         [Test]
+        [System.ComponentModel.Description("Validates that columns are parsed correctly with default parser options")]
+        public void ValidateColumnParsingWithDefaultParserOptions()
+        {
+            const int numberOflinesInInputStream = 1;
+            var input = "\"First Name\",\"Last Name\",\"Full Name (Last Name, First Name)\",\"Employee Number\",\"Unique ID\"";
+            Stream streamInput = StringToStream(input);
+            using (var parser = new DelimitedFileParser(_fieldParserFactory, streamInput, ParserOptions.GetDefaultParserOptions()))
+            {
+                IEnumerable<string> parsedColumns = parser.ParseColumns();
+
+                Assert.AreEqual(numberOflinesInInputStream, parser.RecordsAffected);
+                Assert.AreEqual(parsedColumns.Count(), 5);
+            }
+        }
+
+        [Test]
         public void ShouldNotValidateColumnsBecaseColumnsAlreadyExist()
         {
             // Arrange
