@@ -98,6 +98,7 @@ namespace kCura.IntegrationPoints.FtpProvider
         {
             LogRetrievingBatchableIds(identifier);
             IDataReader retVal;
+            List<FieldEntry> fields = new List<FieldEntry>();
             string fileName = string.Empty;
             string remoteLocation = string.Empty;
             Settings settings = GetSettingsModel(providerConfiguration.Configuration);
@@ -111,6 +112,15 @@ namespace kCura.IntegrationPoints.FtpProvider
                 remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
                 using (IFtpConnector client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
                 {
+
+                    using (Stream stream = client.DownloadStream(remoteLocation, fileName, Constants.RetyCount))
+                    {
+                        using (var parser = _parserFactory.GetDelimitedFileParser(stream, ParserOptions.GetDefaultParserOptions()))
+                        {
+                            IEnumerable<string> columns = parser.ParseColumns();
+                            fields.AddRange(columns.Select(name => new FieldEntry() { DisplayName = name, FieldIdentifier = name }));
+                        }
+                    }
                     string fileLocation = Path.GetTempPath() + Guid.NewGuid() + ".csv";
                     client.DownloadFile(fileLocation, remoteLocation, fileName, Constants.RetyCount);
                     IDataReader fileReader = _dataReaderFactory.GetFileDataReader(fileLocation);
@@ -118,8 +128,7 @@ namespace kCura.IntegrationPoints.FtpProvider
                     {
                         // since column list and order is recorded at the last Integration Point save,
                         // verify that current file has the same structure
-                        string columns = fileReader.GetString(0);
-                        ValidateColumns(columns, settings, parserOptions);
+                        ValidateColumns(fields, settings, parserOptions);
                     }
                     retVal = fileReader;
                     return retVal;
@@ -216,12 +225,11 @@ namespace kCura.IntegrationPoints.FtpProvider
             return retVal;
         }
 
-        internal void ValidateColumns(string columns, Settings settings, ParserOptions parserOptions)
+        internal void ValidateColumns(List<FieldEntry> fields, Settings settings, ParserOptions parserOptions)
         {
             // must contain the same columns in the same order as it was initially when Integration Point was saved
             string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
-
-            string fixedColumns = string.Join(",", columns.Split(',').Select(item => item.Trim(' ', '"')));
+            string fixedColumns = string.Join(parserOptions.Delimiters[0], fields.Select(x => x.FieldIdentifier).ToList());
 
             if (!expectedColumns.Equals(fixedColumns, StringComparison.InvariantCultureIgnoreCase))
             {

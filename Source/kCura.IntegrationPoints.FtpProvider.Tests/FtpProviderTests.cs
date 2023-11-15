@@ -34,10 +34,14 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         }
 
         [Test, System.ComponentModel.Description("Validates columns when all match")]
-        [TestCase("AAA, bbb ,CcC")]
-        [TestCase("\"AAA\", \"bbb\"  ,\"CcC\"")]
-        public void ValidateColumns_AllMatch(string columns)
+        public void ValidateColumns_AllMatch()
         {
+            var columns = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa" },
+                    new FieldEntry() {FieldIdentifier = "BBB" },
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                };
             var settings = new Settings()
             {
                 ColumnList = new List<FieldEntry>()
@@ -54,10 +58,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         }
 
         [Test, System.ComponentModel.Description("Validates columns when some of them are missing")]
-        [TestCase("AAA, bbb")]
-        [TestCase("bbb")]
-        [TestCase("")]
-        public void ValidateColumns_SomeMissing(string columns)
+        [TestCaseSource(nameof(ValidateColumns_SomeMissing_TestData))]
+        public void ValidateColumns_SomeMissing(List<FieldEntry> columns)
         {
             var settings = new Settings()
             {
@@ -75,10 +77,22 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             Assert.Throws<Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
 
+        private static IEnumerable<TestCaseData> ValidateColumns_SomeMissing_TestData()
+        {
+            yield return new TestCaseData(new List<FieldEntry> { new FieldEntry { FieldIdentifier = "AAA" }, new FieldEntry { FieldIdentifier = "bbb" } });
+            yield return new TestCaseData(new List<FieldEntry> { new FieldEntry { FieldIdentifier = "bbb" } });
+            yield return new TestCaseData(new List<FieldEntry>());
+        }
+
         [Test, System.ComponentModel.Description("Validates columns when all missing in settings 3 vs 0")]
         public void ValidateColumns_AllMissingInSettings()
         {
-            var columns = "AAA,bbb,CcC";
+            var columns = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa" },
+                    new FieldEntry() {FieldIdentifier = "BBB" },
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                };
             var settings = new Settings()
             {
                 ColumnList = new List<FieldEntry>() { }
