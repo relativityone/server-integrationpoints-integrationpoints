@@ -55,6 +55,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupStorageService();
 
             _entityFullNameServiceFake = new Mock<IEntityFullNameService>();
+            _entityFullNameServiceFake.Setup(
+                    x => x.FormatFullName(It.IsAny<Dictionary<string, IndexedFieldMap>>(), It.IsAny<IDataReader>()))
+                .Returns(_fxt.Create<string>());
 
             _sourceProvider = new MyFirstProvider();
 
