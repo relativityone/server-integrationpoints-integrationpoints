@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare
             throw new System.NotImplementedException();
         }
 
-        public async Task<IList<string>> ReadAllLinesAsync(string filePath)
+        public async Task<List<string>> ReadAllLinesAsync(string filePath)
         {
             Stream stream = File.OpenRead(filePath);
             List<string> lines = new List<string>();

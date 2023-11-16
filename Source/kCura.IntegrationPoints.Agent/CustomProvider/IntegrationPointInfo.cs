@@ -17,14 +17,14 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             FieldMap = integrationPoint.FieldMappings?.Select((map, i) => new IndexedFieldMap(map, FieldMapType.Normal, i)).ToList();
         }
 
-        public int ArtifactId { get; }
+        public int ArtifactId { get; set; }
 
-        public string SourceConfiguration { get; }
+        public string SourceConfiguration { get; set; }
 
         public CustomProviderDestinationConfiguration DestinationConfiguration { get; set; }
 
-        public string SecuredConfiguration { get; }
+        public string SecuredConfiguration { get; set; }
 
-        public List<IndexedFieldMap> FieldMap { get; }
+        public List<IndexedFieldMap> FieldMap { get; set; }
     }
 }

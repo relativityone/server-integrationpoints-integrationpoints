@@ -100,6 +100,7 @@ nuget Selenium.WebDriver.ChromeDriver 78.0.3904.1100-beta
 nuget Selenium.WebDriver.GeckoDriver 0.24.0
 nuget Serilog 2.12.0
 nuget ARMTestServices 1.1.1
+nuget IntegrationPoints.MyFirstProvider 12.3.10
 
 // Relativity Sync packages
 nuget Relativity.Sync.Services.Interfaces 1.1.89

@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Storage
             return stream;
         }
 
-        public async Task<IList<string>> ReadAllLinesAsync(string filePath)
+        public async Task<List<string>> ReadAllLinesAsync(string filePath)
         {
             try
             {
