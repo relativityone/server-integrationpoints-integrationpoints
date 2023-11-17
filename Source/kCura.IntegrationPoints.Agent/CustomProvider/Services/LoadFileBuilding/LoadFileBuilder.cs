@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     {
                         using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIdsChunk, providerConfig))
                         {
-                            await WriteFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
+                            await AppendToFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
                         }
                     }
 
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             }
         }
 
-        private async Task WriteFileAsync(
+        private async Task AppendToFileAsync(
             IDataReader sourceProviderDataReader,
             Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary,
             DataSourceSettings settings,
