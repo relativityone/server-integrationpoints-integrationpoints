@@ -10,6 +10,7 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.AutomatedWorkflows.SDK
+IntegrationPoints.MyFirstProvider
 iTextSharp
 FluentAssertions
 Moq

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.CustomProvider.DTO;
 using kCura.IntegrationPoints.Agent.CustomProvider.Services.EntityServices;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Storage;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
@@ -18,6 +19,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 {
     internal class LoadFileBuilder : ILoadFileBuilder
     {
+        private const int _SOURCE_PROVIDER_GET_DATA_BATCH_SIZE = 1000;
+
         private readonly IRelativityStorageService _relativityStorageService;
         private readonly IEntityFullNameService _entityFullNameService;
         private readonly IAPILog _logger;
@@ -50,12 +53,19 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
 
                 _logger.LogInformation("Fields to retrieve from sourceprovider: {@fields}", fields);
 
-                using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIds, providerConfig))
                 using (StorageStream dataFileStream = await GetDataFileStreamAsync(importDirectory, batch).ConfigureAwait(false))
                 using (TextWriter dataFileWriter = new StreamWriter(dataFileStream))
                 {
                     DataSourceSettings settings = CreateSettings(dataFileStream.StoragePath);
-                    await WriteFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
+
+                    foreach (List<string> entryIdsChunk in entryIds.SplitList(_SOURCE_PROVIDER_GET_DATA_BATCH_SIZE))
+                    {
+                        using (IDataReader sourceProviderDataReader = provider.GetData(fields, entryIdsChunk, providerConfig))
+                        {
+                            await AppendToFileAsync(sourceProviderDataReader, destinationFieldNameToFieldMapDictionary, settings, dataFileWriter).ConfigureAwait(false);
+                        }
+                    }
+
                     _logger.LogInformation("Successfully created data file for batch index: {batchIndex} GUID: {batchGuid} path: {path}", batch.BatchID, batch.BatchGuid, dataFileStream.StoragePath);
                     return settings;
                 }
@@ -67,7 +77,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
             }
         }
 
-        private async Task WriteFileAsync(
+        private async Task AppendToFileAsync(
             IDataReader sourceProviderDataReader,
             Dictionary<string, IndexedFieldMap> destinationFieldNameToFieldMapDictionary,
             DataSourceSettings settings,

@@ -1,19 +1,15 @@
-﻿using kCura.IntegrationPoints.Core.Extensions;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Extensions;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Extensions
 {
     [TestFixture]
     public class CollectionExtensionsTests
     {
-        [Test]
-        [TestCase(new[] { 0 }, 0)]
         [TestCase(new[] { 0 }, 1)]
-        [TestCase(new[] { 0, 1 }, -1)]
-        [TestCase(new[] { 0, 1 }, 0)]
         [TestCase(new[] { 0, 1 }, 2)]
         [TestCase(new[] { 0, 1 }, 50)]
         public void SplitListOneCollectionTests(int[] testValues, int testBatchSize)
@@ -22,12 +18,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
             const int expectedNumberOfBatches = 1;
 
             // Act
-            IList<IList<int>> actualResult = CollectionExtensions.SplitList(testValues, testBatchSize).ToList();
+            IList<List<int>> actualResult = CollectionExtensions.SplitList(testValues, testBatchSize).ToList();
 
             // Assert
             CollectionAssert.IsNotEmpty(actualResult);
             Assert.AreEqual(expectedNumberOfBatches, actualResult.Count);
             CollectionAssert.AreEqual(testValues, actualResult[0]);
+        }
+
+        [TestCase(new[] { 0 }, 0)]
+        [TestCase(new[] { 0, 1 }, 0)]
+        [TestCase(new[] { 0, 1 }, -1)]
+        public void SplitListOneCollectionTests_WithExpectedException(int[] testValues, int testBatchSize)
+        {
+            // Act
+            Func<IEnumerable<List<int>>> action = () => CollectionExtensions.SplitList(testValues, testBatchSize).ToList();
+
+            // Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => action());
         }
 
         [Test]
@@ -37,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
             int[] testValues = Array.Empty<int>();
 
             // Act
-            IList<IList<int>> actualResult = CollectionExtensions.SplitList(testValues, 0).ToList();
+            IList<List<int>> actualResult = CollectionExtensions.SplitList(testValues, 10).ToList();
 
             // Assert
             Assert.IsNotNull(actualResult);
@@ -56,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
             int testBatchSize = (int)Math.Ceiling((double)testValues.Length / expectedNumberOfBatches);
 
             // Act
-            IList<IList<int>> actualResult = CollectionExtensions.SplitList(testValues, testBatchSize).ToList();
+            IList<List<int>> actualResult = CollectionExtensions.SplitList(testValues, testBatchSize).ToList();
 
             // Assert
             CollectionAssert.IsNotEmpty(actualResult);
