@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Storage
 
         Task<StorageStream> OpenFileAsync(OpenFileParameters parameters, CancellationToken cancellationToken = default(CancellationToken));
 
-        Task<List<string>> ReadAllLinesAsync(string filePath);
+        Task<IList<string>> ReadAllLinesAsync(string filePath);
 
         Task<string> GetWorkspaceDirectoryPathAsync(int workspaceId);
 

@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.LoadFileBuilding
                     .Select(x => x.FieldMap.SourceField);
 
                 DataSourceProviderConfiguration providerConfig = new DataSourceProviderConfiguration(integrationPointInfo.SourceConfiguration, integrationPointInfo.SecuredConfiguration);
-                List<string> entryIds = await _relativityStorageService.ReadAllLinesAsync(batch.IDsFilePath).ConfigureAwait(false);
+                IList<string> entryIds = await _relativityStorageService.ReadAllLinesAsync(batch.IDsFilePath).ConfigureAwait(false);
 
                 _logger.LogInformation("Fields to retrieve from sourceprovider: {@fields}", fields);
 

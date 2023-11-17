@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         {
             _storageServiceFake = new Mock<IRelativityStorageService>();
             _storageServiceFake.Setup(x => x.ReadAllLinesAsync(It.IsAny<string>()))
-                .Returns((string path) => Task.FromResult(File.ReadAllLines(path).ToList()));
+                .Returns((string path) => Task.FromResult<IList<string>>(File.ReadAllLines(path).ToList()));
             _storageServiceFake.Setup(x => x.CreateFileOrTruncateExistingAsync(It.IsAny<string>()))
                 .Returns((string path) =>
                 {
