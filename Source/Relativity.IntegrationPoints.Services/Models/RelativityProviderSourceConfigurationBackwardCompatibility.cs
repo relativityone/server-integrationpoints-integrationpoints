@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Services.Models
         /// <summary>
         ///     This is not used - DestinationFolderArtifactId
         /// </summary>
-        public int FolderArtifactId { get; set;  }
+        public int? FolderArtifactId { get; set;  }
 
         [JsonProperty(PropertyName = "TaggingOption")]
         public string TaggingOption { get; set; }
