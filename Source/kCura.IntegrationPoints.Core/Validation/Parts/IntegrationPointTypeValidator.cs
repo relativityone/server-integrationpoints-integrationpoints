@@ -1,22 +1,22 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
     public class IntegrationPointTypeValidator : IValidator
     {
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IAPILog _logger;
+        private readonly ILogger<IntegrationPointTypeValidator> _logger;
 
         public string Key => Constants.IntegrationPointProfiles.Validation.INTEGRATION_POINT_TYPE;
 
-        public IntegrationPointTypeValidator(IRelativityObjectManager objectManager, IAPILog logger)
+        public IntegrationPointTypeValidator(IRelativityObjectManager objectManager, ILogger<IntegrationPointTypeValidator> logger)
         {
             _logger = logger;
             _objectManager = objectManager;

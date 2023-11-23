@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Domain.Logging;
 using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Conversion
@@ -8,14 +7,10 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
     public class SynchronizerObjectBuilder : IObjectBuilder
     {
         private readonly Dictionary<string, FieldEntry> _fieldsDictionary;
-        private readonly IDiagnosticLog _diagnosticLog;
 
-        public SynchronizerObjectBuilder(IEnumerable<FieldEntry> fields, IDiagnosticLog diagnosticLog)
+        public SynchronizerObjectBuilder(IEnumerable<FieldEntry> fields)
         {
             _fieldsDictionary = fields.ToDictionary(k => k.FieldIdentifier, v => v);
-            _diagnosticLog = diagnosticLog;
-
-            _diagnosticLog.LogDiagnostic("DataReader fields: {fields}", string.Join(", ", _fieldsDictionary.Keys));
         }
 
         public T BuildObject<T>(System.Data.IDataRecord row)
@@ -32,8 +27,6 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
                     returnValue.Add(field, row[i]);
                     wasRead = true;
                 }
-
-                _diagnosticLog.LogDiagnostic("Read Value for {name} - {wasRead}", name, wasRead);
             }
 
             return (T)returnValue;

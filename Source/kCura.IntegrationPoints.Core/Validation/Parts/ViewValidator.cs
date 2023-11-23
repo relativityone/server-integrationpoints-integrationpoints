@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
     public class ViewValidator : BasePartsValidator<int>
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<ViewValidator> _logger;
         private readonly IRelativityObjectManager _objectManager;
 
-        public ViewValidator(IRelativityObjectManager objectManager, IAPILog logger)
+        public ViewValidator(IRelativityObjectManager objectManager, ILogger<ViewValidator> logger)
         {
             _objectManager = objectManager;
             _logger = logger;

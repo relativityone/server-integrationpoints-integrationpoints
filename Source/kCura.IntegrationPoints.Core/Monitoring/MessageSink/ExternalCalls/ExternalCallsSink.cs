@@ -1,10 +1,10 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using Relativity.API;
+﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
-using System;
-using System.Collections.Generic;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls
 {
@@ -18,11 +18,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls
         private string _currentCorrelationId;
         private const string _BUCKET_EXTERNALL_CALL = "IntegrationPoints.Performance.ExternalCall";
         private const string _BUCKET_EXTERNALL_CALL_JOB_SUMMARY = "IntegrationPoints.Performance.ExternalCall.Summary";
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExternalCallsSink> _logger;
         private readonly object _lock = new object();
         private readonly Lazy<IMetricsManager> _apmManager;
 
-        public ExternalCallsSink(IMetricsManagerFactory metricsManagerFactory, IAPILog logger)
+        public ExternalCallsSink(IMetricsManagerFactory metricsManagerFactory, ILogger<ExternalCallsSink> logger)
         {
             _apmManager = new Lazy<IMetricsManager>(metricsManagerFactory.CreateAPMManager);
             _logger = logger;

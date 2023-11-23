@@ -1,11 +1,11 @@
-﻿using kCura.IntegrationPoints.Common.Metrics;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
 
@@ -13,15 +13,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 {
     public class IntegrationPointsMessageService : MessageService
     {
-        public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
+        public IntegrationPointsMessageService(IMetricsManagerFactory metricsManagerFactory, IConfig config, ILogger<IntegrationPointsMessageService> logger, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
         {
             ConfigureAggregatedJobSink(metricsManagerFactory, config, logger, dateTimeHelper, ripMetrics);
             ConfigureExternalCallsSink(metricsManagerFactory, config, logger);
         }
 
-        private void ConfigureAggregatedJobSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
+        private void ConfigureAggregatedJobSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, ILogger<IntegrationPointsMessageService> logger, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
         {
-            var aggregatedJobSink = new AggregatedJobSink(logger, metricsManagerFactory, dateTimeHelper, ripMetrics);
+            var aggregatedJobSink = new AggregatedJobSink(logger.ForContext<AggregatedJobSink>(), metricsManagerFactory, dateTimeHelper, ripMetrics);
 
             this.AddSink(new ToggledMessageSink<JobStartedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
             this.AddSink(new ToggledMessageSink<JobCompletedMessage>(aggregatedJobSink, () => config.SendSumMetrics));
@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring
             this.AddSink(new ToggledMessageSink<JobProgressMessage>(new ThrottledMessageSink<JobProgressMessage>(aggregatedJobSink, () => config.MetricsThrottling), () => config.SendLiveApmMetrics));
         }
 
-        private void ConfigureExternalCallsSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, IAPILog logger)
+        private void ConfigureExternalCallsSink(IMetricsManagerFactory metricsManagerFactory, IConfig config, ILogger<IntegrationPointsMessageService> logger)
         {
-            var externalCallsSink = new ExternalCallsSink(metricsManagerFactory, logger);
+            var externalCallsSink = new ExternalCallsSink(metricsManagerFactory, logger.ForContext<ExternalCallsSink>());
 
             this.AddSink(new ToggledMessageSink<ExternalCallCompletedMessage>(externalCallsSink, () => config.SendLiveApmMetrics));
             this.AddSink(new ToggledMessageSink<JobStartedMessage>(externalCallsSink, () => config.SendLiveApmMetrics));

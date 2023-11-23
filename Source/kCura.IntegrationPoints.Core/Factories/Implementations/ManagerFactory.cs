@@ -81,7 +81,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             Guid jobIdentifier,
             long jobId,
             bool supportsDrainStop,
-            IDiagnosticLog diagnosticLog,
             CancellationTokenSource stopCancellationTokenSource = null,
             CancellationTokenSource drainStopCancellationTokenSource = null)
         {
@@ -95,8 +94,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 _agent,
                 supportsDrainStop,
                 stopCancellationTokenSource ?? new CancellationTokenSource(),
-                drainStopCancellationTokenSource ?? new CancellationTokenSource(),
-                diagnosticLog);
+                drainStopCancellationTokenSource ?? new CancellationTokenSource());
             jobStopManager.ActivateTimer();
             return jobStopManager;
         }

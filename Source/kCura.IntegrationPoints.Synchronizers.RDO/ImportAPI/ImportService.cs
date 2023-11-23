@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
@@ -14,7 +13,6 @@ using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
-using Exception = System.Exception;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -27,7 +25,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IJobStopManager _jobStopManager;
-        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
@@ -46,12 +43,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             IImportApiFactory factory,
             IImportJobFactory jobFactory,
             IHelper helper,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             _helper = helper;
             _jobStopManager = jobStopManager;
-            _diagnosticLog = diagnosticLog;
             Settings = settings;
             _batchManager = batchManager;
             _inputMappings = fieldMappings;
@@ -153,7 +148,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             importJob.OnComplete += ImportJob_OnComplete;
             importJob.OnFatalException += ImportJob_OnComplete;
             importJob.OnError += ImportJob_OnError;
-            importJob.OnMessage += ImportJob_OnMessage;
             importJob.OnProgress += ImportJob_OnProgress;
             importJob.OnProcessProgress += ImportJob_OnProcessProgress;
             ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
@@ -298,11 +292,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             OnBatchComplete?.Invoke(start, end, processedRows, errorRows);
         }
 
-        private void ImportJob_OnMessage(Status status)
-        {
-            LogOnMessageEvent(status);
-        }
-
         private void ImportJob_OnError(System.Collections.IDictionary row)
         {
             _jobProgressInfo.ItemErrored();
@@ -312,8 +301,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private void ImportJob_OnProgress(long item)
         {
             _jobProgressInfo.ItemTransferred();
-
-            _diagnosticLog.LogDiagnostic("ImportJob_OnProgress - Item: {item}, JobProgressInfo: {@jobProgressInfo} ", item, _jobProgressInfo);
 
             UpdateStatus();
         }
@@ -332,17 +319,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
             if (Environment.TickCount - _lastJobStatusUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
             {
-                _diagnosticLog.LogDiagnostic(
-                    "OnStatusUpdate - ItemsTransferred: {transferredItemsCount}, ItemsErrored: {itemsErrored}",
-                    _jobProgressInfo.NumberOfItemsTransferred,
-                    _jobProgressInfo.NumberOfItemsErrored);
-
                 OnStatusUpdate(_jobProgressInfo.NumberOfItemsTransferred, _jobProgressInfo.NumberOfItemsErrored);
 
                 _lastJobStatusUpdate = Environment.TickCount;
                 _jobProgressInfo.Reset();
-
-                _diagnosticLog.LogDiagnostic("Status was updated.");
             }
         }
 
@@ -400,11 +380,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                 totalRows,
                 errorRows,
                 (end - start).Milliseconds);
-        }
-
-        private void LogOnMessageEvent(Status status)
-        {
-            _diagnosticLog.LogDiagnostic("ImportJob OnMessage event received. Current status: {Status}.", status?.Message);
         }
 
         #endregion

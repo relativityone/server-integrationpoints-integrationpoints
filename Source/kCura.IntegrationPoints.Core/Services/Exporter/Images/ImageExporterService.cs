@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
@@ -38,7 +39,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
             FieldMap[] mappedFields,
             int startAt,
             SourceConfiguration sourceConfiguration,
-            int searchArtifactId)
+            int searchArtifactId,
+            ILogger<ImageExporterService> logger)
             : base(
                 documentRepository,
                 relativityObjectManager,
@@ -50,7 +52,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
                 mappedFields,
                 startAt,
                 sourceConfiguration,
-                searchArtifactId)
+                searchArtifactId,
+                logger.ForContext<ExporterServiceBase>())
         {
             _destinationConfiguration = destinationConfiguration;
             _adlsHelper = adlsHelper;
@@ -58,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 
         public override IDataTransferContext GetDataTransferContext(IExporterTransferConfiguration transferConfiguration)
         {
-            var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, Logger, transferConfiguration.ScratchRepositories);
+            var imageTransferDataReader = new ImageTransferDataReader(this, MappedFields, Logger.ForContext<ImageTransferDataReader>(), transferConfiguration.ScratchRepositories);
             return Context ?? (Context = new ExporterTransferContext(imageTransferDataReader, transferConfiguration));
         }
 

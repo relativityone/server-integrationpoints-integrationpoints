@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
@@ -35,8 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -48,8 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointService,
-                diagnosticLog)
+                integrationPointService)
         {
             _job = job;
         }

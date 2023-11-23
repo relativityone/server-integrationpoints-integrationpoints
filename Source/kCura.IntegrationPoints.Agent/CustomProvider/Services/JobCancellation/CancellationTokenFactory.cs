@@ -3,7 +3,6 @@ using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -41,7 +40,6 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobCancellation
                 batchInstance,
                 jobId,
                 supportsDrainStop: true,
-                new EmptyDiagnosticLog(),
                 stopCancellationTokenSource: stopTokenSource,
                 drainStopCancellationTokenSource: drainStopTokenSource);
 

@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers.Metrics
     [Description("Register Integration Points telemetry metrics")]
     [RunOnce(true)]
     [Guid("570BA0F8-4A18-46DD-BAE5-7F5E4A476641")]
-    public class RegisterIntegrationPointsMetricsEventHandler: PostInstallEventHandlerBase
+    public class RegisterIntegrationPointsMetricsEventHandler : PostInstallEventHandlerBase
     {
         protected override IAPILog CreateLogger()
         {

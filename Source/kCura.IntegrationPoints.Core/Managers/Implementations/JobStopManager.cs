@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
         private readonly CancellationTokenSource _drainStopCancellationTokenSource;
-        private readonly IDiagnosticLog _diagnosticLog;
         private readonly Guid _jobBatchIdentifier;
         private readonly IJobService _jobService;
         private readonly IJobHistoryService _jobHistoryService;
@@ -38,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper,
             Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
-            CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource, IDiagnosticLog diagnosticLog)
+            CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource)
         {
             _jobService = jobService;
             _jobHistoryService = jobHistoryService;
@@ -50,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
             _stopCancellationTokenSource = stopCancellationTokenSource;
             _drainStopCancellationTokenSource = drainStopCancellationTokenSource;
-            _diagnosticLog = diagnosticLog;
             _token = _stopCancellationTokenSource.Token;
             _timer = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -124,7 +122,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             Stopwatch sw = Stopwatch.StartNew();
             try
             {
-                _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
                 _isTerminateInProgress = true;
                 TerminateIfRequested();
             }

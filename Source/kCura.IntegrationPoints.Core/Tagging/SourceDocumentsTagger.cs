@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tagging
 {
@@ -12,17 +12,16 @@ namespace kCura.IntegrationPoints.Core.Tagging
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IMassUpdateHelper _massUpdateHelper;
-        private readonly IAPILog _logger;
+        private readonly ILogger<SourceDocumentsTagger> _logger;
 
         public SourceDocumentsTagger(
             IDocumentRepository documentRepository,
-            IAPILog logger,
-            IMassUpdateHelper massUpdateHelper)
+            IMassUpdateHelper massUpdateHelper,
+            ILogger<SourceDocumentsTagger> logger)
         {
             _documentRepository = documentRepository ?? throw new ArgumentNullException(nameof(documentRepository));
             _massUpdateHelper = massUpdateHelper ?? throw new ArgumentNullException(nameof(massUpdateHelper));
-            _logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
-                .ForContext<SourceDocumentsTagger>();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task TagDocumentsWithDestinationWorkspaceAndJobHistoryAsync(

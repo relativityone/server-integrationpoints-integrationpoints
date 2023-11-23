@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -14,13 +15,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
     {
         private readonly IResourcePoolRepository _resourcePoolRepository;
         private readonly IServicesMgr _servicesMgr;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ResourcePoolManager> _logger;
 
-        public ResourcePoolManager(IRepositoryFactory repositoryFactory, IServicesMgr servicesMgr, IHelper helper)
+        public ResourcePoolManager(IRepositoryFactory repositoryFactory, IServicesMgr servicesMgr, ILogger<ResourcePoolManager> logger)
         {
             _resourcePoolRepository = repositoryFactory.GetResourcePoolRepository();
             _servicesMgr = servicesMgr;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<ResourcePoolManager>();
+            _logger = logger;
         }
 
         public List<ProcessingSourceLocationDTO> GetProcessingSourceLocation(int workspaceId)

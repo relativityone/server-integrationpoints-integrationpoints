@@ -1,22 +1,20 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
     public class RelativityProviderSourceProductionPermissionValidator : IRelativityProviderSourceProductionPermissionValidator
     {
         private readonly IProductionRepository _productionRepository;
-        private readonly IAPILog _logger;
+        private readonly ILogger<RelativityProviderSourceProductionPermissionValidator> _logger;
 
-        public RelativityProviderSourceProductionPermissionValidator(IProductionRepository productionRepository, IAPILog logger)
+        public RelativityProviderSourceProductionPermissionValidator(IProductionRepository productionRepository, ILogger<RelativityProviderSourceProductionPermissionValidator> logger)
         {
             _productionRepository = productionRepository;
-            _logger = logger.ForContext<RelativityProviderSourceProductionPermissionValidator>();
+            _logger = logger;
         }
 
         public ValidationResult Validate(int sourceWorkspaceId, int sourceProductionArtifactId)
@@ -24,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
             var result = new ValidationResult();
             try
             {
-                _productionRepository.GetProduction(sourceWorkspaceId, sourceProductionArtifactId);;
+                _productionRepository.GetProduction(sourceWorkspaceId, sourceProductionArtifactId); ;
             }
             catch (Exception ex)
             {

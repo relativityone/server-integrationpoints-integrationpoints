@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
@@ -11,9 +13,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.AdlsHelpers;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         private readonly IFileRepository _fileRepository;
         private readonly IAdlsHelper _adlsHelper;
         private readonly ISerializer _serializer;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExporterFactory> _logger;
 
         public ExporterFactory(
             IRepositoryFactory repositoryFactory,
@@ -35,7 +36,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             IRelativityObjectManager relativityObjectManager,
             IFileRepository fileRepository,
             ISerializer serializer,
-            IAdlsHelper adlsHelper)
+            IAdlsHelper adlsHelper,
+            ILogger<ExporterFactory> logger)
         {
             _repositoryFactory = repositoryFactory;
             _helper = helper;
@@ -44,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             _fileRepository = fileRepository;
             _serializer = serializer;
             _adlsHelper = adlsHelper;
-            _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
+            _logger = logger;
         }
 
         public IExporterService BuildExporter(
@@ -107,7 +109,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 mappedFields,
                 startAtRecord,
                 sourceConfiguration,
-                savedSearchArtifactID);
+                savedSearchArtifactID,
+                _logger.ForContext<RelativityExporterService>());
         }
 
         private IExporterService CreateImageExporterService(
@@ -143,7 +146,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 mappedFiles,
                 startAtRecord,
                 sourceConfiguration,
-                searchArtifactId);
+                searchArtifactId,
+                _logger.ForContext<ImageExporterService>());
         }
 
         private void LogBuildExporterExecutionWithParameters(

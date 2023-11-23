@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Monitoring;
@@ -188,24 +187,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 
             container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
             container.Register(Component.For<IRipToggleProvider>().ImplementedBy<RipToggleProvider>().LifestyleTransient());
-
-            container.Register(Component.For<IDiagnosticLog>().UsingFactoryMethod<IDiagnosticLog>(c =>
-            {
-                IRipToggleProvider toggle = c.Resolve<IRipToggleProvider>();
-
-                IAPILog log = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-
-                if (toggle.IsEnabled<EnableDiagnosticLoggingToggle>())
-                {
-                    log.LogInformation("Creating DiagnosticLog...");
-
-                    return new DiagnosticLog(log);
-                }
-
-                log.LogInformation("Diagnostic Toggle is disabled. EmptyDiagnosticLog will be used.");
-
-                return new EmptyDiagnosticLog();
-            }).LifestyleSingleton());
 
             container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
             container.Register(Component.For<IArtifactServiceFactory>().ImplementedBy<ArtifactServiceFactory>().LifestyleTransient());

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
@@ -11,10 +12,10 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         private readonly IServicesMgr _serviceManager;
         private readonly IRipToggleProvider _toggleProvider;
-        private readonly IAPILog _logger;
+        private readonly ILogger<AgentLauncher> _logger;
         private Guid _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-        public AgentLauncher(IServicesMgr serviceManager, IRipToggleProvider toggleProvider, IAPILog logger)
+        public AgentLauncher(IServicesMgr serviceManager, IRipToggleProvider toggleProvider, ILogger<AgentLauncher> logger)
         {
             _serviceManager = serviceManager;
             _toggleProvider = toggleProvider;

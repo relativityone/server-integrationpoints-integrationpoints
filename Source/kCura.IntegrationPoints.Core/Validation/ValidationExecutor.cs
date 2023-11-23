@@ -1,14 +1,15 @@
-﻿using kCura.IntegrationPoints.Core.Validation.Abstract;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
     public class ValidationExecutor : IValidationExecutor
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<ValidationExecutor> _logger;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
         private readonly IIntegrationPointProviderValidator _integrationModelValidator;
+
         private enum OperationType
         {
             Run,
@@ -18,11 +19,11 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public ValidationExecutor(IIntegrationPointProviderValidator integrationModelValidator,
-            IIntegrationPointPermissionValidator permissionValidator, IHelper helper)
+            IIntegrationPointPermissionValidator permissionValidator, ILogger<ValidationExecutor> logger)
         {
             _integrationModelValidator = integrationModelValidator;
             _permissionValidator = permissionValidator;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<ValidationExecutor>();
+            _logger = logger;
         }
 
         public void ValidateOnRun(ValidationContext validationContext)

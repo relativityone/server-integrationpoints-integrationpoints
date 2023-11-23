@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.API;
@@ -38,13 +37,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IEnumerable<IDictionary<FieldEntry, object>> data,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             try
             {
                 UpdateImportSettingsForTagging(options.DestinationConfiguration);
-                _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager, diagnosticLog);
+                _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager);
             }
             catch (Exception ex)
             {
@@ -56,13 +54,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IDataTransferContext data,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             try
             {
                 UpdateImportSettingsForTagging(options.DestinationConfiguration);
-                _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager, diagnosticLog);
+                _rdoSynchronizer.SyncData(data, fieldMap, options, jobStopManager);
             }
             catch (Exception ex)
             {

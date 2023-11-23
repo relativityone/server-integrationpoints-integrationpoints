@@ -66,6 +66,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         protected abstract string SuccessMessage { get; }
 
         protected abstract string GetFailureMessage(Exception ex);
+
         private EhCorrelationContext CreateCorrelationContext()
         {
             Guid ehGuid = GetEventHandlerGuid();

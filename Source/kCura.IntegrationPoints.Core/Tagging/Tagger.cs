@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tagging
@@ -17,25 +16,22 @@ namespace kCura.IntegrationPoints.Core.Tagging
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IDataSynchronizer _synchronizer;
-        private readonly IDiagnosticLog _diagnosticLog;
-        private readonly IAPILog _logger;
         private readonly FieldMap[] _fields;
         private readonly ImportSettings _importConfig;
+        private readonly ILogger<Tagger> _logger;
 
         public Tagger(
             IDocumentRepository documentRepository,
             IDataSynchronizer synchronizer,
-            IHelper helper,
             FieldMap[] fields,
             ImportSettings importConfig,
-            IDiagnosticLog diagnosticLog)
+            ILogger<Tagger> logger)
         {
             _documentRepository = documentRepository;
             _synchronizer = synchronizer;
             _fields = fields;
             _importConfig = importConfig;
-            _diagnosticLog = diagnosticLog;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<Tagger>();
+            _logger = logger;
         }
 
         public void TagDocuments(TagsContainer tagsContainer, IScratchTableRepository scratchTableRepository)
@@ -61,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
                 {
                     FieldMap[] fieldsToPush = { identifierField };
                     var documentTransferContext = new DefaultTransferContext(reader);
-                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null, _diagnosticLog);
+                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null);
                 }
             }
             catch (Exception e)

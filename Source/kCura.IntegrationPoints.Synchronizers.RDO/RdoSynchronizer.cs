@@ -7,7 +7,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -29,7 +28,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
     {
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
-        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly IRelativityFieldQuery _fieldQuery;
@@ -42,13 +40,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         protected IImportService ImportService { get; private set; }
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, ISerializer serializer)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, ISerializer serializer)
         {
             _fieldQuery = fieldQuery;
             _factory = factory;
             _jobFactory = jobFactory;
             _helper = helper;
-            _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
             Serializer = serializer;
         }
@@ -150,13 +147,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IEnumerable<IDictionary<FieldEntry, object>> data,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             try
             {
                 LogSyncingData();
-                InitializeImportJob(fieldMap, options, jobStopManager, diagnosticLog);
+                InitializeImportJob(fieldMap, options, jobStopManager);
 
                 bool rowProcessed = false;
                 if (jobStopManager?.ShouldDrainStop == true)
@@ -168,12 +164,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 _logger.LogInformation("Data processing loop is starting");
                 int addedRows = 0;
                 int skippedRows = 0;
-                _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
+
                 try
                 {
                     foreach (var row in data)
                     {
-                        _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
                         try
                         {
                             Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
@@ -226,14 +221,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IDataTransferContext context,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             try
             {
                 LogSyncingData();
 
-                InitializeImportJob(fieldMap, options, jobStopManager, diagnosticLog);
+                InitializeImportJob(fieldMap, options, jobStopManager);
 
                 FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
                 LogFieldMapLength(fieldMaps);
@@ -323,8 +317,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             ImportSettings settings,
             Dictionary<string, int> importFieldMap,
             NativeFileImportService nativeFileImportService,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog)
+            IJobStopManager jobStopManager)
         {
             LogInitializingImportService();
 
@@ -336,8 +329,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 _factory,
                 _jobFactory,
                 _helper,
-                jobStopManager,
-                diagnosticLog);
+                jobStopManager);
 
             importService.OnBatchComplete += Finish;
             importService.OnJobError += JobError;
@@ -508,7 +500,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        private void InitializeImportJob(IEnumerable<FieldMap> fieldMap, ImportSettings options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+        private void InitializeImportJob(IEnumerable<FieldMap> fieldMap, ImportSettings options, IJobStopManager jobStopManager)
         {
             LogInitializingImportJob();
 
@@ -522,8 +514,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 ImportSettings,
                 importFieldMap,
                 NativeFileImportService,
-                jobStopManager,
-                diagnosticLog);
+                jobStopManager);
 
             _isJobComplete = false;
 

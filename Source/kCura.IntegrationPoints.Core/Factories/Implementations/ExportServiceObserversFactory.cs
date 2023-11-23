@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,7 +10,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -24,23 +24,20 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
         private readonly IMassUpdateHelper _massUpdateHelper;
-        private readonly IAPILog _logger;
-        private readonly IDiagnosticLog _diagnosticLog;
+        private readonly ILogger<ExportServiceObserversFactory> _logger;
 
         public ExportServiceObserversFactory(
             IHelper helper,
             IRepositoryFactory repositoryFactory,
             ISourceDocumentsTagger sourceDocumentsTagger,
             IMassUpdateHelper massUpdateHelper,
-            IAPILog logger,
-            IDiagnosticLog diagnosticLog)
+            ILogger<ExportServiceObserversFactory> logger)
         {
             _helper = helper;
             _repositoryFactory = repositoryFactory;
             _sourceDocumentsTagger = sourceDocumentsTagger;
             _massUpdateHelper = massUpdateHelper;
             _logger = logger;
-            _diagnosticLog = diagnosticLog;
         }
 
         public List<IBatchStatus> InitializeExportServiceJobObservers(
@@ -117,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 importSettingsClone,
                 jobHistory.ArtifactId,
                 uniqueJobID,
-                _diagnosticLog);
+                _logger.ForContext<TargetDocumentsTaggingManagerFactory>());
 
             IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
             return destinationFieldsTagger;
@@ -131,12 +128,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         {
             return new SourceObjectBatchUpdateManager(
                 _repositoryFactory,
-                _logger,
                 sourceWorkspaceTagsCreator,
                 _sourceDocumentsTagger,
                 configuration,
                 jobHistory,
-                uniqueJobID);
+                uniqueJobID,
+                _logger.ForContext<SourceObjectBatchUpdateManager>());
         }
 
         private IBatchStatus CreateJobHistoryErrorUpdater(
@@ -147,12 +144,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         {
             return new JobHistoryErrorBatchUpdateManager(
                 jobHistoryErrorManager,
-                _logger,
                 _repositoryFactory,
                 jobStopManager,
                 configuration.SourceWorkspaceArtifactId,
                 updateStatusType,
-                _massUpdateHelper);
+                _massUpdateHelper,
+                _logger.ForContext<JobHistoryErrorBatchUpdateManager>());
         }
 
         private static ImportSettings DeepCloneImportSettings(ImportSettings input, ISerializer serializer)

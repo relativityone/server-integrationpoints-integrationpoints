@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter.Validators;
 using kCura.IntegrationPoints.Data.DTO;
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
         protected readonly HashSet<int> LongTextFieldArtifactIds;
         protected readonly HashSet<int> MultipleObjectFieldArtifactIds;
         protected readonly HashSet<int> SingleChoiceFieldsArtifactIds;
-        protected readonly IAPILog Logger;
+        protected readonly ILogger<ExporterServiceBase> Logger;
         protected readonly IDocumentRepository DocumentRepository;
         protected readonly IRelativityObjectManager RelativityObjectManager;
         protected readonly IJobStopManager JobStopManager;
@@ -52,8 +53,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             FieldMap[] mappedFields,
             int startAt,
             SourceConfiguration sourceConfiguration,
-            int searchArtifactId)
-            : this(mappedFields, jobStopManager, helper)
+            int searchArtifactId,
+            ILogger<ExporterServiceBase> logger)
+            : this(mappedFields, jobStopManager, helper, logger)
         {
             DocumentRepository = documentRepository;
             FileRepository = fileRepository;
@@ -83,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             }
         }
 
-        protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper)
+        protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper, ILogger<ExporterServiceBase> logger)
         {
             SingleChoiceFieldsArtifactIds = new HashSet<int>();
             MultipleObjectFieldArtifactIds = new HashSet<int>();
@@ -91,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             RetrievedDataCount = 0;
             MappedFields = mappedFields;
             JobStopManager = jobStopManager;
-            Logger = helper.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>();
+            Logger = logger;
             FieldArtifactIds = mappedFields.Select(field => int.Parse(field.SourceField.FieldIdentifier)).ToArray();
             IdentifierField = mappedFields.First(x => x.SourceField.IsIdentifier).SourceField;
         }
@@ -121,7 +123,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 
         private void ValidateSourceFields(IRepositoryFactory sourceRepositoryFactory, IEnumerable<FieldMap> mappedFields)
         {
-            var nestedAndMultiValuesValidator = new NestedAndMultiValuesFieldValidator(Logger);
+            var nestedAndMultiValuesValidator = new NestedAndMultiValuesFieldValidator(Logger.ForContext<NestedAndMultiValuesFieldValidator>());
 
             foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
             {
@@ -156,7 +158,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
         private void ValidateDestinationFields(IRepositoryFactory targetRepositoryFactory, FieldMap[] mappedFields)
         {
             IFieldQueryRepository targetFieldQueryRepository = targetRepositoryFactory.GetFieldQueryRepository(SourceConfiguration.TargetWorkspaceArtifactId);
-            var destinationFieldsValidator = new DestinationFieldsValidator(targetFieldQueryRepository, Logger);
+            var destinationFieldsValidator = new DestinationFieldsValidator(targetFieldQueryRepository, Logger.ForContext<DestinationFieldsValidator>());
             destinationFieldsValidator.ValidateDestinationFields(mappedFields);
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Models;
 using Relativity.API;
 using Relativity.Sync.Services.Interfaces.V1;
@@ -11,12 +12,12 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
     {
         private readonly IServicesMgr _servicesMgr;
         private readonly IIntegrationPointToSyncAppConverter _integrationPointToSyncAppConverter;
-        private readonly IAPILog _logger;
+        private readonly ILogger<RelativitySyncAppIntegration> _logger;
 
         public RelativitySyncAppIntegration(
             IServicesMgr servicesMgr,
             IIntegrationPointToSyncAppConverter integrationPointToSyncAppConverter,
-            IAPILog logger)
+            ILogger<RelativitySyncAppIntegration> logger)
         {
             _servicesMgr = servicesMgr;
             _integrationPointToSyncAppConverter = integrationPointToSyncAppConverter;

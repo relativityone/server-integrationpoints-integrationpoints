@@ -26,7 +26,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -76,8 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IDocumentRepository documentRepository,
             IExportDataSanitizer exportDataSanitizer,
             IAdlsHelper adlsHelper,
-            ILogger<ExportServiceManager> logger,
-            IDiagnosticLog diagnosticLog)
+            ILogger<ExportServiceManager> logger)
             : base(
                 helper,
                 jobService,
@@ -92,8 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 synchronizerFactory,
                 agentValidator,
                 integrationPointService,
-                logger.ForContext<ServiceManagerBase>(),
-                diagnosticLog)
+                logger.ForContext<ServiceManagerBase>())
         {
             _repositoryFactory = repositoryFactory;
             _exportServiceObserversFactory = exportServiceObserversFactory;
@@ -225,7 +222,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     {
                         _logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
 
-                        synchronizer.SyncData(dataTransferContext, IntegrationPointDto.FieldMappings, userImportApiSettings, JobStopManager, DiagnosticLog);
+                        synchronizer.SyncData(dataTransferContext, IntegrationPointDto.FieldMappings, userImportApiSettings, JobStopManager);
                     }
                     LogPushingDocumentsSuccessfulEnd(job);
                 }

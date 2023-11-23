@@ -1,24 +1,24 @@
-﻿using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
-using LanguageExt;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Provider.Internals;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using LanguageExt;
 
 namespace kCura.IntegrationPoints.Core.Provider
 {
     public class RipProviderUninstaller : IRipProviderUninstaller
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<RipProviderUninstaller> _logger;
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
         private readonly IIntegrationPointsRemover _integrationPointsRemover;
 
         public RipProviderUninstaller(
-            IAPILog logger,
+            ILogger<RipProviderUninstaller> logger,
             ISourceProviderRepository sourceProviderRepository,
             IApplicationGuidFinder applicationGuidFinder,
             IIntegrationPointsRemover integrationPointsRemover)

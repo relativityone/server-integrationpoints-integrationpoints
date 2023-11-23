@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.Storage;
-using Relativity.API;
 using Relativity.Environment.V1.Workspace;
 using Relativity.Environment.V1.Workspace.Models;
 using Relativity.Storage;
@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoints.Core.AdlsHelpers
 
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IRelativityStorageService _storageService;
-        private readonly IAPILog _logger;
+        private readonly ILogger<AdlsHelper> _logger;
 
-        public AdlsHelper(IKeplerServiceFactory serviceFactory, IRelativityStorageService storageService, IAPILog logger)
+        public AdlsHelper(IKeplerServiceFactory serviceFactory, IRelativityStorageService storageService, ILogger<AdlsHelper> logger)
         {
             _serviceFactory = serviceFactory;
             _storageService = storageService;

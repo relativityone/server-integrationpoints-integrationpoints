@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 {
     public class NestedAndMultiValuesFieldValidator
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<NestedAndMultiValuesFieldValidator> _logger;
 
-        public NestedAndMultiValuesFieldValidator(IAPILog logger)
+        public NestedAndMultiValuesFieldValidator(ILogger<NestedAndMultiValuesFieldValidator> logger)
         {
             _logger = logger.ForContext<NestedAndMultiValuesFieldValidator>();
         }

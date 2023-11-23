@@ -65,8 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IEnumerable<IBatchStatus> batchStatuses,
             IAgentValidator agentValidator,
-            ILogger<SyncManager> logger,
-            IDiagnosticLog diagnosticLog) : base(helper, diagnosticLog)
+            ILogger<SyncManager> logger) : base(helper)
         {
             _caseServiceContext = caseServiceContext;
             _providerFactory = providerFactory;
@@ -143,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 IDataReader idReader = GetBatchableIdsWithDrainStopTimeout(job, provider, GetDrainStopTimeout());
 
                 JobStopManager?.ThrowIfStopRequested();
-                return new ReaderEnumerable(idReader, JobStopManager, DiagnosticLog);
+                return new ReaderEnumerable(idReader, JobStopManager);
             }
             catch (OperationCanceledException e)
             {
@@ -339,7 +338,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _jobHistoryErrorService.JobHistory = JobHistory;
             _jobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
 
-            JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true, DiagnosticLog);
+            JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
             JobStopManager.ThrowIfStopRequested();
 
             if (!JobHistory.StartTimeUTC.HasValue)
@@ -680,19 +679,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private class ReaderEnumerable : IEnumerable<string>, IDisposable
         {
             private readonly IJobStopManager _jobStopManager;
-            private readonly IDiagnosticLog _diagnosticLog;
             private readonly IDataReader _reader;
 
-            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager)
             {
                 _reader = reader;
                 _jobStopManager = jobStopManager;
-                _diagnosticLog = diagnosticLog;
             }
 
             public void Dispose()
             {
-                _diagnosticLog.LogDiagnostic("Dispose ReaderEnumerable");
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
@@ -704,7 +700,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     _jobStopManager?.ThrowIfStopRequested();
 
                     string result = _reader.GetString(0);
-                    _diagnosticLog.LogDiagnostic("Reading: {result}", result);
                     yield return result;
                 }
 

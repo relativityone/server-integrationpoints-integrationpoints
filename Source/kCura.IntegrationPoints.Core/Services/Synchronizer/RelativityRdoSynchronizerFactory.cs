@@ -3,7 +3,6 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 
@@ -18,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             _container = container;
         }
 
-        public IDataSynchronizer CreateSynchronizer(DestinationConfiguration configuration, SourceProvider sourceProvider, IDiagnosticLog diagnosticLog)
+        public IDataSynchronizer CreateSynchronizer(DestinationConfiguration configuration, SourceProvider sourceProvider)
         {
             Dictionary<string, RelativityFieldQuery> rdoSynchronizerParametersDictionary = CreateRdoSynchronizerParametersDictionary(configuration);
 

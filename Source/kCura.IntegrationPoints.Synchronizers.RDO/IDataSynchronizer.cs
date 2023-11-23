@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using Relativity.IntegrationPoints.Contracts.Models;
@@ -24,8 +23,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IEnumerable<IDictionary<FieldEntry, object>> data,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog);
+            IJobStopManager jobStopManager);
 
         /// <summary>
         /// Synchronizes data from the data source provider and imports it into Relativity.
@@ -38,8 +36,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IDataTransferContext data,
             IEnumerable<FieldMap> fieldMap,
             ImportSettings options,
-            IJobStopManager jobStopManager,
-            IDiagnosticLog diagnosticLog);
+            IJobStopManager jobStopManager);
 
         /// <summary>
         /// Returns total rows processed during last SyncData call

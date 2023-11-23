@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
 
@@ -19,16 +19,16 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
         private const string _INTEGRATION_POINTS_USAGE_PREFIX = "IntegrationPoints.Usage";
         private const double _TOLERANCE = 0.0000001;
         private readonly IMetricsManagerFactory _metricsManagerFactory;
-        private readonly IAPILog _logger;
+        private readonly ILogger<AggregatedJobSink> _logger;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IRipMetrics _ripMetrics;
         private readonly ConcurrentDictionary<string, JobStatistics>
             _jobs = new ConcurrentDictionary<string, JobStatistics>();
 
-        public AggregatedJobSink(IAPILog logger, IMetricsManagerFactory metricsManagerFactory, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
+        public AggregatedJobSink(ILogger<AggregatedJobSink> logger, IMetricsManagerFactory metricsManagerFactory, IDateTimeHelper dateTimeHelper, IRipMetrics ripMetrics)
         {
             _metricsManagerFactory = metricsManagerFactory;
-            _logger = logger.ForContext<AggregatedJobSink>();
+            _logger = logger;
             _dateTimeHelper = dateTimeHelper;
             _ripMetrics = ripMetrics;
         }

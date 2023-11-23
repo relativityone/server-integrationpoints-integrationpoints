@@ -1,10 +1,10 @@
-﻿using Castle.Windsor;
-using Castle.MicroKernel.Registration;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using Relativity.API;
+﻿using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
