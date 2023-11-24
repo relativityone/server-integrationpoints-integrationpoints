@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _fxt = FixtureFactory.Create();
 
-            _sut = new OverlayFieldIdentifierValidator(Mock.Of<ILogger<OverlayFieldIdentifierValidator>>());
+            _sut = new OverlayFieldIdentifierValidator(new LoggerFake<OverlayFieldIdentifierValidator>());
         }
 
         [Test]

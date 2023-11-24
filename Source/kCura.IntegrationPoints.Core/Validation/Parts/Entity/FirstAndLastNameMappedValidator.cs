@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts.Entity
         public FirstAndLastNameMappedValidator(ILogger<FirstAndLastNameMappedValidator> logger)
             : base(logger.ForContext<EntityValidatorBase>())
         {
-            _logger = logger.ForContext<FirstAndLastNameMappedValidator>();
+            _logger = logger;
         }
 
         public override ValidationResult Validate(IntegrationPointProviderValidationModel value)

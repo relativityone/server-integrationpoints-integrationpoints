@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             IRelativityObjectManager relativityObjectManager,
             IRepositoryFactory repositoryFactory,
             IJobStopManager jobStopManager,
-            IHelper helper,
             IFileRepository fileRepository,
             ISerializer serializer,
             FieldMap[] mappedFields,
@@ -55,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             SourceConfiguration sourceConfiguration,
             int searchArtifactId,
             ILogger<ExporterServiceBase> logger)
-            : this(mappedFields, jobStopManager, helper, logger)
+            : this(mappedFields, jobStopManager, logger)
         {
             DocumentRepository = documentRepository;
             FileRepository = fileRepository;
@@ -85,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             }
         }
 
-        protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, IHelper helper, ILogger<ExporterServiceBase> logger)
+        protected ExporterServiceBase(FieldMap[] mappedFields, IJobStopManager jobStopManager, ILogger<ExporterServiceBase> logger)
         {
             SingleChoiceFieldsArtifactIds = new HashSet<int>();
             MultipleObjectFieldArtifactIds = new HashSet<int>();

@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _fxt = FixtureFactory.Create();
 
-            _sut = new ManagerMappedWhenLinkingEnabledValidator(Mock.Of<ILogger<ManagerMappedWhenLinkingEnabledValidator>>());
+            _sut = new ManagerMappedWhenLinkingEnabledValidator(new LoggerFake<ManagerMappedWhenLinkingEnabledValidator>());
         }
 
         [Test]
