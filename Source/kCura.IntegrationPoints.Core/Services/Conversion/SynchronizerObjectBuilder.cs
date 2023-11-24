@@ -21,11 +21,9 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
             {
                 string name = row.GetName(i);
 
-                bool wasRead = false;
                 if (_fieldsDictionary.TryGetValue(name, out FieldEntry field))
                 {
                     returnValue.Add(field, row[i]);
-                    wasRead = true;
                 }
             }
 
