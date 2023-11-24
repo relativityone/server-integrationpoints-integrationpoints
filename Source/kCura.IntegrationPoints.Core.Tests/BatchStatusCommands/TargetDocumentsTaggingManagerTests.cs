@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private ITagsCreator _tagsCreator;
         private ITagger _tagger;
         private ITagSavedSearchManager _tagSavedSearchManager;
-        private IAPILog _logger;
+        private ILogger<TargetDocumentsTaggingManager> _logger;
         private IScratchTableRepository _scratchTableRepository;
         private int _sourceWorkspaceArtifactId;
         private int _destinationWorkspaceArtifactId;
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _tagsCreator = Substitute.For<ITagsCreator>();
             _tagger = Substitute.For<ITagger>();
             _tagSavedSearchManager = Substitute.For<ITagSavedSearchManager>();
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<TargetDocumentsTaggingManager>>();
             _scratchTableRepository = Substitute.For<IScratchTableRepository>();
 
             _destinationConfiguration = new DestinationConfiguration();
@@ -47,12 +47,9 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _repositoryFactory.GetScratchTableRepository(_sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, _uniqueJobId)
                 .ReturnsForAnyArgs(_scratchTableRepository);
 
-            var helper = Substitute.For<IHelper>();
-            helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>().Returns(_logger);
-
             _instance = new TargetDocumentsTaggingManager(_repositoryFactory, _tagsCreator,
-                _tagger, _tagSavedSearchManager, helper, new ImportSettings(_destinationConfiguration), _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
-                _federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId);
+                _tagger, _tagSavedSearchManager, new ImportSettings(_destinationConfiguration), _sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+                _federatedInstanceArtifactId, _jobHistoryArtifactId, _uniqueJobId, _logger);
         }
 
         [Test]

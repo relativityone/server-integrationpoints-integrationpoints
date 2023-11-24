@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
@@ -11,7 +12,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _sourceFieldManager = Substitute.For<IFieldManager>();
             _targetFieldManager = Substitute.For<IFieldManager>();
-            IAPILog logger = Substitute.For<IAPILog>();
+            var logger = Substitute.For<ILogger<FieldsMappingValidator>>();
             _instance = new FieldsMappingValidator(logger, new JSONSerializer(), _sourceFieldManager, _targetFieldManager);
         }
 

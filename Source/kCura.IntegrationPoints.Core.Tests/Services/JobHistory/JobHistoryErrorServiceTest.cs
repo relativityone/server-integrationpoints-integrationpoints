@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -26,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private IntegrationPointDto _integrationPoint;
         private Data.JobHistory _jobHistory;
         private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
-        private Mock<IHelper> _helperFake;
         private JobHistoryErrorService _instance;
         private Mock<IJobStopManager> _stopJobManagerFake;
         private Mock<IIntegrationPointRepository> _integrationPointRepositoryFake;
@@ -47,9 +47,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
             _relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
-            _helperFake = new Mock<IHelper>();
-
-            _helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>()).Returns(new Mock<IAPILog>().Object);
 
             _stopJobManagerFake = new Mock<IJobStopManager>();
             _integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
@@ -62,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 })
                 .Callback<MassCreateRequest, ExecutionIdentity>((req, executionIdentity) => _errors.AddRange(ExtractErrors(req.ValueLists)));
 
-            _instance = new JobHistoryErrorService(_relativityObjectManagerFake.Object, _helperFake.Object, _integrationPointRepositoryFake.Object)
+            _instance = new JobHistoryErrorService(_relativityObjectManagerFake.Object, _integrationPointRepositoryFake.Object, Mock.Of<ILogger<JobHistoryErrorService>>())
             {
                 IntegrationPointDto = _integrationPoint,
                 JobHistory = _jobHistory,

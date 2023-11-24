@@ -1,19 +1,19 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {
@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests
         private ISerializer _serializer;
         private IJobTrackerQueryManager _jobTrackerQueryManager;
         private IQueueQueryManager _queueQueryManager;
-        private IHelper _helper;
         private JobTracker _jobTracker;
         private JobResourceTracker _jobResource;
         private int _workspaceId;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.Core.Tests
         private int _userId;
         private string _correlationIdFake;
         private TaskType _task;
-        private IAPILog _logger;
 
         [SetUp]
         public override void SetUp()
@@ -47,15 +45,13 @@ namespace kCura.IntegrationPoints.Core.Tests
             _context.UserID = 55555;
             _correlationIdFake = Guid.NewGuid().ToString();
 
-            _helper = Substitute.For<IHelper>();
             _jobService = Substitute.For<IJobService>();
             _serializer = Substitute.For<ISerializer>();
             _jobTrackerQueryManager = Substitute.For<IJobTrackerQueryManager>();
             _queueQueryManager = Substitute.For<IQueueQueryManager>();
-            _logger = Substitute.For<IAPILog>();
             _jobResource = new JobResourceTracker(_jobTrackerQueryManager, _queueQueryManager);
-            _jobTracker = new JobTracker(_jobResource, _logger);
-            _manager = new AgentJobManager(_context, _jobService, _helper, _serializer, _jobTracker);
+            _jobTracker = new JobTracker(_jobResource, Substitute.For<ILogger<JobTracker>>());
+            _manager = new AgentJobManager(_context, _jobService, _serializer, _jobTracker, Substitute.For<ILogger<AgentJobManager>>());
         }
 
         [Test]
@@ -289,7 +285,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Job GetJob(long jobID, long? rootJobID)
         {
             return JobHelper.GetJob(jobID, rootJobID, null, 1, 1, 111,
-                222, Guid.NewGuid().ToString(),TaskType.SyncEntityManagerWorker,
+                222, Guid.NewGuid().ToString(), TaskType.SyncEntityManagerWorker,
                 new DateTime(), null, "", 0, new DateTime(), 1,
                 null, null);
         }

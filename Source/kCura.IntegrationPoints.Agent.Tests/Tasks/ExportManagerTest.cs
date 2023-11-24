@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -16,7 +15,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -69,15 +67,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IJobHistoryService>(),
                 Substitute.For<JobHistoryErrorService>(
                     relativityObjectManager,
-                    _helperMock,
-                    _integrationPointRepositoryMock),
+                    _integrationPointRepositoryMock,
+                    Substitute.For<ILogger<JobHistoryErrorService>>()),
                 Substitute.For<IScheduleRuleFactory>(),
                 managerFactoryMock,
                 new List<IBatchStatus>(),
                 _exportInitProcessService,
                 agentValidator,
-                Substitute.For<ILogger<ExportManager>>(),
-                Substitute.For<IDiagnosticLog>());
+                Substitute.For<ILogger<ExportManager>>());
         }
 
         [TestCase(10)]

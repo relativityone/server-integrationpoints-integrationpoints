@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Logging;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using Newtonsoft.Json;
@@ -48,10 +46,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_data, _fieldMap, new ImportSettings(destinationConfiguration), null, new EmptyDiagnosticLog());
+            _instance.SyncData(_data, _fieldMap, new ImportSettings(destinationConfiguration), null);
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null, Arg.Any<IDiagnosticLog>());
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null);
         }
 
         [Test]
@@ -67,10 +65,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_records, _fieldMap, new ImportSettings(destinationConfiguration), (IJobStopManager)null, null);
+            _instance.SyncData(_records, _fieldMap, new ImportSettings(destinationConfiguration), (IJobStopManager)null);
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null, null);
+            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<ImportSettings>(x => AssertOptions(x.DestinationConfiguration)), null);
         }
 
         [Test]

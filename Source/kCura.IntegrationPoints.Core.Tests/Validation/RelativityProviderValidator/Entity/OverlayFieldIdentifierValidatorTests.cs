@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
@@ -15,7 +11,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Entity
 {
@@ -31,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _fxt = FixtureFactory.Create();
 
-            _sut = new OverlayFieldIdentifierValidator(Mock.Of<IAPILog>());
+            _sut = new OverlayFieldIdentifierValidator(Mock.Of<ILogger<OverlayFieldIdentifierValidator>>());
         }
 
         [Test]
@@ -87,9 +82,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             IntegrationPointProviderValidationModel validationModel = _fxt.Create<IntegrationPointProviderValidationModel>();
 
             validationModel.DestinationConfiguration.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-			validationModel.DestinationConfiguration.OverlayIdentifier = validationModel.FieldsMap.First().DestinationField.DisplayName;
+            validationModel.DestinationConfiguration.OverlayIdentifier = validationModel.FieldsMap.First().DestinationField.DisplayName;
 
-			validationModel.FieldsMap.Last().DestinationField.DisplayName = EntityFieldNames.FullName;
+            validationModel.FieldsMap.Last().DestinationField.DisplayName = EntityFieldNames.FullName;
 
             // Act
             ValidationResult actual = _sut.Validate(validationModel);

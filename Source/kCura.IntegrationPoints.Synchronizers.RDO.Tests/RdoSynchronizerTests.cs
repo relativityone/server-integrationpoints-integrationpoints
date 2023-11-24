@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private Mock<IObjectTypeRepository> _objectTypeRepository;
         private Mock<IRelativityFieldQuery> _relativityFieldQuery;
         private Mock<IJobImport> _importJobMock;
-        private Mock<IDiagnosticLog> _diagnosticLogMock;
         private Mock<IAPILog> _loggerFake;
         private Mock<IJobStopManager> _jobStopManagerMock;
         private Mock<IImportApiFactory> _importApiFactoryMock;
@@ -72,7 +71,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _relativityFieldQuery = new Mock<IRelativityFieldQuery>();
             _importJobFactory = new Mock<IImportJobFactory>();
             _helper = MockHelper();
-            _diagnosticLogMock = new Mock<IDiagnosticLog>();
             _jobStopManagerMock = new Mock<IJobStopManager>();
             _importJobMock = new Mock<IJobImport>();
             _importApiFactoryMock = new Mock<IImportApiFactory>();
@@ -598,7 +596,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _importApiFactoryMock.Setup(x => x.GetImportApiFacade())
                 .Returns(new ImportApiFacade(_importApiFactoryMock.Object, new Mock<ILogger<ImportApiFacade>>().Object));
 
-            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object, Serializer);
+            var sut = new RdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, Serializer);
 
             // Act
             IEnumerable<FieldEntry> results = sut.GetFields(new DataSourceProviderConfiguration(options));
@@ -614,7 +612,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         {
             // Arrange
             var (data, fieldsMap, serializedOptions) = PrepareDataForSynchronization();
-            TestRdoSynchronizer sut = new TestRdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object);
+            TestRdoSynchronizer sut = new TestRdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object);
 
             // Act
             Func<Task> func = ExecuteDataSynchronization(sut, data, fieldsMap, serializedOptions);
@@ -629,10 +627,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             // Arrange
             MalformedLineException malformedException = new MalformedLineException("bla");
             var (data, fieldsMap, serializedOptions) = PrepareDataForSynchronization(malformedException);
-            TestRdoSynchronizer sut = new TestRdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object, _diagnosticLogMock.Object);
+            TestRdoSynchronizer sut = new TestRdoSynchronizer(_relativityFieldQuery.Object, _importApiFactoryMock.Object, _importJobFactory.Object, _helper.Object);
 
             // Act
-            Task syncDataTask = Task.Run(() => sut.SyncData(data, fieldsMap, serializedOptions, _jobStopManagerMock.Object, _diagnosticLogMock.Object));
+            Task syncDataTask = Task.Run(() => sut.SyncData(data, fieldsMap, serializedOptions, _jobStopManagerMock.Object));
             Func<Task> func = async () => await syncDataTask.ConfigureAwait(false);
 
             // Assert
@@ -651,7 +649,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
                     RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
                     _importJobFactory.Object,
                     _helper.Object,
-                    _diagnosticLogMock.Object,
                     Serializer);
         }
 
@@ -750,7 +747,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             List<FieldMap> fieldsMap,
             ImportSettings serializedOptions)
         {
-            Task syncDataTask = Task.Run(() => sut.SyncData(data, fieldsMap, serializedOptions, _jobStopManagerMock.Object, _diagnosticLogMock.Object));
+            Task syncDataTask = Task.Run(() => sut.SyncData(data, fieldsMap, serializedOptions, _jobStopManagerMock.Object));
             Type rdoSynchronizerType = sut.GetType().BaseType;
             FieldInfo sutIsJobComplete = rdoSynchronizerType?.GetField("_isJobComplete", BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -777,14 +774,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     public class TestRdoSynchronizer : RdoSynchronizer
     {
         public TestRdoSynchronizer()
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
         }
 
-        public TestRdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory importApiFactory, IImportJobFactory importJobFactory, IHelper helper, IDiagnosticLog logger)
-            : base(fieldQuery, importApiFactory, importJobFactory, helper, logger, new JSONSerializer())
+        public TestRdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory importApiFactory, IImportJobFactory importJobFactory, IHelper helper)
+            : base(fieldQuery, importApiFactory, importJobFactory, helper, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;
@@ -806,7 +803,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private readonly WorkspaceRef _workspaceRef;
 
         public MockSynchronizer(WorkspaceRef workspaceRef)
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new JSONSerializer())
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new JSONSerializer())
         {
             DisableNativeLocationValidation = false;
             DisableNativeValidation = false;

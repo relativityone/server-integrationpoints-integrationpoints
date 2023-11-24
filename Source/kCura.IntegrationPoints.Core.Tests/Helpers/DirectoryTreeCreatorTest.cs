@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SystemInterface.IO;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.API;
-using kCura.IntegrationPoints.Core.Helpers;
+using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         {
             _directoryMock = Substitute.For<IDirectory>();
 
-            _subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock, Substitute.For<IHelper>(), Substitute.For<ICryptographyHelper>());
+            _subjectUnderTest = new DirectoryTreeCreator<JsTreeItemDTO>(_directoryMock, Substitute.For<ICryptographyHelper>(), Substitute.For<ILogger<DirectoryTreeCreator<JsTreeItemDTO>>>());
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             List<JsTreeItemDTO> rootItem = _subjectUnderTest.GetChildren(_ROOT_FOLDER, true);
 
             // Assert
-            Assert.That(rootItem.Count,Is.EqualTo(1));
+            Assert.That(rootItem.Count, Is.EqualTo(1));
             Assert.That(rootItem[0].Children.Count, Is.EqualTo(0));
         }
 

@@ -1,20 +1,19 @@
-﻿using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+﻿using System;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
+using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.ExternalCalls;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
-using System;
-using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation.Model;
 
 namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCalls
 {
     [TestFixture, Category("Unit")]
     public class ExternalCallsSinkTests
     {
-        private IAPILog _logger;
+        private ILogger<ExternalCallsSink> _logger;
         private ExternalCallsSink _sut;
         private IMetricsManager _apmManager;
         private const string _BUCKET_EXTERNALL_CALL = "IntegrationPoints.Performance.ExternalCall";
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
         [SetUp]
         public void SetUp()
         {
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<ExternalCallsSink>>();
             _apmManager = Substitute.For<IMetricsManager>();
             IMetricsManagerFactory metricsManagerFactory = Substitute.For<IMetricsManagerFactory>();
             metricsManagerFactory.CreateAPMManager().Returns(_apmManager);
@@ -383,7 +382,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring.MessageSink.ExternalCall
             _apmManager.Received().LogCount(
                 _BUCKET_EXTERNALL_CALL_JOB_SUMMARY,
                 expectedDuration,
-                Arg.Is<IMetricMetadata>(x=>ValidateSummaryMessage(x, _firstCallContextForFirstService.ServiceType, 2, expectedDuration)));
+                Arg.Is<IMetricMetadata>(x => ValidateSummaryMessage(x, _firstCallContextForFirstService.ServiceType, 2, expectedDuration)));
         }
 
         [Test]

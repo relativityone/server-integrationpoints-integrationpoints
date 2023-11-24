@@ -1,4 +1,8 @@
-﻿using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -6,16 +10,13 @@ using LanguageExt;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider
 {
     [TestFixture, Category("Unit")]
     public class RipProviderUninstallerTests
     {
-        private Mock<IAPILog> _loggerMock;
+        private Mock<ILogger<RipProviderUninstaller>> _loggerMock;
         private Mock<ISourceProviderRepository> _sourceProviderRepositoryMock;
         private Mock<IApplicationGuidFinder> _appGuidFinderMock;
         private Mock<IIntegrationPointsRemover> _integrationPointRemoverMock;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
         [SetUp]
         public void SetUp()
         {
-            _loggerMock = new Mock<IAPILog>();
+            _loggerMock = new Mock<ILogger<RipProviderUninstaller>>();
             _sourceProviderRepositoryMock = new Mock<ISourceProviderRepository>();
             _appGuidFinderMock = new Mock<IApplicationGuidFinder>();
             _integrationPointRemoverMock = new Mock<IIntegrationPointsRemover>();

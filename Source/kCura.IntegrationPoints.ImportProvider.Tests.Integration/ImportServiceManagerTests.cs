@@ -2,24 +2,31 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using Microsoft.VisualBasic.Devices;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
-using NSubstitute;
-using NUnit.Framework;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers;
@@ -27,21 +34,11 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Microsoft.VisualBasic.Devices;
+using NSubstitute;
+using NUnit.Framework;
 using Relativity.API;
-using kCura.IntegrationPoints.Common;
-using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Common.Handlers;
-using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.AdlsHelpers;
-using kCura.IntegrationPoints.Core.Logging;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using Relativity.AutomatedWorkflows.SDK;
-using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -70,7 +67,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             // Substitutes
             IHelper helper = Substitute.For<IHelper>();
-            IDiagnosticLog diagnosticLog = Substitute.For<IDiagnosticLog>();
             ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
             ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
             IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
@@ -104,7 +100,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 _windsorContainer.Resolve<IImportApiFactory>(),
                 _windsorContainer.Resolve<IImportJobFactory>(),
                 helper,
-                diagnosticLog,
                 _serializer,
                 true,
                 true);
@@ -136,7 +131,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             // JobStopManager
             IJobStopManager stopManager = Substitute.For<IJobStopManager>();
             managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
-                Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(stopManager);
+                Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
 
             // Job History Service
             JobHistory jobHistoryDto = new JobHistory()
@@ -188,8 +183,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 Substitute.For<IFileIdentificationService>(),
                 Substitute.For<IDataTransferLocationService>(),
                 Substitute.For<IAdlsHelper>(),
-                Substitute.For<ILogger<ImportServiceManager>>(),
-                new EmptyDiagnosticLog());
+                Substitute.For<ILogger<ImportServiceManager>>());
         }
 
         public override void TestTeardown()

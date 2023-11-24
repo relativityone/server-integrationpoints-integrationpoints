@@ -5,7 +5,6 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -82,8 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 _emailFormatterMock.Object,
                 _managerFactoryMock.Object,
                 _jobServiceMock.Object,
-                _integrationPointServiceMock.Object,
-                new EmptyDiagnosticLog());
+                _integrationPointServiceMock.Object);
         }
 
         [Test]

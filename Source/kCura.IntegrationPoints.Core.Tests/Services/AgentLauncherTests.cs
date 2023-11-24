@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -18,7 +19,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IRipToggleProvider> _toggleProviderMock;
         private Mock<IAgentStatusManagerService> _agentStatusManagerServiceMock;
         private Mock<IServicesMgr> _servicesMgrMock;
-        private Mock<IAPILog> _logMock;
         private Guid _agentGuid;
         private AgentLauncher _sut;
 
@@ -27,12 +27,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _toggleProviderMock = new Mock<IRipToggleProvider>();
             _agentStatusManagerServiceMock = new Mock<IAgentStatusManagerService>();
             _servicesMgrMock = new Mock<IServicesMgr>();
-            _logMock = new Mock<IAPILog>();
 
             _servicesMgrMock.Setup(x => x.CreateProxy<IAgentStatusManagerService>(It.IsAny<ExecutionIdentity>())).Returns(_agentStatusManagerServiceMock.Object);
             _agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-            _sut = new AgentLauncher(_servicesMgrMock.Object, _toggleProviderMock.Object, _logMock.Object);
+            _sut = new AgentLauncher(_servicesMgrMock.Object, _toggleProviderMock.Object, Mock.Of<ILogger<AgentLauncher>>());
         }
 
         [Test]

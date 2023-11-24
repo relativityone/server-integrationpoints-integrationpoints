@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
         private bool _errorOccurredDuringJob;
 
-        public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IHelper helper, IIntegrationPointRepository integrationPointRepository, ILogger<JobHistoryErrorService> logger)
+        public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IIntegrationPointRepository integrationPointRepository, ILogger<JobHistoryErrorService> logger)
         {
             _integrationPointRepository = integrationPointRepository;
             _relativityObjectManager = relativityObjectManager;

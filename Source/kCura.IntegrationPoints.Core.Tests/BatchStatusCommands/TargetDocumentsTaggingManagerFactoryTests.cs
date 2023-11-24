@@ -1,12 +1,12 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private TargetDocumentsTaggingManagerFactory _instance;
         private ImportSettings _importSettings;
         private IDataSynchronizer _dataSynchronizer;
-        private IDiagnosticLog _diagnosticLog;
+        private ILogger<TargetDocumentsTaggingManagerFactory> _logger;
         private const int _JOBHISTORY_ARTIFACT_ID = 321;
         private const string _UNIQUE_JOBID = "very unique";
         private readonly SourceConfiguration _sourceConfiguration = new SourceConfiguration();
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _serializer = Substitute.For<ISerializer>();
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
             _helper = Substitute.For<IHelper>();
-            _diagnosticLog = Substitute.For<IDiagnosticLog>();
+            _logger = Substitute.For<ILogger<TargetDocumentsTaggingManagerFactory>>();
             _fields = new FieldMap[0];
             _importSettings = new ImportSettings(new DestinationConfiguration());
         }
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _importSettings,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
-                _diagnosticLog
+                _logger
             );
 
             // ASSERT
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _importSettings,
                 _JOBHISTORY_ARTIFACT_ID,
                 _UNIQUE_JOBID,
-                _diagnosticLog
+                _logger
             );
 
             // ACT

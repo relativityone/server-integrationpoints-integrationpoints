@@ -1,10 +1,9 @@
-﻿using kCura.IntegrationPoints.Core.Services.Exporter;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Models;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
@@ -17,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
             return new ImageTransferDataReader(
                 _exportService,
                 _templateFieldEntries,
-                NSubstitute.Substitute.For<IAPILog>(),
+                NSubstitute.Substitute.For<ILogger<ImageTransferDataReader>>(),
                 _scratchRepositories);
         }
 
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
             return new ImageTransferDataReader(
                 relativityExportService,
                 fieldMappings,
-                NSubstitute.Substitute.For<IAPILog>(),
+                NSubstitute.Substitute.For<ILogger<ImageTransferDataReader>>(),
                 scratchTableRepositories);
         }
     }

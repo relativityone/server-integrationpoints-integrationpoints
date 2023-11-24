@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
     {
         private IRelativityObjectManager _relativityObjectManager;
         private IWorkspaceManager _workspaceManager;
-        private IAPILog _logger;
+        private ILogger<JobHistoryService> _logger;
         private JobHistoryService _instance;
         private IntegrationPointDto _integrationPoint;
         private DestinationConfiguration _destinationConfiguration;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _workspaceManager = Substitute.For<IWorkspaceManager>();
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<JobHistoryService>>();
 
             _integrationPoint = new IntegrationPointDto
             {

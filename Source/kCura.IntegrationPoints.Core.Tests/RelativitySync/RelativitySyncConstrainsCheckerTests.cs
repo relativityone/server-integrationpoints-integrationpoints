@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -78,8 +79,6 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 DestinationProvider = _DESTINATION_PROVIDER_ID,
             };
 
-            var log = new Mock<IAPILog>();
-
             _configurationDeserializer = new Mock<ISerializer>();
             _configurationDeserializer.Setup(d => d.Deserialize<SourceConfiguration>(_SOURCE_CONFIGURATION))
                 .Returns(_sourceConfiguration);
@@ -113,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 _providerTypeService.Object,
                 _toggleProvider.Object,
                 _configurationDeserializer.Object,
-                log.Object);
+                Mock.Of<ILogger<RelativitySyncConstrainsChecker>>());
         }
 
         [Test]

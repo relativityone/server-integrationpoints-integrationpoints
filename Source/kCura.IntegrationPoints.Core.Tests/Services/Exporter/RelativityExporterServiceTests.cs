@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
@@ -339,7 +340,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                Mock.Of<ILogger<RelativityExporterService>>());
         }
 
         private static SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)

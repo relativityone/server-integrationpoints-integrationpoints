@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Domain.Authentication;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
 {
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
         private WebApiLoginService _instanceUnderTest;
         private ILoginHelperFacade _authProvider;
         private IAuthTokenGenerator _tokenGenerator;
-        private IAPILog _logger;
+        private ILogger<WebApiLoginService> _logger;
         private CookieContainer _cookieContainer;
         private string _fakeAuthToken = "AUTH_TOKEN";
 
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi
             _authProvider = Substitute.For<ILoginHelperFacade>();
             _tokenGenerator = Substitute.For<IAuthTokenGenerator>();
             _tokenGenerator.GetAuthToken().Returns(_fakeAuthToken);
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<WebApiLoginService>>();
             _cookieContainer = new CookieContainer();
 
             _instanceUnderTest = new WebApiLoginService(_authProvider, _tokenGenerator, _logger);

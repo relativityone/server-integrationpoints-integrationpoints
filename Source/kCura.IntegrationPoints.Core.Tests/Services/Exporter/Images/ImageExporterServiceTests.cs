@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -38,6 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         private IFileRepository _fileRepository;
         private IRelativityObjectManager _relativityObjectManager;
         private ISerializer _serializer;
+        private ILogger<ImageExporterService> _logger;
         private const int _START_AT = 0;
         private const int _SEARCH_ARTIFACT_ID = 0;
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
@@ -104,7 +106,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _mappedFields,
                 _START_AT,
                 sourceConfiguration,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                _logger);
 
             IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -147,7 +150,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID
+                _SEARCH_ARTIFACT_ID,
+                _logger
             );
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
@@ -199,7 +203,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                _logger);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -272,7 +277,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                _logger);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -345,7 +351,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                _logger);
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 

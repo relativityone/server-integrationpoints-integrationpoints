@@ -1,44 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Api;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
-using kCura.IntegrationPoints.Common.Handlers;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common;
-using kCura.IntegrationPoints.Common.Toggles;
-using kCura.IntegrationPoints.Core.AdlsHelpers;
-using kCura.IntegrationPoints.Domain.Managers;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.AutomatedWorkflows.SDK;
 using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
-using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Core.Logging;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -163,7 +161,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                     Size = _LOAD_FILE_SIZE
                 }
             };
-            JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, ItemsTransferred = 0, ItemsWithErrors = 0};
+            JobHistory jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, ItemsTransferred = 0, ItemsWithErrors = 0 };
             SourceProvider sourceProvider = new SourceProvider();
             List<FieldMap> mappings = new List<FieldMap>();
 
@@ -173,7 +171,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _taskParameters.BatchInstance, Arg.Any<DateTime>()).Returns(jobHistory);
             caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<DestinationConfiguration>()).Returns(_synchronizer);
-            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(jobStopManager);
+            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(jobStopManager);
 
             DestinationConfiguration imageSettings = new DestinationConfiguration();
             imageSettings.ImageImport = true;
@@ -215,8 +213,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IFileIdentificationService>(),
                 Substitute.For<IDataTransferLocationService>(),
                 Substitute.For<IAdlsHelper>(),
-                Substitute.For<ILogger<ImportServiceManager>>(),
-                new EmptyDiagnosticLog());
+                Substitute.For<ILogger<ImportServiceManager>>());
         }
 
         [Test]
@@ -230,7 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<ImportSettings>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
+            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<ImportSettings>(), Arg.Any<IJobStopManager>());
         }
 
         [Test]

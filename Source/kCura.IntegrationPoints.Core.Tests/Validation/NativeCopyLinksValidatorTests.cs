@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
     {
         private NativeCopyLinksValidator _sut;
         private Mock<ISerializer> _serializerFake;
-        private Mock<IAPILog> _loggerFake;
+        private Mock<ILogger<NativeCopyLinksValidator>> _loggerFake;
         private Mock<IHelper> _helperFake;
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IGroupManager> _groupManager;
@@ -39,8 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [SetUp]
         public void SetUp()
         {
-            _loggerFake = new Mock<IAPILog>();
-            _loggerFake.SetupLog();
+            _loggerFake = new Mock<ILogger<NativeCopyLinksValidator>>();
 
             _groupManager = new Mock<IGroupManager>();
 

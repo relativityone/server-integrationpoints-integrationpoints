@@ -1,13 +1,12 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -20,15 +19,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         private Tagger _instance;
         private IDocumentRepository _documentRepository;
         private IDataSynchronizer _dataSynchronizer;
-        private IDiagnosticLog _diagnosticLog;
         private ImportSettings _importConfig;
 
         public override void SetUp()
         {
             _documentRepository = Substitute.For<IDocumentRepository>();
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
-            _diagnosticLog = Substitute.For<IDiagnosticLog>();
-            IHelper helper = Substitute.For<IHelper>();
+            ILogger<Tagger> logger = Substitute.For<ILogger<Tagger>>();
 
             FieldMap[] fields =
             {
@@ -55,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
             _importConfig = new ImportSettings(new DestinationConfiguration());
 
-            _instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig, _diagnosticLog);
+            _instance = new Tagger(_documentRepository, _dataSynchronizer, fields, _importConfig, logger);
         }
 
         [Test]
@@ -87,8 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                     Arg.Any<IDataTransferContext>(),
                     Arg.Any<FieldMap[]>(),
                     _importConfig,
-                    null,
-                    Arg.Any<IDiagnosticLog>());
+                    null);
         }
 
         [Test]
@@ -119,8 +115,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                     Arg.Any<IDataTransferContext>(),
                     Arg.Any<FieldMap[]>(),
                     _importConfig,
-                    null,
-                    Arg.Any<IDiagnosticLog>());
+                    null);
         }
     }
 }

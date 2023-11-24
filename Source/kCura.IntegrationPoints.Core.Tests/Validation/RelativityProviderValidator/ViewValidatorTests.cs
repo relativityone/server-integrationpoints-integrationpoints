@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -15,17 +16,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     public class ViewValidatorTests
     {
         private const int _VIEW_ID = 10001;
-        private Mock<IAPILog> _loggerFake;
         private Mock<IRelativityObjectManager> _objectManagerMock;
         private ViewValidator _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _loggerFake = new Mock<IAPILog>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
 
-            _sut = new ViewValidator(_objectManagerMock.Object, _loggerFake.Object);
+            _sut = new ViewValidator(_objectManagerMock.Object, Mock.Of<ILogger<ViewValidator>>());
         }
 
         [Test]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
@@ -8,15 +9,12 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
     [TestFixture, Category("Unit")]
     public class ValidationExecutorTests : TestBase
     {
-        #region Fields
-
         private DestinationProvider _destinationProvider;
         private IIntegrationPointPermissionValidator _permissionValidatorMock;
         private IIntegrationPointProviderValidator _providerValidatorMock;
@@ -29,18 +27,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         private const int _ZERO_USER_ID = 0;
         private readonly Guid _objectTypeGuid = Guid.NewGuid();
 
-        #endregion // Fields
-
-        #region Setup
-
         public override void SetUp()
         {
             _providerValidatorMock = Substitute.For<IIntegrationPointProviderValidator>();
             _permissionValidatorMock = Substitute.For<IIntegrationPointPermissionValidator>();
 
-            IHelper helper = Substitute.For<IHelper>();
-
-            _subjectUnderTest = new ValidationExecutor(_providerValidatorMock, _permissionValidatorMock, helper);
+            _subjectUnderTest = new ValidationExecutor(_providerValidatorMock, _permissionValidatorMock, Substitute.For<ILogger<ValidationExecutor>>());
 
             _destinationProvider = new DestinationProvider();
             _sourceProvider = new SourceProvider();
@@ -57,10 +49,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
                 UserId = _USER_ID
             };
         }
-
-        #endregion // Setup
-
-        #region Tests
 
         [Test]
         public void ItShouldThrowValidationExceptionOnNotDefinedUserid()
@@ -356,7 +344,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             _providerValidatorMock.DidNotReceive().Validate(Arg.Any<IntegrationPointDtoBase>(), Arg.Any<SourceProvider>(),
                 Arg.Any<DestinationProvider>(), Arg.Any<IntegrationPointType>(), Arg.Any<Guid>(), Arg.Any<int>());
         }
-
-        #endregion // Tests
     }
 }

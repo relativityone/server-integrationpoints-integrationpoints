@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
@@ -10,11 +11,9 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
 using Moq;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 {
@@ -24,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private JobHistoryErrorBatchUpdateManager _sut;
         private IRepositoryFactory _repositoryFactoryMock;
         private IJobHistoryErrorRepository _jobHistoryErrorRepositoryMock;
-        private IHelper _helperMock;
         private Mock<IMassUpdateHelper> _massUpdateHelperMock;
         private JobHistoryErrorDTO.UpdateStatusType _updateStatusTypeMock;
         private const int _sourceWorkspaceId = 1357475;
@@ -44,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
             _updateStatusTypeMock = Substitute.For<JobHistoryErrorDTO.UpdateStatusType>();
             _jobHistoryErrorManagerMock = Substitute.For<IJobHistoryErrorManager>();
-            _helperMock = Substitute.For<IHelper>();
 
             _jobHistoryErrorManagerMock.JobHistoryErrorItemStart.Returns(Substitute.For<IScratchTableRepository>());
             _jobHistoryErrorManagerMock.JobHistoryErrorItemComplete.Returns(Substitute.For<IScratchTableRepository>());
@@ -56,12 +53,12 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
 
             _sut = new JobHistoryErrorBatchUpdateManager(
                 _jobHistoryErrorManagerMock,
-                _helperMock.GetLoggerFactory().GetLogger(),
                 _repositoryFactoryMock,
                 _jobStopManagerMock,
                 _sourceWorkspaceId,
                 _updateStatusTypeMock,
-                _massUpdateHelperMock.Object);
+                _massUpdateHelperMock.Object,
+                Substitute.For<ILogger<JobHistoryErrorBatchUpdateManager>>());
 
             _repositoryFactoryMock.GetJobHistoryErrorRepository(_sourceWorkspaceId).Returns(_jobHistoryErrorRepositoryMock);
         }

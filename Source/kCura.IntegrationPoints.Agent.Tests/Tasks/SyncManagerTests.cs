@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -20,7 +19,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
@@ -114,7 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance = new SyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
                 _integrationPointService, _serializer, guidService, _jobHistoryService,
                 _jobHistoryErrorService, scheduleRuleFactory, _managerFactory,
-                batchStatuses, _agentValidator, Substitute.For<ILogger<SyncManager>>(), new EmptyDiagnosticLog())
+                batchStatuses, _agentValidator, Substitute.For<ILogger<SyncManager>>())
             {
                 BatchInstance = _correlationID,
                 IntegrationPointDto = _integrationPoint
@@ -134,7 +132,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 x => x.Configuration.Equals(_integrationPoint.SourceConfiguration) && x.SecuredConfiguration.Equals(_integrationPoint.SecuredConfiguration))).Returns(_dataReader);
             _dataReader.Read().Returns(true, false);
             _dataReader.GetString(0).Returns(_data);
-            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
+            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>())
                 .Returns(_jobStopManager);
             _jobService.GetJobNextUtcRunDateTime(_job, scheduleRuleFactory, Arg.Any<TaskResult>()).Returns(DateTime.Now);
             _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
@@ -162,8 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
-                Substitute.For<ILogger<SyncManager>>(),
-                diagnosticLog: new EmptyDiagnosticLog());
+                Substitute.For<ILogger<SyncManager>>());
             Job job = GetJob(null);
 
             // ACT
@@ -195,8 +192,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
-                Substitute.For<ILogger<SyncManager>>(),
-                diagnosticLog: new EmptyDiagnosticLog());
+                Substitute.For<ILogger<SyncManager>>());
             Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = _jobGuidValue }));
 
             // ACT
@@ -228,8 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory: _managerFactory,
                 batchStatuses: null,
                 agentValidator: _agentValidator,
-                Substitute.For<ILogger<SyncManager>>(),
-                diagnosticLog: new EmptyDiagnosticLog());
+                Substitute.For<ILogger<SyncManager>>());
             Job job = GetJob("BAD_GUID");
 
             // ACT
@@ -338,7 +333,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // We expect to update Start Time and State of JobHistory object
             _jobHistoryService.Received(2).UpdateRdoWithoutDocuments(_jobHistory);
-            _managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>());
+            _managerFactory.Received(1).CreateJobStopManager(_jobService, _jobHistoryService, _correlationID, _job.JobId, Arg.Any<bool>());
         }
 
         [Test]
@@ -409,7 +404,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 {
                     throw exception4;
                 });
-            _jobHistoryService.When(x => x.UpdateRdoWithoutDocuments(_jobHistory)).Do(x => { throw exception5;});
+            _jobHistoryService.When(x => x.UpdateRdoWithoutDocuments(_jobHistory)).Do(x => { throw exception5; });
             _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(_jobHistory);
 
             // act
@@ -543,7 +538,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 }
             );
             bool jobValidationFailedUpdated = false;
-            _jobHistoryService.When(x => x.UpdateRdoWithoutDocuments(Arg.Is<JobHistory>( jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
+            _jobHistoryService.When(x => x.UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(jh => jh.JobStatus.Guids.First() == JobStatusChoices.JobHistoryValidationFailed.Guids.First()))).Do(item =>
                 {
                     jobValidationFailedUpdated = true;
                 }
@@ -624,7 +619,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 IManagerFactory managerFactory,
                 IEnumerable<IBatchStatus> batchStatuses,
                 IAgentValidator agentValidator) : base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService,
-                jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, Substitute.For<ILogger<SyncManager>>(), new EmptyDiagnosticLog())
+                jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, Substitute.For<ILogger<SyncManager>>())
             {
             }
 

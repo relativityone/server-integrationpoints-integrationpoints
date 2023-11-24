@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -14,7 +15,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     {
         private ArtifactValidator _destinationFolderValidatorMock;
         private FieldsMappingValidator _fieldMappingValidatorMock;
-        private IAPILog _logger;
+        private ILogger<RelativityProviderConfigurationValidator> _logger;
         private IArtifactService _artifactServiceMock;
         private IFieldManager _sourceFieldManager;
         private IFieldManager _targetFieldManager;
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [SetUp]
         public void SetUp()
         {
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<RelativityProviderConfigurationValidator>>();
             _serializerMock = new JSONSerializer();
             _toggleProvider = Substitute.For<IRipToggleProvider>();
             _validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
