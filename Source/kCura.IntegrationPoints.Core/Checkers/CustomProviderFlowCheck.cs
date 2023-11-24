@@ -1,12 +1,12 @@
 ﻿using System;
 using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Checkers
 {
@@ -14,9 +14,9 @@ namespace kCura.IntegrationPoints.Core.Checkers
     {
         private readonly IRipToggleProvider _toggleProvider;
         private readonly IIntegrationPointService _integrationPointService;
-        private readonly IAPILog _log;
+        private readonly ILogger<CustomProviderFlowCheck> _log;
 
-        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IIntegrationPointService integrationPointService, IAPILog log)
+        public CustomProviderFlowCheck(IRipToggleProvider toggleProvider, IIntegrationPointService integrationPointService, ILogger<CustomProviderFlowCheck> log)
         {
             _toggleProvider = toggleProvider;
             _integrationPointService = integrationPointService;

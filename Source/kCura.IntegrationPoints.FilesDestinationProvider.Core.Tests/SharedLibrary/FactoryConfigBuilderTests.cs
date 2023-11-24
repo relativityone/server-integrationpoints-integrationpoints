@@ -1,15 +1,15 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
-using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibrary
 {
@@ -25,11 +25,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         [SetUp]
         public override void SetUp()
         {
-            IHelper helper = Substitute.For<IHelper>();
+            ILogger<JobHistoryErrorService> logger = Substitute.For<ILogger<JobHistoryErrorService>>();
             IExportConfig exportConfig = Substitute.For<IExportConfig>();
             IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            var jobHistoryErrorService = new JobHistoryErrorService(relativityObjectManager, helper, _integrationPointRepository);
+            var jobHistoryErrorService = new JobHistoryErrorService(relativityObjectManager, _integrationPointRepository, logger);
             _jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);
 
             IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
                 }
             };
 
-            _factory = new FactoryConfigBuilder(_jobHistoryErrorServiceProvider,fileNameProvidersDictionaryBuilder, exportConfig);
+            _factory = new FactoryConfigBuilder(_jobHistoryErrorServiceProvider, fileNameProvidersDictionaryBuilder, exportConfig);
         }
 
         [Test]

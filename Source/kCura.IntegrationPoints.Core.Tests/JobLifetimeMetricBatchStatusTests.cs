@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Models;
@@ -14,7 +15,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 
@@ -59,11 +59,11 @@ namespace kCura.IntegrationPoints.Core.Tests
 
             _jobStatusUpdaterFake = new Mock<IJobStatusUpdater>();
 
-            Mock<IAPILog> log = new Mock<IAPILog>();
+            Mock<ILogger<JobLifetimeMetricBatchStatus>> log = new Mock<ILogger<JobLifetimeMetricBatchStatus>>();
 
             _sut = new JobLifetimeMetricBatchStatus(_messageServiceMock.Object, integrationPointService.Object,
                 providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object,
-                serializer.Object, _dateTimeHelperFake.Object, log.Object);
+                _dateTimeHelperFake.Object, log.Object);
         }
 
         [Test]

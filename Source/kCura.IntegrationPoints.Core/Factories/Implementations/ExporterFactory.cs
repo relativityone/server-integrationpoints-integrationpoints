@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Images;
@@ -10,41 +12,37 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.AdlsHelpers;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
     public class ExporterFactory : IExporterFactory
     {
         private readonly IRepositoryFactory _repositoryFactory;
-        private readonly IHelper _helper;
         private readonly IFolderPathReaderFactory _folderPathReaderFactory;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IFileRepository _fileRepository;
         private readonly IAdlsHelper _adlsHelper;
         private readonly ISerializer _serializer;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExporterFactory> _logger;
 
         public ExporterFactory(
             IRepositoryFactory repositoryFactory,
-            IHelper helper,
             IFolderPathReaderFactory folderPathReaderFactory,
             IRelativityObjectManager relativityObjectManager,
             IFileRepository fileRepository,
             ISerializer serializer,
-            IAdlsHelper adlsHelper)
+            IAdlsHelper adlsHelper,
+            ILogger<ExporterFactory> logger)
         {
             _repositoryFactory = repositoryFactory;
-            _helper = helper;
             _folderPathReaderFactory = folderPathReaderFactory;
             _relativityObjectManager = relativityObjectManager;
             _fileRepository = fileRepository;
             _serializer = serializer;
             _adlsHelper = adlsHelper;
-            _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ExporterFactory>();
+            _logger = logger;
         }
 
         public IExporterService BuildExporter(
@@ -99,7 +97,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 _relativityObjectManager,
                 _repositoryFactory,
                 jobStopManager,
-                _helper,
                 folderPathReader,
                 _fileRepository,
                 _serializer,
@@ -107,7 +104,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 mappedFields,
                 startAtRecord,
                 sourceConfiguration,
-                savedSearchArtifactID);
+                savedSearchArtifactID,
+                _logger.ForContext<RelativityExporterService>());
         }
 
         private IExporterService CreateImageExporterService(
@@ -138,12 +136,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 jobStopManager,
                 _adlsHelper,
                 destinationConfiguration,
-                _helper,
                 _serializer,
                 mappedFiles,
                 startAtRecord,
                 sourceConfiguration,
-                searchArtifactId);
+                searchArtifactId,
+                _logger.ForContext<ImageExporterService>());
         }
 
         private void LogBuildExporterExecutionWithParameters(

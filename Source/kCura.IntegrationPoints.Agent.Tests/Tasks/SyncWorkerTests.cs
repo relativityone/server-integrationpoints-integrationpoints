@@ -7,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,7 +17,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
@@ -85,8 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory,
                 _jobService,
                 providerTypeService,
-                integrationPointService,
-                new EmptyDiagnosticLog());
+                integrationPointService);
 
             _job = JobHelper.GetFakeJobOfTaskType(TaskType.SyncEntityManagerWorker);
 
@@ -119,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             jobHistoryService.GetRdoWithoutDocuments(Guid.Empty).Returns(_jobHistory);
 
-            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
+            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>())
                 .Returns(_jobStopManager);
 
             serializer.Deserialize<List<string>>(Arg.Is<string>(_taskParams.BatchParameters.ToString())).Returns(recordIds);
@@ -151,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             // assert
             _batchStatus.Received(1).OnJobStart(_job);
             EnsureToSetJobHistroyErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), Arg.Any<ImportSettings>(), _jobStopManager, Arg.Any<IDiagnosticLog>());
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), Arg.Any<ImportSettings>(), _jobStopManager);
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
@@ -178,8 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
                     Arg.Any<ImportSettings>(),
-                    _jobStopManager,
-                    Arg.Any<IDiagnosticLog>());
+                    _jobStopManager);
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
@@ -204,8 +200,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
                     Arg.Any<ImportSettings>(),
-                    _jobStopManager,
-                    Arg.Any<IDiagnosticLog>());
+                    _jobStopManager);
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().CommitErrors();
             EnsureToUpdateTheStopStateBackToNone();
@@ -222,7 +217,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // assert
-            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager, null);
+            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager);
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.Unstoppable); // mark job as unstoppable while finalizing the job.
             EnsureToUpdateTheStopStateBackToNone();
         }
@@ -242,7 +237,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // assert
-            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager, null);
+            _dataSynchronizer.DidNotReceive().SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<FieldMap[]>(), new ImportSettings(_integrationPoint.DestinationConfiguration), _jobStopManager);
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.Unstoppable); // mark job as unstoppable while finalizing the job.
             EnsureToUpdateTheStopStateBackToNone();
         }
@@ -269,8 +264,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                     Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(),
                     Arg.Any<FieldMap[]>(),
                     Arg.Any<ImportSettings>(),
-                    _jobStopManager,
-                    Arg.Any<IDiagnosticLog>());
+                    _jobStopManager);
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryErrorService.Received().AddError(ErrorTypeChoices.JobHistoryErrorJob, exception);
             _jobHistoryErrorService.Received().CommitErrors();

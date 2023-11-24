@@ -90,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Factories
             Guid jobIdentifier,
             long jobId,
             bool supportsDrainStop,
-            IDiagnosticLog diagnosticLog,
             CancellationTokenSource stopCancellationTokenSource = null,
             CancellationTokenSource drainStopCancellationTokenSource = null);
 

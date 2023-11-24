@@ -1,8 +1,8 @@
 ﻿using System;
-using Stream = System.IO.Stream;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -10,9 +10,9 @@ using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
+using Stream = System.IO.Stream;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
         private readonly Dictionary<int, string> _nativeFileNames;
         private readonly Dictionary<int, string> _nativeFileTypes;
         private readonly HashSet<int> _documentsSupportedByViewer;
-        private readonly IAPILog _logger;
+        private readonly ILogger<DocumentTransferDataReader> _logger;
         private readonly IDocumentRepository _documentRepository;
         private readonly IFileRepository _fileRepository;
         private readonly int _workspaceArtifactID;
@@ -40,12 +40,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             IScratchTableRepository[] scratchTableRepositories,
             IRelativityObjectManager relativityObjectManager,
             IDocumentRepository documentRepository,
-            IAPILog logger,
+            ILogger<DocumentTransferDataReader> logger,
             IQueryFieldLookupRepository fieldLookupRepository,
             IFileRepository fileRepository,
             bool useDynamicFolderPath,
             int workspaceArtifactID) :
-            base(relativityExportService, fieldMappings, scratchTableRepositories, logger, useDynamicFolderPath)
+            base(relativityExportService, fieldMappings, scratchTableRepositories, logger.ForContext<ExportTransferDataReaderBase>(), useDynamicFolderPath)
         {
             _nativeFileLocations = new Dictionary<int, string>();
             _nativeFileNames = new Dictionary<int, string>();

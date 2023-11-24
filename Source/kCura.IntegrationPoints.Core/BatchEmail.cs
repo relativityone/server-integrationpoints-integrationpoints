@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -13,7 +14,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.Services.Choice;
@@ -37,8 +37,7 @@ namespace kCura.IntegrationPoints.Core
             IEmailFormatter converter,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -50,8 +49,7 @@ namespace kCura.IntegrationPoints.Core
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointService,
-                diagnosticLog)
+                integrationPointService)
         {
             _jobStatusUpdater = jobStatusUpdater;
             _converter = converter;

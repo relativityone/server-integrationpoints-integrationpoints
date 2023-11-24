@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Storage;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification.OutsideInServices;
 using OutsideIn;
 using Relativity.Storage;
@@ -23,20 +22,17 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
         private readonly IFileMetadataCollector _fileMetadataCollector;
 
         private readonly ILogger<FileIdentificationService> _logger;
-        private readonly IDiagnosticLog _diagnosticLogger;
 
         public FileIdentificationService(
             IOutsideInService outsideInService,
             IFileMetadataCollector fileMetadataCollector,
             IRelativityStorageService relativityStorageService,
-            ILogger<FileIdentificationService> logger,
-            IDiagnosticLog diagnosticLogger)
+            ILogger<FileIdentificationService> logger)
         {
             _outsideInService = outsideInService;
             _fileMetadataCollector = fileMetadataCollector;
             _relativityStorageService = relativityStorageService;
             _logger = logger;
-            _diagnosticLogger = diagnosticLogger;
         }
 
         public async Task IdentifyFilesAsync(BlockingCollection<string> files)
@@ -65,12 +61,9 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
             {
                 try
                 {
-                    _diagnosticLogger.LogDiagnostic("Identifying file {fullPath}", fullPath);
-
                     using (Stream stream = await OpenFileStreamAsync(fullPath).ConfigureAwait(false))
                     {
                         FileMetadata fileMetadata = IdentifyFileMetadata(stream);
-                        _diagnosticLogger.LogDiagnostic("Identified FileMetadata - {@metadata}", fileMetadata);
 
                         if (_fileMetadataCollector.StoreMetadata(fullPath, fileMetadata) == false)
                         {
@@ -87,8 +80,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification
 
         private async Task<Stream> OpenFileStreamAsync(string filePath)
         {
-            _diagnosticLogger.LogDiagnostic("Opening Stream - {filePath}", filePath);
-
             var openFileParameters = new OpenFileParameters
             {
                 Path = filePath,

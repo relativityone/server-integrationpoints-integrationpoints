@@ -54,8 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IJobService jobService,
             IProviderTypeService providerTypeService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -67,8 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointService,
-                diagnosticLog)
+                integrationPointService)
         {
             BatchStatus = statuses;
             _providerTypeService = providerTypeService;
@@ -169,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected void ConfigureJobStopManager(Job job, bool supportsDrainStop)
         {
-            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: supportsDrainStop, DiagnosticLog);
+            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, BatchInstance, job.JobId, supportsDrainStop: supportsDrainStop);
             JobHistoryErrorService.JobStopManager = JobStopManager;
         }
 
@@ -276,7 +274,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     JobStopManager?.ThrowIfStopRequested();
 
                     _logger.LogInformation("Start SyncData...");
-                    dataSynchronizer.SyncData(sourceData, fieldMaps, importSettings, JobStopManager, DiagnosticLog);
+                    dataSynchronizer.SyncData(sourceData, fieldMaps, importSettings, JobStopManager);
                     _logger.LogInformation("SyncData Completed. Processed rows: {processedRows}", dataSynchronizer.TotalRowsProcessed);
                 }
             }

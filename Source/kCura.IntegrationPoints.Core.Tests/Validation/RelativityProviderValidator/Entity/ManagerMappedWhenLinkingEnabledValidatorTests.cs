@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts.Entity;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Entity
 {
@@ -28,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         {
             _fxt = FixtureFactory.Create();
 
-            _sut = new ManagerMappedWhenLinkingEnabledValidator(Mock.Of<IAPILog>());
+            _sut = new ManagerMappedWhenLinkingEnabledValidator(new LoggerFake<ManagerMappedWhenLinkingEnabledValidator>());
         }
 
         [Test]

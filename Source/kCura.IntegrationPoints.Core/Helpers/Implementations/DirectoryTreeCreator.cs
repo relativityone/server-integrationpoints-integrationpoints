@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SystemInterface.IO;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
+using SystemInterface.IO;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
     public class DirectoryTreeCreator<TTreeItem> : IDirectoryTreeCreator<TTreeItem> where TTreeItem : JsTreeItemDTO, new()
     {
-        private readonly IAPILog _logger;
         private readonly IDirectory _directory;
         private readonly ICryptographyHelper _cryptographyHelper;
+        private readonly ILogger<DirectoryTreeCreator<TTreeItem>> _logger;
 
-        public DirectoryTreeCreator(IDirectory directory, IHelper helper, ICryptographyHelper cryptographyHelper)
+        public DirectoryTreeCreator(IDirectory directory, ICryptographyHelper cryptographyHelper, ILogger<DirectoryTreeCreator<TTreeItem>> logger)
         {
             _directory = directory;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<DirectoryTreeCreator<TTreeItem>>();
             _cryptographyHelper = cryptographyHelper;
+            _logger = logger;
         }
 
         public virtual List<TTreeItem> GetChildren(string path, bool isRoot, bool includeFiles = false)
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 IsDirectory = true,
                 Children = new List<JsTreeItemDTO>(subItems)
             };
-            return new List<TTreeItem> {root};
+            return new List<TTreeItem> { root };
         }
 
         protected virtual bool CanAccessFolder(string path, bool isRoot)

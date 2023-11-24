@@ -18,7 +18,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
@@ -33,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
         private IRepositoryFactory _repositoryFactoryMock;
         private IJobStopManager _jobStopManager;
         private IAdlsHelper _aldsHelper;
-        private IHelper _helper;
         private FieldMap[] _mappedFields;
         private IFileRepository _fileRepository;
         private IRelativityObjectManager _relativityObjectManager;
@@ -51,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
             _repositoryFactoryMock = Substitute.For<IRepositoryFactory>();
             _jobStopManager = Substitute.For<IJobStopManager>();
             _aldsHelper = Substitute.For<IAdlsHelper>();
-            _helper = Substitute.For<IHelper>();
             _relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _serializer = Substitute.For<ISerializer>();
 
@@ -99,12 +96,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _jobStopManager,
                 _aldsHelper,
                 null,
-                _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 sourceConfiguration,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<ImageExporterService>());
 
             IExporterTransferConfiguration transferConfiguration = Substitute.For<IExporterTransferConfiguration>();
 
@@ -142,12 +139,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _jobStopManager,
                 _aldsHelper,
                 settings,
-                _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<ImageExporterService>()
             );
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
@@ -194,12 +191,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _jobStopManager,
                 _aldsHelper,
                 _settings,
-                _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<ImageExporterService>());
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -267,12 +264,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _jobStopManager,
                 _aldsHelper,
                 _settings,
-                _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<ImageExporterService>());
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 
@@ -340,12 +337,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
                 _jobStopManager,
                 _aldsHelper,
                 _settings,
-                _helper,
                 _serializer,
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<ImageExporterService>());
 
             _sut.GetDataTransferContext(Substitute.For<IExporterTransferConfiguration>());
 

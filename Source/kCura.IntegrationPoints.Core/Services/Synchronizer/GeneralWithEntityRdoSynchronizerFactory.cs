@@ -3,7 +3,6 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
@@ -12,13 +11,11 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
     {
         private readonly RelativityRdoSynchronizerFactory _relativityRdoSynchronizerFactory;
         private readonly ImportProviderRdoSynchronizerFactory _importProviderRdoSynchronizerFactory;
-        private readonly IDiagnosticLog _diagnosticLog;
 
-        public GeneralWithEntityRdoSynchronizerFactory(IWindsorContainer container, IObjectTypeRepository objectTypeRepository, IDiagnosticLog diagnosticLog)
+        public GeneralWithEntityRdoSynchronizerFactory(IWindsorContainer container, IObjectTypeRepository objectTypeRepository)
         {
             _relativityRdoSynchronizerFactory = new RelativityRdoSynchronizerFactory(container);
             _importProviderRdoSynchronizerFactory = new ImportProviderRdoSynchronizerFactory(container, objectTypeRepository);
-            _diagnosticLog = diagnosticLog;
         }
 
         public ITaskJobSubmitter TaskJobSubmitter { get; set; }
@@ -28,8 +25,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
         public IDataSynchronizer CreateSynchronizer(Guid identifier, DestinationConfiguration options)
         {
             return string.Equals(options.Provider, nameof(ProviderType.Relativity), StringComparison.InvariantCultureIgnoreCase)
-                ? _relativityRdoSynchronizerFactory.CreateSynchronizer(options, SourceProvider, _diagnosticLog)
-                : _importProviderRdoSynchronizerFactory.CreateSynchronizer(options, TaskJobSubmitter, _diagnosticLog);
+                ? _relativityRdoSynchronizerFactory.CreateSynchronizer(options, SourceProvider)
+                : _importProviderRdoSynchronizerFactory.CreateSynchronizer(options, TaskJobSubmitter);
         }
     }
 }

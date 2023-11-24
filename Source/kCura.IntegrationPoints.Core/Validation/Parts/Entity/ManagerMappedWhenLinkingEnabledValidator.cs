@@ -1,13 +1,14 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Entity;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts.Entity
 {
     internal class ManagerMappedWhenLinkingEnabledValidator : EntityValidatorBase
     {
-        public ManagerMappedWhenLinkingEnabledValidator(IAPILog logger) : base(logger)
+        public ManagerMappedWhenLinkingEnabledValidator(ILogger<ManagerMappedWhenLinkingEnabledValidator> logger)
+            : base(logger.ForContext<EntityValidatorBase>())
         {
         }
 

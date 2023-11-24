@@ -45,8 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobService jobService,
             IDataTransferLocationService dataTransferLocationService,
             IProviderTypeService providerTypeService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -61,8 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 managerFactory,
                 jobService,
                 providerTypeService,
-                integrationPointService,
-                diagnosticLog)
+                integrationPointService)
         {
             _exportProcessRunner = exportProcessRunner;
             _dataTransferLocationService = dataTransferLocationService;

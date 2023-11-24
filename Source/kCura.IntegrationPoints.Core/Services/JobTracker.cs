@@ -1,17 +1,17 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Queries;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
     public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
-        private readonly IAPILog _logger;
+        private readonly ILogger<JobTracker> _logger;
 
-        public JobTracker(IJobResourceTracker tracker, IAPILog logger)
+        public JobTracker(IJobResourceTracker tracker, ILogger<JobTracker> logger)
         {
             _tracker = tracker;
             _logger = logger;

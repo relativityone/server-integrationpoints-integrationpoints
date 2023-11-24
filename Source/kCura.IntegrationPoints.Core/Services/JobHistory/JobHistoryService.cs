@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -11,7 +12,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Utils;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -21,12 +21,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     {
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IWorkspaceManager _workspaceManager;
-        private readonly IAPILog _logger;
+        private readonly ILogger<JobHistoryService> _logger;
 
         public JobHistoryService(
             IRelativityObjectManager relativityObjectManager,
             IWorkspaceManager workspaceManager,
-            IAPILog logger)
+            ILogger<JobHistoryService> logger)
         {
             _relativityObjectManager = relativityObjectManager;
             _workspaceManager = workspaceManager;

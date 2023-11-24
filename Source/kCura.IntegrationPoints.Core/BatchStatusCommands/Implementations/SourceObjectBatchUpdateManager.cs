@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Constants;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Tagging;
@@ -7,8 +8,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.ScheduleQueue.Core;
-using Relativity.API;
 using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -22,16 +21,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private readonly int? _federatedInstanceID;
         private readonly ISourceDocumentsTagger _sourceDocumentsTagger;
         private readonly ISourceWorkspaceTagCreator _sourceWorkspaceTagCreator;
-        private readonly IAPILog _logger;
+        private readonly ILogger<SourceObjectBatchUpdateManager> _logger;
 
         public SourceObjectBatchUpdateManager(
             IRepositoryFactory sourceRepositoryFactory,
-            IAPILog logger,
             ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
             ISourceDocumentsTagger sourceDocumentsTagger,
             SourceConfiguration sourceConfig,
             JobHistory jobHistoryInstanceId,
-            string uniqueJobId)
+            string uniqueJobId,
+            ILogger<SourceObjectBatchUpdateManager> logger)
         {
             ScratchTableRepository = sourceRepositoryFactory.GetScratchTableRepository(
                 sourceConfig.SourceWorkspaceArtifactId,
@@ -42,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _jobHistory = jobHistoryInstanceId;
             _sourceWorkspaceTagCreator = sourceWorkspaceTagCreator;
             _sourceDocumentsTagger = sourceDocumentsTagger;
-            _logger = logger.ForContext<SourceObjectBatchUpdateManager>();
+            _logger = logger;
         }
 
         public IScratchTableRepository ScratchTableRepository { get; }

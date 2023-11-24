@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -10,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -21,17 +21,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private readonly IJobStopManager _jobStopManager;
         private readonly int _sourceWorkspaceArtifactID;
         private readonly JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
-        private readonly IAPILog _logger;
         private readonly IMassUpdateHelper _massUpdateHelper;
+        private readonly ILogger<JobHistoryErrorBatchUpdateManager> _logger;
 
         public JobHistoryErrorBatchUpdateManager(
             IJobHistoryErrorManager jobHistoryErrorManager,
-            IAPILog logger,
             IRepositoryFactory repositoryFactory,
             IJobStopManager jobStopManager,
             int sourceWorkspaceArtifactID,
             JobHistoryErrorDTO.UpdateStatusType updateStatusType,
-            IMassUpdateHelper massUpdateHelper)
+            IMassUpdateHelper massUpdateHelper,
+            ILogger<JobHistoryErrorBatchUpdateManager> logger)
         {
             _jobHistoryErrorManager = jobHistoryErrorManager;
             _repositoryFactory = repositoryFactory;
@@ -40,8 +40,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _updateStatusType = updateStatusType;
             _massUpdateHelper = massUpdateHelper;
 
-            _logger = (logger ?? throw new ArgumentNullException(nameof(logger)))
-                .ForContext<JobHistoryErrorBatchUpdateManager>();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         private bool IsRetryErrorsJob =>

@@ -3,6 +3,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -10,7 +11,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private IJobHistoryService _jobHistoryService;
         private IJobService _jobService;
         private ISerializer _serializer;
-        private IAPILog _logger;
+        private ILogger<JobHistoryBatchUpdateStatus> _logger;
         private IDateTimeHelper _dateTimeHelper;
         private JobHistoryBatchUpdateStatus _instance;
         private int _workspaceID = 100001;
@@ -37,14 +37,13 @@ namespace kCura.IntegrationPoints.Core.Tests
             _jobHistoryService = Substitute.For<IJobHistoryService>();
             _jobService = Substitute.For<IJobService>();
             _serializer = Substitute.For<ISerializer>();
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<JobHistoryBatchUpdateStatus>>();
             _dateTimeHelper = Substitute.For<IDateTimeHelper>();
 
             _instance = new JobHistoryBatchUpdateStatus(
                 _updater,
                 _jobHistoryService,
                 _jobService,
-                _serializer,
                 _logger,
                 _dateTimeHelper);
         }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Helpers;
@@ -10,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.DTO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
@@ -18,10 +18,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
     [TestFixture, Category("Unit")]
     public class SourceDocumentsTaggerTests : TestBase
     {
-        private Mock<IAPILog> _loggerMock;
         private Mock<IDocumentRepository> _documentRepositoryMock;
         private Mock<IMassUpdateHelper> _massUpdateHelperMock;
         private Mock<IScratchTableRepository> _documentsToTagRepositoryMock;
+        private ILogger<SourceDocumentsTagger> _logger;
         private SourceDocumentsTagger _sut;
         private const int _DESTINATION_WORKSPACE_INSTANCE_ID = 1357475;
         private const int _JOB_HISTORY_INSTANCE_ID = 1357475;
@@ -31,14 +31,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         public override void SetUp()
         {
             _documentRepositoryMock = new Mock<IDocumentRepository>();
-            _loggerMock = new Mock<IAPILog>() { DefaultValue = DefaultValue.Mock };
             _massUpdateHelperMock = new Mock<IMassUpdateHelper>();
             _documentsToTagRepositoryMock = new Mock<IScratchTableRepository>();
+            _logger = Mock.Of<ILogger<SourceDocumentsTagger>>();
 
             _sut = new SourceDocumentsTagger(
                 _documentRepositoryMock.Object,
-                _loggerMock.Object,
-                _massUpdateHelperMock.Object);
+                _massUpdateHelperMock.Object,
+                _logger);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
             // act
             Action action = () => new SourceDocumentsTagger(
                 documentRepository: null,
-                logger: _loggerMock.Object,
+                logger: _logger,
                 massUpdateHelper: _massUpdateHelperMock.Object);
 
             // assert
@@ -73,8 +73,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
             // act
             Action action = () => new SourceDocumentsTagger(
                 _documentRepositoryMock.Object,
-                _loggerMock.Object,
-                massUpdateHelper: null);
+                massUpdateHelper: null,
+                _logger);
 
             // assert
             action.ShouldThrow<ArgumentNullException>();

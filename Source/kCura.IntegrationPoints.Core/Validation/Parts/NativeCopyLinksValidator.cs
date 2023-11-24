@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -19,9 +20,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
         private const string _COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION =
             "You do not have permission to perform this operation because it uses referential links to files. " +
             "You must either log in as a system administrator or change the settings to upload files.";
+
         private const string _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE =
             "Relativity.Sync.Toggles.EnableNonAdminSyncLinksToggle";
-        private readonly IAPILog _logger;
+
+        private readonly ILogger<NativeCopyLinksValidator> _logger;
         private readonly IHelper _helper;
         private readonly ISerializer _serializer;
         private readonly IManagerFactory _managerFactory;
@@ -29,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
         public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
-        public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IRipToggleProvider toggleProvider)
+        public NativeCopyLinksValidator(ILogger<NativeCopyLinksValidator> logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IRipToggleProvider toggleProvider)
         {
             _logger = logger;
             _helper = helper;
@@ -58,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
                 bool nonAdminCanSyncUsingLinks = _toggleProvider.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE);
 
                 _logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, Toggle {toggleName}: {toggleValue}",
-                    isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE, nonAdminCanSyncUsingLinks );
+                    isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE, nonAdminCanSyncUsingLinks);
 
                 if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
                 {

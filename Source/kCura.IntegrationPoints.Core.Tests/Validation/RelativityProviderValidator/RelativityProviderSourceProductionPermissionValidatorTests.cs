@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
@@ -23,21 +15,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     public class RelativityProviderSourceProductionPermissionValidatorTests : TestBase
     {
         private IProductionRepository _productionRepository;
-        private IAPILog _logger;
+        private ILogger<RelativityProviderSourceProductionPermissionValidator> _logger;
         private int _workspaceId = 111222;
         private int _productionId = 333444;
 
         public override void SetUp()
         {
             _productionRepository = Substitute.For<IProductionRepository>();
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<RelativityProviderSourceProductionPermissionValidator>>();
         }
 
         [Test]
         public void ShouldReturnSuccessfulValidationResultWhenThereIsNoAccessToProduction()
         {
             // arrange
-            _productionRepository.GetProduction(_workspaceId, _productionId).Returns(new ProductionDTO() { ArtifactID = _productionId.ToString(), DisplayName = "Test Production"});
+            _productionRepository.GetProduction(_workspaceId, _productionId).Returns(new ProductionDTO() { ArtifactID = _productionId.ToString(), DisplayName = "Test Production" });
             RelativityProviderSourceProductionPermissionValidator validator = new RelativityProviderSourceProductionPermissionValidator(_productionRepository, _logger);
 
             // act

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Properties;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -8,7 +9,6 @@ using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -16,17 +16,17 @@ namespace kCura.IntegrationPoints.Core.Services
     {
         private readonly IEddsServiceContext _context;
         private readonly IJobService _jobService;
-        private readonly IAPILog _logger;
+        private readonly ILogger<AgentJobManager> _logger;
         private readonly ISerializer _serializer;
         private readonly IJobTracker _tracker;
 
-        public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, ISerializer serializer, IJobTracker tracker)
+        public AgentJobManager(IEddsServiceContext context, IJobService jobService, ISerializer serializer, IJobTracker tracker, ILogger<AgentJobManager> logger)
         {
             _context = context;
             _jobService = jobService;
             _serializer = serializer;
             _tracker = tracker;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<AgentJobManager>();
+            _logger = logger;
         }
 
         public void CreateJob(TaskParameters jobDetails, TaskType task, string correlationId, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)

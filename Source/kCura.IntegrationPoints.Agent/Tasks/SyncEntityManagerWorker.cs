@@ -62,8 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IRepositoryFactory repositoryFactory,
             IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -78,8 +77,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 managerFactory,
                 jobService,
                 providerTypeService,
-                integrationPointService,
-                diagnosticLog)
+                integrationPointService)
         {
             _queueQueryManager = queueQueryManager;
             _repositoryFactory = repositoryFactory;
@@ -321,7 +319,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private EntityManagerDataReaderToEnumerableService GetEntityManagerDataReaderToEnumerableService(
             List<FieldEntry> sourceFields)
         {
-            var objectBuilder = new SynchronizerObjectBuilder(sourceFields, DiagnosticLog);
+            var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
             EntityManagerDataReaderToEnumerableService convertDataService =
                 new EntityManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);
             return convertDataService;
@@ -451,7 +449,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetupJobHistoryErrorSubscriptions(dataSynchronizer);
 
 #pragma warning disable 612
-            dataSynchronizer.SyncData(sourceData, managerLinkMap, importSettings, jobStopManager, DiagnosticLog);
+            dataSynchronizer.SyncData(sourceData, managerLinkMap, importSettings, jobStopManager);
 #pragma warning restore 612
 
             return dataSynchronizer.TotalRowsProcessed;

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -30,17 +31,17 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly Guid _timestampUtcField = new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F");
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _relativityObjectManager;
-        private readonly IAPILog _logger;
+        private readonly ILogger<JobHistoryErrorService> _logger;
         private readonly ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
         private bool _errorOccurredDuringJob;
 
-        public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IHelper helper, IIntegrationPointRepository integrationPointRepository)
+        public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IIntegrationPointRepository integrationPointRepository, ILogger<JobHistoryErrorService> logger)
         {
             _integrationPointRepository = integrationPointRepository;
             _relativityObjectManager = relativityObjectManager;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
             _jobHistoryErrorQueue = new ConcurrentQueue<JobHistoryError>();
             _errorOccurredDuringJob = false;
+            _logger = logger;
         }
 
         public Data.JobHistory JobHistory { get; set; }

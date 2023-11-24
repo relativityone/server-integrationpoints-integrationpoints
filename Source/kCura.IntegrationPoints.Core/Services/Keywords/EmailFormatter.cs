@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Relativity.API;
+using kCura.IntegrationPoints.Common;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
     public class EmailFormatter : IEmailFormatter
     {
         private readonly IEnumerable<IKeyword> _keywords;
-        private readonly IAPILog _logger;
+        private readonly ILogger<EmailFormatter> _logger;
 
-        public EmailFormatter(IHelper helper, IEnumerable<IKeyword> keywords)
+        public EmailFormatter(IEnumerable<IKeyword> keywords, ILogger<EmailFormatter> logger)
         {
             _keywords = keywords;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<EmailFormatter>();
+            _logger = logger;
         }
 
         public string Format(string textToFormat)

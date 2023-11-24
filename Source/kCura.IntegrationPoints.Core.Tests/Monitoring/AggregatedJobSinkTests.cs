@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.MetricsManager.APM;
 
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
     [TestFixture, Category("Unit")]
     public class AggregatedJobSinkTests
     {
-        private IAPILog _logger;
+        private ILogger<AggregatedJobSink> _logger;
         private IMetricsManagerFactory _metricsManagerFactory;
         private IMetricsManager _sum, _apm;
         private IDateTimeHelper _dateTimeHelper;
@@ -31,8 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Monitoring
         [SetUp]
         public void SetUp()
         {
-            _logger = Substitute.For<IAPILog>();
-            _logger.ForContext<AggregatedJobSink>().Returns(_logger);
+            _logger = Substitute.For<ILogger<AggregatedJobSink>>();
             _metricsManagerFactory = Substitute.For<IMetricsManagerFactory>();
             _sum = Substitute.For<IMetricsManager>();
             _metricsManagerFactory.CreateSUMManager().Returns(_sum);

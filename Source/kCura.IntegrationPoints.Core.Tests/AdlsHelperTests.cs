@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Kepler;
 using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Storage;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Environment.V1.Workspace;
 using Relativity.Services.Exceptions;
 
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 .ReturnsAsync(_workspaceManager.Object);
             _storageService = new Mock<IRelativityStorageService>();
 
-            _sut = new AdlsHelper(_keplerServiceFactory.Object, _storageService.Object, Mock.Of<IAPILog>());
+            _sut = new AdlsHelper(_keplerServiceFactory.Object, _storageService.Object, Mock.Of<ILogger<AdlsHelper>>());
         }
 
         [Test]

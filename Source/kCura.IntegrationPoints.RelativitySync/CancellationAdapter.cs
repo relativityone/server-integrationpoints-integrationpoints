@@ -3,7 +3,6 @@ using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -44,7 +43,6 @@ namespace kCura.IntegrationPoints.RelativitySync
                 _job.JobIdentifier,
                 _job.JobId,
                 supportsDrainStop: true,
-                new EmptyDiagnosticLog(),
                 stopCancellationTokenSource: stopTokenSource,
                 drainStopCancellationTokenSource: drainStopTokenSource);
             _container.Register(Component.For<IJobStopManager>().Instance(jobStopManager).Named($"{nameof(jobStopManager)}-{Guid.NewGuid()}"));

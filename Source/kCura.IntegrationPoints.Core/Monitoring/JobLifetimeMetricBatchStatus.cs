@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Models;
@@ -8,8 +8,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 
@@ -22,9 +20,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
         private readonly IProviderTypeService _providerTypeService;
         private readonly IJobStatusUpdater _updater;
         private readonly IJobHistoryService _jobHistoryService;
-        private readonly ISerializer _serializer;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly IAPILog _log;
+        private readonly ILogger<JobLifetimeMetricBatchStatus> _log;
 
         public JobLifetimeMetricBatchStatus(
             IMessageService messageService,
@@ -32,16 +29,14 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
             IProviderTypeService providerTypeService,
             IJobStatusUpdater updater,
             IJobHistoryService jobHistoryService,
-            ISerializer serializer,
             IDateTimeHelper dateTimeHelper,
-            IAPILog log)
+            ILogger<JobLifetimeMetricBatchStatus> log)
         {
             _messageService = messageService;
             _integrationPointService = integrationPointService;
             _providerTypeService = providerTypeService;
             _updater = updater;
             _jobHistoryService = jobHistoryService;
-            _serializer = serializer;
             _dateTimeHelper = dateTimeHelper;
             _log = log;
         }

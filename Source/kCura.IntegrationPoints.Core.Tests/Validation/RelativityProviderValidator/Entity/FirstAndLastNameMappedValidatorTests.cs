@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts.Entity;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator.Entity
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     public class FirstAndLastNameMappedValidatorTests
     {
         private FirstAndLastNameMappedValidator _sut;
-        private Mock<IAPILog> _loggerFake;
+
         private const string _FIRST_NAME_FIELD_MAP = "{\"sourceField\":{\"displayName\":\"" + EntityFieldNames.FirstName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                      "\"destinationField\":{\"displayName\":\"" + EntityFieldNames.FirstName + "\",\"isIdentifier\":false,\"fieldIdentifier\":\"1035368\",\"isRequired\":false}," +
                                                      "\"fieldMapType\":\"None\"}";
@@ -31,9 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [SetUp]
         public void SetUp()
         {
-            _loggerFake = new Mock<IAPILog>();
-            _loggerFake.Setup(x => x.ForContext<FirstAndLastNameMappedValidator>()).Returns(_loggerFake.Object);
-            _sut = new FirstAndLastNameMappedValidator(_loggerFake.Object);
+            _sut = new FirstAndLastNameMappedValidator(new LoggerFake<FirstAndLastNameMappedValidator>());
         }
 
         [Test]

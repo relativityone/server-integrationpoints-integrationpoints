@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 {
     public class ImageTransferDataReader : ExportTransferDataReaderBase
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<ImageTransferDataReader> _logger;
 
         public ImageTransferDataReader(
             IExporterService relativityExportService,
             FieldMap[] fieldMappings,
-            IAPILog logger,
+            ILogger<ImageTransferDataReader> logger,
             IScratchTableRepository[] scratchTableRepositories) :
-            base(relativityExportService, fieldMappings, scratchTableRepositories, logger, false)
+            base(relativityExportService, fieldMappings, scratchTableRepositories, logger.ForContext<ExportTransferDataReaderBase>(), false)
         {
             _logger = logger.ForContext<ImageTransferDataReader>();
         }

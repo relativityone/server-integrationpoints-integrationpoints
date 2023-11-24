@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Domain.Authentication;
 using NUnit.Framework;
 using Relativity.API;
+using Serilog.Core;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
@@ -113,6 +114,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
                 CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
                 CreateDummyObjectRegistration<IAuthTokenGenerator>()
             };
+
+            container.Register(Component.For<Serilog.ILogger>()
+                .Instance(Logger.None));
+
+            container.Register(Component.For(typeof(ILogger<>))
+                .ImplementedBy(typeof(Logger<>))
+                .LifestyleTransient());
+
+
 
             container.Register(dependencies);
         }

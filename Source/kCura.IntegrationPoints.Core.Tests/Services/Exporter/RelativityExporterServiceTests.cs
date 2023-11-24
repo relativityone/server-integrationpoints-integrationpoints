@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -30,12 +29,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         private Mock<IFileRepository> _fileRepository;
         private Mock<IRepositoryFactory> _repositoryFactoryMock;
         private Mock<IFolderPathReader> _folderPathReader;
-        private Mock<IHelper> _helper;
         private Mock<IJobStopManager> _jobStopManager;
         private Mock<IQueryFieldLookupRepository> _queryFieldLookupRepository;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
         private Mock<ISerializer> _serializer;
         private Mock<IExportDataSanitizer> _exportDataSanitizer;
+
         private RelativityExporterService _instance;
         private IDictionary<string, object> _fieldValues;
         private const string _CONTROL_NUMBER = "Control Number";
@@ -51,11 +50,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
         [SetUp]
         public override void SetUp()
         {
-            var apiLogMock = new Mock<IAPILog>();
-            _helper = new Mock<IHelper>();
-            _helper
-                .Setup(x => x.GetLoggerFactory().GetLogger().ForContext<RelativityExporterService>())
-                .Returns(apiLogMock.Object);
             _documentRepository = new Mock<IDocumentRepository>();
             _fileRepository = new Mock<IFileRepository>();
             _repositoryFactoryMock = new Mock<IRepositoryFactory>();
@@ -331,7 +325,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                 _relativityObjectManager.Object,
                 _repositoryFactoryMock.Object,
                 _jobStopManager.Object,
-                _helper.Object,
                 _folderPathReader.Object,
                 _fileRepository.Object,
                 _serializer.Object,
@@ -339,7 +332,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
                 _mappedFields,
                 _START_AT,
                 config,
-                _SEARCH_ARTIFACT_ID);
+                _SEARCH_ARTIFACT_ID,
+                new LoggerFake<RelativityExporterService>());
         }
 
         private static SourceConfiguration GetConfig(SourceConfiguration.ExportType exportType, int sourceProductionID = 0)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Tab;
@@ -10,12 +11,12 @@ namespace kCura.IntegrationPoints.Core.Services.Tabs
     public class TabService : ITabService
     {
         private readonly IServicesMgr _servicesMgr;
-        private readonly IAPILog _logger;
+        private readonly ILogger<TabService> _logger;
 
-        public TabService(IServicesMgr servicesMgr, IHelper helper)
+        public TabService(IServicesMgr servicesMgr, ILogger<TabService> logger)
         {
             _servicesMgr = servicesMgr;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<TabService>();
+            _logger = logger;
         }
 
         public int GetTabId(int workspaceId, int objectTypeId)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -24,7 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private Mock<IResourcePoolRepository> _resourcePoolRepositoryMock;
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IWorkspaceManager> _workspaceManagerFake;
-        private Mock<IHelper> _helperFake;
         private const int _RESOURCE_POOL_ID = 1234;
         private readonly WorkspaceResponse _workspaceResponse = new WorkspaceResponse()
         {
@@ -55,14 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             _servicesMgrFake.Setup(x => x.CreateProxy<IWorkspaceManager>(ExecutionIdentity.System))
                 .Returns(_workspaceManagerFake.Object);
 
-            Mock<IAPILog> logger = new Mock<IAPILog>();
-            logger.Setup(x => x.ForContext<ResourcePoolManager>()).Returns(logger.Object);
-            Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
-            logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
-            _helperFake = new Mock<IHelper>();
-            _helperFake.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-
-            _sut = new ResourcePoolManager(_repositoryFactoryFake.Object, _servicesMgrFake.Object, _helperFake.Object);
+            _sut = new ResourcePoolManager(_repositoryFactoryFake.Object, _servicesMgrFake.Object, Mock.Of<ILogger<ResourcePoolManager>>());
         }
 
         [Test]

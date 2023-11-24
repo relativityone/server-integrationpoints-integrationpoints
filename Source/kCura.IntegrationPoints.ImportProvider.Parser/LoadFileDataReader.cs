@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly string _loadFileDirectory;
         private readonly ImportProviderSettings _providerSettings;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
-        private readonly IDiagnosticLog _diagnosticLogger;
 
         public bool HasExtraNativeColumns { get; }
 
@@ -39,7 +38,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IArtifactReader reader,
             IJobStopManager jobStopManager,
             IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
-            IDiagnosticLog diagnosticLogger,
             bool hasExtraNativeColumns)
         {
             _providerSettings = providerSettings;
@@ -47,7 +45,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _loadFileReader = reader;
             _jobStopManager = jobStopManager;
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
-            _diagnosticLogger = diagnosticLogger;
             HasExtraNativeColumns = hasExtraNativeColumns;
 
             _isClosed = false;
@@ -104,7 +101,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
                 if (HasExtraNativeColumns)
                 {
                     _currentNativeFile = _readOnlyFileMetadataStore.GetMetadata(_currentLine[_nativeFilePathIndex]);
-                    _diagnosticLogger.LogDiagnostic("Current Native File {@nativeFile}", _currentNativeFile);
                 }
             }
 
@@ -160,7 +156,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         public override object GetValue(int i)
         {
             const string invalidPath = "null Value";
-            _diagnosticLogger.LogDiagnostic("Reading for index {index}", i);
 
             if (i >= _columnCount)
             {
@@ -179,7 +174,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             // return meaningless file-path to IAPI - it will result with item-level-error
             if (i == _nativeFilePathIndex && HasExtraNativeColumns && _currentNativeFile == null)
             {
-                _diagnosticLogger.LogDiagnostic("currentNativeFile is null");
                 return invalidPath;
             }
 
@@ -191,15 +185,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             switch (i)
             {
                 case Domain.Constants.SPECIAL_FILE_SIZE_INDEX:
-                    _diagnosticLogger.LogDiagnostic("Reading Size - {size}", _currentNativeFile?.Size);
                     return _currentNativeFile?.Size;
 
                 case Domain.Constants.SPECIAL_FILE_TYPE_INDEX:
-                    _diagnosticLogger.LogDiagnostic("Reading File Type - {type}", _currentNativeFile?.Description);
                     return _currentNativeFile?.Description;
 
                 case Domain.Constants.SPECIAL_OI_FILE_TYPE_ID_INDEX:
-                    _diagnosticLogger.LogDiagnostic("Reading OI File Type - {type}", _currentNativeFile?.TypeId);
                     return _currentNativeFile?.TypeId;
 
                 default:

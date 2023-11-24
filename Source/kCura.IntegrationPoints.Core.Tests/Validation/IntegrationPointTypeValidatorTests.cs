@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
@@ -8,7 +9,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
     [TestFixture, Category("Unit")]
     public class IntegrationPointTypeValidatorTests
     {
+        private ILogger<IntegrationPointTypeValidator> _logger;
         private IRelativityObjectManager _objectManager;
         private const int _INTEGRATION_POINT_TYPE = 0;
         private const string _LOAD_FILE_SOURCE_PROVIDE_IDENTIFIER = "548F0873-8E5E-4DA6-9F27-5F9CDA764636";
@@ -32,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         public void SetUp()
         {
             _objectManager = Substitute.For<IRelativityObjectManager>();
+            _logger = Substitute.For<ILogger<IntegrationPointTypeValidator>>();
         }
 
         [Test]
@@ -43,8 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         {
             // Arrange
             MockIpTypeId(ipType);
-            IAPILog logger = Substitute.For<IAPILog>();
-            var validator = new IntegrationPointTypeValidator(_objectManager, logger);
+            var validator = new IntegrationPointTypeValidator(_objectManager, _logger);
             var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
             // Act
@@ -63,8 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         {
             // Arrange
             MockIpTypeId(ipType);
-            IAPILog logger = Substitute.For<IAPILog>();
-            var validator = new IntegrationPointTypeValidator(_objectManager, logger);
+            var validator = new IntegrationPointTypeValidator(_objectManager, _logger);
             var ipModel = GetProviderValidationModelObject(sourceProviderId);
 
             // Act
@@ -80,8 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             // Arrange
             IntegrationPointType ipTypeObject = null;
             _objectManager.Read<IntegrationPointType>(Arg.Any<int>()).Returns(ipTypeObject);
-            IAPILog logger = Substitute.For<IAPILog>();
-            var validator = new IntegrationPointTypeValidator(_objectManager, logger);
+            var validator = new IntegrationPointTypeValidator(_objectManager, _logger);
             var ipModel = GetProviderValidationModelObject(IntegrationPoints.Domain.Constants.RELATIVITY_PROVIDER_GUID);
 
             // Act

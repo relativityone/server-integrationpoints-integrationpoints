@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 {
     public abstract class ExportTransferDataReaderBase : RelativityReaderBase
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<ExportTransferDataReaderBase> _logger;
 
         protected const string _FIELD_IDENTIFIER_PARSE_ERROR_MSG =
             "Parsing field identifier ({@fieldId}) FAILED.";
@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
             IExporterService relativityExportService,
             FieldMap[] fieldMappings,
             IScratchTableRepository[] scratchTableRepositories,
-            IAPILog logger,
+            ILogger<ExportTransferDataReaderBase> logger,
             bool useDynamicFolderPath) :
                 base(GenerateDataColumnsFromFieldEntries(fieldMappings, useDynamicFolderPath))
         {
-            _logger = logger.ForContext<ExportTransferDataReaderBase>();
+            _logger = logger;
             ScratchTableRepositories = scratchTableRepositories;
             RelativityExporterService = relativityExportService;
 

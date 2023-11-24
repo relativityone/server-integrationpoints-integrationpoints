@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using Moq;
 using NUnit.Framework;
@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Tabs
     {
         private Mock<ITabManager> _tabManagerMock;
         private Mock<IServicesMgr> _servicesMgrFake;
-        private Mock<IHelper> _helperFake;
         private TabService _sut;
         private const int _WORKSPACE_ID = 1111;
 
@@ -30,14 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Tabs
             _servicesMgrFake.Setup(x => x.CreateProxy<ITabManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_tabManagerMock.Object);
 
-            _helperFake = new Mock<IHelper>();
-            Mock<IAPILog> logger = new Mock<IAPILog>();
-            logger.Setup(x => x.ForContext<TabService>()).Returns(logger.Object);
-            Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
-            logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
-            _helperFake.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-
-            _sut = new TabService(_servicesMgrFake.Object, _helperFake.Object);
+            _sut = new TabService(_servicesMgrFake.Object, Mock.Of<ILogger<TabService>>());
         }
 
         [Test]

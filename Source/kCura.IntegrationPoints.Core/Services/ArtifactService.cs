@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services
@@ -12,12 +12,12 @@ namespace kCura.IntegrationPoints.Core.Services
     public class ArtifactService : IArtifactService
     {
         private readonly IRelativityObjectManagerFactory _objectManagerFactory;
-        private readonly IAPILog _logger;
+        private readonly ILogger<ArtifactService> _logger;
 
-        public ArtifactService(IRelativityObjectManagerFactory objectManagerFactory, IHelper helper)
+        public ArtifactService(IRelativityObjectManagerFactory objectManagerFactory, ILogger<ArtifactService> logger)
         {
             _objectManagerFactory = objectManagerFactory;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<ArtifactService>();
+            _logger = logger;
         }
 
         public RelativityObject GetArtifact(int workspaceArtifactId, string artifactTypeName, int artifactId)

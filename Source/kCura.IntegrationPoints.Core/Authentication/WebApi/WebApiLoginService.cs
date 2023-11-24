@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade;
 using kCura.IntegrationPoints.Domain.Authentication;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Authentication.WebApi
 {
@@ -10,12 +10,12 @@ namespace kCura.IntegrationPoints.Core.Authentication.WebApi
     {
         private readonly ILoginHelperFacade _authProvider;
         private readonly IAuthTokenGenerator _tokenGenerator;
-        private readonly IAPILog _logger;
+        private readonly ILogger<WebApiLoginService> _logger;
 
         public WebApiLoginService(
             ILoginHelperFacade authProvider,
             IAuthTokenGenerator tokenGenerator,
-            IAPILog logger)
+            ILogger<WebApiLoginService> logger)
         {
             _authProvider = authProvider;
             _tokenGenerator = tokenGenerator;

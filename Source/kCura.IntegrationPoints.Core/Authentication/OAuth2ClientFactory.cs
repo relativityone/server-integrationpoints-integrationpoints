@@ -14,14 +14,14 @@ namespace kCura.IntegrationPoints.Core.Authentication
     {
         private readonly IRetryHandler _retryHandler;
         private readonly IHelper _helper;
-        private readonly IAPILog _logger;
+        private readonly ILogger<OAuth2ClientFactory> _logger;
 
-        public OAuth2ClientFactory(IRetryHandlerFactory retryHandlerFactory, IHelper helper)
+        public OAuth2ClientFactory(IRetryHandlerFactory retryHandlerFactory, IHelper helper, ILogger<OAuth2ClientFactory> logger)
         {
             const int maxNumberOfRetries = 4;
             _retryHandler = retryHandlerFactory.Create(maxNumberOfRetries);
             _helper = helper;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<OAuth2ClientFactory>();
+            _logger = logger;
         }
 
         public async Task<OAuth2Client> GetOauth2ClientAsync(int userId)

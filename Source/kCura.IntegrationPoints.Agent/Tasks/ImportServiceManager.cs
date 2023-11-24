@@ -89,8 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IFileIdentificationService fileIdentificationService,
             IDataTransferLocationService dataTransferLocationService,
             IAdlsHelper adlsHelper,
-            ILogger<ImportServiceManager> logger,
-            IDiagnosticLog diagnosticLog)
+            ILogger<ImportServiceManager> logger)
             : base(
                 helper,
                 jobService,
@@ -105,8 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 synchronizerFactory,
                 agentValidator,
                 integrationPointService,
-                logger.ForContext<ServiceManagerBase>(),
-                diagnosticLog)
+                logger.ForContext<ServiceManagerBase>())
         {
             _helper = helper;
             _automatedWorkflowsRetryHandler = retryHandler;
@@ -142,11 +140,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 ImportSettings settings = GetImportApiSettingsObjectForUser(job);
 
-                DiagnosticLog.LogDiagnostic("ImportSettings: {@importSettings}", settings);
-
                 string providerSettings = UpdatedProviderSettingsLoadFile();
-
-                DiagnosticLog.LogDiagnostic("ProviderSettings: {settings}", providerSettings);
 
                 LogWorkspaceFileShareTypeAsync(job).GetAwaiter().GetResult();
 
@@ -169,11 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
                         context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
 
-                        DiagnosticLog.LogDiagnostic("Context: {@context}", context);
-
-                        DiagnosticLog.LogDiagnostic("Synchronizing...");
-                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager, DiagnosticLog);
-                        DiagnosticLog.LogDiagnostic("Finished synchronizing.");
+                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, settings, JobStopManager);
                     }
                 }
 
@@ -244,7 +234,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     while (nativeFilePathReader.Read())
                     {
                         string fullPath = Path.Combine(workspaceFileShareDirectory, nativeFilePathReader.GetCurrentNativeFilePath());
-                        DiagnosticLog.LogDiagnostic("Reading Native File - {nativeFile}", fullPath);
                         nativeFiles.Add(fullPath);
                     }
 
@@ -286,8 +275,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
             JobHistory = JobHistoryService.GetRdoWithoutDocuments(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
-
-            DiagnosticLog.LogDiagnostic("Processed ItemsCount: {itemsCount}", processedItemsCount);
 
             if (IsDrainStopped())
             {
@@ -468,8 +455,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     JobHistory = JobHistoryService.GetRdoWithoutDocuments(Identifier);
                     JobHistory.TotalItems = recordCount;
                     UpdateJobStatus(JobHistory);
-
-                    DiagnosticLog.LogDiagnostic("Update JobHistory with TotalItems {recordsCount}", recordCount);
                 }
 
                 LogUpdateSourceRecordSuccesfulEnd();

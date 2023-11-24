@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services.Keywords;
+using Moq;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Keywords
 {
     [TestFixture, Category("Unit")]
     public class KeywordConverterTests : TestBase
     {
-        private IHelper _helper;
-
-        [SetUp]
-        public override void SetUp()
-        {
-            _helper = NSubstitute.Substitute.For<IHelper>();
-        }
-
         [Test]
         public void Convert_KeywordDifferentCaseReturnAnOutput_CorrectOutput()
         {
@@ -28,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
             {
                 new mockKeyword(keyword, Environment.NewLine + "Great")
             };
-            EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
+            EmailFormatter emailFormatter = new EmailFormatter(keywords, Mock.Of<ILogger<EmailFormatter>>());
 
             // ACT
             string output = emailFormatter.Format(input);
@@ -49,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
                 new mockKeyword(keyword, string.Empty)
             };
 
-            EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
+            EmailFormatter emailFormatter = new EmailFormatter(keywords, Mock.Of<ILogger<EmailFormatter>>());
 
             // ACT
             string output = emailFormatter.Format(input);
@@ -68,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
             {
                 new mockKeyword(keyword, string.Empty)
             };
-            EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
+            EmailFormatter emailFormatter = new EmailFormatter(keywords, Mock.Of<ILogger<EmailFormatter>>());
 
             // ACT
             string output = emailFormatter.Format(input);
@@ -89,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Keywords
                 new mockKeyword(keyword, string.Empty)
             };
 
-            EmailFormatter emailFormatter = new EmailFormatter(_helper, keywords);
+            EmailFormatter emailFormatter = new EmailFormatter(keywords, Mock.Of<ILogger<EmailFormatter>>());
 
             // ACT
             string output = emailFormatter.Format(input);

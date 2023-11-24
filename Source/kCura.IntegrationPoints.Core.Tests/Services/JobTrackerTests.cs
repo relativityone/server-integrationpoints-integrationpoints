@@ -1,12 +1,12 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -18,8 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private string _goldFlowBatchId;
         private IJobResourceTracker _jobResourceTracker;
         private Mock<IJobResourceTracker> _jobResourceTrackerMock;
-        private Mock<IAPILog> _loggerMock;
-        private IAPILog _loggerMockObject;
 
         public override void FixtureSetUp()
         {
@@ -28,8 +26,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _goldFlowJob = GetJob(11, 22, 33);
             _goldFlowExpectedTempTableName = "RIP_JobTracker_22_33_batchID";
             _jobResourceTrackerMock = new Mock<IJobResourceTracker>();
-            _loggerMock = new Mock<IAPILog>();
-            _loggerMockObject = _loggerMock.Object;
             _jobResourceTracker = _jobResourceTrackerMock.Object;
             _jobResourceTrackerMock
                 .Setup(x => x.RemoveEntryAndCheckStatus(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>()))
@@ -47,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
         private JobTracker PrepareJobTracker()
         {
-            return new JobTracker(_jobResourceTracker, _loggerMockObject);
+            return new JobTracker(_jobResourceTracker, Mock.Of<ILogger<JobTracker>>());
         }
 
         [SetUp]

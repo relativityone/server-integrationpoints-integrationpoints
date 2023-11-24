@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Core.AdlsHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
@@ -30,7 +29,6 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -198,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
             _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
             synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPointDto.DestinationConfiguration).Returns(_synchronizer);
-            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(_jobStopManager);
+            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(_jobStopManager);
             _repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(documentRepository);
 
             _exporterFactory.BuildExporter(
@@ -240,8 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 documentRepository: _documentRepository,
                 exportDataSanitizer: _exportDataSanitizer,
                 _adlsHelper,
-                Substitute.For<ILogger<ExportServiceManager>>(),
-                diagnosticLog: new EmptyDiagnosticLog());
+                Substitute.For<ILogger<ExportServiceManager>>());
             _managerFactory.CreateJobHistoryManager().Returns(_historyManager);
         }
 
@@ -481,11 +478,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         public void Execute_CreateDestinationProvider_MakeSureToSetSourceProvider()
         {
             // ARRANGE
-            IDiagnosticLog diagnosticLog = new EmptyDiagnosticLog();
-
             IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
             IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-            ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, diagnosticLog);
+            ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository);
 
             // ACT
             ExportServiceManager instance = new ExportServiceManager(
@@ -508,8 +503,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _documentRepository,
                 _exportDataSanitizer,
                 _adlsHelper,
-                Substitute.For<ILogger<ExportServiceManager>>(),
-                diagnosticLog);
+                Substitute.For<ILogger<ExportServiceManager>>());
             try
             {
                 instance.Execute(_job);
@@ -653,7 +647,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<ImportSettings>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
+            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<ImportSettings>(), Arg.Any<IJobStopManager>());
         }
 
         [Test]
@@ -702,7 +696,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             );
 
             // ACT
-            Action action = () =>_instance.Execute(_job);
+            Action action = () => _instance.Execute(_job);
 
             // ASSERT
             action.ShouldThrow<IntegrationPointValidationException>();

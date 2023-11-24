@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core.Exceptions;
 using Relativity.API;
 
@@ -16,14 +15,10 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
     {
         private readonly IAPILog _logger;
 
-        protected IDiagnosticLog DiagnosticLog { get; }
-
-        protected BatchManagerBase(IHelper helper, IDiagnosticLog diagnosticLog)
+        protected BatchManagerBase(IHelper helper)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<BatchManagerBase<T>>();
             BatchSize = 1000;
-
-            DiagnosticLog = diagnosticLog;
         }
 
         public virtual int BatchSize { get; }
@@ -80,7 +75,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
                 {
                     list.Add(id);
                     count += 1;
-                    DiagnosticLog.LogDiagnostic("In BatchTask - {count}, ID: {id}", count, id);
+
                     if (list.Count == BatchSize)
                     {
                         CreateBatchJob(job, list, startIndex);

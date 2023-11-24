@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
     {
         private ArtifactValidator _destinationFolderValidatorMock;
         private FieldsMappingValidator _fieldMappingValidatorMock;
-        private IAPILog _logger;
+        private ILogger<RelativityProviderConfigurationValidator> _logger;
         private IArtifactService _artifactServiceMock;
         private IFieldManager _sourceFieldManager;
         private IFieldManager _targetFieldManager;
@@ -84,21 +85,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         [SetUp]
         public void SetUp()
         {
-            _logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<ILogger<RelativityProviderConfigurationValidator>>();
             _serializerMock = new JSONSerializer();
             _toggleProvider = Substitute.For<IRipToggleProvider>();
             _validatorsFactoryMock = Substitute.For<IRelativityProviderValidatorsFactory>();
             _workspaceManagerMock = Substitute.For<IWorkspaceManager>();
             _workspaceValidatorMock = Substitute.For<RelativityProviderWorkspaceNameValidator>(_workspaceManagerMock, string.Empty);
             _savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-            _savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(_logger, _savedSearchRepositoryMock);
+            _savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(Substitute.For<IAPILog>(), _savedSearchRepositoryMock);
             _objectManagerMock = Substitute.For<IRelativityObjectManager>();
-            _viewValidatorMock = Substitute.For<ViewValidator>(_objectManagerMock, _logger);
+            _viewValidatorMock = Substitute.For<ViewValidator>(_objectManagerMock, Substitute.For<ILogger<ViewValidator>>());
             _artifactServiceMock = Substitute.For<IArtifactService>();
             _destinationFolderValidatorMock = Substitute.For<ArtifactValidator>(_artifactServiceMock, Arg.Any<int>(), Arg.Any<string>());
             _sourceFieldManager = Substitute.For<IFieldManager>();
             _targetFieldManager = Substitute.For<IFieldManager>();
-            _fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(_logger, _serializerMock, _sourceFieldManager, _targetFieldManager);
+            _fieldMappingValidatorMock = Substitute.For<FieldsMappingValidator>(Substitute.For<ILogger<FieldsMappingValidator>>(), _serializerMock, _sourceFieldManager, _targetFieldManager);
             _productionManagerMock = Substitute.For<IProductionManager>();
             _permissionManager = Substitute.For<IPermissionManager>();
             _importProductionValidatorMock = Substitute.For<ImportProductionValidator>(Arg.Any<int>(), _productionManagerMock, _permissionManager, Arg.Any<int?>(), Arg.Any<string>());

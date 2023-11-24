@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Domain;
+using Moq;
 using Relativity;
 using Relativity.API;
 
@@ -13,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         {
             var generator = new OAuth2TokenGenerator(
                 helper,
-                new OAuth2ClientFactory(retryHandlerFactory, helper),
+                new OAuth2ClientFactory(retryHandlerFactory, helper, Mock.Of<ILogger<OAuth2ClientFactory>>()),
                 new TokenProviderFactoryFactory(),
                 new CurrentUser(userID: userArtifactId));
             string authToken = generator.GetAuthToken();

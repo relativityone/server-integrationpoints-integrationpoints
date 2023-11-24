@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
@@ -12,6 +13,8 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using Relativity.Toggles;
+using Serilog;
+using Serilog.Core;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
@@ -203,6 +206,12 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
                 CreateDummyObjectRegistration<IToggleProvider>(),
                 CreateDummyObjectRegistration<IKubernetesMode>()
             };
+
+            container.Register(Component.For<ILogger>().Instance(Logger.None));
+
+            container.Register(Component.For(typeof(ILogger<>))
+                .ImplementedBy(typeof(Logger<>))
+                .LifestyleTransient());
 
             container.Register(dependencies);
         }

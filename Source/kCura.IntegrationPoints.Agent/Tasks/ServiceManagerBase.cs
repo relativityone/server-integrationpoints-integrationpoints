@@ -52,8 +52,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected IIntegrationPointService IntegrationPointService { get; }
 
-        protected IDiagnosticLog DiagnosticLog { get; }
-
         protected IJobStatisticsService StatisticsService { get; }
 
         protected ISynchronizerFactory SynchronizerFactory { get; }
@@ -82,8 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             ISynchronizerFactory synchronizerFactory,
             IAgentValidator agentValidator,
             IIntegrationPointService integrationPointService,
-            ILogger<ServiceManagerBase> logger,
-            IDiagnosticLog diagnosticLog)
+            ILogger<ServiceManagerBase> logger)
         {
             _agentValidator = agentValidator;
             _logger = logger;
@@ -96,7 +93,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             BatchStatus = statuses.ToList();
             CaseServiceContext = caseServiceContext;
             IntegrationPointService = integrationPointService;
-            DiagnosticLog = diagnosticLog;
             StatisticsService = statisticsService;
             SynchronizerFactory = synchronizerFactory;
             Result = new TaskResult();
@@ -174,20 +170,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             // if you want to create add another synchronizer aka exporter, you may add it here.
             // RDO synchronizer
 
-            DiagnosticLog.LogDiagnostic("Creating DestinationProvider..");
-
             var factory = SynchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
             if (factory != null)
             {
-                DiagnosticLog.LogDiagnostic("Factory is {factoryType}", nameof(GeneralWithEntityRdoSynchronizerFactory));
                 factory.SourceProvider = SourceProvider;
             }
 
             try
             {
-                DiagnosticLog.LogDiagnostic("Creating Synchronizer...");
                 IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
-                DiagnosticLog.LogDiagnostic("Synchronizer was created {type}.", synchronizer?.GetType());
 
                 return synchronizer;
             }
@@ -357,7 +348,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ConfigureJobStopManager(Job job, bool supportsDrainStop)
         {
-            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop, DiagnosticLog);
+            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop);
             JobHistoryErrorService.JobStopManager = JobStopManager;
         }
 

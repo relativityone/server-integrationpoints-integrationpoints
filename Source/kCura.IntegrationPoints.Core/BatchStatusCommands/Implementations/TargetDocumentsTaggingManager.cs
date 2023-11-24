@@ -1,11 +1,10 @@
 ﻿using System;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -14,12 +13,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private readonly int _destinationWorkspaceArtifactId;
         private readonly int? _federatedInstanceArtifactId;
         private readonly int _jobHistoryArtifactId;
-        private readonly IAPILog _logger;
         private readonly int _sourceWorkspaceArtifactId;
         private readonly ITagsCreator _tagsCreator;
         private readonly ITagger _tagger;
         private readonly ITagSavedSearchManager _tagSavedSearchManager;
         private readonly ImportSettings _importSettings;
+        private readonly ILogger<TargetDocumentsTaggingManager> _logger;
+
         private bool _errorOccurDuringJobStart;
         private TagsContainer _tagsContainer;
 
@@ -28,17 +28,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             ITagsCreator tagsCreator,
             ITagger tagger,
             ITagSavedSearchManager tagSavedSearchManager,
-            IHelper helper,
             ImportSettings importSettings,
             int sourceWorkspaceArtifactId,
             int destinationWorkspaceArtifactId,
             int? federatedInstanceArtifactId,
             int jobHistoryArtifactId,
-            string uniqueJobId)
+            string uniqueJobId,
+            ILogger<TargetDocumentsTaggingManager> logger)
         {
             ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId,
                 Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, uniqueJobId);
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<TargetDocumentsTaggingManager>();
 
             _sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
             _destinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
@@ -48,6 +47,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _tagsCreator = tagsCreator;
             _tagSavedSearchManager = tagSavedSearchManager;
             _importSettings = importSettings;
+
+            _logger = logger;
         }
 
         public IScratchTableRepository ScratchTableRepository { get; }

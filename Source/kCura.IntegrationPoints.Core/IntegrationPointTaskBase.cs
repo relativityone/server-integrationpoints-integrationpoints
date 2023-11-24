@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected ISynchronizerFactory AppDomainRdoSynchronizerFactoryFactory;
         protected IIntegrationPointService IntegrationPointService;
         protected SourceProvider _sourceProvider;
-        protected readonly IDiagnosticLog DiagnosticLog;
         protected readonly IHelper Helper;
 
         public IntegrationPointTaskBase(
@@ -52,8 +51,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointService integrationPointService,
-            IDiagnosticLog diagnosticLog)
+            IIntegrationPointService integrationPointService)
         {
             CaseServiceContext = caseServiceContext;
             Helper = helper;
@@ -67,8 +65,6 @@ namespace kCura.IntegrationPoints.Core.Agent
             JobService = jobService;
             IntegrationPointService = integrationPointService;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
-
-            DiagnosticLog = diagnosticLog;
         }
 
         protected DestinationProvider DestinationProvider
@@ -165,8 +161,8 @@ namespace kCura.IntegrationPoints.Core.Agent
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var objectBuilder = new SynchronizerObjectBuilder(sourceFields, DiagnosticLog);
-            IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder, DiagnosticLog)
+            var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
+            IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder)
                 .GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
             sw.Stop();
 

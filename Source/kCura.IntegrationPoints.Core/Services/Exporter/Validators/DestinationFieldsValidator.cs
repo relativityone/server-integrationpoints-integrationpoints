@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -12,10 +12,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Validators
 {
     public class DestinationFieldsValidator
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<DestinationFieldsValidator> _logger;
         private readonly IFieldQueryRepository _fieldQueryRepository;
 
-        public DestinationFieldsValidator(IFieldQueryRepository fieldQueryRepository, IAPILog logger)
+        public DestinationFieldsValidator(IFieldQueryRepository fieldQueryRepository, ILogger<DestinationFieldsValidator> logger)
         {
             _logger = logger.ForContext<DestinationFieldsValidator>();
             _fieldQueryRepository = fieldQueryRepository;

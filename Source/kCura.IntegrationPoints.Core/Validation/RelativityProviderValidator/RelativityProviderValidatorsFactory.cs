@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -7,7 +8,6 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
     public class RelativityProviderValidatorsFactory : IRelativityProviderValidatorsFactory
     {
-        private readonly IAPILog _logger;
-        private readonly IHelper _helper;
+        private readonly IAPILog _apiLogger;
+        private readonly ILogger<RelativityProviderValidatorsFactory> _logger;
         private readonly IProductionManager _productionManager;
         private readonly IManagerFactory _managerFactory;
         private readonly IRepositoryFactory _repositoryFactory;
@@ -31,39 +31,41 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
             IHelper helper,
             IProductionManager productionManager,
             IManagerFactory managerFactory,
-            IArtifactServiceFactory artifactServiceFactory, IRelativityObjectManager objectManager)
+            IArtifactServiceFactory artifactServiceFactory,
+            IRelativityObjectManager objectManager,
+            ILogger<RelativityProviderValidatorsFactory> logger)
         {
             _serializer = serializer;
             _repositoryFactory = repositoryFactory;
-            _helper = helper;
             _productionManager = productionManager;
             _managerFactory = managerFactory;
             _artifactServiceFactory = artifactServiceFactory;
 
-            _logger = _helper.GetLoggerFactory().GetLogger();
+            _logger = logger;
+            _apiLogger = helper.GetLoggerFactory().GetLogger();
             _objectManager = objectManager;
         }
 
         public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId, string credentials)
         {
             IFieldManager fieldManager = _managerFactory.CreateFieldManager();
-            return new FieldsMappingValidator(_logger, _serializer, fieldManager, fieldManager);
+            return new FieldsMappingValidator(_logger.ForContext<FieldsMappingValidator>(), _serializer, fieldManager, fieldManager);
         }
 
         public ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId, string credentials)
         {
-            IArtifactService artifactService = _artifactServiceFactory.CreateArtifactService(_helper);
+            IArtifactService artifactService = _artifactServiceFactory.CreateArtifactService();
             return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
         }
 
         public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId)
         {
-            return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId));
+            return new SavedSearchValidator(_apiLogger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId));
         }
 
         public ViewValidator CreateViewValidator(int workspaceArtifactId)
         {
-            return new ViewValidator(_objectManager, _logger);
+            return new ViewValidator(_objectManager, _logger.ForContext<ViewValidator>());
         }
 
         public ProductionValidator CreateProductionValidator(int workspaceArtifactId)
@@ -105,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
         public IRelativityProviderSourceProductionPermissionValidator CreateSourceProductionPermissionValidator(int workspaceArtifactId)
         {
             IProductionRepository productionRepository = _repositoryFactory.GetProductionRepository(workspaceArtifactId);
-            return new RelativityProviderSourceProductionPermissionValidator(productionRepository, _logger);
+            return new RelativityProviderSourceProductionPermissionValidator(productionRepository, _logger.ForContext<RelativityProviderSourceProductionPermissionValidator>());
         }
 
         private IPermissionManager CreatePermissionManager()

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Exporter.Base;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
@@ -27,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             IRelativityObjectManager relativityObjectManager,
             IRepositoryFactory repositoryFactory,
             IJobStopManager jobStopManager,
-            IHelper helper,
             IFolderPathReader folderPathReader,
             IFileRepository fileRepository,
             ISerializer serializer,
@@ -35,19 +35,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
             FieldMap[] mappedFields,
             int startAt,
             SourceConfiguration sourceConfiguration,
-            int searchArtifactId)
+            int searchArtifactId,
+            ILogger<RelativityExporterService> logger)
             : base(
                 documentRepository,
                 relativityObjectManager,
                 repositoryFactory,
                 jobStopManager,
-                helper,
                 fileRepository,
                 serializer,
                 mappedFields,
                 startAt,
                 sourceConfiguration,
-                searchArtifactId)
+                searchArtifactId,
+                logger.ForContext<ExporterServiceBase>())
         {
             _folderPathReader = folderPathReader;
             _exportDataSanitizer = exportDataSanitizer;
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
                 transferConfiguration.ScratchRepositories,
                 RelativityObjectManager,
                 DocumentRepository,
-                Logger,
+                Logger.ForContext<DocumentTransferDataReader>(),
                 QueryFieldLookupRepository,
                 FileRepository,
                 transferConfiguration.DestinationConfiguration.UseDynamicFolderPath,

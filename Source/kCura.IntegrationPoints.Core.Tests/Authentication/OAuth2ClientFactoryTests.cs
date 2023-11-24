@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
@@ -18,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
     public class OAuth2ClientFactoryTests : TestBase
     {
         private Mock<IHelper> _helperFake;
-        private Mock<IAPILog> _loggerFake;
         private Mock<IOAuth2ClientManager> _oAuth2ClientManagerFake;
         private Mock<IRetryHandler> _retryHandlerMock;
         private Mock<IRetryHandlerFactory> _retryHandlerFactoryFake;
@@ -33,17 +31,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
             _clientName = $"{Constants.IntegrationPoints.OAUTH2_CLIENT_NAME_PREFIX} {_contextUserId}";
 
             _oAuth2ClientManagerFake = new Mock<IOAuth2ClientManager>();
-            _loggerFake = new Mock<IAPILog>();
             _helperFake = new Mock<IHelper>();
             _retryHandlerMock = new Mock<IRetryHandler>();
 
             _retryHandlerFactoryFake = new Mock<IRetryHandlerFactory>();
+
             _retryHandlerFactoryFake
                 .Setup(x => x.Create(It.IsAny<ushort>(), It.IsAny<ushort>()))
                 .Returns(_retryHandlerMock.Object);
-            _helperFake
-                .Setup(x => x.GetLoggerFactory().GetLogger().ForContext<OAuth2ClientFactory>())
-                .Returns(_loggerFake.Object);
+
             _helperFake
                 .Setup(x => x.GetServicesManager().CreateProxy<IOAuth2ClientManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_oAuth2ClientManagerFake.Object);
@@ -54,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
                 Name = _clientName
             };
 
-            _instance = new OAuth2ClientFactory(_retryHandlerFactoryFake.Object, _helperFake.Object);
+            _instance = new OAuth2ClientFactory(_retryHandlerFactoryFake.Object, _helperFake.Object, Mock.Of<ILogger<OAuth2ClientFactory>>());
         }
 
         [Test]
@@ -114,8 +110,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
                 .WithInnerExceptionExactly<OutOfMemoryException>();
-            _loggerFake
-                .Verify(x => x.LogError($"IOAuth2ClientManager failed on CreateAsync with {exception.Message}"));
         }
 
         [Test]
@@ -135,8 +129,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication
                 .ShouldThrow<InvalidOperationException>()
                 .WithMessage($"Failed to retrieve OAuth2Client for user with id: {_contextUserId}")
                 .WithInnerExceptionExactly<OutOfMemoryException>();
-            _loggerFake
-                .Verify(x => x.LogError($"IOAuth2ClientManager failed on ReadAllAsync with { exception.Message}"));
         }
     }
 }

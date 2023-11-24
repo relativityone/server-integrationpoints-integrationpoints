@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -9,7 +10,6 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -17,14 +17,14 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 {
     public class FieldsMappingValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
     {
-        private readonly IAPILog _logger;
+        private readonly ILogger<FieldsMappingValidator> _logger;
         private readonly ISerializer _serializer;
         private readonly IFieldManager _sourcefieldManager;
         private readonly IFieldManager _targetfieldManager;
 
-        public FieldsMappingValidator(IAPILog logger, ISerializer serializer, IFieldManager sourcefieldManager, IFieldManager targetfieldManager)
+        public FieldsMappingValidator(ILogger<FieldsMappingValidator> logger, ISerializer serializer, IFieldManager sourcefieldManager, IFieldManager targetfieldManager)
         {
-            _logger = logger.ForContext<FieldsMappingValidator>();
+            _logger = logger;
             _serializer = serializer;
             _sourcefieldManager = sourcefieldManager;
             _targetfieldManager = targetfieldManager;

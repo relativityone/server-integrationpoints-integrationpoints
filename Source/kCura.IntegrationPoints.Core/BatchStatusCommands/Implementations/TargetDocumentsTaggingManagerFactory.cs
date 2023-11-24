@@ -1,10 +1,10 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private readonly ISynchronizerFactory _synchronizerFactory;
         private readonly ITagSavedSearchManager _tagSavedSearchManager;
         private readonly string _uniqueJobId;
-        private readonly IDiagnosticLog _diagnosticLog;
+        private readonly ILogger<TargetDocumentsTaggingManagerFactory> _logger;
 
         public TargetDocumentsTaggingManagerFactory(
             IRepositoryFactory repositoryFactory,
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             ImportSettings destinationConfig,
             int jobHistoryArtifactId,
             string uniqueJobId,
-            IDiagnosticLog diagnosticLog)
+            ILogger<TargetDocumentsTaggingManagerFactory> logger)
         {
             _repositoryFactory = repositoryFactory;
             _tagSavedSearchManager = tagSavedSearchManager;
@@ -53,9 +53,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _sourceConfig = sourceConfig;
             _jobHistoryArtifactId = jobHistoryArtifactId;
             _uniqueJobId = uniqueJobId;
-            _diagnosticLog = diagnosticLog;
             _destinationConfig = destinationConfig;
             AdjustDestinationConfig(_destinationConfig);
+            _logger = logger;
         }
 
         public IConsumeScratchTableBatchStatus BuildDocumentsTagger()
@@ -67,13 +67,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
                 _tagsCreator,
                 tagger,
                 _tagSavedSearchManager,
-                _helper,
                 _destinationConfig,
                 _sourceConfig.SourceWorkspaceArtifactId,
                 _sourceConfig.TargetWorkspaceArtifactId,
                 _sourceConfig.FederatedInstanceArtifactId,
                 _jobHistoryArtifactId,
-                _uniqueJobId);
+                _uniqueJobId,
+                _logger.ForContext<TargetDocumentsTaggingManager>());
 
             return taggingManager;
         }
@@ -88,10 +88,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             var tagger = new Tagger(
                 _documentRepository,
                 tagsSynchronizer,
-                _helper,
                 _fields,
                 _destinationConfig,
-                _diagnosticLog);
+                _logger.ForContext<Tagger>());
             return tagger;
         }
 

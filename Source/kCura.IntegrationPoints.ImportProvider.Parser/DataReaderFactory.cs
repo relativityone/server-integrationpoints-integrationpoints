@@ -2,16 +2,15 @@
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
+using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Api;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using Relativity.DataExchange.Service;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using kCura.IntegrationPoints.Domain.Managers;
-using kCura.IntegrationPoints.ImportProvider.Parser.FileIdentification;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser
 {
@@ -22,7 +21,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
         private readonly IFieldParserFactory _fieldParserFactory;
         private readonly ISerializer _serializer;
         private readonly IReadOnlyFileMetadataStore _readOnlyFileMetadataStore;
-        private readonly IDiagnosticLog _diagnosticLogger;
         private readonly ILogger<DataReaderFactory> _logger;
 
         public DataReaderFactory(
@@ -31,7 +29,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             IWinEddsFileReaderFactory winEddsFileReaderFactory,
             ISerializer serializer,
             IReadOnlyFileMetadataStore readOnlyFileMetadataStore,
-            IDiagnosticLog diagnosticLogger,
             ILogger<DataReaderFactory> logger)
         {
             _fieldParserFactory = fieldParserFactory;
@@ -39,7 +36,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _winEddsFileReaderFactory = winEddsFileReaderFactory;
             _serializer = serializer;
             _readOnlyFileMetadataStore = readOnlyFileMetadataStore;
-            _diagnosticLogger = diagnosticLogger;
             _logger = logger;
         }
 
@@ -88,7 +84,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             int colIdx = 0;
             foreach (string col in fieldParser.GetFields())
             {
-                int fieldCat = (! string.IsNullOrEmpty(fieldIdentifierColumnName) && col == fieldIdentifierColumnName)
+                int fieldCat = (!string.IsNullOrEmpty(fieldIdentifierColumnName) && col == fieldIdentifierColumnName)
                     ? (int)FieldCategory.Identifier
                     : -1;
 
@@ -103,7 +99,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
 
             _logger.LogInformation("ImportProviderSettings: {@settings}", settings);
 
-            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore, _diagnosticLogger, addExtraNativeColumns);
+            LoadFileDataReader rv = new LoadFileDataReader(settings, loadFile, reader, jobStopManager, _readOnlyFileMetadataStore, addExtraNativeColumns);
             rv.Init();
             return rv;
         }

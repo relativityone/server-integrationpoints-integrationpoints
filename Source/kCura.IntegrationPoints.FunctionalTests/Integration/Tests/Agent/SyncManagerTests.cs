@@ -319,8 +319,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 IManagerFactory managerFactory,
                 IEnumerable<IBatchStatus> batchStatuses,
                 IAgentValidator agentValidator,
-                ILogger<SyncManager> logger,
-                IDiagnosticLog diagnosticLog)
+                ILogger<SyncManager> logger)
                     : base(
                         caseServiceContext,
                         providerFactory,
@@ -336,8 +335,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                         managerFactory,
                         batchStatuses,
                         agentValidator,
-                        logger,
-                        diagnosticLog)
+                        logger)
             {
             }
 

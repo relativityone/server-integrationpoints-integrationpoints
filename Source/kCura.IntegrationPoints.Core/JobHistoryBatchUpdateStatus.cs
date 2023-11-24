@@ -1,12 +1,11 @@
 ﻿using System;
-using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 using Relativity.Services.Choice;
 using Relativity.Telemetry.APM;
 using Client = Relativity.Telemetry.APM.Client;
@@ -20,22 +19,19 @@ namespace kCura.IntegrationPoints.Core
         private readonly IJobStatusUpdater _updater;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobService _jobService;
-        private readonly IAPILog _logger;
-        private readonly ISerializer _serializer;
+        private readonly ILogger<JobHistoryBatchUpdateStatus> _logger;
         private readonly IDateTimeHelper _dateTimeHelper;
 
         public JobHistoryBatchUpdateStatus(
             IJobStatusUpdater jobStatusUpdater,
             IJobHistoryService jobHistoryService,
             IJobService jobService,
-            ISerializer serializer,
-            IAPILog logger,
+            ILogger<JobHistoryBatchUpdateStatus> logger,
             IDateTimeHelper dateTimeHelper)
         {
             _updater = jobStatusUpdater;
             _jobHistoryService = jobHistoryService;
             _jobService = jobService;
-            _serializer = serializer;
             _logger = logger;
             _dateTimeHelper = dateTimeHelper;
         }

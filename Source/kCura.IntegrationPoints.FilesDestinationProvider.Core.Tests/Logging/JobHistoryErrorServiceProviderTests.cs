@@ -1,10 +1,10 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 {
@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         {
             JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(
                 Substitute.For<IRelativityObjectManager>(),
-                Substitute.For<IHelper>(),
-                Substitute.For<IIntegrationPointRepository>()
+                Substitute.For<IIntegrationPointRepository>(),
+                Substitute.For<ILogger<JobHistoryErrorService>>()
             );
 
             JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);

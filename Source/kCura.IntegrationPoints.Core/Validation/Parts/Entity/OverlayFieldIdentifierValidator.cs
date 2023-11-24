@@ -1,15 +1,15 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Entity;
+﻿using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts.Entity
 {
     internal class OverlayFieldIdentifierValidator : EntityValidatorBase
     {
-        public OverlayFieldIdentifierValidator(IAPILog log)
-            : base(log)
+        public OverlayFieldIdentifierValidator(ILogger<OverlayFieldIdentifierValidator> log)
+            : base(log.ForContext<EntityValidatorBase>())
         {
         }
 
