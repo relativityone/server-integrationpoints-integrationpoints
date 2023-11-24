@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
         private Mock<IResourcePoolRepository> _resourcePoolRepositoryMock;
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IWorkspaceManager> _workspaceManagerFake;
-        private Mock<IHelper> _helperFake;
         private const int _RESOURCE_POOL_ID = 1234;
         private readonly WorkspaceResponse _workspaceResponse = new WorkspaceResponse()
         {
