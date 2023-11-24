@@ -62,6 +62,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             catch (Exception exception)
             {
+                _logger.LogError(exception, "Unable to retrieve integration point data of id {integrationPointId}", id);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, exception.Message);
             }
         }

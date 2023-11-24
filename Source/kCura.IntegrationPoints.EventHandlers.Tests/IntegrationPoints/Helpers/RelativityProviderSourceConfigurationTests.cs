@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         private const int _SOURCE_WORKSPACE_ID = 2;
         private const int _SAVED_SEARCH_ARTIFACT_ID = 3;
         private const int _PRODUCTION_ID = 4;
-        private const string _ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+        private const string _ERROR_FOLDER_NOT_FOUND = "Folder in source workspace not found!";
         private const string _SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
         private const string _RELATIVITY_THIS_INSTANCE = "This instance";
         private const string _SOURCE_PRODUCTION_NAME = "SourceProductionName";

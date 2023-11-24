@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 {
     public class RelativityProviderSourceConfiguration : RelativityProviderConfiguration
     {
-        private const string _ERROR_FOLDER_NOT_FOUND = "Folder in destination workspace not found!";
+        private const string _ERROR_FOLDER_NOT_FOUND = "Folder in source workspace not found!";
         private const string _ERROR_PRODUCTION_SET_NOT_FOUND = "Production Set not found!";
         private const string _SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
         private const string _RELATIVITY_THIS_INSTANCE = "This instance";
@@ -263,14 +263,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             {
                 return folder.Name;
             }
-            foreach (var folderChild in folder.Children)
+
+            if (folder.Children != null)
             {
-                string name = FindFolderName(folderChild, folderArtifactId);
-                if (!string.IsNullOrEmpty(name))
+                foreach (var folderChild in folder.Children)
                 {
-                    return $"{folder.Name}/{name}";
+                    string name = FindFolderName(folderChild, folderArtifactId);
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        return $"{folder.Name}/{name}";
+                    }
                 }
             }
+
             return string.Empty;
         }
     }
