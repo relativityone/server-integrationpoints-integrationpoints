@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 
         private void LogExecutionInfo()
         {
-            Logger.LogInformation("Post install EventHandler started: {eventHandler} in workspace {workspaceId}", this.GetType().Name, Helper.GetActiveCaseID());
+            Logger.LogWarning("Post install EventHandler started: {eventHandler} in workspace {workspaceId}", this.GetType().Name, Helper.GetActiveCaseID());
         }
     }
 }
