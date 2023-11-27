@@ -139,6 +139,35 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
             }
         }
 
+        public async Task SetJobIdAsync(int workspaceId, int jobHistoryId, string jobID)
+        {
+            try
+            {
+                FieldRefValuePair[] fieldsToUpdate = new[]
+                {
+                    new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = JobHistoryFieldGuids.JobIDGuid
+                        },
+                        Value = jobID
+                    }
+                };
+
+                await UpdateJobHistoryAsync(workspaceId, jobHistoryId, fieldsToUpdate).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to set jobID: {jobID} for Job History ID: {jobHistoryId}",
+                    jobID,
+                    jobHistoryId);
+                throw;
+            }
+        }
+
         public async Task UpdateReadItemsCountAsync(int workspaceId, int jobHistoryId, int readItemsCount)
         {
             try

@@ -213,6 +213,40 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _jobHistoryErrorService.Verify(x => x.AddJobErrorAsync(It.IsAny<int>(), It.IsAny<int>(), It.Is<Exception>(y => y.Message.Contains(expectedMessageStart))));
         }
 
+        [Test]
+        public void Execute_ShouldSetJobIdInJobHistory_WhenScheduledJobRun()
+        {
+            // Arrange
+            List<CustomProviderBatch> batches = _fxt.Build<CustomProviderBatch>()
+                .With(x => x.Status, IntegrationPoints.Agent.CustomProvider.DTO.BatchStatus.Completed)
+                .CreateMany()
+                .ToList();
+
+            _jobDetails = _fxt.Build<CustomProviderJobDetails>()
+                .With(x => x.Batches, new List<CustomProviderBatch>())
+                .Create();
+
+            Job job = PrepareBasicJob();
+
+            _idFilesBuilder.Setup(x => x.BuildIdFilesAsync(
+                    It.IsAny<IDataSourceProvider>(), It.IsAny<IntegrationPointInfo>(), It.IsAny<string>()))
+                .ReturnsAsync(batches);
+
+            SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
+
+            JobHistory jobHistory = _fxt.Build<JobHistory>().Create();
+            jobHistory.JobID = null;
+            _jobHistoryService.Setup(x => x.ReadJobHistoryByGuidAsync(job.WorkspaceID, It.IsAny<Guid>()))
+                .Returns(() => Task.FromResult(jobHistory));
+
+            // Act
+            _sut.Execute(job);
+
+            // Assert
+            _jobHistoryService.Verify(x => x.ReadJobHistoryByGuidAsync(job.WorkspaceID, Guid.Parse(job.CorrelationID)));
+            _jobHistoryService.Verify(x => x.SetJobIdAsync(job.WorkspaceID, jobHistory.ArtifactId, job.JobId.ToString()));
+        }
+
         private Job PrepareJob(IntegrationPointDto integrationPoint, Guid jobHistoryGuid)
         {
             TaskParameters parameters = _fxt.Build<TaskParameters>()
