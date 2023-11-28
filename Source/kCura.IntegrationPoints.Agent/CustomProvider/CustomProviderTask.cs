@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
                 jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails, job.CorrelationID, integrationPointDto).ConfigureAwait(false);
 
-                await UpdateJobHistoryAtJobStart(job.WorkspaceID, jobDetails.JobHistoryID, job.JobId.ToString(), job.ScheduleRule);
+                await UpdateJobHistoryAtJobStartAsync(job.WorkspaceID, jobDetails.JobHistoryID, job.JobId.ToString(), job.ScheduleRule).ConfigureAwait(false);
 
                 importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, Guid.Parse(job.CorrelationID), jobDetails.JobHistoryID);
 
@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private async Task UpdateJobHistoryAtJobStart(int workspaceId, int jobHistoryId, string jobID, string scheduleRule)
+        private async Task UpdateJobHistoryAtJobStartAsync(int workspaceId, int jobHistoryId, string jobID, string scheduleRule)
         {
             if (!string.IsNullOrEmpty(scheduleRule))
             {
