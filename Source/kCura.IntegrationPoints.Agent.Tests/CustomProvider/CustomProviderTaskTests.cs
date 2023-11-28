@@ -235,7 +235,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             SetupImportJobRunner(new ImportJobResult { Status = JobEndStatus.Completed });
 
             JobHistory jobHistory = _fxt.Build<JobHistory>().Create();
-            jobHistory.JobID = null;
             _jobHistoryService.Setup(x => x.ReadJobHistoryByGuidAsync(job.WorkspaceID, It.IsAny<Guid>()))
                 .Returns(() => Task.FromResult(jobHistory));
 
@@ -243,8 +242,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
             _sut.Execute(job);
 
             // Assert
-            _jobHistoryService.Verify(x => x.ReadJobHistoryByGuidAsync(job.WorkspaceID, Guid.Parse(job.CorrelationID)));
-            _jobHistoryService.Verify(x => x.SetJobIdAsync(job.WorkspaceID, jobHistory.ArtifactId, job.JobId.ToString()));
+            _jobHistoryService.Verify(x => x.SetJobIdAsync(job.WorkspaceID, _jobDetails.JobHistoryID, job.JobId.ToString()));
         }
 
         private Job PrepareJob(IntegrationPointDto integrationPoint, Guid jobHistoryGuid)

@@ -90,11 +90,10 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             {
                 integrationPointDto = _integrationPointService.Read(job.RelatedObjectArtifactID);
                 jobDetails = await _jobDetailsService.GetJobDetailsAsync(job.WorkspaceID, job.JobDetails, job.CorrelationID, integrationPointDto).ConfigureAwait(false);
-                await SetJobIdOnJobHistory(job.WorkspaceID, job.JobId.ToString(), job.CorrelationID).ConfigureAwait(false);
+
+                await UpdateJobHistoryAtJobStart(job.WorkspaceID, jobDetails.JobHistoryID, job.JobId.ToString(), job.ScheduleRule);
 
                 importJobContext = new ImportJobContext(job.WorkspaceID, job.JobId, Guid.Parse(job.CorrelationID), jobDetails.JobHistoryID);
-
-                await _jobHistoryService.TryUpdateStartTimeAsync(job.WorkspaceID, jobDetails.JobHistoryID).ConfigureAwait(false);
 
                 LogIntegrationPointConfiguration(integrationPointDto);
 
@@ -139,14 +138,13 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider
             }
         }
 
-        private async Task SetJobIdOnJobHistory(int workspaceId, string jobID, string correlationID)
+        private async Task UpdateJobHistoryAtJobStart(int workspaceId, int jobHistoryId, string jobID, string scheduleRule)
         {
-            Guid jobHistoryGuid = Guid.Parse(correlationID);
-            JobHistory jobHistory = await _jobHistoryService.ReadJobHistoryByGuidAsync(workspaceId, jobHistoryGuid).ConfigureAwait(false);
-            if (jobHistory != null && string.IsNullOrEmpty(jobHistory.JobID))
+            if (!string.IsNullOrEmpty(scheduleRule))
             {
-                await _jobHistoryService.SetJobIdAsync(workspaceId, jobHistory.ArtifactId, jobID).ConfigureAwait(false);
+                await _jobHistoryService.SetJobIdAsync(workspaceId, jobHistoryId, jobID).ConfigureAwait(false);
             }
+            await _jobHistoryService.TryUpdateStartTimeAsync(workspaceId, jobHistoryId).ConfigureAwait(false);
         }
 
         private async Task ValidateJobAsync(Job job, int jobHistoryId, IntegrationPointDto integrationPoint)
