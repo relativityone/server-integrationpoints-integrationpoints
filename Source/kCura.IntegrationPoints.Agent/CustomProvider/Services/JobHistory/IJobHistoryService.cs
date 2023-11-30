@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.Agent.CustomProvider.Services.JobHistory
 
         Task SetTotalItemsAsync(int workspaceId, int jobHistoryId, int totalItemsCount);
 
+        Task SetJobIdAsync(int workspaceId, int jobHistoryId, string jobID);
+
         Task UpdateReadItemsCountAsync(int workspaceId, int jobHistoryId, int readItemsCount);
 
         Task UpdateProgressAsync(int workspaceId, int jobHistoryId, int importedItemsCount, int failedItemsCount);

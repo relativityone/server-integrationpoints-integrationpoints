@@ -229,6 +229,25 @@ namespace kCura.IntegrationPoints.Agent.Tests.CustomProvider
         }
 
         [Test]
+        public async Task SetJobIdAsync_ShouldSendValidRequest()
+        {
+            // Arrange
+            int workspaceId = 111;
+            int jobHistoryId = 222;
+            string jobID = "jobID";
+
+            // Act
+            await _sut.SetJobIdAsync(workspaceId, jobHistoryId, jobID);
+
+            // Assert
+            _objectManager
+                .Verify(x => x.UpdateAsync(workspaceId, It.Is<UpdateRequest>(request =>
+                    request.Object.ArtifactID == jobHistoryId &&
+                    request.FieldValues.Single().Field.Guid == JobHistoryFieldGuids.JobIDGuid &&
+                    (string)request.FieldValues.Single().Value == jobID)));
+        }
+
+        [Test]
         public async Task UpdateReadItemsCountAsync_ShouldSendValidRequest()
         {
             // Arrange
