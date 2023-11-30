@@ -27,16 +27,14 @@
 	WHERE [JobID] =
 	(
 		SELECT TOP 1 [JobID]
-		FROM [eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))
-			INNER JOIN [eddsdbo].[Case] c 
-			ON q.[WorkspaceID] = c.[ArtifactID]
+		FROM [eddsdbo].[{0}] WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))
 		WHERE
-			q.[LockedByAgentID] IS NULL
-			AND q.[AgentTypeID] = @AgentTypeID
-			AND (@RootJobID IS NULL OR q.[RootJobID] = @RootJobID)
-			AND q.[NextRunTime] <= GETUTCDATE()
-			AND q.[StopState] IN (0, 8)
-			AND q.[JobID] not in (SELECT JobID FROM [eddsdbo].[{0}]
+			[LockedByAgentID] IS NULL
+			AND [AgentTypeID] = @AgentTypeID
+			AND (@RootJobID IS NULL OR [RootJobID] = @RootJobID)
+			AND [NextRunTime] <= GETUTCDATE()
+			AND [StopState] IN (0, 8)
+			AND [JobID] not in (SELECT JobID FROM [eddsdbo].[{0}]
 												WHERE TaskType = 'SyncEntityManagerWorker' 
 												AND RootJobID in (SELECT RootJobID FROM [eddsdbo].[{0}] where TaskType = 'SyncWorker'))
 		ORDER BY
@@ -49,6 +47,6 @@
 				WHEN 777
 					THEN 0
 				ELSE 1
-			END, q.[JobID]
+			END, [JobID]
 	)
 END
