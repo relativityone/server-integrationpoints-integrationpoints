@@ -55,13 +55,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				RelativityObject artifact = fieldLookup[fieldEntry.FieldIdentifier];
 				fieldEntry.IsIdentifier = IsField(artifact, Guid.Parse(EntityFieldGuids.UniqueID));
 
-				if (IsField(artifact, Guid.Parse(EntityFieldGuids.FullName)))
-				{
-					continue;
-				}
-
-				bool isRequired = IsField(artifact, Guid.Parse(EntityFieldGuids.FirstName)) ||
-								IsField(artifact, Guid.Parse(EntityFieldGuids.LastName));
+                bool isRequired = IsField(artifact, Guid.Parse(EntityFieldGuids.FirstName)) ||
+                                  IsField(artifact, Guid.Parse(EntityFieldGuids.LastName));
 
 				fieldEntry.IsRequired = isRequired;
 				yield return fieldEntry;
