@@ -12,14 +12,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     {
         protected override string SuccessMessage => "RIP Destination Providers registered successfully";
 
-        private readonly IRdoSynchronizerProvider _synchronizerProvider;
         private readonly object _executionLock = new object();
         private int _executionAttempt;
-
-        public RegisterDestinationProviders()
-        {
-            _synchronizerProvider = CreateSynchronizerProvider();
-        }
 
         protected override string GetFailureMessage(Exception ex)
         {
@@ -33,7 +27,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
                 _executionAttempt++;
                 if (_executionAttempt == 1)
                 {
-                    _synchronizerProvider.CreateOrUpdateDestinationProviders();
+                    IRdoSynchronizerProvider synchronizerProvider = CreateSynchronizerProvider();
+                    synchronizerProvider.CreateOrUpdateDestinationProviders();
                 }
                 else
                 {
