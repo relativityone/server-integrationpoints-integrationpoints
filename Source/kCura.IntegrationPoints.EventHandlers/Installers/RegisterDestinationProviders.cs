@@ -1,7 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -12,6 +12,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     {
         protected override string SuccessMessage => "RIP Destination Providers registered successfully";
 
+        private readonly object _executionLock = new object();
+        private int _executionAttempt;
+
         protected override string GetFailureMessage(Exception ex)
         {
             return "Error occured while installing destination providers";
@@ -19,9 +22,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         protected override void Run()
         {
-            IRdoSynchronizerProvider synchronizerProvider = CreateSynchronizerProvider();
-
-            synchronizerProvider.CreateOrUpdateDestinationProviders();
+            lock (_executionLock)
+            {
+                _executionAttempt++;
+                if (_executionAttempt == 1)
+                {
+                    IRdoSynchronizerProvider synchronizerProvider = CreateSynchronizerProvider();
+                    synchronizerProvider.CreateOrUpdateDestinationProviders();
+                }
+                else
+                {
+                    Logger.LogError(
+                        "Unwanted execution of {eventHandlerName} Event Handler detected - attempt {attempt}",
+                        nameof(RegisterDestinationProviders),
+                        _executionAttempt);
+                }
+            }
         }
 
         private IRdoSynchronizerProvider CreateSynchronizerProvider()
