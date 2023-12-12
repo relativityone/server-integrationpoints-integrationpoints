@@ -742,6 +742,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var sourceWithoutPair = [];
 				var destinationWithoutPair = [];
+				var bothMissingFromPair = [];
 
 				$.each(fieldMapping, function (_index, mapping) {
 					var sourceField = self.updateFieldFromMapping(mapping[sourceKey], sourceFields);
@@ -750,15 +751,17 @@ ko.validation.insertValidationMessage = function (element) {
 						sourceMapped.push(sourceField);
 						destinationMapped.push(destinationField);
 					} else {
-						if (!destinationField) {
+						if (!destinationField && sourceField) {
 							sourceWithoutPair.push(sourceField);
-						} else {
+						} else if (!sourceField && destinationField) {
 							destinationWithoutPair.push(destinationField);
+						} else {
+							bothMissingFromPair.push(mapping)
 						}
 					}
 				});
 
-				return [sourceMapped, destinationMapped, sourceWithoutPair, destinationWithoutPair];
+				return [sourceMapped, destinationMapped, sourceWithoutPair, destinationWithoutPair, bothMissingFromPair];
 			}
 
 			return {
@@ -769,12 +772,14 @@ ko.validation.insertValidationMessage = function (element) {
 
 		function confirmRemovingNotMappedFields(notMappedSourceFields,
 			notMappedDestinationFields,
+			bothMissingFromPair,
 			successCallback,
 			cancelCallback) {
 
-			var tableDiv = $('<div/>').css({ "overflow-y": "auto", "max-height": "400px" });
+			var tableDivOneFieldMissing = $('<div/>').css({ "overflow-y": "auto", "max-height": "400px" });
+			var tableDivBothFieldsMissing = $('<div/>').css({ "overflow-y": "auto", "max-height": "400px" });
 
-			function addColumn(description, elements) {
+			function addColumn(description, elements, table) {
 				var columnDiv = $('<div/>').css({ "float": "left", "width": "50%" });
 				$('<p/>').html(description).appendTo(columnDiv);
 
@@ -785,41 +790,69 @@ ko.validation.insertValidationMessage = function (element) {
 						$('<li/>').html(this).appendTo(list);
 					});
 
-				$(columnDiv).appendTo(tableDiv);
+				$(columnDiv).appendTo(table);
 			}
 
 			if (notMappedSourceFields.length) {
-				addColumn("Source:", notMappedSourceFields.map(x => x.name));
+				addColumn("Source:", notMappedSourceFields.map(x => x.name), tableDivOneFieldMissing);
 			}
 
 			if (notMappedDestinationFields.length) {
-				addColumn("Destination:", notMappedDestinationFields.map(x => x.name));
+				addColumn("Destination:", notMappedDestinationFields.map(x => x.name), tableDivOneFieldMissing);
 			}
 
-			var dialogContent = $('<div/>')
-				.html('<p>The below fields were skipped from mapping.</p>');
+			if (bothMissingFromPair.length) {
+				addColumn("Both fields from pair are skipped:", bothMissingFromPair.map(x => x.sourceField.displayName + ", " + x.destinationField.displayName), tableDivBothFieldsMissing);
+			}
 
-			tableDiv.appendTo(dialogContent);
+			var finalContent = $('<div/>');
 
-			$('<div/>')
-				.html('<p>Would you like to keep them in mapping anyway?</p>').appendTo(dialogContent)
+			if (bothMissingFromPair.length) {
+				var dialogContentSkipped = $('<div/>')
+					.html('<p>The below fields were skipped from mapping because the fields no longer exist in source and destination workspaces.</p>');
+				tableDivBothFieldsMissing.appendTo(dialogContentSkipped);
+				dialogContentSkipped.appendTo(finalContent);
+			}
 
-			return window.Dragon.dialogs.showConfirmWithCancelHandler({
-				message: dialogContent.html(),
+			if (notMappedSourceFields.length || notMappedDestinationFields.length) {
+				var dialogContent = $('<div/>')
+					.html('<p>The below fields should be skipped from mapping because fields they were paired with no longer exist.</p>');
+				tableDivOneFieldMissing.appendTo(dialogContent);
+				$('<div/>')
+					.html('<p>Would you like to keep them in mapping anyway?</p>').appendTo(dialogContent)
+				dialogContent.appendTo(finalContent);
+
+				return window.Dragon.dialogs.showConfirmWithCancelHandler({
+					message: finalContent.html(),
+					title: "Integration Point Mapping",
+					width: 450,
+					okText: "Yes, keep them",
+					cancelText: "No, skip them",
+					showCancel: true,
+					messageAsHtml: true,
+					closeOnEscape: false,
+					success: function (calls) {
+						calls.close();
+						successCallback();
+					},
+					cancel: function (calls) {
+						calls.close();
+						cancelCallback();
+					}
+				});
+			}
+
+			return window.Dragon.dialogs.showConfirm({
+				message: finalContent.html(),
 				title: "Integration Point Mapping",
 				width: 450,
-				okText: "Yes, keep them",
-				cancelText: "No, skip them",
-				showCancel: true,
+				okText: "Ok",
+				showCancel: false,
 				messageAsHtml: true,
 				closeOnEscape: false,
 				success: function (calls) {
 					calls.close();
 					successCallback();
-				},
-				cancel: function (calls) {
-					calls.close();
-					cancelCallback();
 				}
 			});
 		}
@@ -835,13 +868,15 @@ ko.validation.insertValidationMessage = function (element) {
 
 			var sourceWithoutPair = mapped[2];
 			var destinationWithoutPair = mapped[3];
+			var bothMissingFromPair = mapped[4];
 
 			return new Promise(function (resolve, reject) {
-				if (!sourceWithoutPair.length && !destinationWithoutPair.length) {
+				if (!sourceWithoutPair.length && !destinationWithoutPair.length && !bothMissingFromPair.length) {
 					resolve();
 				} else {
 					confirmRemovingNotMappedFields(sourceWithoutPair,
 						destinationWithoutPair,
+						bothMissingFromPair,
 						() => {
 							sourceMapped = sourceMapped.concat(sourceWithoutPair);
 							destinationMapped = destinationMapped.concat(destinationWithoutPair);
