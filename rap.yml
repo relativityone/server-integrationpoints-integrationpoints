@@ -1,0 +1,23 @@
+trigger:
+  branches:
+    include:
+    - '*'
+
+variables:
+- name: unregister.opt-in
+  value: true
+
+resources:
+  repositories:
+    - repository: azdo_templates
+      type: github
+      name: relativityone/azdo-templates
+      endpoint: relativityone
+      ref: 'refs/heads/main'
+
+stages:
+- template: rapci-server.yml@azdo_templates  # Template reference
+  parameters:
+    buildSteps:
+      - checkout: self
+      - checkout: azdo_templates
