@@ -122,7 +122,7 @@ Task Package -Description "Package up the build artifacts" {
 Task Clean -Description "Delete build artifacts" {
     Initialize-Folder $ArtifactsDir
 
-    Write-Verbose "Running Clean target on $Solution"
+    Write-Host "Running Clean target on $Solution"
     exec { msbuild @($Solution,
         ("/target:Clean"),
         ("/property:Configuration=$BuildConfig"),
@@ -136,7 +136,7 @@ Task Clean -Description "Delete build artifacts" {
 Task Rebuild -Description "Do a rebuild" {
     Initialize-Folder $ArtifactsDir
 
-    Write-Verbose "Running Rebuild target on $Solution"
+    Write-Host "Running Rebuild target on $Solution"
     exec { msbuild @($Solution,
         ("/target:Rebuild"),
         ("/property:Configuration=$BuildConfig"),

@@ -75,8 +75,8 @@ Running Custom Tests against Hopper Relativity environment:
 
 * Adler Sieben (adlersieben@relativity.com)
 
-The server- branches are in the process of being transitioned to the Server Vertical.
-#team-server-delta
+This repository is owned by the Server Data Transfer Team.
+#help-server-data-transfer
 
 ## Miscellaneous
 
@@ -93,6 +93,6 @@ Integration Points is required for the ECA and Investigation application.
 
 ## History  
 
-The release-server-2013 branch was forked for Relativity Server by the Server Vertical.
-Tag: 13.0
-Branch: release-server-2013
+The server-main branch was migrated from https://git.kcura.com/projects/IN/repos/integrationpoints/browse?at=refs%2Fheads%2Fserver-main by the Server Data Transfer Team.
+Tag: 24000.0.0
+Branch: server-main
