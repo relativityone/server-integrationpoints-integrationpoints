@@ -49,33 +49,38 @@ param(
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
+$ToolsDir = Join-Path $BaseDir 'buildtools'
+$NuGetFolder = Join-path $ToolsDir 'NuGet'
+$NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$ToolsDir = Join-Path $BaseDir "buildtools"
-$NugetExe = Join-Path $ToolsDir "nuget.exe"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
-Write-Progress "Checking for NuGet in tools path..."
+Write-Host "Checking for NuGet in tools path..."
 if (-Not (Test-Path $NugetExe -Verbose:$VerbosePreference)) {
-	Write-Progress "Installing NuGet from $NugetUrl..."
+	Write-Host "Installing NuGet from $NugetUrl..."
 	Invoke-WebRequest $NugetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
 }
 
-Write-Progress "Restoring tools from NuGet..."
+Write-Host "Restoring tools from NuGet..."
 $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
-& $NugetExe install $ToolsConfig -o $ToolsDir -ExcludeVersion -Verbosity $NuGetVerbosity
+& $NugetExe install $ToolsConfig -o $ToolsDir -Verbosity $NuGetVerbosity
 
 if ($LASTEXITCODE -ne 0) {
 	Throw "An error occured while restoring NuGet tools."
 }
 
-Write-Progress "Importing required Powershell modules..."
+Write-Host "Importing required Powershell modules..."
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 Import-Module (Join-Path $ToolsDir "psake-rel\tools\psake\psake.psd1") -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
 Import-Module -Force "$ToolsDir\NpmBuildHelpers.psm1" -ErrorAction Stop
 
-Install-Module VSSetup -Scope CurrentUser -Force
+if (!(Get-Module -Name VSSetup -ListAvailable))
+{
+    Install-Module VSSetup -Scope CurrentUser -Repository 'powershell-anthology' -Force
+}
+Import-Module VSSetup -Force
 
 $Params = @{
 	taskList = $TaskList
@@ -95,6 +100,7 @@ $Params = @{
 	}
 	Verbose = $VerbosePreference
 	Debug = $DebugPreference
+	buildFile = (Join-Path $BaseDir "psakefile.ps1")
 }
 
 Try
