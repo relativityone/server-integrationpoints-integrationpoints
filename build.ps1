@@ -64,7 +64,7 @@ if (-Not (Test-Path $NugetExe -Verbose:$VerbosePreference)) {
 
 Write-Host "Restoring tools from NuGet..."
 $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } else { "quiet" }
-& $NugetExe install $ToolsConfig -o $ToolsDir -Verbosity $NuGetVerbosity
+& $NugetExe install $ToolsConfig -o $ToolsDir -ExcludeVersion -Verbosity $NuGetVerbosity
 
 if ($LASTEXITCODE -ne 0) {
 	Throw "An error occured while restoring NuGet tools."
