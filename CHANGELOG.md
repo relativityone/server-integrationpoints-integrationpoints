@@ -1,3 +1,9 @@
+## [23013.2.1005] - 12-18-2023
+
+### Changed
+
+- [REL-891069](https://jira.kcura.com/browse/REL-891069) Cloned repo from BitBucket to GitHub and created pipeline in AzDO.
+
 ## [23013.2.1004] - 10-06-2023
 
 ### Changed
