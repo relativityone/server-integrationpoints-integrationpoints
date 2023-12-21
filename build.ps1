@@ -45,7 +45,8 @@ param(
 	[Parameter(Mandatory=$False)]
 	[String]$TestFilter
 	)
-	
+
+. $profile
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
