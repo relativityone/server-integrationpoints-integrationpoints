@@ -54,9 +54,6 @@ $ToolsDir = Join-Path $BaseDir 'buildtools'
 $NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$NodeDir = Join-Path $ToolsDir "Portable.NodeJS"
-$NodeExe = Join-Path $NodeDir "tools\win-x64\node.exe"
-$NodeCli = Join-Path $NodeDir "tools\win-x64\node_modules\npm\bin\npm-cli.js"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
@@ -96,9 +93,6 @@ $Params = @{
 		BuildToolsDir = $ToolsDir
 		RAPVersion = $RAPVersion
 		PackageVersion = $PackageVersion
-		NodeDir = $NodeDir
-		NodeExe = $NodeExe
-		NodeCli = $NodeCli
 		# <-- Test section -->
 		TestFilter = $TestFilter
 	}
