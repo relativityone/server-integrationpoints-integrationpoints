@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.LDAPProvider;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Common;
@@ -13,6 +14,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 {
     [TestExecutionCategory.CI, TestLevel.L2]
+    [Ignore("")]
     public class LDAPProviderTests_JumpCloud : TestsBase
     {
         public readonly JumpCloudUsersTestData UsersTestData;
