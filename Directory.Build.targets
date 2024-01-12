@@ -7,5 +7,6 @@
         <WarningsAsErrors />
         <WarningsNotAsErrors />
         <NoWarn />
-  </PropertyGroup>
+    </PropertyGroup>
+	<Import Project="stylecop\StyleCop.targets" />
 </Project>

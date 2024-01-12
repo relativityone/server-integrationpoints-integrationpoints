@@ -5,24 +5,24 @@ using Relativity.Services.Exceptions;
 
 namespace Relativity.IntegrationPoints.Services
 {
-	[Serializable]
-	[FaultCode(HttpStatusCode.InternalServerError)]
-	public class InternalServerErrorException : ServiceException
-	{
-		public InternalServerErrorException()
-		{
-		}
+    [Serializable]
+    [FaultCode(HttpStatusCode.InternalServerError)]
+    public class InternalServerErrorException : ServiceException
+    {
+        public InternalServerErrorException()
+        {
+        }
 
-		public InternalServerErrorException(string message) : base(message)
-		{
-		}
+        public InternalServerErrorException(string message) : base(message)
+        {
+        }
 
-		public InternalServerErrorException(string message, Exception innerException) : base(message, innerException)
-		{
-		}
+        public InternalServerErrorException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
 
-		protected InternalServerErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-		}
-	}
+        protected InternalServerErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
 }

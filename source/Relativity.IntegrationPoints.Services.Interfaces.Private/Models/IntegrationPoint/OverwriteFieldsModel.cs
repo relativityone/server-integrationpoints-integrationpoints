@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
-	public class OverwriteFieldsModel : BaseModel
-	{
-	}
+    public class OverwriteFieldsModel : BaseModel
+    {
+    }
 }

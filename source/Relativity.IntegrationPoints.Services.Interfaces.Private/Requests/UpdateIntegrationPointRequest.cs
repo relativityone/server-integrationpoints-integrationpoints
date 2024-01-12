@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
-	public class UpdateIntegrationPointRequest : CreateIntegrationPointRequest
-	{
-	}
+    public class UpdateIntegrationPointRequest : CreateIntegrationPointRequest
+    {
+    }
 }

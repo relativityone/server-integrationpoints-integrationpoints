@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
-	public class IntegrationPointTypeModel : BaseModel
-	{
-	}
+    public class IntegrationPointTypeModel : BaseModel
+    {
+    }
 }

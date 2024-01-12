@@ -12,10 +12,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpGuidelineAnalyzer" Version="3.1.0" />
-    <PackageReference Include="Relativity.API" Version="17.4.2" />
-    <PackageReference Include="Relativity.Kepler" Version="2.15.6" />
-    <PackageReference Include="Relativity.Telemetry.APM" Version="2019.10.9" />
+    <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.Kepler" />
+    <PackageReference Include="Relativity.Telemetry.APM" />
+    <PackageReference Include="StyleCop.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
-	public class ProviderModel : BaseModel
-	{
-	}
+    public class ProviderModel : BaseModel
+    {
+    }
 }
