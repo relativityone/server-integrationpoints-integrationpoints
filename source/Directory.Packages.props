@@ -6,16 +6,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- Define package versions -->
-    <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
-    <RelativitySDK>17.4.2</RelativitySDK>
-    <KeplerVersion>2.15.6</KeplerVersion>
-    <TelemetryAPM>2019.10.9</TelemetryAPM>
     <coverletmsbuild>2.6.0</coverletmsbuild>
-    <NUnit>3.13.3</NUnit>
-    <NUnit3TestAdapter>4.4.2</NUnit3TestAdapter>
     <NunitXmlTestLogger>2.1.41</NunitXmlTestLogger>
-    <StyleCopAnalyzers>1.1.118</StyleCopAnalyzers>
-	  <!--new added -->
 	  <Antler>3.5.0.2</Antler>
 	  <Autofac>4.9.4</Autofac>
 	  <AutoFixture>4.17.0</AutoFixture>
@@ -25,7 +17,7 @@
 	  <BCryptNetCore>1.6.0</BCryptNetCore>
 	  <BenchmarkDotNet>0.10.12</BenchmarkDotNet>
 	  <CastleCore>3.3.0</CastleCore>
-	  <!--<CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>-->
+	  <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
 	  <Dapper>2.0.123</Dapper>
 	  <DapperContrib>2.0.78</DapperContrib>
 	  <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
@@ -52,8 +44,8 @@
 	  <netDumbster>2.0.0.4</netDumbster>
 	  <NewtonsoftJson>6.0.8</NewtonsoftJson>
 	  <NSubstitute>1.10.0.0</NSubstitute>
-	  <!--<NUnit>3.13.3</NUnit>-->
-	  <!--<NUnit3TestAdapter>4.4.2</NUnit3TestAdapter>-->
+	  <NUnit>3.13.3</NUnit>
+	  <NUnit3TestAdapter>4.4.2</NUnit3TestAdapter>
 	  <OutsideIn>2023.4.0</OutsideIn>
 	  <Polly>5.9.0</Polly>
 	  <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
@@ -65,7 +57,7 @@
 	  <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
 	  <RelativityIntegrationPointsSDK>1.3.0</RelativityIntegrationPointsSDK>
 	  <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0</RelativityIntegrationPointsServicesInterfacesPrivate>
-	  <!--<KeplerVersion>2.15.6</KeplerVersion>-->
+	  <KeplerVersion>2.15.6</KeplerVersion>
 	  <RelativityKeplerService>2.7.0</RelativityKeplerService>
 	  <RelativityLogging>3000.0.1</RelativityLogging>
 	  <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
@@ -73,14 +65,14 @@
 	  <RelativityOAuth2Client>1.5.5</RelativityOAuth2Client>
 	  <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
 	  <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
-	  <!--<RelativitySDK>17.4.2</RelativitySDK>-->
+	  <RelativitySDK>17.4.2</RelativitySDK>
 	  <!-- The custom pages project requires additional work to upgrade the package. -->
 	  <RelativitySDKCustomPagesOnly>13.3.0</RelativitySDKCustomPagesOnly>
 	  <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
 	  <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
 	  <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
 	  <RelativitySync>0.12.3</RelativitySync>
-	  <!--<TelemetryAPM>2019.10.9</TelemetryAPM>-->
+	  <TelemetryAPM>2019.10.9</TelemetryAPM>
 	  <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
 	  <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
 	  <RelativityTestingFramework>10.3.0</RelativityTestingFramework>
@@ -105,18 +97,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Package versions -->
-    <PackageVersion Include="CSharpGuidelineAnalyzer" Version="$(CSharpGuidelineAnalyzer)" />
-    <PackageVersion Include="Relativity.API" Version="$(RelativitySDK)" />
-    <PackageVersion Include="Relativity.Kepler" Version="$(KeplerVersion)" />
-    <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
-    <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)" />
-    <PackageVersion Include="NUnit" Version="$(NUnit)" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapter)" />
-    <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
-    <PackageVersion Include="StyleCop.Analyzers" Version="$(StyleCopAnalyzers)" />
-
-    <!--new added -->
-
+      <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)" />
+      <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
 	  <PackageVersion Include="Antlr" Version="$(Antler)" />
 	  <PackageVersion Include="ARMTestServices" Version="$(ARMTestServices)" />
 	  <PackageVersion Include="Autofac" Version="$(Autofac)" />
@@ -128,7 +110,7 @@
 	  <PackageVersion Include="BCrypt.Net-Core" Version="$(BCryptNetCore)" />
 	  <PackageVersion Include="Castle.Core" Version="$(CastleCore)" />
 	  <PackageVersion Include="Castle.Windsor" Version="$(CastleCore)" />
-	  <!--<PackageVersion Include="CSharpGuidelineAnalyzer" Version="$(CSharpGuidelineAnalyzer)" />-->
+	  <PackageVersion Include="CSharpGuidelineAnalyzer" Version="$(CSharpGuidelineAnalyzer)" />
 	  <PackageVersion Include="Dapper" Version="$(Dapper)" />
 	  <PackageVersion Include="Dapper.Contrib" Version="$(DapperContrib)" />
 	  <PackageVersion Include="DotNetSeleniumExtras.PageObjects" Version="$(DotNetSeleniumExtrasPageObjects)" />
@@ -165,12 +147,12 @@
 	  <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
 	  <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
 	  <PackageVersion Include="NSubstitute" Version="$(NSubstitute)" />
-	  <!--<PackageVersion Include="NUnit" Version="$(NUnit)" />
-	  <PackageVersion Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapter)" />-->
+	  <PackageVersion Include="NUnit" Version="$(NUnit)" />
+	  <PackageVersion Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapter)" />
 	  <PackageVersion Include="Polly" Version="$(Polly)" />
 	  <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribWaitAndRetry)" />
 	  <PackageVersion Include="Relativity" Version="$(RelativityCore)" />
-	  <!--<PackageVersion Include="Relativity.API" Version="$(RelativitySDK)" />-->
+	  <PackageVersion Include="Relativity.API" Version="$(RelativitySDK)" />
 	  <PackageVersion Include="Relativity.AutomatedWorkflows.SDK" Version="$(RelativityAutomatedWorkflowsSDK)" />
 	  <PackageVersion Include="Relativity.CustomPages" Version="$(RelativitySDKCustomPagesOnly)" />
 	  <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
@@ -181,7 +163,7 @@
 	  <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
 	  <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
 	  <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
-	  <!--<PackageVersion Include="Relativity.Kepler" Version="$(KeplerVersion)" />-->
+	  <PackageVersion Include="Relativity.Kepler" Version="$(KeplerVersion)" />
 	  <PackageVersion Include="Relativity.Kepler.Client" Version="$(KeplerVersion)" />
 	  <PackageVersion Include="Relativity.Kepler.Service" Version="$(KeplerVersion)" />
 	  <PackageVersion Include="Relativity.Logging" Version="$(RelativityLogging)" />
@@ -196,7 +178,7 @@
 	  <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />
 	  <PackageVersion Include="Relativity.Services.Interfaces.Helpers" Version="$(RelativityServicesInterfacesHelpers)" />
 	  <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
-	  <!--<PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />-->
+	  <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
 	  <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(TelemetryMetricsCollectionClient)" />
 	  <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(TelemetryMetricsCollectionBootstrapper)" />
 	  <PackageVersion Include="Relativity.Telemetry.Services.Interface" Version="$(TelemetryKeplerInterfaces)" />
@@ -214,14 +196,13 @@
 	  <PackageVersion Include="Serilog" Version="$(Serilog)" />
 	  <PackageVersion Include="Serilog.Sinks.Seq" Version="$(SerilogSinksSeq)" />
 	  <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
-	  <!--<PackageVersion Include="StyleCop.Analyzers" Version="$(StyleCopAnalyzers)" />-->
+	  <PackageVersion Include="StyleCop.Analyzers" Version="$(StyleCopAnalyzers)" />
 	  <PackageVersion Include="System.Reactive" Version="$(SystemReactive)" />
 	  <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
 	  <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
 	  <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
 	  <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
 	  <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
-
 	  <PackageVersion Include="jQuery" Version="3.6.1" />
 	  <PackageVersion Include="jquery.jstree" Version="3.3.7" />
 	  <PackageVersion Include="jQuery.UI.Combined" Version="1.13.2" />
