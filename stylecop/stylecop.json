@@ -1,0 +1,61 @@
+{
+ "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+ "settings": {
+
+   "indentation" : {
+     "indentationSize" : 4,
+     "useTabs" : false
+   },
+
+   "orderingRules" : {
+     "elementOrder" : [
+       "kind",
+       "constant",
+       "static",
+       "accessibility",
+       "readonly"
+     ],
+     "usingDirectivesPlacement" : "outsideNamespace",
+     "systemUsingDirectivesFirst": true,
+     "blankLinesBetweenUsingGroups": "allow"
+   },
+
+   "namingRules": {
+     "includeInferredTupleElementNames": true,
+     "tupleElementNameCasing": "PascalCase"
+   },
+
+   "maintainabilityRules": {
+     "topLevelTypes": [
+       "class",
+       "interface",
+       "struct",
+       "enum",
+	   "delegate"
+     ]
+   },
+
+   "layoutRules" : {
+     "newlineAtEndOfFile" : "require",
+     "allowConsecutiveUsings": true,
+	 "allowDoWhileOnClosingBrace": false
+   },
+
+   "documentationRules": {
+     "companyName": "Relativity ODA LLC",
+     "copyrightText": "Copyright (c) 2022, Relativity ODA LLC",
+     "xmlHeader": false,
+     "headerDecoration": "-----------------------------------------------------------------------",
+     "documentationCulture": "en-US",
+     "documentExposedElements": true,
+     "documentInterfaces": true,
+     "documentInternalElements": false,
+     "documentPrivateElements": false,
+     "documentPrivateFields": false,
+     "excludeFromPunctuationCheck": [
+       "seealso",
+       "see also"
+     ]
+   }
+ }
+}
