@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using FluentAssertions;
 using kCura.IntegrationPoints.LDAPProvider;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.Tests.Common;
