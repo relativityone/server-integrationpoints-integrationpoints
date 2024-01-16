@@ -13,6 +13,7 @@ using Relativity.Testing.Identification;
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.LDAP
 {
     [TestExecutionCategory.CI, TestLevel.L2]
+    [Ignore("REL-865787")]
     public class LDAPProviderTests_JumpCloud : TestsBase
     {
         public readonly JumpCloudUsersTestData UsersTestData;
