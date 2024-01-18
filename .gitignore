@@ -100,3 +100,13 @@ FunctionalTestSettings
 /package-lock.json
 .dccache
 node_modules/
+!buildtools/BuildHelpers.psm1
+bin/
+obj/
+logs/
+artifacts/
+*.user
+coverage.cobertura.xml
+!vendor/*
+Help/
+buildtools/*
