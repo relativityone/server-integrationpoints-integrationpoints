@@ -1,0 +1,38 @@
+﻿ Automatic Payroll Deposit 
+ PLEASE PRINT OR TYPE.
+ Employee ________________________________________________________________ Phone Ext . _________________________ 
+ Company _______________________________________________________________ Date ____/____/____
+ o Addition 
+ o Deletion 
+ o Change
+ Checking Account Number _____________________________ Bank
+ Location
+ Transit Routing Number 
+ ( nine digits)
+ Savings Account Number ______________________________ Bank
+ Location
+ Transit Routing Number 
+ ( nine digits)
+ Action To Be Taken (Funds may be allocated to a maximum of two accounts only. Please allow one pay period to pass
+ before your transaction is implemented.) 
+ o Please deposit my entire payroll check in my checking account. 
+ o Please deposit my entire payroll check in my savings account. 
+ o Please start making an automatic savings deposit in the amount
+ shown: $ _____________________ 
+ o Please increase my automatic savings deposit to the amount shown: $ _____________________ 
+ o Please decrease my automatic savings deposit to the amount shown: $ _____________________ 
+ o Please eliminate the automatic savings deposit and deposit all funds
+ in my checking account. 
+ o Please discontinue depositing my paycheck and mail it to my home. 
+ You must furnish a copy of a cancelled check or a deposit slip with this form. 
+ I hereby authorize UBS and the bank indicated above to deposit my net pay or part of my net pay into my account automatically each pay day. I
+ authorize UBS and the bank indicated above to deposit reimbursements due me for travel and entertainment expenses into my account automatically
+ following receipt of valid and approved expense reports. I understand UBS reserves the right to reverse any such deposits, if necessary, to correct
+ errors. I understand that it is my responsibility to notify the Payroll in writing on a timely basis, should I change banks or bank account numbers.
+ This authority shall remain in effect until I have cancelled it in writing. 
+ Signature ________________________________________________________________ 
+ If you do not wish to turn this form in during orientation, you may send it directly to UBS Payroll in Stamford:
+ 680 Washington Blvd.
+ Stamford, CT 06901
+ Attn: Payroll
+

@@ -1,0 +1,80 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync", "Relativity.Sync\Relativity.Sync.csproj", "{A3456AED-70A0-4451-8C77-138ACD77C88C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E69BB707-2273-4EB3-91BE-07F1F1D412D9}"
+	ProjectSection(SolutionItems) = preProject
+		..\DevelopmentScripts\additional.runsettings = ..\DevelopmentScripts\additional.runsettings
+		..\Directory.Build.props = ..\Directory.Build.props
+		..\Directory.Build.targets = ..\Directory.Build.targets
+		Directory.Build.targets = Directory.Build.targets
+		..\global.json = ..\global.json
+		..\LICENSE.txt = ..\LICENSE.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{307583E0-12A5-4253-96FD-79A334886705}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Unit", "Relativity.Sync.Tests.Unit\Relativity.Sync.Tests.Unit.csproj", "{FE322410-F6A3-457A-A0DA-4C5C250E004D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Integration", "Relativity.Sync.Tests.Integration\Relativity.Sync.Tests.Integration.csproj", "{F554366E-D52E-4512-AFF5-9DD802EF1E42}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Performance", "Relativity.Sync.Tests.Performance\Relativity.Sync.Tests.Performance.csproj", "{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.System", "Relativity.Sync.Tests.System\Relativity.Sync.Tests.System.csproj", "{3EC97119-47A5-467C-A3F1-7730A539F837}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Common", "Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj", "{8A904822-C8C5-450C-83EA-69936710C190}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.System.Core", "Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj", "{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3456AED-70A0-4451-8C77-138ACD77C88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3456AED-70A0-4451-8C77-138ACD77C88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3456AED-70A0-4451-8C77-138ACD77C88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3456AED-70A0-4451-8C77-138ACD77C88C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE322410-F6A3-457A-A0DA-4C5C250E004D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE322410-F6A3-457A-A0DA-4C5C250E004D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE322410-F6A3-457A-A0DA-4C5C250E004D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE322410-F6A3-457A-A0DA-4C5C250E004D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F554366E-D52E-4512-AFF5-9DD802EF1E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F554366E-D52E-4512-AFF5-9DD802EF1E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F554366E-D52E-4512-AFF5-9DD802EF1E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F554366E-D52E-4512-AFF5-9DD802EF1E42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EC97119-47A5-467C-A3F1-7730A539F837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EC97119-47A5-467C-A3F1-7730A539F837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EC97119-47A5-467C-A3F1-7730A539F837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EC97119-47A5-467C-A3F1-7730A539F837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A904822-C8C5-450C-83EA-69936710C190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A904822-C8C5-450C-83EA-69936710C190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A904822-C8C5-450C-83EA-69936710C190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A904822-C8C5-450C-83EA-69936710C190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FE322410-F6A3-457A-A0DA-4C5C250E004D} = {307583E0-12A5-4253-96FD-79A334886705}
+		{F554366E-D52E-4512-AFF5-9DD802EF1E42} = {307583E0-12A5-4253-96FD-79A334886705}
+		{58EF822C-220E-43FF-A5E5-0EBDA8E6D0F3} = {307583E0-12A5-4253-96FD-79A334886705}
+		{3EC97119-47A5-467C-A3F1-7730A539F837} = {307583E0-12A5-4253-96FD-79A334886705}
+		{8A904822-C8C5-450C-83EA-69936710C190} = {307583E0-12A5-4253-96FD-79A334886705}
+		{E00E8D0E-FA81-4CFD-BB29-01AA42F52CFD} = {307583E0-12A5-4253-96FD-79A334886705}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {396CB10D-9E33-487D-B497-2E94B53B3874}
+	EndGlobalSection
+EndGlobal
