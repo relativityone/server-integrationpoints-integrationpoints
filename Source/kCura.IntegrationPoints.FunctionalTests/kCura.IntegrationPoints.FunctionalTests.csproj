@@ -52,6 +52,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
   </ItemGroup>
@@ -143,7 +144,6 @@
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
@@ -160,7 +160,7 @@
     <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
-    <PackageReference Include="IntegrationPoints.MyFirstProvider" >
+    <PackageReference Include="IntegrationPoints.MyFirstProvider">
       <NoWarn>NU1603</NoWarn>
     </PackageReference>
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />

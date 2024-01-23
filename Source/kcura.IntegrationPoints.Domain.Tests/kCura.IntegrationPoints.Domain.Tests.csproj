@@ -32,10 +32,10 @@
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Logging.Interfaces" />
     <PackageReference Include="Relativity.Logging" />

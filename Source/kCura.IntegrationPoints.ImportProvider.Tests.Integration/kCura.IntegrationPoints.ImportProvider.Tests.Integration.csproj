@@ -42,6 +42,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -154,7 +155,6 @@
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="kCura.FreeImage" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="iTextSharp" />

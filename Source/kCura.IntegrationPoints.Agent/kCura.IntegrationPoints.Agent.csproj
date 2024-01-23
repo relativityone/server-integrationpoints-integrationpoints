@@ -51,6 +51,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +64,6 @@
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />

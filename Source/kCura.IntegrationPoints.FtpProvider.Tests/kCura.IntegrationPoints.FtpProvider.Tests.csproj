@@ -40,11 +40,11 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />

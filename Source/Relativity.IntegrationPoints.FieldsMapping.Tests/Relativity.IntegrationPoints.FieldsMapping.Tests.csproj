@@ -28,6 +28,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -36,7 +37,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />

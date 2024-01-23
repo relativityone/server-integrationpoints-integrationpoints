@@ -37,6 +37,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +46,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.OutsideIn" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="kCura.Apps.Common.Utils" />

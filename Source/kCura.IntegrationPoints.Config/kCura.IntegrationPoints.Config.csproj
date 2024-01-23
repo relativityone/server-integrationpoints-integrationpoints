@@ -25,11 +25,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
   </ItemGroup>
 </Project>

@@ -36,6 +36,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -56,7 +57,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="iTextSharp" />
   </ItemGroup>
 </Project>

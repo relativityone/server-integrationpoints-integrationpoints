@@ -38,12 +38,12 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />

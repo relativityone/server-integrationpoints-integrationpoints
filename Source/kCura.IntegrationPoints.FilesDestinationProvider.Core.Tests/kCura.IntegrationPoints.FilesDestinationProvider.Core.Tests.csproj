@@ -42,6 +42,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -52,7 +53,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />

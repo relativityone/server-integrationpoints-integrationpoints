@@ -62,6 +62,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kCura" />
@@ -69,7 +70,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Dapper" />

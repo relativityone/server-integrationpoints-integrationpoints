@@ -52,7 +52,6 @@
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsSDK>1.3.0</RelativityIntegrationPointsSDK>
     <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0</RelativityIntegrationPointsServicesInterfacesPrivate>
     <KeplerVersion>2.15.6</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
@@ -90,6 +89,8 @@
     <SSHNET>2016.0.0</SSHNET>
     <WebGrease>1.6.0</WebGrease>
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
+    <coverletmsbuild>2.6.3</coverletmsbuild>
+    <NunitXmlTestLogger>2.1.41</NunitXmlTestLogger>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Antlr" Version="$(Antler)" />
@@ -151,8 +152,6 @@
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
@@ -196,6 +195,11 @@
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
     <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
+    <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageVersion>
+    <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
 
     <PackageVersion Include="jQuery" Version="3.6.1" />
     <PackageVersion Include="jquery.jstree" Version="3.3.7" />

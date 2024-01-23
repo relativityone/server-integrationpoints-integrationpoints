@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
@@ -32,6 +33,5 @@
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
   </ItemGroup>
 </Project>

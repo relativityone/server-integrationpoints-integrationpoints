@@ -28,6 +28,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
@@ -35,7 +36,6 @@
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
   </ItemGroup>

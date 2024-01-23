@@ -35,10 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.SourceProviderInstaller\Relativity.IntegrationPoints.SourceProviderInstaller.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="Relativity.DataGrid" />
