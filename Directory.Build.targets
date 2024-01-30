@@ -2,11 +2,11 @@
 <Project>
     <PropertyGroup>
         <!-- Build standards -->
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
         <WarningsAsErrors />
         <WarningsNotAsErrors />
-        <NoWarn>NU1604</NoWarn>
+        <NoWarn />
     </PropertyGroup>
     <ItemGroup Condition="'$(TemplateLanguage)' == 'CSharp'">
         <Compile Remove="Properties\AssemblyInfo.cs" />

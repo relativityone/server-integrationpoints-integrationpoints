@@ -6,6 +6,7 @@ trigger:
 variables:
 - name: unregister.opt-in
   value: true
+  DisableNuGetWarning: 'NU1604'
 
 resources:
   repositories:
