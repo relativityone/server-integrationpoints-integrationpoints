@@ -8,8 +8,9 @@
     <IsTestProject>false</IsTestProject>
     <IsPackable>true</IsPackable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	<NuspecFile>Relativity.IntegrationPoints.Contracts.nuspec</NuspecFile>
-	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuspecFile>Relativity.IntegrationPoints.Contracts.nuspec</NuspecFile>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
