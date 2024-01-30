@@ -26,6 +26,16 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return Task.FromResult(GetToggleDefaultValue(toggleType));
         }
 
+        public bool IsEnabledByGuid(Guid componentGuid)
+        {
+	        throw new NotImplementedException();
+        }
+
+        public Task<bool> IsEnabledByGuidAsync(Guid componentGuid)
+        {
+	        throw new NotImplementedException();
+        }
+
         private bool GetToggleDefaultValue(Type toggleType)
         {
             DefaultValueAttribute attribute = toggleType.GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;

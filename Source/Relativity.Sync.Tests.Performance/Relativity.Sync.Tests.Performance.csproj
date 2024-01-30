@@ -23,25 +23,27 @@
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="3.0.5" />
+        <PackageReference Include="Microsoft.Azure.KeyVault.Core"  />
     </ItemGroup>
     <!-- Relativity Packages with Release Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
-        <PackageReference Include="Moq" Version="4.5.30" />
+        <PackageReference Include="Microsoft.Azure.Cosmos.Table"  />
+        <PackageReference Include="Moq"  />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="ARMTestServices" Version="1.1.1" />
+        <PackageReference Include="ARMTestServices" />
     </ItemGroup>
     <!-- Third Party Packages -->
     <ItemGroup>
-        <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.3" />
-        <PackageReference Include="NUnit" Version="3.13.3" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
-        <PackageReference Include="Relativity.ARM.SDK" Version="11.3.0" />
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.9.1001" />
-        <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
+        <PackageReference Include="Microsoft.Azure.Storage.Blob" />
+        <PackageReference Include="NUnit"  />
+        <PackageReference Include="NUnit3TestAdapter"  />
+        <PackageReference Include="Relativity.ARM.SDK"  />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK"  />
+        <PackageReference Include="Relativity.Testing.Identification"  />
+        <PackageReference Include="Newtonsoft.Json"  />
+        <PackageReference Include="Castle.Core"  />
     </ItemGroup>
     <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

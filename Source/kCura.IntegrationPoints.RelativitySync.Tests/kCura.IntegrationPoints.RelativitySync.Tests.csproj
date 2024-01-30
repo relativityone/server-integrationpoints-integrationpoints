@@ -38,6 +38,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
+    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Banzai" />
@@ -54,6 +55,5 @@
     <PackageReference Include="Moq" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
-    <PackageReference Include="Relativity.Sync" />
   </ItemGroup>
 </Project>

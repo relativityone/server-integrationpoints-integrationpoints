@@ -54,6 +54,7 @@
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
+    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Functional\Helpers\DataFiles\kcura.png">
@@ -160,11 +161,10 @@
     <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
-    <PackageReference Include="IntegrationPoints.MyFirstProvider" >
+    <PackageReference Include="IntegrationPoints.MyFirstProvider">
       <NoWarn>NU1603</NoWarn>
     </PackageReference>
     <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
-    <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
   </ItemGroup>
 </Project>

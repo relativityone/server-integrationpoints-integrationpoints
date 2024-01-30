@@ -24,10 +24,11 @@
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="NUnit" Version="3.13.3" />
-        <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
-        <PackageReference Include="Relativity.DataExchange.Client.SDK" Version="2.9.1001" />
-        <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
+        <PackageReference Include="NUnit" />
+        <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+        <PackageReference Include="Relativity.Testing.Identification"  />
+        <PackageReference Include="Castle.Core"  />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Web.Services" />
