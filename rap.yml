@@ -8,6 +8,14 @@ variables:
   value: true
   DisableNuGetWarning: 'NU1604'
 
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    msbuildArguments: '/p:NoWarn=$(DisableNuGetWarning)'
+
 resources:
   repositories:
     - repository: azdo_templates
