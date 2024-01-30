@@ -363,6 +363,7 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj">
       <Project>{9956a61c-f6df-4a53-9ae1-6bc675b16a09}</Project>
       <Name>Relativity.IntegrationPoints.Contracts</Name>
+      <Version>1.3.0</Version>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">
       <Project>{faff9dbe-b607-45b3-8392-469b5eec5259}</Project>
