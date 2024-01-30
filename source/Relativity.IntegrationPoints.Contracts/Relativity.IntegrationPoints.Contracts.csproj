@@ -10,7 +10,6 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <NuspecFile>Relativity.IntegrationPoints.Contracts.nuspec</NuspecFile>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net462|AnyCPU'">
