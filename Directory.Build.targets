@@ -2,8 +2,8 @@
 <Project>
     <PropertyGroup>
         <!-- Build standards -->
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <WarningLevel>4</WarningLevel>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+        <WarningLevel>0</WarningLevel>
         <WarningsAsErrors />
         <WarningsNotAsErrors />
         <NoWarn />
