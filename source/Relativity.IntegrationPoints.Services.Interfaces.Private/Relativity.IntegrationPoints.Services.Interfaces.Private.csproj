@@ -9,6 +9,7 @@
     <IsPackable>true</IsPackable>
 	<NuspecFile>Relativity.IntegrationPoints.Services.Interfaces.Private.nuspec</NuspecFile>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
