@@ -4,8 +4,16 @@ trigger:
     - '*'
 
 variables:
-  unregister.opt-in: true
-  DisableNuGetWarning: 'NU1604'
+- name: unregister.opt-in
+  value: true
+
+resources:
+  repositories:
+    - repository: azdo_templates
+      type: github
+      name: relativityone/azdo-templates
+      endpoint: relativityone
+      ref: 'refs/heads/main'
 
 stages:
 - template: rapci-server.yml@azdo_templates  # Template reference
@@ -15,17 +23,3 @@ stages:
     buildSteps:
       - checkout: self
       - checkout: azdo_templates
-      - task: DotNetCoreCLI@2
-        displayName: 'Build'
-        inputs:
-          command: 'build'
-          projects: '**/*.csproj'
-          msbuildArguments: '/p:NoWarn=$(DisableNuGetWarning)'
-
-resources:
-  repositories:
-    - repository: azdo_templates
-      type: github
-      name: relativityone/azdo-templates
-      endpoint: relativityone
-      ref: 'refs/heads/main'
