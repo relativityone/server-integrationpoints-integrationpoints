@@ -213,7 +213,5 @@
         <Rule Id="SA1649"  Action="None" />          <!-- File name should match first type name -->
         <Rule Id="SA1650"  Action="None" />             <!-- Element documentation should be spelled correctly -->
         <Rule Id="SA1651"  Action="None" />          <!-- Do not use placeholder elements -->
-        \\ Add more rules here for SpacingRules
-
     </Rules>
 </RuleSet>
