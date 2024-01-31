@@ -62,6 +62,7 @@
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativitySDK>17.4.2</RelativitySDK>
+    <RelativityIntegrationPointsSDK>1.3.0</RelativityIntegrationPointsSDK>
     <!-- The custom pages project requires additional work to upgrade the package. -->
     <RelativitySDKCustomPagesOnly>13.3.0</RelativitySDKCustomPagesOnly>
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
@@ -151,6 +152,8 @@
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativitySDKCustomPagesOnly)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
     <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
+    <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
+	  <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
