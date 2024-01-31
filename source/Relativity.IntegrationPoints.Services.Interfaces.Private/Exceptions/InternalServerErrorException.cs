@@ -9,19 +9,39 @@ namespace Relativity.IntegrationPoints.Services
     [FaultCode(HttpStatusCode.InternalServerError)]
     public class InternalServerErrorException : ServiceException
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalServerErrorException"/> class.
+        /// </summary>
         public InternalServerErrorException()
         {
         }
 
-        public InternalServerErrorException(string message) : base(message)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalServerErrorException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
+        public InternalServerErrorException(string message)
+            : base(message)
         {
         }
 
-        public InternalServerErrorException(string message, Exception innerException) : base(message, innerException)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalServerErrorException"/> class.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
+        public InternalServerErrorException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
-        protected InternalServerErrorException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InternalServerErrorException"/> class.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected InternalServerErrorException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

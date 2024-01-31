@@ -4,6 +4,9 @@ namespace Relativity.IntegrationPoints.Services
 {
     public class JobHistorySummaryModel
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobHistorySummaryModel"/> class.
+        /// </summary>
         public JobHistorySummaryModel()
         {
             Data = new JobHistoryModel[0];
