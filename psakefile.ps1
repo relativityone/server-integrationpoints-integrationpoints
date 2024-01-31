@@ -226,7 +226,7 @@ function Invoke-Tests
     else
     {
         exec { & $NUnit $Solution `
-            "--where=`"$WhereClause`"" `
+            "--where= $WhereClause" `
             "--noheader" `
             "--labels=On" `
             "--skipnontestassemblies" `
