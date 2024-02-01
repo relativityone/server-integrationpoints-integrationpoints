@@ -5,6 +5,9 @@ using Relativity.Kepler.Services;
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Manager for Integration Point Types
+    /// </summary>
     [WebService("Integration Point Type Manager")]
     [ServiceAudience(Audience.Private)]
     public interface IIntegrationPointTypeManager : IKeplerService, IDisposable
