@@ -2,6 +2,9 @@
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Model representing historical promotion status.
+    /// </summary>
     public class HistoricalPromotionStatusModel
     {
         /// <summary>

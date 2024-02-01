@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents the configuration data used during the installation of a provider.
+    /// </summary>
     public class InstallProviderConfigurationDto
     {
         /// <summary>

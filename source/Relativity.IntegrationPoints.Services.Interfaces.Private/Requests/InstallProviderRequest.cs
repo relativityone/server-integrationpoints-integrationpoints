@@ -2,6 +2,9 @@
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents a request to install source providers in a specific workspace.
+    /// </summary>
     public class InstallProviderRequest
     {
         /// <summary>

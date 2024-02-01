@@ -1,5 +1,8 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Model representing the current promotion status.
+    /// </summary>
     public class CurrentPromotionStatusModel
     {
         /// <summary>

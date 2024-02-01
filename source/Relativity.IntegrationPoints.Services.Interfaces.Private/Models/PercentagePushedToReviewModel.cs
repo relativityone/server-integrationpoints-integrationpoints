@@ -1,5 +1,8 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents a model containing the total number of documents in a workspace and the total number of documents pushed to another workspace.
+    /// </summary>
     public class PercentagePushedToReviewModel
     {
         /// <summary>

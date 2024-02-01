@@ -5,6 +5,9 @@ using Relativity.Kepler.Services;
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Manager for Source and Destination Providers in the Integration Points module.
+    /// </summary>
     [WebService("Source Provider Manager")]
     [ServiceAudience(Audience.Private)]
     public interface IProviderManager : IKeplerService, IDisposable
@@ -42,15 +45,15 @@ namespace Relativity.IntegrationPoints.Services
         /// <summary>
         /// Install source providers in a selected workspace
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+        /// <param name="request">InstallProviderRequest containing installation details</param>
+        /// <returns>InstallProviderResponse with the result of the installation</returns>
         Task<InstallProviderResponse> InstallProviderAsync(InstallProviderRequest request);
 
         /// <summary>
         /// Uninstall source provider from a workspace
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+        /// <param name="request">UninstallProviderRequest containing uninstallation details</param>
+        /// <returns>UninstallProviderResponse with the result of the uninstallation</returns>
         Task<UninstallProviderResponse> UninstallProviderAsync(UninstallProviderRequest request);
     }
 }

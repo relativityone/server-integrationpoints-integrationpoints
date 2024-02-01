@@ -1,5 +1,8 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents a request to uninstall a source provider from a specific workspace.
+    /// </summary>
     public class UninstallProviderRequest
     {
         /// <summary>

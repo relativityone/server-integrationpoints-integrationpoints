@@ -2,6 +2,9 @@
 
 namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents data used during the installation of a data source provider in Relativity.
+    /// </summary>
     public class InstallProviderDto
     {
         /// <summary>

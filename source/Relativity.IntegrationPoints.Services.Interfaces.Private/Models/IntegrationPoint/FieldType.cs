@@ -1,5 +1,8 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Enum representing the field types for integration points.
+    /// </summary>
     public enum FieldType
     {
         /// <summary>

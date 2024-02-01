@@ -1,5 +1,8 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
+    /// <summary>
+    /// Represents a request to retrieve job history information from a specific workspace.
+    /// </summary>
     public class JobHistoryRequest
     {
         /// <summary>
