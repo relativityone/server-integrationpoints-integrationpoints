@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net472</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
     <IsTestProject>true</IsTestProject>
@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSharpGuidelineAnalyzer"/>
-    <PackageReference Include="coverlet.msbuild" >
+    <PackageReference Include="CSharpGuidelineAnalyzer" />
+    <PackageReference Include="coverlet.msbuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -24,9 +24,9 @@
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NunitXml.TestLogger" />
 	<PackageReference Include="kCura.EventHandler" />
-	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private"  />
+	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
 	<PackageReference Include="Relativity.Kepler" />
-	<PackageReference Include="FluentAssertions"  />
+	<PackageReference Include="FluentAssertions" />
 	<PackageReference Include="Moq" />
   </ItemGroup>
 
