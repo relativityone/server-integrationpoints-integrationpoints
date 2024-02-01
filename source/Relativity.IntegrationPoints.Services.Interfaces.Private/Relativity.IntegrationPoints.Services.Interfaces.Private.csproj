@@ -17,6 +17,7 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Telemetry.APM" />
+  </ItemGroup>
   
   <ItemGroup>
     <Reference Include="System" />

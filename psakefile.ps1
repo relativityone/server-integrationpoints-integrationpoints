@@ -145,8 +145,8 @@ Task Rebuild -Description "Do a rebuild" {
         ("/nodeReuse:False"),
         ("/maxcpucount"),
         ("/nologo"),
-        ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
+        ("/fileloggerparameters1:LogFile= $LogFilePath"),
+        ("/fileloggerparameters2:errorsonly;LogFile= $ErrorLogFilePath"))
     }
 }
 
