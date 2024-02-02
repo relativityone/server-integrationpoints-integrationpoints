@@ -31,8 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
-	<ProjectReference Include="..\Relativity.IntegrationPoints.SourceProviderInstaller\Relativity.IntegrationPoints.SourceProviderInstaller.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.SourceProviderInstaller\Relativity.IntegrationPoints.SourceProviderInstaller.csproj" />
   </ItemGroup>
 
   <ItemGroup>

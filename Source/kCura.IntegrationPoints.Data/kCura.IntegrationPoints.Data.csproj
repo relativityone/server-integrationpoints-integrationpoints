@@ -361,7 +361,7 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj">
-      <Project>{9956a61c-f6df-4a53-9ae1-6bc675b16a09}</Project>
+      <Project>{1995EAFD-D75B-4819-9925-09503B1B2573}</Project>
       <Name>Relativity.IntegrationPoints.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj">

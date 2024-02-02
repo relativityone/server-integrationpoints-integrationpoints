@@ -34,7 +34,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj" />
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj" />
-    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kCura" />
