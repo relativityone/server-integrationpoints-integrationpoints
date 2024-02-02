@@ -21,5 +21,18 @@ stages:
     RelativityBranch: ''
     TemplateName: 'aio-server-2023-ga'
     buildSteps:
+      - script: 'msbuild /t:Clean'  # Clean build step
+        displayName: 'Clean Solution'
       - checkout: self
       - checkout: azdo_templates
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '**/*.sln'
+          feedsToUse: 'config'
+          nugetConfigPath: '$(Pipeline.Workspace)/NuGet.config'
+      - script: |
+          Get-ChildItem -Path $(System.DefaultWorkingDirectory) -Recurse -Filter '*.dll' | ForEach-Object { $_.VersionInfo | Out-String }
+        displayName: 'Log Assembly Versions'
+      - script: 'msbuild /v:detailed'  # Increase MSBuild output verbosity
+        displayName: 'Build Solution'
