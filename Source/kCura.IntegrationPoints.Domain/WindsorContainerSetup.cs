@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Domain
     {
         private static readonly HashSet<string> _allowedInstallerAssemblies = new HashSet<string>()
         {
-            "Relativity.IntegrationPoints.Contracts",
             "kCura.IntegrationPoints.Core",
             "kCura.IntegrationPoints.Data",
             "kCura.IntegrationPoints.FilesDestinationProvider.Core",
