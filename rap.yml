@@ -21,8 +21,14 @@ stages:
     RelativityBranch: ''
     TemplateName: 'aio-server-2023-ga'
     buildSteps:
-      - script: 'msbuild /t:Clean /v:diag'  # Clean solution with diagnostic verbosity
-        displayName: 'Clean Solution'
+      - script: choco install microsoft-build-tools -y
+        displayName: 'Install MSBuild'
+
+      - task: MSBuild@1
+        inputs:
+          solution: '**/*.sln'
+          targets: 'Clean'
+          verbosity: 'normal'
 
       - checkout: self
       - checkout: azdo_templates
