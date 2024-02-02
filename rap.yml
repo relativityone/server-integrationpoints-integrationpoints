@@ -21,5 +21,18 @@ stages:
     RelativityBranch: ''
     TemplateName: 'aio-server-2023-ga'
     buildSteps:
+      - script: 'msbuild /t:Clean /v:diag'  # Clean solution with diagnostic verbosity
+        displayName: 'Clean Solution'
+
       - checkout: self
       - checkout: azdo_templates
+
+      - task: NuGetCommand@2
+        inputs:
+          command: 'restore'
+          restoreSolution: '**/*.sln'
+          feedsToUse: 'config'
+          nugetConfigPath: '$(Pipeline.Workspace)/NuGet.config'
+
+      - script: 'msbuild /v:detailed'
+        displayName: 'Build Solution'
