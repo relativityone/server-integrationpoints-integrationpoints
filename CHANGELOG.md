@@ -1,3 +1,9 @@
+## [23013.2.2001] - 05-Feb-2024
+
+### Changed
+
+- [REL-895553](https://jira.kcura.com/browse/REL-895553) - Revved latest package for Relativity.Sync.
+
 ## [23013.2.1005] - 12-18-2023
 
 ### Changed
