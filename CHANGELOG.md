@@ -1,3 +1,9 @@
+## [24000.0.3] - 06-Feb-2024
+
+### Changed
+
+- [REL-891060](https://jira.kcura.com/browse/REL-891060) Server 2023 - Combine RelativitySync into RIP monolith.
+
 ## [24000.0.1] - 12-14-2023
 
 ### Changed
