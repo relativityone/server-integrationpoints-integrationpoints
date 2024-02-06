@@ -4,6 +4,7 @@ properties {
     $SourceDir = Join-Path $PSScriptRoot "source"
     $Solution = ((Get-ChildItem -Path $SourceDir -Filter *.sln -File)[0].FullName)
     $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts"
+    $NusepcsDir = Join-Path $PSScriptRoot "Nuspecs"
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
@@ -16,7 +17,7 @@ Task Analyze -Description "Run build analysis" {
 }
 
 Task NugetRestore -Description "Restore the packages needed for this build" {
-   exec { & $NugetExe @('restore', $Solution) }
+    exec { & $NugetExe @('restore', $Solution) }
 }
 
 Task BuildNodePackagesJS{
@@ -73,7 +74,7 @@ Task Compile -Depends NugetRestore,BuildNodePackagesJS,BuildLiquidFormsJS -Descr
 
 Task Test -Description "Run tests that don't require a deployed environment." {
     $LogPath = Join-Path $LogsDir "TestResults.xml"
-    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
+    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration || namespace !~ Relativity.IntegrationPoints.MyFirstProvider.Provider.FunctionalTests" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
@@ -103,7 +104,7 @@ Task Package -Description "Package up the build artifacts" {
     $RAPBuilder = Join-Path $buildTools "Relativity.RAPBuilder\tools\Relativity.RAPBuilder.exe"
     $BuildXML = Join-Path $developmentScripts "build.xml"
 
-     exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
+    exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
 
     exec { & $RAPBuilder `
         "--source" "$PSScriptRoot" `
@@ -135,7 +136,7 @@ Task Clean -Description "Delete build artifacts" {
 
 Task Rebuild -Description "Do a rebuild" {
     Initialize-Folder $ArtifactsDir
-
+    
     Write-Host "Running Rebuild target on $Solution"
     exec { msbuild @($Solution,
         ("/target:Rebuild"),
