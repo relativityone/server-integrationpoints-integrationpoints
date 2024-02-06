@@ -219,14 +219,20 @@ function Invoke-Tests
         $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator\tools\net47\ReportGenerator.exe"
         $CoveragePath = Join-Path $LogsDir "Coverage.xml"
 
-        exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=`"$WhereClause`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[kCura*]* +[Relativity*]* -[*Tests*]*" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
-        exec { & $ReportGenerator -reports:"$LogsDir\OpenCover.xml" -targetdir:$LogsDir -reporttypes:Cobertura }
-        Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+        $q = '"'
+        $openCoverFile = Join-Path $LogsDir 'OpenCover.xml'
+        $openCoverTargetArgs = "$Solution $q--where=$WhereClause$q --noheader --labels=On --skipnontestassemblies $q--result=$OutputFile$q $settings"
+        Write-host "OpenCoverTargetArgs: $openCoverTargetArgs"
+        exec { & $OpenCover -target:$NUnit -targetargs:"$openCoverTargetArgs" -register:user -filter:"+[RelativityServices*]* -[*Tests*]* -[*NUnit*]*" -hideskipped:All -output:"$openCoverFile" -returntargetcode }
+        write-host "Executing report generator"
+        exec { & $ReportGenerator -reports:"$openCoverFile" -targetdir:$LogsDir -reporttypes:Cobertura }
+        Move-Item $openCoverFile $CoveragePath -Force
     }
     else
     {
+        $q = '"'
         exec { & $NUnit $Solution `
-            "--where=`"$WhereClause`"" `
+            "--where=$WhereClause" `
             "--noheader" `
             "--labels=On" `
             "--skipnontestassemblies" `
