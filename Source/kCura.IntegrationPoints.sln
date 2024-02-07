@@ -146,6 +146,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoint
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.SourceProviderInstaller.Tests", "Relativity.IntegrationPoints.SourceProviderInstaller.Tests\Relativity.IntegrationPoints.SourceProviderInstaller.Tests.csproj", "{56F05AB7-DD11-4CF0-8CCA-485E9FA85255}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FunctionalTests", "kCura.IntegrationPoints.FunctionalTests\kCura.IntegrationPoints.FunctionalTests.csproj", "{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -368,6 +370,10 @@ Global
 		{56F05AB7-DD11-4CF0-8CCA-485E9FA85255}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56F05AB7-DD11-4CF0-8CCA-485E9FA85255}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56F05AB7-DD11-4CF0-8CCA-485E9FA85255}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -411,6 +417,7 @@ Global
 		{B98DF39A-AD93-4A78-8B26-26170D9F3C6D} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
 		{87231674-824E-4158-B69B-33578B87E40E} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 		{56F05AB7-DD11-4CF0-8CCA-485E9FA85255} = {1CF9A281-4FE6-4735-A66D-71C7E415EF69}
+		{DCA1CB00-1AE2-4BF7-88DF-09E2612C782B} = {0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB2FC964-D70B-48F6-BC3C-A447F2976738}
