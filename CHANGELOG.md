@@ -1,3 +1,9 @@
+## [23013.2.2002] - 07-Feb-2024
+
+### Changed
+
+- [REL-911797](https://jira.kcura.com/browse/REL-911797) - Create patch2 changes for p2 issue PSD-102904.
+
 ## [23013.2.1005] - 12-18-2023
 
 ### Changed
