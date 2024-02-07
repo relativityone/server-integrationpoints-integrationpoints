@@ -2,7 +2,7 @@
 
 ### Changed
 
-- [REL-891060](https://jira.kcura.com/browse/REL-891060) Server 2023 - Combine RelativitySync into RIP monolith.
+- [REL-891060](https://jira.kcura.com/browse/REL-891060)  -  Combine Bitbucket RelativitySync into GitHub RIP monolith.
 
 ## [24000.0.1] - 12-14-2023
 
