@@ -75,7 +75,6 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.12.1001</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -187,7 +186,6 @@
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Helpers" Version="$(RelativityServicesInterfacesHelpers)" />
-    <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(TelemetryMetricsCollectionClient)" />
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(TelemetryMetricsCollectionBootstrapper)" />
