@@ -84,7 +84,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     # Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
     # Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 
-    Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 
 }
 
@@ -145,8 +145,8 @@ Task Rebuild -Description "Do a rebuild" {
         ("/nodeReuse:False"),
         ("/maxcpucount"),
         ("/nologo"),
-        ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
+        ("/fileloggerparameters1:LogFile= $LogFilePath"),
+        ("/fileloggerparameters2:errorsonly;LogFile= $ErrorLogFilePath"))
     }
 }
 
@@ -222,9 +222,18 @@ function Invoke-Tests
         exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=`"$WhereClause`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[kCura*]* +[Relativity*]* -[*Tests*]*" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
         exec { & $ReportGenerator -reports:"$LogsDir\OpenCover.xml" -targetdir:$LogsDir -reporttypes:Cobertura }
         Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+        $q = '"'
+        $openCoverFile = Join-Path $LogsDir 'OpenCover.xml'
+        $openCoverTargetArgs = "$Solution $q--where=$WhereClause$q --noheader --labels=On --skipnontestassemblies $q--result=$OutputFile$q $settings"
+        Write-host "OpenCoverTargetArgs: $openCoverTargetArgs"
+        exec { & $OpenCover -target:$NUnit -targetargs:"$openCoverTargetArgs" -register:user -filter:"+[RelativityServices*]* -[*Tests*]* -[*NUnit*]*" -hideskipped:All -output:"$openCoverFile" -returntargetcode }
+        write-host "Executing report generator"
+        exec { & $ReportGenerator -reports:"$openCoverFile" -targetdir:$LogsDir -reporttypes:Cobertura }
+        Move-Item $openCoverFile $CoveragePath -Force
     }
     else
     {
+        $q = '"'
         exec { & $NUnit $Solution `
             "--where= $WhereClause" `
             "--noheader" `

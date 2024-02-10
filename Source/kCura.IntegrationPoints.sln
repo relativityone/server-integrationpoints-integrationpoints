@@ -156,6 +156,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Syste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.Sync.Tests.Unit", "Relativity.Sync.Tests.Unit\Relativity.Sync.Tests.Unit.csproj", "{054B7647-31A2-4698-8E60-4EB5F1E13287}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.Services.Interfaces.Private", "Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj", "{8B54E03D-A1CA-4405-B5B7-B18D08C1DCA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -398,6 +400,10 @@ Global
 		{054B7647-31A2-4698-8E60-4EB5F1E13287}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{054B7647-31A2-4698-8E60-4EB5F1E13287}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{054B7647-31A2-4698-8E60-4EB5F1E13287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B54E03D-A1CA-4405-B5B7-B18D08C1DCA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B54E03D-A1CA-4405-B5B7-B18D08C1DCA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B54E03D-A1CA-4405-B5B7-B18D08C1DCA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B54E03D-A1CA-4405-B5B7-B18D08C1DCA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

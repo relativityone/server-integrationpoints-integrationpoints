@@ -4,6 +4,12 @@
 
 - [REL-891060](https://jira.kcura.com/browse/REL-891060)  -  Combine Bitbucket RelativitySync into GitHub RIP monolith.
 
+## [24000.0.2] - 06-Feb-2023
+
+### Changed
+
+- [REL-891075](https://jira.kcura.com/browse/REL-891075) - Combine Bitbucket integrationpoints-keplerservicesinterfaces into GitHub RIP monolith.
+
 ## [24000.0.1] - 12-14-2023
 
 ### Changed

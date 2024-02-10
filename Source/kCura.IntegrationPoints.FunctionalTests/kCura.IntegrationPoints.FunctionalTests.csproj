@@ -53,6 +53,7 @@
     <ProjectReference Include="..\kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj" />
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
     <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
   </ItemGroup>
