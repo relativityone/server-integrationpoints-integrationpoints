@@ -3,6 +3,7 @@
 ### Changed
 
 - [REL-895553](https://jira.kcura.com/browse/REL-895553) - Revved latest package for Relativity.Sync.
+- [REL-911797](https://jira.kcura.com/browse/REL-911797) - Changes made to sync to create webapi url that is supplied by rip and Logic to get Integration point web api url.
 
 ## [23013.2.1005] - 12-18-2023
 
