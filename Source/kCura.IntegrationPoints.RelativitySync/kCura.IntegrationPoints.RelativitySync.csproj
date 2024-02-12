@@ -42,7 +42,6 @@
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.Services.Interfaces" />     
     <PackageReference Include="Relativity.Telemetry.APM" />
   </ItemGroup>
 </Project>
