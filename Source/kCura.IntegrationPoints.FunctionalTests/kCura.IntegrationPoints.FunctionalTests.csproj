@@ -55,6 +55,7 @@
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj" />
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj" />
+    <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Functional\Helpers\DataFiles\kcura.png">
@@ -164,7 +165,6 @@
     <PackageReference Include="IntegrationPoints.MyFirstProvider">
       <NoWarn>NU1603</NoWarn>
     </PackageReference>
-    <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
   </ItemGroup>
 </Project>

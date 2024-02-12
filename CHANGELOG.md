@@ -1,3 +1,9 @@
+## [24000.0.3] - 06-Feb-2024
+
+### Changed
+
+- [REL-891060](https://jira.kcura.com/browse/REL-891060)  -  Combine Bitbucket RelativitySync into GitHub RIP monolith.
+
 ## [24000.0.2] - 06-Feb-2023
 
 ### Changed

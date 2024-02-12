@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+     <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <WarningLevel>4</WarningLevel>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+        <IsTestProject>false</IsTestProject>
+    </PropertyGroup>
+     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Resources\Relativity_Sync_Test_Helper.xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Relativity_Sync_Test_Helper.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="Resources\Custom_Relativity_Sync_Test_Helper.xml" />
+        <EmbeddedResource Include="Resources\Custom_Relativity_Sync_Test_Helper.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+        <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+    </ItemGroup>
+    <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
+    <!-- Third Party Packages -->
+    <ItemGroup>
+        <PackageReference Include="Castle.Windsor"  />
+        <PackageReference Include="NUnit3TestAdapter"  />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK"  />
+    </ItemGroup>
+    <!-- Relativity Packages with Unknown Versioning Schema -->
+    <ItemGroup>
+        <PackageReference Include="Relativity.Testing.Framework"  />
+        <PackageReference Include="Relativity.Testing.Framework.Api" />
+        <PackageReference Include="Relativity.Testing.Identification"  />
+        <PackageReference Include="Relativity.Productions.Services.Interfaces"  />
+        <PackageReference Include="Castle.Core" /> 
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.Web.Services" />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.targets" />
+</Project>

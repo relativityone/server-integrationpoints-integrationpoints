@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <WarningLevel>4</WarningLevel>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="coverage.cobertura.xml" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+      <ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
+    </ItemGroup>
+    <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.KeyVault.Core"  />
+    </ItemGroup>
+    <!-- Relativity Packages with Release Versioning Schema -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.Cosmos.Table"  />
+        <PackageReference Include="Moq"  />
+    </ItemGroup>
+    <!-- Relativity Packages with Unknown Versioning Schema -->
+    <ItemGroup>
+        <PackageReference Include="ARMTestServices" />
+    </ItemGroup>
+    <!-- Third Party Packages -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.Storage.Blob" />
+        <PackageReference Include="NUnit"  />
+        <PackageReference Include="NUnit3TestAdapter"  />
+        <PackageReference Include="Relativity.ARM.SDK"  />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK"  />
+        <PackageReference Include="Relativity.Testing.Identification"  />
+        <PackageReference Include="Newtonsoft.Json"  />
+        <PackageReference Include="Castle.Core"  />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.targets" />
+</Project>

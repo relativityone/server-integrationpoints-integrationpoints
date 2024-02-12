@@ -57,6 +57,7 @@ param (
 if($TestVMName)
 {
     $testvm = Get-TestVm | Where-Object { $_.BoxName -eq $TestVMName }
+    Write-Host $TestVMName
 
     if(-not $ServerBindingType)
     {
@@ -166,8 +167,8 @@ foreach($parameter in $testRunParameters.ChildNodes)
 {
     if($parameter.Value)
     {
-        Add-Content (Join-Path $PSScriptRoot ..\FunctionalTestSettings) "--params `"$($parameter.Name)=$($parameter.Value)`""
-    }
+    Add-Content (Join-Path $PSScriptRoot ..\FunctionalTestSettings) "--params `"$($parameter.Name)=$($parameter.Value)`""
+}
 }
 
 $runSettingsDocument.Save((Join-Path $PSScriptRoot ..\FunctionalTest.runsettings))
