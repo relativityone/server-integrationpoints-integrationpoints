@@ -13,6 +13,10 @@ Microsoft Active Directory.
 * Relativity - Allowing documents to be pushed between workspaces.
 * File Transfer - Providing connection to an FTP/SFTP server for upload.
 
+# Integration Points - MyFirstProvider
+
+MyFirstProvider is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from XML file.
+
 ## How to Build
 
 Usage:
@@ -96,3 +100,5 @@ Integration Points is required for the ECA and Investigation application.
 The server-main branch was migrated from https://git.kcura.com/projects/IN/repos/integrationpoints/browse?at=refs%2Fheads%2Fserver-main by the Server Data Transfer Team.
 Tag: 24000.0.0
 Branch: server-main
+
+**Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.

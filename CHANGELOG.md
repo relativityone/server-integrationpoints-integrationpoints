@@ -1,3 +1,9 @@
+## [24000.0.4] - 12-Feb-2024
+
+### Changed
+
+- [REL-891078](https://jira.kcura.com/browse/REL-891078) - Combine Bitbucket integrationpoints-myfirstprovider into GitHub RIP monolith.
+
 ## [24000.0.1] - 12-14-2023
 
 ### Changed
