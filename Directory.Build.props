@@ -4,7 +4,7 @@
     <PropertyGroup>
         <!-- NuGet -->
         <IsPackable>False</IsPackable>
-        <PackageVersion>0.1.5-local</PackageVersion>
+        <PackageVersion>1.0.0-local</PackageVersion>
         <NuspecProperties>version=$(PackageVersion);licensePath=$(MSBuildThisFileDirectory)LICENSE.txt</NuspecProperties>
         <PackageOutputPath>$(MSBuildThisFileDirectory)Artifacts\NuGet\</PackageOutputPath>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
