@@ -11,9 +11,9 @@
         <!-- Build standards -->
         <OutputPath>bin\</OutputPath>
         <!-- Assembly information -->
-        <FileVersion>0.1.5</FileVersion>
+        <FileVersion>1.0.0</FileVersion>
         <InformationalVersion>local build</InformationalVersion>
-        <AssemblyVersion>0.1.5</AssemblyVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
         <Copyright>© Relativity</Copyright>
         <Company>Relativity ODA LLC</Company>
     </PropertyGroup>
