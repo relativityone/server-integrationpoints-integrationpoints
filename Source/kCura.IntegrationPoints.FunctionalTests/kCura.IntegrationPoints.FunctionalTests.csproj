@@ -166,4 +166,8 @@
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
   </ItemGroup>
+	<Target Name="RemoveSpecificDll" AfterTargets="Restore">
+		<Delete Files="$(RestorePackagesPath)\Relativity.IntegrationPoints.SDK\1.3.0\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll" />
+		<Delete Files="$(RestorePackagesPath)\Relativity.IntegrationPoints.SDK\1.3.0\lib\net462\Relativity.IntegrationPoints.Contracts.dll" />
+	</Target>
 </Project>
