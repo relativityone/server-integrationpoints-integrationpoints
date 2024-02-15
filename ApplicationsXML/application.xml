@@ -1721,7 +1721,7 @@
       <Name>Relativity.IntegrationPoints.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
+	<Assembly>
       <ArtifactId>5375021</ArtifactId>
       <Keywords />
       <Name>Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Name>
@@ -12391,6 +12391,7 @@
     <FullTextAll>1000182</FullTextAll>
   </EnvironmentVariables>
   <GlobalApplication>false</GlobalApplication>
+  <UserFriendlyUrl />
   <RelativityScriptIds />
   <ViewIds>
     <Id>1039172</Id>
