@@ -30,7 +30,6 @@ The build configuration to use. Either Debug or Release. Defaults to Debug.
 param(
 	[string[]]$taskList = @(),
 	
-	
 	[Parameter(Mandatory=$False)]
 	[String]$RAPVersion = "1.0.0.0",
 
@@ -55,7 +54,6 @@ $NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $ToolsDir = Join-Path $BaseDir "buildtools"
-$NugetExe = Join-Path $ToolsDir "nuget.exe"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
