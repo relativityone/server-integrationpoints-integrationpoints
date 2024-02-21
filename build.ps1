@@ -28,23 +28,24 @@ The build configuration to use. Either Debug or Release. Defaults to Debug.
 
 [CmdletBinding()]
 param(
-	[string[]]$taskList = @(),
-	
-	[Parameter(Mandatory=$False)]
-	[String]$RAPVersion = "1.0.0.0",
+    [string[]]$taskList = @(),
 
-	[Parameter(Mandatory=$False)]
-	[String]$PackageVersion = "1.0.0",
-	
-	[Parameter(Mandatory=$False)]
-	[ValidateSet("Debug","Release")]
-	[string]$Configuration = "Debug",
-	
-	# <-- Test section -->
-	[Parameter(Mandatory=$False)]
-	[String]$TestFilter
-	)
-	
+
+    [Parameter(Mandatory=$False)]
+    [String]$RAPVersion = "1.0.0.0",
+
+    [Parameter(Mandatory=$False)]
+    [String]$PackageVersion = "1.0.0",
+
+    [Parameter(Mandatory=$False)]
+    [ValidateSet("Debug","Release")]
+    [string]$Configuration = "Debug",
+
+    # <-- Test section -->
+    [Parameter(Mandatory=$False)]
+    [String]$TestFilter
+)
+
 . $profile
 Set-StrictMode -Version 2.0
 
@@ -53,14 +54,13 @@ $ToolsDir = Join-Path $BaseDir 'buildtools'
 $NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$ToolsDir = Join-Path $BaseDir "buildtools"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 
 Write-Host "Checking for NuGet in tools path..."
 if (-Not (Test-Path $NugetExe -Verbose:$VerbosePreference)) {
-	Write-Host "Installing NuGet from $NugetUrl..."
-	Invoke-WebRequest $NugetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
+    Write-Host "Installing NuGet from $NugetUrl..."
+    Invoke-WebRequest $NugetUrl -OutFile $NugetExe -Verbose:$VerbosePreference -ErrorAction Stop
 }
 
 Write-Host "Restoring tools from NuGet..."
@@ -68,7 +68,7 @@ $NuGetVerbosity = if ($VerbosePreference -gt "SilentlyContinue") { "normal" } el
 & $NugetExe install $ToolsConfig -o $ToolsDir -ExcludeVersion -Verbosity $NuGetVerbosity
 
 if ($LASTEXITCODE -ne 0) {
-	Throw "An error occured while restoring NuGet tools."
+    Throw "An error occured while restoring NuGet tools."
 }
 
 Write-Host "Importing required Powershell modules..."
@@ -83,42 +83,51 @@ if (!(Get-Module -Name VSSetup -ListAvailable))
 }
 Import-Module VSSetup -Force
 
+$ReportGenerator = Join-Path $ToolsDir "reportgenerator.exe"
+
+if (-not (Test-Path $ReportGenerator))
+{
+    & dotnet tool install dotnet-reportgenerator-globaltool --version 4.1.5 --tool-path $ToolsDir
+    if ($LASTEXITCODE -ne 0) { throw "An error occurred while restoring build tools." }
+}
+
 $Params = @{
-	taskList = $TaskList
-	nologo = $true
-	framework = "4.6"
-	parameters = @{	
-		NugetExe = $NugetExe
-		BuildConfig = $Configuration
-		BuildToolsDir = $ToolsDir
-		RAPVersion = $RAPVersion
-		PackageVersion = $PackageVersion
-		# <-- Test section -->
-		TestFilter = $TestFilter
-	}
-	properties = @{
-		build_config = $Configuration
-	}
-	Verbose = $VerbosePreference
-	Debug = $DebugPreference
-	buildFile = (Join-Path $BaseDir "psakefile.ps1")
+    taskList = $TaskList
+    nologo = $true
+    framework = "4.6"
+    parameters = @{	
+        NugetExe = $NugetExe
+        BuildConfig = $Configuration
+        BuildToolsDir = $ToolsDir
+        RAPVersion = $RAPVersion
+        PackageVersion = $PackageVersion
+        # <-- Test section -->
+        TestFilter = $TestFilter
+        ReportGenerator = $ReportGenerator
+    }
+    properties = @{
+        build_config = $Configuration
+    }
+    Verbose = $VerbosePreference
+    Debug = $DebugPreference
+    buildFile = (Join-Path $BaseDir "psakefile.ps1")
 }
 
 Try
 {
-	Invoke-PSake @Params
+    Invoke-PSake @Params
 }
 Finally
 {
-	$ExitCode = 0
-	If ($psake.build_success -eq $False)
-	{
-		$ExitCode = 1
-	}
+    $ExitCode = 0
+    If ($psake.build_success -eq $False)
+    {
+        $ExitCode = 1
+    }
 
-	Remove-Module PSake -Force -ErrorAction SilentlyContinue
-	Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
-	Remove-Module NpmBuildHelpers -Force -ErrorAction SilentlyContinue
+    Remove-Module PSake -Force -ErrorAction SilentlyContinue
+    Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
+    Remove-Module NpmBuildHelpers -Force -ErrorAction SilentlyContinue
 }
 
 Exit $ExitCode

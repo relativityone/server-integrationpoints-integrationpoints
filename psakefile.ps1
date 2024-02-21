@@ -4,7 +4,6 @@ properties {
     $SourceDir = Join-Path $PSScriptRoot "source"
     $Solution = ((Get-ChildItem -Path $SourceDir -Filter *.sln -File)[0].FullName)
     $ArtifactsDir = Join-Path $PSScriptRoot "Artifacts"
-    $NusepcsDir = Join-Path $PSScriptRoot "Nuspecs"
     $LogsDir = Join-Path $ArtifactsDir "Logs"
     $LogFilePath = Join-Path $LogsDir "buildsummary.log"
     $ErrorLogFilePath = Join-Path $LogsDir "builderrors.log"
@@ -17,7 +16,7 @@ Task Analyze -Description "Run build analysis" {
 }
 
 Task NugetRestore -Description "Restore the packages needed for this build" {
-    exec { & $NugetExe @('restore', $Solution) }
+   exec { & $NugetExe @('restore', $Solution) }
 }
 
 Task BuildNodePackagesJS{
@@ -61,8 +60,8 @@ Task Compile -Depends NugetRestore,BuildNodePackagesJS,BuildLiquidFormsJS -Descr
         ("/nodeReuse:False"),
         ("/maxcpucount"),
         ("/nologo"),
-        ("/fileloggerparameters1:LogFile=$LogFilePath"),
-        ("/fileloggerparameters2:errorsonly;LogFile=$ErrorLogFilePath"))
+        ("/fileloggerparameters1:LogFile= $LogFilePath"),
+        ("/fileloggerparameters2:errorsonly;LogFile= $ErrorLogFilePath"))
     }
 
     $publishPath = "$SourceDir\CustomPages\IntegrationPoints"
@@ -74,7 +73,7 @@ Task Compile -Depends NugetRestore,BuildNodePackagesJS,BuildLiquidFormsJS -Descr
 
 Task Test -Description "Run tests that don't require a deployed environment." {
     $LogPath = Join-Path $LogsDir "TestResults.xml"
-    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration || namespace !~ Relativity.IntegrationPoints.MyFirstProvider.Provider.FunctionalTests" -OutputFile $LogPath -WithCoverage
+    Invoke-Tests -WhereClause "cat == Unit || namespace =~ Relativity.IntegrationPoints.Tests.Unit || namespace =~ Relativity.IntegrationPoints.Tests.Integration" -OutputFile $LogPath -WithCoverage
 }
 
 Task FunctionalTest -Description "Run tests that require a deployed environment." {
@@ -85,7 +84,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     # Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
     # Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 
-    Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 
 }
 
@@ -104,7 +103,7 @@ Task Package -Description "Package up the build artifacts" {
     $RAPBuilder = Join-Path $buildTools "Relativity.RAPBuilder\tools\Relativity.RAPBuilder.exe"
     $BuildXML = Join-Path $developmentScripts "build.xml"
 
-    exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
+     exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
 
     exec { & $RAPBuilder `
         "--source" "$PSScriptRoot" `
@@ -136,7 +135,7 @@ Task Clean -Description "Delete build artifacts" {
 
 Task Rebuild -Description "Do a rebuild" {
     Initialize-Folder $ArtifactsDir
-    
+
     Write-Host "Running Rebuild target on $Solution"
     exec { msbuild @($Solution,
         ("/target:Rebuild"),
@@ -146,8 +145,8 @@ Task Rebuild -Description "Do a rebuild" {
         ("/nodeReuse:False"),
         ("/maxcpucount"),
         ("/nologo"),
-        ("/fileloggerparameters1:LogFile=$LogFilePath"),
-        ("/fileloggerparameters2:errorsonly;LogFile=$ErrorLogFilePath"))
+        ("/fileloggerparameters1:LogFile= $LogFilePath"),
+        ("/fileloggerparameters2:errorsonly;LogFile= $ErrorLogFilePath"))
     }
 }
 
@@ -223,11 +222,20 @@ function Invoke-Tests
         exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=`"$WhereClause`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[kCura*]* +[Relativity*]* -[*Tests*]*" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
         exec { & $ReportGenerator -reports:"$LogsDir\OpenCover.xml" -targetdir:$LogsDir -reporttypes:Cobertura }
         Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
+        $q = '"'
+        $openCoverFile = Join-Path $LogsDir 'OpenCover.xml'
+        $openCoverTargetArgs = "$Solution $q--where=$WhereClause$q --noheader --labels=On --skipnontestassemblies $q--result=$OutputFile$q $settings"
+        Write-host "OpenCoverTargetArgs: $openCoverTargetArgs"
+        exec { & $OpenCover -target:$NUnit -targetargs:"$openCoverTargetArgs" -register:user -filter:"+[RelativityServices*]* -[*Tests*]* -[*NUnit*]*" -hideskipped:All -output:"$openCoverFile" -returntargetcode }
+        write-host "Executing report generator"
+        exec { & $ReportGenerator -reports:"$openCoverFile" -targetdir:$LogsDir -reporttypes:Cobertura }
+        Move-Item $openCoverFile $CoveragePath -Force
     }
     else
     {
+        $q = '"'
         exec { & $NUnit $Solution `
-            "--where=$WhereClause" `
+            "--where= $WhereClause" `
             "--noheader" `
             "--labels=On" `
             "--skipnontestassemblies" `
