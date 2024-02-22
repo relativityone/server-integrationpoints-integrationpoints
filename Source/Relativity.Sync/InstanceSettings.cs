@@ -90,6 +90,11 @@ namespace Relativity.Sync
                 : defaultValue;
         }
 
+        public async Task<string> GetIntegrationPointsWebAPIUrl()
+        {
+	        return await GetAsync<string>("WebAPIPath", "kCura.IntegrationPoints", string.Empty).ConfigureAwait(false);
+        }
+        
         private async Task<InstanceSettingQueryResultSet> TryReadInstanceSettingAsync(string name, string section)
         {
             try

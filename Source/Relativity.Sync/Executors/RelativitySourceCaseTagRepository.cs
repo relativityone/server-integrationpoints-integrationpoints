@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
         private const string _NAME_FIELD_NAME = "Name";
         private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
 
-        private readonly IDestinationServiceFactoryForUser _serviceFactoryForUser;
+        private readonly IServiceFactoryForAdmin _serviceFactory;
         private readonly IAPILog _logger;
 
         private static readonly Guid ObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
@@ -25,9 +25,9 @@ namespace Relativity.Sync.Executors
         private static readonly Guid InstanceNameFieldGuid = new Guid("C5212F20-BEC4-426C-AD5C-8EBE2697CB19");
         private static readonly Guid SourceWorkspaceNameFieldGuid = new Guid("a16f7beb-b3b0-4658-bb52-1c801ba920f0");
 
-        public RelativitySourceCaseTagRepository(IDestinationServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
+        public RelativitySourceCaseTagRepository(IServiceFactoryForAdmin serviceFactory, IAPILog logger)
         {
-            _serviceFactoryForUser = serviceFactoryForUser;
+            _serviceFactory = serviceFactory;
             _logger = logger;
         }
 
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Executors
 
         private async Task<RelativityObject> QueryRelativityObjectTagAsync(int destinationWorkspaceArtifactId, int sourceWorkspaceArtifactId, string sourceInstanceName, CancellationToken token)
         {
-            using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 QueryRequest request = new QueryRequest
                 {
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Executors
         public async Task<RelativitySourceCaseTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceCaseTag sourceCaseTag)
         {
             _logger.LogVerbose("Creating {tagName} in destination workspace artifact ID: {destinationWorkspaceArtifactId}", nameof(RelativitySourceCaseTag), destinationWorkspaceArtifactId);
-            using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 CreateRequest request = new CreateRequest
                 {
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Executors
                 FieldValues = CreateFieldValues(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
             };
 
-            using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 try
                 {
