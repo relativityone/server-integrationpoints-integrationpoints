@@ -12045,6 +12045,12 @@
 			<Size>25118996</Size>
 			<Hash>A5-95-5D-1F-13-32-DF-97-3D-EB-7F-3A-28-93-60-8E-C9-CA-37-D6</Hash>
 		</CustomPage>
+		<CustomPage>
+			<ArtifactID></ArtifactID>
+			<Guid>26cd78ff-d5a9-4469-af6b-1b81aa346b32</Guid>
+			<Path>Source\CustomPages\MyFirstProvider</Path>
+			<Name>MyFirstProvider</Name>
+		</CustomPage>
 	</CustomPages>
 	<AgentTypes>
 		<AgentType>
