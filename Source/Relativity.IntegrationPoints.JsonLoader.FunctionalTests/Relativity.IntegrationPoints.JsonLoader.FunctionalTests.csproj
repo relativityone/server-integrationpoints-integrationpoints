@@ -107,7 +107,7 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
     <PackageReference Include="NuGetPowerTools" />
-    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit" VersionOverride="3.13.2" />
     <PackageReference Include="NUnitExtras.HierarchicalCategories" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Relativity" />
