@@ -27,8 +27,9 @@ namespace Relativity.Sync.Executors
         private readonly IExtendedImportAPI _extendedImportApi;
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
+        private readonly IInstanceSettings _instanceSettings;
 
-        public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, ISyncToggles syncToggles, IUserService userService, IExtendedImportAPI extendedImportApi, IHelper helper, IAPILog logger)
+        public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, ISyncToggles syncToggles, IUserService userService, IExtendedImportAPI extendedImportApi, IHelper helper, IAPILog logger, IInstanceSettings instanceSettings)
         {
             _userContextConfiguration = userContextConfiguration;
             _tokenGenerator = tokenGenerator;
@@ -37,6 +38,7 @@ namespace Relativity.Sync.Executors
             _extendedImportApi = extendedImportApi;
             _helper = helper;
             _logger = logger;
+            _instanceSettings = instanceSettings;
         }
 
         public async Task<IImportAPI> CreateImportApiAsync()
@@ -51,7 +53,7 @@ namespace Relativity.Sync.Executors
             _logger.LogInformation("Creating IAPI as userId: {executingUserId}", executingUserId);
             IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(executingUserId, _tokenGenerator);
 
-            Uri webServiceUrl = GetWebServiceUrl();
+            Uri webServiceUrl = await GetWebServiceUrlAsync().ConfigureAwait(false);
             _logger.LogInformation("Using following web service URL to create ImportAPI: {webServiceUrl}", webServiceUrl.AbsoluteUri);
 
             ImportAPI importApiInstanceByToken = _extendedImportApi.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider);
@@ -70,6 +72,26 @@ namespace Relativity.Sync.Executors
             return _helper.GetUrlHelper().GetApplicationURL(_ripAppGuid);
         }
 
+        private async Task<Uri> GetWebServiceUrlAsync()
+        {
+	        // Add log entries
+	        Uri webServiceUrl;
+	        if (_syncToggles.IsEnabled<EnableIntegrationPointsWebAPIUrl>())
+	        {
+		        var webAPIUrl = await _instanceSettings.GetIntegrationPointsWebAPIUrl().ConfigureAwait(false);
+		        Uri.TryCreate(webAPIUrl, UriKind.Absolute, out webServiceUrl);
+		        _logger.LogVerbose("Created following web API URL when EnableIntegrationPointsWebAPIUrl: {webServiceUrl}", webServiceUrl.AbsoluteUri);
+	        }
+	        else
+	        {
+		        Uri relativityUri = GetRelativityUri();
+		        webServiceUrl = new Uri($"{relativityUri.Scheme}://{relativityUri.Host}/Relativity.Rest/API/");
+		        _logger.LogVerbose("Created following web API URL when EnableIntegrationPointsWebAPIUrl: {webServiceUrl}", webServiceUrl.AbsoluteUri);
+	        }
+
+	        return webServiceUrl;
+        }
+        
         private class RelativityTokenProvider : IRelativityTokenProvider
         {
             private readonly int _executingUserId;

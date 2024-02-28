@@ -26,6 +26,7 @@ namespace Relativity.Sync.Tests.Unit
         private const int _GLOBAL_ADMIN_USER_ID = 777;
         private const int _USER_IS_ADMIN_ID = 666;
         private const int _USER_IS_NON_ADMIN_ID = 111;
+        private Mock<IInstanceSettings> _instanceSettingsFake;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +38,7 @@ namespace Relativity.Sync.Tests.Unit
             _extendedImportAPIFake = new Mock<IExtendedImportAPI>();
             _helperFake = new Mock<IHelper>();
             _syncLogMock = new Mock<IAPILog>();
+            _instanceSettingsFake = new Mock<IInstanceSettings>();
 
             _helperFake.Setup(x => x.GetUrlHelper().GetApplicationURL(It.IsAny<Guid>()))
                 .Returns(new Uri("https://test.uri"));
@@ -48,7 +50,8 @@ namespace Relativity.Sync.Tests.Unit
                 _userServiceFake.Object,
                 _extendedImportAPIFake.Object,
                 _helperFake.Object,
-                _syncLogMock.Object);
+                _syncLogMock.Object,
+                _instanceSettingsFake.Object);
         }
 
         [TestCase(_USER_IS_ADMIN_ID)]
@@ -97,6 +100,27 @@ namespace Relativity.Sync.Tests.Unit
 
             // ASSERT
             _syncLogMock.Verify(x => x.LogInformation("Creating IAPI as userId: {executingUserId}", _USER_IS_ADMIN_ID));
+        }
+
+        [Test]
+        [TestCase(true, "https://test.uri")]
+        [TestCase(false, "https://test.uri/Relativity.Rest/API/")]
+        public async Task CreateImportApiAsync_ShouldCreateWebAPIUrl_When_Toggle_EnableIntegrationPointsWebAPIUrl(bool toggleValue, string apiUrl)
+        {
+	        // ARRANGE
+	        Uri expectedUrl = new Uri(apiUrl);
+	        int userId = _USER_IS_ADMIN_ID;
+	        _userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
+	        _userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<int>()))
+		        .Returns(Task.FromResult(true));
+	        _syncTogglesFake.Setup(x => x.IsEnabled<EnableIntegrationPointsWebAPIUrl>()).Returns(toggleValue);
+	        _instanceSettingsFake.Setup(x => x.GetIntegrationPointsWebAPIUrl()).ReturnsAsync("https://test.uri");
+
+	        // ACT
+	        await _sut.CreateImportApiAsync().ConfigureAwait(false);
+
+	        // ASSERT
+	        _syncLogMock.Verify(x => x.LogVerbose("Created following web API URL when EnableIntegrationPointsWebAPIUrl: {webServiceUrl}", expectedUrl.AbsoluteUri));
         }
     }
 }

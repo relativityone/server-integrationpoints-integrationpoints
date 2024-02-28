@@ -22,5 +22,7 @@ namespace Relativity.Sync
         Task<int> GetImportAPIBatchStatusItemsUpdateCountAsync(int defaultValue = 1000);
 
         Task<T> GetAsync<T>(string name, string section, T defaultValue);
+
+        Task<string> GetIntegrationPointsWebAPIUrl();
     }
 }

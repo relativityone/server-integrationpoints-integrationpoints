@@ -1,10 +1,17 @@
-## [24000.0.4] - 27-Feb-2024
+## [24000.0.5] - 27-Feb-2024
 
 ### Changed
 
 - [REL-891072](https://jira.kcura.com/browse/REL-891072)  -  Combine Bitbucket integrationpoints-jsonloader into GitHub RIP monolith.
 
-## [24000.0.3] - 06-Feb-2024 
+## [24000.0.4] - 21-Feb-2024
+
+### Changed
+
+- [REL-895553](https://jira.kcura.com/browse/REL-895553) - [Server Backport] [SYNC] Enable Non-Admin User to Run job on new Destination Workspace
+- [REL-911797](https://jira.kcura.com/browse/REL-911797) - Changes made to sync to create webapi url that is supplied by rip and Logic to get Integration point web api url.
+
+## [24000.0.3] - 06-Feb-2024
 
 ### Changed
 
