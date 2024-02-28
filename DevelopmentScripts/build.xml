@@ -80,7 +80,6 @@
 				</ResourceFiles>
         <CustomPages>
 					<CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
-					<CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
         </CustomPages>
       </Application>
     </Applications>
