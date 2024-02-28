@@ -7,7 +7,7 @@ using Relativity.Sync.KeplerFactory;
 namespace Relativity.Sync.Tests.Common
 {
     [ExcludeFromCodeCoverage]
-    internal sealed class ServiceFactoryStub : ISourceServiceFactoryForAdmin, ISourceServiceFactoryForUser, IDestinationServiceFactoryForAdmin, IDestinationServiceFactoryForUser
+    internal sealed class ServiceFactoryStub : ISourceServiceFactoryForAdmin, ISourceServiceFactoryForUser, IDestinationServiceFactoryForAdmin, IDestinationServiceFactoryForUser, IServiceFactoryForAdmin
     {
         private readonly ServiceFactory _serviceFactory;
 

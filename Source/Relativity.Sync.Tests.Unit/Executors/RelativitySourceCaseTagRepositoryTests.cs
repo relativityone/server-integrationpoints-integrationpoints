@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [SetUp]
         public void SetUp()
         {
-            var serviceFactory = new Mock<IDestinationServiceFactoryForUser>();
+            var serviceFactory = new Mock<IServiceFactoryForAdmin>();
             _federatedInstance = new Mock<IFederatedInstance>();
             _objectManager = new Mock<IObjectManager>();
             _tagNameFormatter = new Mock<ITagNameFormatter>();

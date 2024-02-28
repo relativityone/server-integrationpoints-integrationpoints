@@ -44,14 +44,17 @@ namespace Relativity.Sync.Tests.Integration
             _objectManagerMock = new Mock<IObjectManager>();
             var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
             var sourceServiceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
+            var serviceFactoryForAdmin = new Mock<IServiceFactoryForAdmin>();
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
             sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
 
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
             sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+            serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
 
             containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
             containerBuilder.RegisterInstance(sourceServiceFactoryForUserMock.Object).As<ISourceServiceFactoryForUser>();
+            containerBuilder.RegisterInstance(serviceFactoryForAdmin.Object).As<IServiceFactoryForAdmin>();
             containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 
             containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();

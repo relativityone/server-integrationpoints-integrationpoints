@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Integration
             _serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
             _serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).ReturnsAsync(_emailNotificationsManager.Object);
             _serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-            containerBuilder.RegisterInstance(_serviceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+            containerBuilder.RegisterInstance(_serviceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>().As<IServiceFactoryForAdmin>();
 
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             _serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);

@@ -25,11 +25,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [SetUp]
         public void SetUp()
         {
-            var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            var serviceFactory = new Mock<IServiceFactoryForAdmin>();
             _objectManager = new Mock<IObjectManager>();
-            serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+            serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-            _sut = new RelativitySourceJobTagRepository(serviceFactoryForUser.Object, new EmptyLogger());
+            _sut = new RelativitySourceJobTagRepository(serviceFactory.Object, new EmptyLogger());
         }
 
         [Test]
