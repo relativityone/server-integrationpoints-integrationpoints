@@ -1793,12 +1793,6 @@
 			<Name>Polly.Contrib.WaitAndRetry.dll</Name>
 			<Notes />
 		</Assembly>
-		<Assembly>
-			<ArtifactId></ArtifactId>
-			<Keywords />
-			<Name>Relativity.IntegrationPoints.MyFirstProvider.Provider.dll</Name>
-			<Notes />
-		</Assembly>
 	</Assemblies>
 	<ResourceFiles>
 		<ResourceFile>
@@ -12397,6 +12391,7 @@
 		<FullTextAll>1000182</FullTextAll>
 	</EnvironmentVariables>
 	<GlobalApplication>false</GlobalApplication>
+	<UserFriendlyUrl />
 	<RelativityScriptIds />
 	<ViewIds>
 		<Id>1039172</Id>
