@@ -74,7 +74,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
-    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Logging.Interfaces" VersionOvveride="3000.4.1" />
