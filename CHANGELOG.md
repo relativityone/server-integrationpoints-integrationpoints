@@ -1,3 +1,9 @@
+## [24000.0.7] - 29-Feb-2024
+
+### Changed
+
+- [REL-891081](https://jira.kcura.com/browse/REL-891081) - Combine Bitbucket integrationpoints-sdk into GitHub RIP monolith.
+
 ## [24000.0.4] - 12-Feb-2024
 
 ### Changed

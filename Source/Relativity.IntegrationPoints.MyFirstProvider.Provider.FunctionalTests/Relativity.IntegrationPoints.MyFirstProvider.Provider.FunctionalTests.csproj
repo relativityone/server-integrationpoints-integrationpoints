@@ -114,7 +114,7 @@
     <PackageReference Include="FluentAssertions" VersionOverride="5.9.0" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="NLog" />
-    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit" VersionOverride="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Relativity" />

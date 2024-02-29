@@ -102,3 +102,4 @@ Tag: 24000.0.0
 Branch: server-main
 
 **Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.
+**Migration Notice**: Migrated `integrationpoints-sdk` into RIP monolith on GitHub.
