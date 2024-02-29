@@ -170,9 +170,7 @@
     <PackageVersion Include="Relativity.AutomatedWorkflows.SDK" Version="$(RelativityAutomatedWorkflowsSDK)" />
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativitySDKCustomPagesOnly)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
-    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.SourceProviderInstaller" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
+    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />    
     <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />

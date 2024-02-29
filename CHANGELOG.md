@@ -1,8 +1,11 @@
 ## [24000.0.7] - 29-Feb-2024
 
+- [REL-891081](https://jira.kcura.com/browse/REL-891081) - Combine Bitbucket integrationpoints-sdk into GitHub RIP monolith.
+## [24000.0.6] - 28-Feb-2024
+
 ### Changed
 
-- [REL-891081](https://jira.kcura.com/browse/REL-891081) - Combine Bitbucket integrationpoints-sdk into GitHub RIP monolith.
+- [REL-891078](https://jira.kcura.com/browse/REL-891078) - Combine Bitbucket integrationpoints-myfirstprovider into GitHub RIP monolith.
 
 ## [24000.0.4] - 21-Feb-2024
 

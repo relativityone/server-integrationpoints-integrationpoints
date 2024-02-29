@@ -162,7 +162,6 @@
     <PackageReference Include="Relativity.Testing.Framework.Api" />
     <PackageReference Include="Relativity.Testing.Framework.Web" />
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
-    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Sync" />
     <PackageReference Include="Polly" />
   </ItemGroup>

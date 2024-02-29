@@ -73,7 +73,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Logging.Interfaces" VersionOvveride="3000.4.1" />
     <PackageReference Include="Relativity.Telemetry.APM" />
