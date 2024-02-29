@@ -1,0 +1,8 @@
+<Project>
+	<ItemGroup>
+		<Compile Include="..\AssemblyInfo.InternalsVisibileTo.cs" Link="Properties\AssemblyInfo.InternalsVisibileTo.cs" />
+	</ItemGroup>
+
+	<!-- This will merge top level Directory.Build.props -->
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+</Project>

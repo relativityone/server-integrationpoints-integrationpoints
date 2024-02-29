@@ -110,3 +110,14 @@ coverage.cobertura.xml
 !vendor/*
 Help/
 buildtools/*
+node_modules/
+logs/
+artifacts/
+*.user
+coverage.cobertura.xml
+!vendor/*
+buildtools/*
+!buildtools/BuildHelpers.psm1
+bin/
+obj/
+packages/

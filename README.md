@@ -13,6 +13,10 @@ Microsoft Active Directory.
 * Relativity - Allowing documents to be pushed between workspaces.
 * File Transfer - Providing connection to an FTP/SFTP server for upload.
 
+# Integration Points - Kepler Services Interfaces
+
+This repository contains interfaces for Kepler services provided by the Relativity Integration Points.
+
 # Integration Points - MyFirstProvider
 
 MyFirstProvider is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from XML file.
@@ -107,3 +111,4 @@ Branch: server-main
 
 **Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.
 **Migration Notice**: Migrated `integrationpoints-sdk` into RIP monolith on GitHub.
+**Migration Notice**: Migrated `integrationpoints-keplerservicesinterfaces` into RIP monolith on GitHub.

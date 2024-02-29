@@ -4,11 +4,24 @@
 
 - [REL-891081](https://jira.kcura.com/browse/REL-891081) - Combine Bitbucket integrationpoints-sdk into GitHub RIP monolith.
 
-## [24000.0.4] - 12-Feb-2024
+## [24000.0.4] - 21-Feb-2024
 
 ### Changed
 
-- [REL-891078](https://jira.kcura.com/browse/REL-891078) - Combine Bitbucket integrationpoints-myfirstprovider into GitHub RIP monolith.
+- [REL-895553](https://jira.kcura.com/browse/REL-895553) - [Server Backport] [SYNC] Enable Non-Admin User to Run job on new Destination Workspace
+- [REL-911797](https://jira.kcura.com/browse/REL-911797) - Changes made to sync to create webapi url that is supplied by rip and Logic to get Integration point web api url.
+
+## [24000.0.3] - 06-Feb-2024
+
+### Changed
+
+- [REL-891060](https://jira.kcura.com/browse/REL-891060)  -  Combine Bitbucket RelativitySync into GitHub RIP monolith.
+
+## [24000.0.2] - 06-Feb-2023
+
+### Changed
+
+- [REL-891075](https://jira.kcura.com/browse/REL-891075) - Combine Bitbucket integrationpoints-keplerservicesinterfaces into GitHub RIP monolith.
 
 ## [24000.0.1] - 12-14-2023
 

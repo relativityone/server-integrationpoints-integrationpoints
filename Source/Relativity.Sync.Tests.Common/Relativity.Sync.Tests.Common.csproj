@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <WarningLevel>4</WarningLevel>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+        <IsTestProject>false</IsTestProject>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+    </ItemGroup>
+  <!-- Third Party Packages -->
+    <ItemGroup>
+        <PackageReference Include="AutoFixture" />
+        <PackageReference Include="AutoFixture.AutoMoq"  />
+        <PackageReference Include="coverlet.msbuild"  />
+        <PackageReference Include="Moq"  VersionOverride="4.5.30"/>
+        <PackageReference Include="NUnit"  />
+        <PackageReference Include="NUnit3TestAdapter" />
+        <PackageReference Include="NunitXml.TestLogger"  VersionOverride="2.1.62"/>
+        <PackageReference Include="FluentAssertions" VersionOverride="5.10.3" />
+        <PackageReference Include="Newtonsoft.Json"  />
+        <PackageReference Include="Castle.Core"  />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.targets" />
+</Project>
