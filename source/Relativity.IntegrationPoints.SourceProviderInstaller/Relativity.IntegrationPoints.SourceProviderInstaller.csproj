@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj" />
   </ItemGroup>
   
   <ItemGroup>
