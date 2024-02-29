@@ -1,11 +1,11 @@
 <BuildTools>
-	<RAPBuilder>
-		<Applications>
+  <RAPBuilder>
+    <Applications>
 			<Application name="kCura.IntegrationPoints" generatenuspec="true">
 				<Destination>Artifacts\kCura.IntegrationPoints.rap</Destination>
 				<ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
 				<TestDirectory>Source\kCura.IntegrationPoints.FunctionalTests\bin\</TestDirectory>
-				<Assemblies>
+        <Assemblies>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Windsor.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Core.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.Apps.Common.Config.dll</Assembly>
@@ -71,16 +71,21 @@
 					<Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Data\bin\Dapper.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Data\bin\Dapper.Contrib.dll</Assembly>
-				</Assemblies>
+					<Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.Contracts.dll</Assembly>
+					<Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+					<Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.MyFirstProvider.Provider.dll</Assembly>
+					<Assembly>Source\Relativity.IntegrationPoints.MyFirstProvider.Provider\bin\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+        </Assemblies>
 				<ResourceFiles>
 					<ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>
 					<ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\dist\integration-point-profile-event-handler.js</ResourceFile>
 					<ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\dist\integration-point-event-handler.js</ResourceFile>
 				</ResourceFiles>
-				<CustomPages>
+        <CustomPages>
 					<CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
-				</CustomPages>
-			</Application>
-		</Applications>
-	</RAPBuilder>
+					<CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">Source\CustomPages\MyFirstProvider</CustomPage>
+        </CustomPages>
+      </Application>
+    </Applications>
+  </RAPBuilder>
 </BuildTools>
