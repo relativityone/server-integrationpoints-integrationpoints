@@ -17,6 +17,10 @@ Microsoft Active Directory.
 
 MyFirstProvider is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from XML file.
 
+# Integration Points SDK
+
+This repository contains Relativity Integration Points SDK that can be used to develop custom Integration Points providers.
+
 ## How to Build
 
 Usage:
