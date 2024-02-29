@@ -1,0 +1,19 @@
+{
+  "RelativityUri": "https://ctus014128-t009.r1.kcura.com/Relativity",
+  "RelativityServicesUri": "https://ctus014128-t009-services.r1.kcura.com/Relativity/Relativity.Services",
+  "RelativityUserName": "relativity.sync@kcura.com",
+  "RelativityPassword": "Test1234!",
+  "TemplateWorkspaceName": "RelativityOne Quick Start Template",
+  "DesiredWorkspaceName": "Large Job Tests - Large-2",
+  "TestDataDirectoryPath": "C:\\Data",
+  "BatchSize": 10000,
+  "TestCases": [
+    {
+      "Name": "Large-2",
+      "NumberOfDocuments": 400000,
+      "NumberOfFields": 0,
+      "TotalNativesSizeInMB": 0,
+      "TotalExtractedTextSizeInMB": 15000
+    }
+  ]
+}

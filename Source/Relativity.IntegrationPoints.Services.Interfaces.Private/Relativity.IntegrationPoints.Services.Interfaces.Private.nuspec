@@ -1,0 +1,33 @@
+﻿<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Relativity.IntegrationPoints.Services.Interfaces.Private</id>
+    <version>$version$</version>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <license type="file">LICENSE.txt</license>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Relativity Integration Points Kepler Services Interfaces</description>
+    <releaseNotes></releaseNotes>
+    <copyright>(c) Relativity</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Relativity.API" version="17.4.2" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Kepler" version="2.15.6" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Telemetry.APM" version="2019.10.9" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.6.2" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.6.2" />
+      <frameworkAssembly assemblyName="System.Data.DataSetExtensions" targetFramework=".NETFramework4.6.2" />
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.6.2" />
+      <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework=".NETFramework4.6.2" />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+      <file src="$licensePath$" target="" />
+      <file src="bin\net462\Relativity.IntegrationPoints.Services.Interfaces.Private.dll" target="lib\net462" />
+  </files>
+</package>

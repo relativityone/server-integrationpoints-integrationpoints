@@ -1,0 +1,20 @@
+{
+  "RelativityUri": "https://<Hopper_Id>.hopper.relativity.com/Relativity",
+  "RelativityServicesUri": "https://<Hopper_Id>.hopper.relativity.com/Relativity/Relativity.Services",
+  "RelativityUserName": "relativity.admin@kcura.com",
+  "RelativityPassword": "Test1234!",
+  "TemplateWorkspaceName": "Relativity Starter Template",
+  "DesiredWorkspaceName": "Nightly Performance Tests",
+  "TestDataDirectoryPath": "C:\\Data",
+  "BatchSize": 10000,
+  "TestCases": [
+    {
+      "Name": "Nightly-1",
+      "NumberOfDocuments": 50000,
+      "NumberOfFields": 50,
+      "TotalNativesSizeInMB": 0,
+      "TotalExtractedTextSizeInMB": 500
+    }
+  ]
+}
+

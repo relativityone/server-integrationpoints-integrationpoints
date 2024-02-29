@@ -57,6 +57,7 @@ param (
 if($TestVMName)
 {
     $testvm = Get-TestVm | Where-Object { $_.BoxName -eq $TestVMName }
+    Write-Host $TestVMName
 
     if(-not $ServerBindingType)
     {

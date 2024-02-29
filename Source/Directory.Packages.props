@@ -13,6 +13,8 @@
     <Banzai>3.0.3</Banzai>
     <BCryptNetCore>1.6.0</BCryptNetCore>
     <BenchmarkDotNet>0.10.12</BenchmarkDotNet>
+    <BanzaiAutofac>3.0.3</BanzaiAutofac>
+    <coverletmsbuild>2.8.0</coverletmsbuild>
     <CastleCore>3.3.0</CastleCore>
     <CSharpGuidelineAnalyzer>1.0.3.0</CSharpGuidelineAnalyzer>
     <Dapper>2.0.123</Dapper>
@@ -37,6 +39,11 @@
     <Moq>4.5.3</Moq>
     <MSTestTestAdapter>1.4.0</MSTestTestAdapter>
     <MSTestTestFramework>1.4.0</MSTestTestFramework>
+    <MicrosoftAzureStorageBlob>11.1.3</MicrosoftAzureStorageBlob>
+    <MicrosoftAzureCosmosTable>1.0.8</MicrosoftAzureCosmosTable>
+    <MicrosoftAzureKeyVaultCore>3.0.5</MicrosoftAzureKeyVaultCore>
+    <MicrosoftReactiveTesting>4.4.1</MicrosoftReactiveTesting>
+	  <NunitXmlTestLogger>2.1.62</NunitXmlTestLogger>
     <netDumbster>2.0.0.4</netDumbster>
     <NewtonsoftJson>6.0.8</NewtonsoftJson>
     <NLog>4.7.2</NLog>
@@ -49,11 +56,10 @@
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
     <RelativityDataExchangeClientSDK>2.9.1001</RelativityDataExchangeClientSDK>
-    <RelativityDataGrid>16.9.1</RelativityDataGrid>
+	  <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityIntegrationPointsSDK>1.3.0</RelativityIntegrationPointsSDK>
-    <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0</RelativityIntegrationPointsServicesInterfacesPrivate>
     <KeplerVersion>2.15.6</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
@@ -69,8 +75,6 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativityServicesLayoutInterfaces>11.4.2</RelativityServicesLayoutInterfaces>
-    <RelativitySync>0.12.1001</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -79,6 +83,9 @@
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
     <RelativityTransferClient>7.7.1001</RelativityTransferClient>
+    <RelativityEnvironmentSDK>2.0.4</RelativityEnvironmentSDK>
+    <RelativityARMSDK>11.3.0</RelativityARMSDK>
+    <SystemReactiveLinq>4.4.1</SystemReactiveLinq>
     <Toggles>1.10.8</Toggles>
     <SeleniumSupport>3.141.0</SeleniumSupport>
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
@@ -104,6 +111,8 @@
     <PackageVersion Include="BenchmarkDotNet" Version="$(BenchmarkDotNet)" />
     <PackageVersion Include="Banzai" Version="$(Banzai)" />
     <PackageVersion Include="BCrypt.Net-Core" Version="$(BCryptNetCore)" />
+    <PackageVersion Include="Banzai.Autofac" Version="$(BanzaiAutofac)" />
+	  <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)" />
     <PackageVersion Include="Castle.Core" Version="$(CastleCore)" />
     <PackageVersion Include="Castle.Windsor" Version="$(CastleCore)" />
     <PackageVersion Include="CSharpGuidelineAnalyzer" Version="$(CSharpGuidelineAnalyzer)" />
@@ -139,6 +148,11 @@
     <PackageVersion Include="Moq" Version="$(Moq)" />
     <PackageVersion Include="MSTest.TestAdapter" Version="$(MSTestTestAdapter)" />
     <PackageVersion Include="MSTest.TestFramework" Version="$(MSTestTestFramework)" />
+    <PackageVersion Include="Microsoft.Azure.Storage.Blob" Version="$(MicrosoftAzureStorageBlob)" />
+    <PackageVersion Include="Microsoft.Azure.Cosmos.Table" Version="$(MicrosoftAzureCosmosTable)" />
+    <PackageVersion Include="Microsoft.Azure.KeyVault.Core" Version="$(MicrosoftAzureKeyVaultCore)" />
+    <PackageVersion Include="Microsoft.Reactive.Testing" Version="$(MicrosoftReactiveTesting)" />
+	  <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
     <PackageVersion Include="NLog" Version="$(NLog)" />
     <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
@@ -152,9 +166,7 @@
     <PackageVersion Include="Relativity.AutomatedWorkflows.SDK" Version="$(RelativityAutomatedWorkflowsSDK)" />
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativitySDKCustomPagesOnly)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
-    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.Services.Interfaces.Private" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.SourceProviderInstaller" Version="$(RelativityIntegrationPointsServicesInterfacesPrivate)" />
+    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />    
     <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
@@ -175,8 +187,6 @@
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Helpers" Version="$(RelativityServicesInterfacesHelpers)" />
-    <PackageVersion Include="Relativity.Services.Layout.Interfaces" Version="$(RelativityServicesLayoutInterfaces)" />
-    <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(TelemetryMetricsCollectionClient)" />
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(TelemetryMetricsCollectionBootstrapper)" />
@@ -201,6 +211,9 @@
     <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
     <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
     <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
+    <PackageVersion Include="Relativity.Environment.SDK" Version="$(RelativityEnvironmentSDK)" />
+    <PackageVersion Include="Relativity.ARM.SDK" Version="$(RelativityARMSDK)" />
+	  <PackageVersion Include="System.Reactive.Linq" Version="$(SystemReactiveLinq)" />
     <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
     <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
 
@@ -217,6 +230,6 @@
     <PackageVersion Include="normalize.css" Version="3.0.1" />
     <PackageVersion Include="Q" Version="1.4.1" />
     <PackageVersion Include="Select2.js" Version="3.5.1" />
-    <PackageVersion Include="Trirand.jqGrid" Version="4.5.4" />
+    <PackageVersion Include="Trirand.jqGrid" Version="4.5.4" />  
   </ItemGroup>
 </Project>

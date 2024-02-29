@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net462</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <WarningLevel>4</WarningLevel>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <IsTestProject>true</IsTestProject>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="coverage.cobertura.xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+        <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+    </ItemGroup>
+    <!-- Third Party Packages -->
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Reactive.Testing"  />
+        <PackageReference Include="Newtonsoft.Json"  />
+        <PackageReference Include="NUnit"  />
+        <PackageReference Include="NUnit3TestAdapter"  />
+         <PackageReference Include="Castle.Core" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.Runtime.Caching" />
+        <Reference Include="System.Web.Services" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Toggles\" />
+        <Folder Include="Utils\Workarounds\" />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.targets" />
+</Project>

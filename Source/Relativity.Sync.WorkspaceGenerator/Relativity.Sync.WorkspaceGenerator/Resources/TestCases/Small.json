@@ -1,0 +1,98 @@
+{
+  "RelativityUri": "https://ctus014128-t009.r1.kcura.com/Relativity",
+  "RelativityServicesUri": "https://ctus014128-t009-services.r1.kcura.com/Relativity/Relativity.Services",
+  "RelativityUserName": "relativity.sync@kcura.com",
+  "RelativityPassword": "Test1234!",
+  "TemplateWorkspaceName": "RelativityOne Quick Start Template",
+  "DesiredWorkspaceName": "Small jobs tests",
+  "TestDataDirectoryPath": "C:\\Data",
+  "TestCases": [
+    {
+      "Name": "Small-1a",
+      "NumberOfDocuments": 10,
+      "NumberOfFields": 150,
+      "TotalNativesSizeInMB": 50,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-1b",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 85,
+      "TotalNativesSizeInMB": 50,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-1c",
+      "NumberOfDocuments": 100,
+      "NumberOfFields": 190,
+      "TotalNativesSizeInMB": 50,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-1d",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 7,
+      "TotalNativesSizeInMB": 50,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-2a",
+      "NumberOfDocuments": 10,
+      "NumberOfFields": 150,
+      "TotalNativesSizeInMB": 30,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-2b",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 85,
+      "TotalNativesSizeInMB": 30,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-2c",
+      "NumberOfDocuments": 100,
+      "NumberOfFields": 190,
+      "TotalNativesSizeInMB": 30,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-2d",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 7,
+      "TotalNativesSizeInMB": 30,
+      "TotalExtractedTextSizeInMB": 1
+    },
+
+    {
+      "Name": "Small-3a",
+      "NumberOfDocuments": 20,
+      "NumberOfFields": 300,
+      "TotalNativesSizeInMB": 10,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-3b",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 85,
+      "TotalNativesSizeInMB": 10,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-3c",
+      "NumberOfDocuments": 100,
+      "NumberOfFields": 190,
+      "TotalNativesSizeInMB": 10,
+      "TotalExtractedTextSizeInMB": 1
+    },
+    {
+      "Name": "Small-3d",
+      "NumberOfDocuments": 200,
+      "NumberOfFields": 7,
+      "TotalNativesSizeInMB": 10,
+      "TotalExtractedTextSizeInMB": 1
+    }
+  ]
+
+}
+
