@@ -24,7 +24,6 @@
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NunitXml.TestLogger" />
 	<PackageReference Include="kCura.EventHandler" />
-	<PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
 	<PackageReference Include="Relativity.Kepler" />
 	<PackageReference Include="FluentAssertions" />
 	<PackageReference Include="Moq" />

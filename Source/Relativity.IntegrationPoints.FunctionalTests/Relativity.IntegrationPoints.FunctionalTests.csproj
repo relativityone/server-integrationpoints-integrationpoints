@@ -61,7 +61,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
