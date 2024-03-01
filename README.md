@@ -28,6 +28,10 @@ Relativity Sync will add a few features to the old RIP workflow:
 - Batching and parallel imports
 - Interfaces to receive detailed job progress reporting
 
+# Integration points - Jsonloader
+
+Json Loader is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from JSON file.
+
 ## How to Build
 
 Usage:
