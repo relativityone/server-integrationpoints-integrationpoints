@@ -17,6 +17,21 @@ Microsoft Active Directory.
 
 This repository contains interfaces for Kepler services provided by the Relativity Integration Points.
 
+# RelativitySync
+
+Relativity Sync utilizes the Relativity Import API, Export API, and various Kepler-based APIs to transfer documents (and eventually objects) between workspaces.
+
+The workspace-to-workspace workflow was originally designed as a part of [Relativity Integration Points (RIP)](https://git.kcura.com/projects/IN/repos/integrationpoints/browse). Relativity Sync is currently packaged with RIP and is still only differentiated as a separate flow within it.
+
+Relativity Sync will add a few features to the old RIP workflow:
+
+- Batching and parallel imports
+- Interfaces to receive detailed job progress reporting
+
+# Integration points - Jsonloader
+
+Json Loader is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from JSON file.
+
 # Integration Points - MyFirstProvider
 
 MyFirstProvider is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from XML file.
@@ -105,4 +120,6 @@ The server-main branch was migrated from https://git.kcura.com/projects/IN/repos
 Tag: 24000.0.0
 Branch: server-main
 **Migration Notice**: Migrated `integrationpoints-keplerservicesinterfaces` into RIP monolith on GitHub.
+**Migration Notice**: Migrated `RelativitySync` into RIP monolith on GitHub.
+**Migration Notice**: Migrated `integrationpoints-jsonloader` into RIP monolith on GitHub.
 **Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.

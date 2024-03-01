@@ -1,9 +1,14 @@
-
 ## [24000.0.6] - 28-Feb-2024
 
 ### Changed
 
 - [REL-891078](https://jira.kcura.com/browse/REL-891078) - Combine Bitbucket integrationpoints-myfirstprovider into GitHub RIP monolith.
+
+## [24000.0.5] - 27-Feb-2024
+
+### Changed
+
+- [REL-891072](https://jira.kcura.com/browse/REL-891072)  -  Combine Bitbucket integrationpoints-jsonloader into GitHub RIP monolith.
 
 ## [24000.0.4] - 21-Feb-2024
 
@@ -18,7 +23,7 @@
 
 - [REL-891060](https://jira.kcura.com/browse/REL-891060)  -  Combine Bitbucket RelativitySync into GitHub RIP monolith.
 
-## [24000.0.2] - 06-Feb-2023
+## [24000.0.2] - 06-Feb-2024
 
 ### Changed
 
