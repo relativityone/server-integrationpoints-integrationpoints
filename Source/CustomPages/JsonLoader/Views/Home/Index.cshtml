@@ -1,0 +1,38 @@
+﻿@model dynamic
+
+@{
+	ViewBag.Title = "Json Loader";
+	Layout = null;
+}
+
+<link   href="~/Content/Site.css" rel="stylesheet" />
+<div class="card" id="jsonConfiguration">
+<label class="section label">Json Loader</label>
+	<div class="field-row">
+		<div class="field-label required">
+			Field Location:
+		</div>
+		<div class="field-value ">
+			<input type="text" name="field" data-bind="value: fieldLocation" class="inputBox" placeholder="Please enter a field location"/>
+			
+		</div>
+	</div>
+	<div class="field-row">
+		<div class="field-label required">
+			Data Location:
+		</div>
+		<div class="field-value ">
+			<input type="text" name="location" data-bind="value: dataLocation"class="inputBox" placeholder="Please enter a data location"/>
+		</div>
+	</div>
+	
+</div>
+
+<script src="~/Scripts/jquery-3.6.0.js"></script>
+<script src="~/Scripts/q.js"></script>
+<script src="~/Scripts/utils.js"></script>
+<script src="~/Scripts/jquery-postMessage.js"></script>
+<script src="~/Scripts/data.js"></script>
+<script src="~/Scripts/frame-messaging.js"></script>
+<script src="~/Scripts/knockout-3.4.0.js"></script>
+<script src="~/Scripts/jsonLoader.js"></script>

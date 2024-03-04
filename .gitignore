@@ -93,6 +93,11 @@ Artifacts
 .ionide
 .vs/
 buildtools/
+[b|B]in
+[o|O]bj
+packages
+Artifacts/
+buildtools/*
 !buildtools/packages.config
 FunctionalTest.runsettings
 FunctionalTestSettings
@@ -113,6 +118,10 @@ buildtools/*
 node_modules/
 logs/
 artifacts/
+*.dll
+*.jar
+*.exe
+*.bin
 *.user
 coverage.cobertura.xml
 !vendor/*
