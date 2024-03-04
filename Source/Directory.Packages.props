@@ -21,7 +21,6 @@
     <DapperContrib>2.0.78</DapperContrib>
     <DotNetSeleniumExtrasPageObjects>3.11.0</DotNetSeleniumExtrasPageObjects>
     <FluentAssertions>4.19.4</FluentAssertions>
-    <IntegrationPointsMyFirstProvider>12.4.0</IntegrationPointsMyFirstProvider>
     <iTextSharp>5.5.13.1</iTextSharp>
     <kCura>13.1.0</kCura>
     <kCuraAppsCommonConfig>2.1.9</kCuraAppsCommonConfig>
@@ -62,6 +61,7 @@
 	<NunitXmlTestLogger>2.1.62</NunitXmlTestLogger>
     <netDumbster>2.0.0.4</netDumbster>
     <NewtonsoftJson>6.0.8</NewtonsoftJson>
+    <NLog>4.7.2</NLog>
     <NSubstitute>1.10.0.0</NSubstitute>
     <NUnit>3.13.3</NUnit>
     <NUnit3TestAdapter>4.4.2</NUnit3TestAdapter>
@@ -86,6 +86,7 @@
     <RelativityOAuth2Client>1.5.5</RelativityOAuth2Client>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
+    <RelativitySecretCatalog>1.0.20</RelativitySecretCatalog>
     <RelativitySDK>17.4.2</RelativitySDK>
     <!-- The custom pages project requires additional work to upgrade the package. -->
     <RelativitySDKCustomPagesOnly>13.3.0</RelativitySDKCustomPagesOnly>
@@ -111,6 +112,7 @@
     <SeleniumSupport>3.141.0</SeleniumSupport>
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
     <SeleniumWebDriverGeckoDriver>0.24.0</SeleniumWebDriverGeckoDriver>
+    <SemanticVersioning>1.2.2</SemanticVersioning>
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
     <StyleCopAnalyzers>1.1.118</StyleCopAnalyzers>
@@ -152,7 +154,6 @@
     <PackageVersion Include="DotNetSeleniumExtras.PageObjects" Version="$(DotNetSeleniumExtrasPageObjects)" />
     <PackageVersion Include="DotNetSeleniumExtras.WaitHelpers" Version="$(DotNetSeleniumExtrasPageObjects)" />
     <PackageVersion Include="FluentAssertions" Version="$(FluentAssertions)" />
-    <PackageVersion Include="IntegrationPoints.MyFirstProvider" Version="$(IntegrationPointsMyFirstProvider)" />
     <PackageVersion Include="iTextSharp" Version="$(iTextSharp)" />
     <PackageVersion Include="kCura" Version="$(kCura)" />
     <PackageVersion Include="kCura.Agent" Version="$(RelativitySDK)" />
@@ -199,6 +200,7 @@
 	<PackageVersion Include="Microsoft.jQuery.Unobtrusive.Validation" Version="$(MicrosoftjQueryUnobtrusiveValidation)" />
 	<PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
+    <PackageVersion Include="NLog" Version="$(NLog)" />
     <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
     <PackageVersion Include="NSubstitute" Version="$(NSubstitute)" />
     <PackageVersion Include="NUnit" Version="$(NUnit)" />
@@ -231,6 +233,7 @@
     <PackageVersion Include="Relativity.OutsideIn" Version="$(OutsideIn)" />
     <PackageVersion Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" Version="$(RelativityPlatformAgentWorkloadDiscoverySDK)" />
     <PackageVersion Include="Relativity.Productions.Services.Interfaces" Version="$(RelativityProductionsServicesInterfaces)" />
+    <PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
     <PackageVersion Include="Relativity.Services.DataContracts" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />
@@ -254,6 +257,7 @@
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="$(SeleniumWebDriverChromeDriver)" />
     <PackageVersion Include="Selenium.WebDriver.GeckoDriver" Version="$(SeleniumWebDriverGeckoDriver)" />
+    <PackageVersion Include="SemanticVersioning" Version="$(SemanticVersioning)" />
     <PackageVersion Include="Serilog" Version="$(Serilog)" />
     <PackageVersion Include="Serilog.Sinks.Seq" Version="$(SerilogSinksSeq)" />
     <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />

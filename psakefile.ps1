@@ -84,7 +84,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     # Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
     # Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 
-Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+# Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 
 }
 

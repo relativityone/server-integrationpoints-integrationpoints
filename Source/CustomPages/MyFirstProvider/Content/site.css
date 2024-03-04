@@ -1,0 +1,66 @@
+﻿.input-box
+{
+	height: 26px;
+	border: 1px solid #c1c1c1;
+	color: #102d4f;
+	border-radius: 3px;
+	width: 750px;
+}
+
+*{
+	box-sizing: border-box;
+}
+
+html
+{
+	background-color: white;
+	font-family: "Open Sans", sans-serif;
+	font-weight: 400;
+	font-size: 1em;
+	color: #666666;
+}
+
+.card
+{
+	background-color: #f7f7f7;
+	border: 1px solid #c1c1c1;
+	border-radius: 3px;
+	box-shadow: 1px 1px 3px #b7b7b7;
+	padding: 10px;
+	margin: 15px 12px 0 12px;
+}
+
+	.card .label
+	{
+		color: #3471b7;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.card .field-label
+	{
+		color: #404040;
+		text-align: right;
+		padding-right: 5px;
+		min-width: 200px;
+		display: table-cell;
+		border-right: 3px solid transparent;
+		font-size: .85em;
+	}
+
+		.card .field-label.required
+		{
+			border-right: 3px solid #f59d1f;
+		}
+
+	.card .field-value
+	{
+		display: table-cell;
+		padding-left: 5px;
+		font-size: 0.85em;
+	}
+
+	.card .field-row
+	{
+		padding: 5px 0;
+	}

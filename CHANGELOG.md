@@ -1,3 +1,9 @@
+## [24000.0.6] - 28-Feb-2024
+
+### Changed
+
+- [REL-891078](https://jira.kcura.com/browse/REL-891078) - Combine Bitbucket integrationpoints-myfirstprovider into GitHub RIP monolith.
+
 ## [24000.0.5] - 27-Feb-2024
 
 ### Changed
@@ -32,7 +38,7 @@
 ## [24000.0.0] - 10-27-2023
 
 ### Changed
- 
+
 - Prepared branch for the next official Relativity 2024 release.
 - Use the latest SUT release image.
 
@@ -90,9 +96,9 @@
 - [REL-870446](https://jira.kcura.com/browse/REL-870446) - Added DefaultValue attribute to toggles EnableSyncNonDocumentFlowToggle and EnableRelativitySyncApplicationToggle. So that Sync toggles are enabled by default
 
 ## [13.2.0] - 08-17-2023
- 
+
 ### Changed
- 
+
 - [REL-868461](https://jira.kcura.com/browse/REL-868461) - Create release branch for RAPCD
 - Official Relativity 2023 12.3 release.
 - The SUT configuration upgrades the previous release image to the latest release image.
