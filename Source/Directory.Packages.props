@@ -77,7 +77,6 @@
 	<RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <RelativityIntegrationPointsServicesInterfacesPrivate>1.4.0</RelativityIntegrationPointsServicesInterfacesPrivate>
     <KeplerVersion>2.15.6</KeplerVersion>
     <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
@@ -93,8 +92,6 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativityServicesLayoutInterfaces>11.4.2</RelativityServicesLayoutInterfaces>
-    <RelativitySync>0.12.1001</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
@@ -108,7 +105,6 @@
 	<Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
     <RelativityOAuth2ClientImplicit>1.5.2</RelativityOAuth2ClientImplicit>
     <RelativitySecretCatalog>1.0.19</RelativitySecretCatalog>
-    <RelativityServicesLayoutInterfaces>10.3.2</RelativityServicesLayoutInterfaces>
     <SystemReactiveLinq>4.4.1</SystemReactiveLinq>
     <Toggles>1.10.8</Toggles>
     <SeleniumSupport>3.141.0</SeleniumSupport>
@@ -219,9 +215,7 @@
     <PackageVersion Include="Relativity.AutomatedWorkflows.SDK" Version="$(RelativityAutomatedWorkflowsSDK)" />
     <PackageVersion Include="Relativity.CustomPages" Version="$(RelativitySDKCustomPagesOnly)" />
     <PackageVersion Include="Relativity.Data" Version="$(RelativityCore)" />
-    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />    
-    <PackageVersion Include="Relativity.IntegrationPoints.Contracts" Version="$(RelativityIntegrationPointsSDK)" />
-    <PackageVersion Include="Relativity.IntegrationPoints.SDK" Version="$(RelativityIntegrationPointsSDK)" />
+    <PackageVersion Include="Relativity.DataExchange.Client.SDK" Version="$(RelativityDataExchangeClientSDK)" />
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
@@ -242,8 +236,6 @@
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Helpers" Version="$(RelativityServicesInterfacesHelpers)" />
-    <PackageVersion Include="Relativity.Services.Layout.Interfaces" Version="$(RelativityServicesLayoutInterfaces)" />
-    <PackageVersion Include="Relativity.Sync" Version="$(RelativitySync)" />
     <PackageVersion Include="Relativity.Telemetry.APM" Version="$(TelemetryAPM)" />
     <PackageVersion Include="Relativity.Telemetry.DataContracts.Shared" Version="$(TelemetryMetricsCollectionClient)" />
     <PackageVersion Include="Relativity.Telemetry.MetricsCollection" Version="$(TelemetryMetricsCollectionBootstrapper)" />
@@ -258,7 +250,6 @@
 	<PackageVersion Include="relativity.faspmanager" Version="$(Relativityfaspmanager)" />
 	<PackageVersion Include="Relativity.OAuth2Client.Implicit" Version="$(RelativityOAuth2ClientImplicit)" />
 	<PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
-	<PackageVersion Include="Relativity.Services.Layout.Interfaces" Version="$(RelativityServicesLayoutInterfaces)" />
     <PackageVersion Include="Selenium.Support" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="$(SeleniumWebDriverChromeDriver)" />
