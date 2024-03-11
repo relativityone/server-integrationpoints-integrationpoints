@@ -1,0 +1,27 @@
+schedules:
+- cron: '0 12 * * *'  # Run Every Sunday at 7PM (12AM UTC).
+  displayName: 'Functional Tests'
+  always: false   # only run if there are new commits or changes
+  branches:
+    include:
+      - main
+
+variables:
+- name: unregister.opt-in
+  value: true
+
+resources:
+  repositories:
+    - repository: azdo_templates
+      type: github
+      name: relativityone/azdo-templates
+      endpoint: relativityone
+      ref: 'refs/heads/main'
+
+stages:
+- template: rapci-server.yml@azdo_templates  # Template reference
+  parameters:
+    ExecuteNightlyTests: true
+    buildSteps:
+      - checkout: self
+      - checkout: azdo_templates

@@ -84,12 +84,15 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     # Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
     # Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 
-# Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+ Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 
 }
 
-Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
+Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
+    $ChromeBinaryDirectory = (Get-ChildItem -Recurse -Directory -Path $ToolsDir -Filter "Relativity.Chromium.Portable*").FullName
+    $ChromeBinaryLocation = (Get-ChildItem -Recurse -File -Include chrome.exe -Path $ChromeBinaryDirectory).DirectoryName
+    $ENV:ChromeBinaryLocation = $ChromeBinaryLocation
     Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
