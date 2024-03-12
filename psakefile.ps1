@@ -93,7 +93,7 @@ Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that 
     $ChromeBinaryDirectory = (Get-ChildItem -Recurse -Directory -Path $ToolsDir -Filter "Relativity.Chromium.Portable*").FullName
     $ChromeBinaryLocation = (Get-ChildItem -Recurse -File -Include chrome.exe -Path $ChromeBinaryDirectory).DirectoryName
     $ENV:ChromeBinaryLocation = $ChromeBinaryLocation
-    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.])" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {
