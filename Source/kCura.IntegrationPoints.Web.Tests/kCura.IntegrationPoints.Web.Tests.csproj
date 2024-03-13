@@ -70,7 +70,6 @@
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="SystemWrapper.Interfaces" />

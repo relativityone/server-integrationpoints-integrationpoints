@@ -63,7 +63,6 @@
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />

@@ -19,6 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Castle.Windsor" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
 </Project>

@@ -30,6 +30,5 @@
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Config" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
   </ItemGroup>
 </Project>

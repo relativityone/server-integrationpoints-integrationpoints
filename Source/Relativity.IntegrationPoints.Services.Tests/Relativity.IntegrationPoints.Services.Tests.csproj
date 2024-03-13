@@ -48,7 +48,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Logging.Interfaces" />

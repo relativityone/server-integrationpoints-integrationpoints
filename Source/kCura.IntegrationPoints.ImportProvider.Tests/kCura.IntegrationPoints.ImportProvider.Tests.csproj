@@ -43,7 +43,6 @@
     <PackageReference Include="kCura" />
     <PackageReference Include="kCura.Apps.Common.Utils" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />

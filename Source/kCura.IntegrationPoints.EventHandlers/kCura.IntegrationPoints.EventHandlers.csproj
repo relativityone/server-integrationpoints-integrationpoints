@@ -59,7 +59,6 @@
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="SystemWrapper.Interfaces" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.Telemetry.MetricsCollection" />
     <PackageReference Include="Relativity.Toggles" />

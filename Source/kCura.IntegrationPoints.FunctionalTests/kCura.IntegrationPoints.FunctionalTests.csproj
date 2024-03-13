@@ -146,7 +146,6 @@
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Moq" />
     <PackageReference Include="FluentAssertions" />
@@ -165,4 +164,8 @@
     <PackageReference Include="Relativity.Testing.Framework.RingSetup" />
     <PackageReference Include="Polly" />
   </ItemGroup>
+	<Target Name="RemoveSpecificDll" AfterTargets="Restore">
+		<Delete Files="$(RestorePackagesPath)\Relativity.IntegrationPoints.SDK\1.3.0\lib\net462\Relativity.IntegrationPoints.SourceProviderInstaller.dll" />
+		<Delete Files="$(RestorePackagesPath)\Relativity.IntegrationPoints.SDK\1.3.0\lib\net462\Relativity.IntegrationPoints.Contracts.dll" />
+	</Target>
 </Project>

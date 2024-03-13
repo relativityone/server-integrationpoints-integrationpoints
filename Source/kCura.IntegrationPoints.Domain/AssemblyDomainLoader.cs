@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Domain
             "kCura.ScheduleQueue.AgentBase",
             "kCura.IntegrationPoints.Config",
             "kCura.IntegrationPoints.Core",
-            "Relativity.IntegrationPoints.SourceProviderInstaller",
             "kCura.IntegrationPoints.Synchronizers.RDO",
             "kCura.IntegrationPoints.EventHandlers",
             "kCura.IntegrationPoints.Agent",

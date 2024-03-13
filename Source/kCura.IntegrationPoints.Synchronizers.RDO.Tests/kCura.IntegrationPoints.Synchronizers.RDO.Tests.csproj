@@ -58,7 +58,6 @@
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="Moq" />

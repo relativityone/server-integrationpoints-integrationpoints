@@ -14,10 +14,6 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Relativity, Version=10.3.109.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Relativity\lib\net462\Relativity.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.ServiceModel" />
@@ -35,10 +31,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj" />
+    <ProjectReference Include="..\Relativity.IntegrationPoints.SourceProviderInstaller\Relativity.IntegrationPoints.SourceProviderInstaller.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="Relativity.DataGrid" />

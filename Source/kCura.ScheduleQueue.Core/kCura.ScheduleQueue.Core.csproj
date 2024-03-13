@@ -69,7 +69,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.Services.Interfaces" />
     <PackageReference Include="Dapper" />

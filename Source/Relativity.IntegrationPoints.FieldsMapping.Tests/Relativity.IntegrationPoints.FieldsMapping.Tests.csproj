@@ -36,7 +36,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
