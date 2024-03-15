@@ -31,7 +31,9 @@
     <PackageReference Include="System.ValueTuple" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="iTextSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj" />
   </ItemGroup>
 </Project>

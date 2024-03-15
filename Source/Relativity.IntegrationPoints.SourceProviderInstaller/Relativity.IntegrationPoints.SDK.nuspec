@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Relativity.IntegrationPoints.SDK</id>
+    <version>$version$</version>
+    <authors>Relativity ODA LLC</authors>
+    <owners>Relativity ODA LLC</owners>
+    <license type="file">LICENSE.txt</license>
+    <projectUrl>https://platform.relativity.com/index.html</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Relativity Integration Points SDK</description>
+    <releaseNotes></releaseNotes>
+    <copyright>(c) Relativity</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="kCura.EventHandler" version="17.4.2" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="6.0.1" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Kepler" version="2.15.6" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Telemetry.APM" version="2019.10.9" exclude="Build,Analyzers" />
+        <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.4.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="$licensePath$" target="" />
+    <file src="bin\Relativity.IntegrationPoints.Contracts.dll" target="lib\net462" />
+    <file src="bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net462" />
+  </files>
+</package>

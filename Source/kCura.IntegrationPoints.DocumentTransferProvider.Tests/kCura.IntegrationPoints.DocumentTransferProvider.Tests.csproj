@@ -49,7 +49,6 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="FluentAssertions" />

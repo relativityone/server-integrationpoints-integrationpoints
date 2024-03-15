@@ -36,6 +36,10 @@ Json Loader is a custom provider compatible with Integration Points app. It allo
 
 MyFirstProvider is a custom provider compatible with Integration Points app. It allows for importing data into Relativity directly from XML file.
 
+# Integration Points SDK
+
+This repository contains Relativity Integration Points SDK that can be used to develop custom Integration Points providers.
+
 ## How to Build
 
 Usage:
@@ -119,7 +123,9 @@ Integration Points is required for the ECA and Investigation application.
 The server-main branch was migrated from https://git.kcura.com/projects/IN/repos/integrationpoints/browse?at=refs%2Fheads%2Fserver-main by the Server Data Transfer Team.
 Tag: 24000.0.0
 Branch: server-main
+
+**Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.
+**Migration Notice**: Migrated `integrationpoints-sdk` into RIP monolith on GitHub.
 **Migration Notice**: Migrated `integrationpoints-keplerservicesinterfaces` into RIP monolith on GitHub.
 **Migration Notice**: Migrated `RelativitySync` into RIP monolith on GitHub.
 **Migration Notice**: Migrated `integrationpoints-jsonloader` into RIP monolith on GitHub.
-**Migration Notice**: Migrated `integrationpoints-myfirstprovider` into RIP monolith on GitHub.

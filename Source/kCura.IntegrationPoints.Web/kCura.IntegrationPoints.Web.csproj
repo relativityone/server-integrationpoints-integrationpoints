@@ -40,20 +40,20 @@
     <None Remove="oi\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="jQuery"/>
-    <PackageReference Include="jquery.jstree"/>
-    <PackageReference Include="jQuery.UI.Combined"/>
-    <PackageReference Include="jQuery.Validation"/>
-    <PackageReference Include="Knockout.Validation"/>
-    <PackageReference Include="knockoutjs"/>
-    <PackageReference Include="Microsoft.AspNet.SignalR.JS"/>
-    <PackageReference Include="Modernizr"/>
-    <PackageReference Include="Moment.js"/>
-    <PackageReference Include="Moment.Timezone.js"/>
-    <PackageReference Include="normalize.css"/>
-    <PackageReference Include="Q"/>
-    <PackageReference Include="Select2.js"/>
-    <PackageReference Include="Trirand.jqGrid"/>
+    <PackageReference Include="jQuery" />
+    <PackageReference Include="jquery.jstree" />
+    <PackageReference Include="jQuery.UI.Combined" />
+    <PackageReference Include="jQuery.Validation" />
+    <PackageReference Include="Knockout.Validation" />
+    <PackageReference Include="knockoutjs" />
+    <PackageReference Include="Microsoft.AspNet.SignalR.JS" />
+    <PackageReference Include="Modernizr" />
+    <PackageReference Include="Moment.js" />
+    <PackageReference Include="Moment.Timezone.js" />
+    <PackageReference Include="normalize.css" />
+    <PackageReference Include="Q" />
+    <PackageReference Include="Select2.js" />
+    <PackageReference Include="Trirand.jqGrid" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="kCura.Method.Web.Controls, Culture=neutral, processorArchitecture=AMD64">
@@ -540,12 +540,11 @@
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.CustomPages" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="SystemWrapper.Interfaces" />
-    <PackageReference Include="WebGrease"/>
+    <PackageReference Include="WebGrease" />
   </ItemGroup>
 </Project>

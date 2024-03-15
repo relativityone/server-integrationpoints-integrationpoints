@@ -154,7 +154,6 @@
     <PackageReference Include="Relativity.Data" />
     <PackageReference Include="kCura.FreeImage" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="iTextSharp" />

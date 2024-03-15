@@ -44,7 +44,6 @@
   <ItemGroup>
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="NSubstitute" />

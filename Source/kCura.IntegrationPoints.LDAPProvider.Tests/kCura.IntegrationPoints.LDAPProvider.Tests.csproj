@@ -41,7 +41,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.Kepler" />
-    <PackageReference Include="Relativity.IntegrationPoints.Contracts" />
     <PackageReference Include="FluentAssertions" />
     <PackageReference Include="NUnit" />
     <PackageReference Include="NUnit3TestAdapter" />

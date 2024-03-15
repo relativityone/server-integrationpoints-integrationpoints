@@ -101,7 +101,6 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity.API" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
-    <PackageReference Include="Relativity.IntegrationPoints.SDK" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Kepler.Client" />
     <PackageReference Include="Relativity.Telemetry.APM" />
@@ -110,9 +109,17 @@
     <PackageReference Include="System.Data.SqlClient" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.Contracts\Relativity.IntegrationPoints.Contracts.csproj">
+      <Project>{1995eafd-d75b-4819-9925-09503b1b2573}</Project>
+      <Name>Relativity.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Relativity.IntegrationPoints.Services.Interfaces.Private\Relativity.IntegrationPoints.Services.Interfaces.Private.csproj">
       <Project>{8b54e03d-a1ca-4405-b5b7-b18d08c1dca2}</Project>
       <Name>Relativity.IntegrationPoints.Services.Interfaces.Private</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Relativity.IntegrationPoints.SourceProviderInstaller\Relativity.IntegrationPoints.SourceProviderInstaller.csproj">
+      <Project>{fb518d9e-7521-4708-b65f-0274937f2c7d}</Project>
+      <Name>Relativity.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
