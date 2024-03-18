@@ -95,6 +95,9 @@ Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that 
     $ChromeBinaryLocation = (Get-ChildItem -Recurse -File -Include chrome.exe -Path $ChromeBinaryDirectory).DirectoryName
     $ENV:ChromeBinaryLocation = $ChromeBinaryLocation
     Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+
+    # Call the SyncTest Task
+    exec { SyncTest }
 }
 
 Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {

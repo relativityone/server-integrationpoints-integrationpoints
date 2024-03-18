@@ -1,5 +1,5 @@
 schedules:
-- cron: '0 12 * * *'  # Run Every Sunday at 7PM (12AM UTC).
+- cron: '0 0 * * 0'  # Run Every Sunday at 7PM (12AM UTC).
   displayName: 'Functional Tests'
   always: false   # only run if there are new commits or changes
   branches:
