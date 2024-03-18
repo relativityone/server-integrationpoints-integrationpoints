@@ -1,6 +1,6 @@
 ## [24000.0.8] - 17-March-2024
 
-- [REL-891061](https://jira.kcura.com/browse/REL-891081) - Combine RelativitySync into RIP monolith - Pipeline and Nightly changes
+- [REL-891061](https://jira.kcura.com/browse/REL-891061) - Combine RelativitySync into RIP monolith - Pipeline and Nightly changes
 
 ## [24000.0.7] - 29-Feb-2024
 
