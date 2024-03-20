@@ -87,6 +87,12 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
 
     Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
 
+
+}
+
+Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "SyncTestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.Sync.Tests.Integration)" -OutputFile $LogPath
 }
 
 Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that require a deployed environment." {
@@ -98,11 +104,6 @@ Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that 
 
     # Call the SyncTest Task
     exec { SyncTest }
-}
-
-Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "SyncTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ Relativity.Sync.Tests.Integration)" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
