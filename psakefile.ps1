@@ -90,11 +90,6 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
 
 }
 
-Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {
-    $LogPath = Join-Path $LogsDir "SyncTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ Relativity.Sync.Tests.Integration)" -OutputFile $LogPath
-}
-
 Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
     $ChromeBinaryDirectory = (Get-ChildItem -Recurse -Directory -Path $ToolsDir -Filter "Relativity.Chromium.Portable*").FullName
@@ -103,7 +98,12 @@ Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that 
     Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 
     # Call the SyncTest Task
-    exec { SyncTest }
+    Invoke-psake SyncTest
+}
+
+Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "SyncTestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.Sync.Tests.Integration)" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
