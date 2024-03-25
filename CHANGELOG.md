@@ -1,3 +1,7 @@
+## [24000.0.8] - 17-March-2024
+
+- [REL-891061](https://jira.kcura.com/browse/REL-891061) - Combine RelativitySync into RIP monolith - Pipeline and Nightly changes
+
 ## [24000.0.7] - 29-Feb-2024
 
 - [REL-891081](https://jira.kcura.com/browse/REL-891081) - Combine Bitbucket integrationpoints-sdk into GitHub RIP monolith.

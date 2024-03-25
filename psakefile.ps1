@@ -82,15 +82,28 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     # REL-865787 : Will be re enable these functional test runs once isolation and release completed.
     # $OneTimeSetupLogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"    
     # Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
-    # Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    # Invoke-Tests -WhereClause "(namespace =~ Provider\.FunctionalTests$ || namespace =~ JsonLoader\.FunctionalTests$ || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    # Invoke-Tests -WhereClause "(namespace =~ JsonLoader\.FunctionalTests$) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 
- Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
+
 
 }
 
-Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
+Task NightlyTest -Alias Nightly -Description "Run Nightly functional tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    $ChromeBinaryDirectory = (Get-ChildItem -Recurse -Directory -Path $ToolsDir -Filter "Relativity.Chromium.Portable*").FullName
+    $ChromeBinaryLocation = (Get-ChildItem -Recurse -File -Include chrome.exe -Path $ChromeBinaryDirectory).DirectoryName
+    $ENV:ChromeBinaryLocation = $ChromeBinaryLocation
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests)" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
+
+    # Call the SyncTest Task
+    Invoke-psake SyncTest
+}
+
+Task SyncTest -Description "Run Relativity Sync test that require a deployed environment." {
+    $LogPath = Join-Path $LogsDir "SyncTestResults.xml"
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.Sync.Tests.Integration)" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {

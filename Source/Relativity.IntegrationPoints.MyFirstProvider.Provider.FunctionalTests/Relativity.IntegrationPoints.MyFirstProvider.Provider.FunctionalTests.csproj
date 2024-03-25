@@ -112,7 +112,7 @@
     <PackageReference Include="Castle.Core" />
     <PackageReference Include="Castle.Windsor" />
     <PackageReference Include="FluentAssertions" VersionOverride="5.9.0" />
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Newtonsoft.Json" VersionOverride="11.0.2" />
     <PackageReference Include="NLog" />
     <PackageReference Include="NUnit" VersionOverride="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" />
