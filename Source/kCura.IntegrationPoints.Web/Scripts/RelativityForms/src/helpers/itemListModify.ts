@@ -1,28 +1,27 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
-export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, previousPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
-    getListData(convenienceApi, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId).then(res => {
-        let newData = [];        
+export function updateJobHistoryTable(convenienceApi: IConvenienceApi, previousPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
+    let currentPage = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
+    if (currentPage === previousPage) {
+        getListData(convenienceApi, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId).then(res => {
+            let newData = [];
 
-        res.Objects.forEach(el => {
-            newData.push(convertToJobHistory(el.Values));
-        })
+            res.Objects.forEach(el => {
+                newData.push(convertToJobHistory(el.Values));
+            })
 
-        let table = document.getElementById(fieldId.toString());        
+            let table = document.getElementById(fieldId.toString());
 
-        let currentPage = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
-        if (currentPage === previousPage) {
-            if (checkIfArrayDataShouldBeUpdated(table["data"], newData)) {
-                table["data"] = newData;
-            }
+            table["data"] = newData;
+
             try {
-                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
+                setTimeout(updateJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             } catch (err) {
                 console.log("Error occured while updating job history table data, will try once again in 5 secs", err)
-                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
+                setTimeout(updateJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             }
-        }
-    })
+        })
+    }
 }
 
 async function getListData(convenienceApi: IConvenienceApi, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
@@ -184,10 +183,10 @@ function GetConditionForTime(field: string, values: Array<string>, operator: str
     }
 }
 
-function convertToJobHistory(el: Object) {   
+function convertToJobHistory(el: Object) {
 
     // for all job histories created before IAPI 2.0 integration "Items Read" value should be equal to "Items Transferred" value (REL-793694)
-    var itemsReadValue = el[7] === 0 || el[7] === null ? el[8] : el[7];    
+    var itemsReadValue = el[7] === 0 || el[7] === null ? el[8] : el[7];
 
     let jobHistory = {
         "Job ID": el[0],
@@ -202,40 +201,9 @@ function convertToJobHistory(el: Object) {
         "Total Items": el[9],
         "Items with Errors": el[10],
         "System Created By": el[11],
-        "ArtifactID": el[12]
+        "ArtifactID": el[2]
     }
     return jobHistory;
 }
 
-function checkIfObjectAreTheSame(row1: object, row2: object): boolean {
-    let areSame = Object.keys(row1).every(key => {
-        if ((row1[key] === null || row2[key] === null)) {
-            if (row1[key] !== row2[key]) {
-                return false;
-            }
-        } else if (typeof row1[key] === 'object') {
-            if (row1[key].Name !== row2[key].Name) {
-                return false;
-            }
-        } else {
-            if (row1[key] !== row2[key]) {
-                return false;
-            }
-        } return true;
-    })
-    return areSame;
-}
 
-function checkIfArrayDataShouldBeUpdated(currentData: Array<object>, pulledData: Array<object>): boolean {
-    try {
-        if (currentData.length !== pulledData.length) {
-            return true;
-        } else {
-            let areSame = pulledData.every((element, index) => checkIfObjectAreTheSame(element, currentData[index]));
-            return !areSame;
-        }
-        
-    } catch (err){
-        console.log(err)
-    }
-}
