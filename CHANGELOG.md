@@ -1,3 +1,9 @@
+## [23013.2.1006] - 19-Apr-2024
+
+### Changed
+
+- Propogated Patch1 changes into release 2023 
+
 ## [23013.2.1005] - 12-18-2023
 
 ### Changed
