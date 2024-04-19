@@ -205,6 +205,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     if (existingDto.LastRun.HasValue)
                     {
                         ValidateConfigurationWhenUpdatingObject(dto, existingDto);
+                        dto.JobHistory = existingDto.JobHistory;
                         dto.HasErrors = existingDto.HasErrors;
                         dto.LastRun = existingDto.LastRun;
                     }

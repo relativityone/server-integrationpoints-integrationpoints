@@ -46,7 +46,7 @@ param(
 	[String]$TestFilter
 	)
 
-. $profile
+. $profile	
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
@@ -54,7 +54,7 @@ $ToolsDir = Join-Path $BaseDir 'buildtools'
 $NuGetFolder = Join-path $ToolsDir 'NuGet'
 $NugetExe = Join-Path $NuGetFolder 'nuget.exe'
 $NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-$NodeDir = Join-Path $ToolsDir "Portable.NodeJS"
+$NugetExe = Join-Path $ToolsDir "nuget.exe"
 
 $ToolsConfig = Join-Path $ToolsDir "packages.config"
 

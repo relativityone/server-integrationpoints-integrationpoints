@@ -97,18 +97,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         {
             _destinationProviderRepositoryMock.Verify(x =>
                 x.Create(
-                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName))
-                )
-            );
+                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName)),
+                    It.IsAny<ExecutionIdentity>()));
         }
 
         private void VerifyDestinationProviderUpdated(string destinationProviderName)
         {
             _destinationProviderRepositoryMock.Verify(x =>
                 x.Update(
-                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName))
-                )
-            );
+                    It.Is<DestinationProvider>(provider => VerifyDestinationProvider(provider, destinationProviderName)),
+                    It.IsAny<ExecutionIdentity>()));
         }
 
         private bool VerifyDestinationProvider(DestinationProvider provider, string destinationProviderName)
