@@ -1,3 +1,8 @@
+## [24000.0.9] - 19-APR-2024
+
+### Changed
+- [REL-929404](https://jira.kcura.com/browse/REL-929404) - Removed DNS Health checks which was adoption of R1 code changes.
+
 ## [24000.0.8] - 17-March-2024
 
 - [REL-891061](https://jira.kcura.com/browse/REL-891061) - Combine RelativitySync into RIP monolith - Pipeline and Nightly changes
