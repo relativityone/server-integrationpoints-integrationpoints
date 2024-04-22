@@ -381,9 +381,8 @@ namespace kCura.ScheduleQueue.AgentBase
             IEddsDBContext eddsDBContext = _dbContextFactory.CreatedEDDSDbContext();
             IServiceHealthChecker dbHealthChecker = new DatabasePingReporter(eddsDBContext, Logger);
             IServiceHealthChecker keplerHealthChecker = new KeplerPingReporter(Helper, Logger);
-            IServiceHealthChecker dnsHealthChecker = new DnsHealthReporter(new RealDnsService(), Logger);
 
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new[] { dbHealthChecker, keplerHealthChecker, dnsHealthChecker }, Logger);
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new[] { dbHealthChecker, keplerHealthChecker }, Logger);
 
             bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 

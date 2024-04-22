@@ -1,3 +1,9 @@
+## [23013.2.1007] - 19-Apr-2024
+
+### Changed
+
+- [REL-929404](https://jira.kcura.com/browse/REL-929404) - Removed DNS Health checks which was adoption of R1 code changes.
+
 ## [23013.2.1006] - 19-Apr-2024
 
 ### Changed
