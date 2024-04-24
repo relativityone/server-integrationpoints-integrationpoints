@@ -59,7 +59,7 @@
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
     <TelemetryMetricsCollectionClient>3003.1.0</TelemetryMetricsCollectionClient>
-    <RelativityOAuth2Client>1.5.5</RelativityOAuth2Client>
+    <RelativityOAuth2Client>1.5.2002</RelativityOAuth2Client>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativitySDK>17.4.2</RelativitySDK>
@@ -68,7 +68,7 @@
     <RelativityServicesSDK>13.5.1</RelativityServicesSDK>
     <RelativityServicesSDKPrivate>14.0.2</RelativityServicesSDKPrivate>
     <RelativityServicesInterfacesHelpers>13.5.1</RelativityServicesInterfacesHelpers>
-    <RelativitySync>0.12.2002</RelativitySync>
+    <RelativitySync>0.12.2003-pre.236</RelativitySync>
     <TelemetryAPM>2019.10.9</TelemetryAPM>
     <TelemetryMetricsCollectionBootstrapper>2018.12.2</TelemetryMetricsCollectionBootstrapper>
     <RelativityTestingIdentification>3.5.0</RelativityTestingIdentification>
