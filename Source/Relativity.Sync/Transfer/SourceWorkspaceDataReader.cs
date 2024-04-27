@@ -113,7 +113,7 @@ namespace Relativity.Sync.Transfer
             RelativityObjectSlim[] batch;
             try
             {
-                batch = await _exportBatcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+                batch = await _exportBatcher.GetNextItemsFromBatchAsync(_cancellationToken).ConfigureAwait(false);
                 _logger.LogInformation("Export API batch read. Items count: {count}", batch?.Length);
             }
             catch (Exception ex)
@@ -163,6 +163,7 @@ namespace Relativity.Sync.Transfer
         {
             if (disposing && _currentReader != null)
             {
+                _exportBatcher.Dispose();
                 _currentReader.Dispose();
                 _currentReader = null;
             }

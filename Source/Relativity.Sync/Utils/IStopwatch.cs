@@ -8,6 +8,8 @@ namespace Relativity.Sync.Utils
         /// <summary>Starts, or resumes, measuring elapsed time for an interval.</summary>
         void Start();
 
+        IStopwatch StartNew();
+
         /// <summary>Stops measuring elapsed time for an interval.</summary>
         void Stop();
 

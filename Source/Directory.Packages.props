@@ -119,6 +119,7 @@
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
     <SSHNET>2016.0.0</SSHNET>
 	<SemanticVersioning>1.2.2</SemanticVersioning>
+	  <RelativityServicesLayoutInterfaces>10.1.4</RelativityServicesLayoutInterfaces>
     <SystemBuffers>4.5.1</SystemBuffers>
     <SystemDiagnosticsDiagnosticSource>5.0.0</SystemDiagnosticsDiagnosticSource>
     <SystemMemory>4.5.4</SystemMemory>
@@ -252,6 +253,7 @@
 	<PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
     <PackageVersion Include="Selenium.Support" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
+	  <PackageVersion Include="Relativity.Services.Layout.Interfaces" Version="$(RelativityServicesLayoutInterfaces)" />
     <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="$(SeleniumWebDriverChromeDriver)" />
     <PackageVersion Include="Selenium.WebDriver.GeckoDriver" Version="$(SeleniumWebDriverGeckoDriver)" />
     <PackageVersion Include="SemanticVersioning" Version="$(SemanticVersioning)" />
