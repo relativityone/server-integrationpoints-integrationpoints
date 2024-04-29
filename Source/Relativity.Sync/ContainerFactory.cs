@@ -8,6 +8,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.DbContext;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Kepler.Snapshot;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Progress;
 using Relativity.Sync.RDOs.Framework;
@@ -48,6 +49,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<RipWorkarounds>().As<IRipWorkarounds>();
             containerBuilder.RegisterType<JobProgressUpdater>().As<IJobProgressUpdater>();
             containerBuilder.RegisterType<TimerFactory>().As<ITimerFactory>();
+            containerBuilder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 
