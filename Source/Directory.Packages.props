@@ -100,7 +100,7 @@
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
     <RelativityTransferClient>7.7.1001</RelativityTransferClient>
-    <RelativityEnvironmentSDK>2.0.4</RelativityEnvironmentSDK>
+    <RelativityEnvironmentSDK>5000.0.1</RelativityEnvironmentSDK>
     <RelativityARMSDK>11.3.0</RelativityARMSDK>
 	<Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
     <RelativityOAuth2ClientImplicit>1.5.2</RelativityOAuth2ClientImplicit>
@@ -111,6 +111,7 @@
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
     <SeleniumWebDriverGeckoDriver>0.24.0</SeleniumWebDriverGeckoDriver>
     <SemanticVersioning>1.2.2</SemanticVersioning>
+    <RelativityKepler>[5000.0.0,)</RelativityKepler>
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
     <StyleCopAnalyzers>1.1.118</StyleCopAnalyzers>
@@ -220,8 +221,8 @@
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
-    <PackageVersion Include="Relativity.Kepler" Version="[24000.0.3,)" />
-     <PackageVersion Include="Relativity.Kepler.Client" Version="[24000.0.3,)" />
+    <PackageVersion Include="Relativity.Kepler" Version="$(RelativityKepler)" />
+    <PackageVersion Include="Relativity.Kepler.Client" Version="$(RelativityKepler)" />
     <PackageVersion Include="Relativity.Kepler.Service" Version="$(KeplerVersion)" />
 	<PackageVersion Include="kCura.Injection" Version="$(kCuraInjection)" />
 	<PackageVersion Include="kCura.Relativity.Client" Version="$(kCuraRelativityClient)" />
