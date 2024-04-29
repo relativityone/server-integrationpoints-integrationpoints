@@ -7,7 +7,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.KeplerFactory
 {
-    internal sealed class ServiceFactoryForUser : ServiceFactoryBase, ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser
+    internal sealed class ServiceFactoryForUser : ServiceFactoryBase, ISourceServiceFactoryForUser, IDestinationServiceFactoryForUser, IServiceFactoryForUser
     {
         private IServiceFactory _serviceFactory;
 
