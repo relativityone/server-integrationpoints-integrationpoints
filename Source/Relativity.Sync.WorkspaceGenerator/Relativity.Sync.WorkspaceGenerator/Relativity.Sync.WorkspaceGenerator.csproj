@@ -67,8 +67,8 @@
     <Reference Include="Relativity.DataTransfer.Nodes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\relativity.transfer.client.7.4.9\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Kepler, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.2.6.2\lib\net462\Relativity.Kepler.dll</HintPath>
+    <Reference Include="Relativity.Kepler, Version=5000.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.5000.0.0\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging.Interfaces, Version=2018.11.8.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.Interfaces.2018.11.8\lib\net462\Relativity.Logging.Interfaces.dll</HintPath>
@@ -112,8 +112,8 @@
     <Reference Include="Relativity.Services.Layout.Interfaces, Version=1.1.46.9, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.Layout.Interfaces.1.1.46\lib\Relativity.Services.Layout.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.ServiceProxy, Version=2.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Kepler.Client.2.6.2\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=5000.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.5000.0.0\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=3000.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.3000.0.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
