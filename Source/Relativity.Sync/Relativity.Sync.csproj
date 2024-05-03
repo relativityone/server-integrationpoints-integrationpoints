@@ -54,6 +54,7 @@
         <PackageReference Include="Newtonsoft.Json"  />
         <PackageReference Include="Relativity.Toggles" />
         <PackageReference Include="System.Reactive.Linq"  />
+        <PackageReference Include="System.Runtime.CompilerServices.Unsafe"  />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="System.Runtime.Caching" />
