@@ -55,7 +55,13 @@
         <PackageReference Include="Relativity.Toggles" />
         <PackageReference Include="System.Reactive.Linq"  />
     </ItemGroup>
+    <!-- Open Telemetry Packages -->
     <ItemGroup>
+      <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+      <PackageReference Include="System.Threading.Tasks.Extensions"  />
+      <PackageReference Include="System.ValueTuple" />
+    </ItemGroup>
+  <ItemGroup>
         <Reference Include="System.Runtime.Caching" />
         <Reference Include="System.Web.Services" />
     </ItemGroup>
