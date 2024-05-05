@@ -15,7 +15,7 @@
       <group targetFramework=".NETFramework4.6.2">
         <dependency id="kCura.EventHandler" version="17.4.2" exclude="Build,Analyzers" />
         <dependency id="Newtonsoft.Json" version="6.0.1" exclude="Build,Analyzers" />
-        <dependency id="Relativity.Kepler" version="[5000.0.0,)" exclude="Build,Analyzers" />
+        <dependency id="Relativity.Kepler" version="5000.0.0" exclude="Build,Analyzers" />
         <dependency id="Relativity.Telemetry.APM" version="2019.10.9" exclude="Build,Analyzers" />
         <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="1.4.0" exclude="Build,Analyzers" />
       </group>
