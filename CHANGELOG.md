@@ -1,3 +1,8 @@
+## [24000.0.10] - 24-APR-2024
+
+### Changed
+- [REL-931883](https://jira.kcura.com/browse/REL-931883) - Update OTEL Dependencies and Verify Kepler Services.
+
 ## [24000.0.9] - 19-APR-2024
 
 ### Changed

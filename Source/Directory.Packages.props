@@ -27,7 +27,7 @@
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
     <kCuraLongPath>1.0.20</kCuraLongPath>
-	<kCuraInjection>12.0.0</kCuraInjection>
+    <kCuraInjection>12.0.0</kCuraInjection>
     <kCuraRelativityClient>11.0.16.1</kCuraRelativityClient>
     <LanguageExtCore>3.1.15</LanguageExtCore>
     <MicrosoftAspNetMvc>5.2.3</MicrosoftAspNetMvc>
@@ -45,7 +45,7 @@
     <MicrosoftAzureCosmosTable>1.0.8</MicrosoftAzureCosmosTable>
     <MicrosoftAzureKeyVaultCore>3.0.5</MicrosoftAzureKeyVaultCore>
     <MicrosoftReactiveTesting>4.4.1</MicrosoftReactiveTesting>
-	<MicrosoftApplicationInsights>2.17.0</MicrosoftApplicationInsights>
+    <MicrosoftApplicationInsights>2.17.0</MicrosoftApplicationInsights>
     <MicrosoftExtensionsConfiguration>2.2.0</MicrosoftExtensionsConfiguration>
     <MicrosoftExtensionsConfigurationAbstractions>2.2.0</MicrosoftExtensionsConfigurationAbstractions>
     <MicrosoftExtensionsConfigurationBinder>2.2.4</MicrosoftExtensionsConfigurationBinder>
@@ -54,18 +54,17 @@
     <MicrosoftAspNetRazor>3.2.3</MicrosoftAspNetRazor>
     <MicrosoftAspNetWebApiClient>5.2.3</MicrosoftAspNetWebApiClient>
     <MicrosoftAspNetWebPages>3.2.3</MicrosoftAspNetWebPages>
-	<MicrosoftBcl>1.1.10</MicrosoftBcl>
+    <MicrosoftBcl>1.1.10</MicrosoftBcl>
     <MicrosoftBclBuild>1.0.14</MicrosoftBclBuild>
     <MicrosoftjQueryUnobtrusiveAjax>3.2.3</MicrosoftjQueryUnobtrusiveAjax>
     <MicrosoftjQueryUnobtrusiveValidation>3.2.3</MicrosoftjQueryUnobtrusiveValidation>
-	<NunitXmlTestLogger>2.1.62</NunitXmlTestLogger>
+    <NunitXmlTestLogger>2.1.62</NunitXmlTestLogger>
     <netDumbster>2.0.0.4</netDumbster>
     <NewtonsoftJson>6.0.8</NewtonsoftJson>
     <NLog>4.7.2</NLog>
     <NSubstitute>1.10.0.0</NSubstitute>
     <NUnit>3.13.3</NUnit>
     <NUnit3TestAdapter>4.4.2</NUnit3TestAdapter>
-	<NLog>4.7.2</NLog>
     <NuGetPowerTools>0.29.0</NuGetPowerTools>
     <NUnitExtrasHierarchicalCategories>1.3.0</NUnitExtrasHierarchicalCategories>
     <OutsideIn>2023.4.0</OutsideIn>
@@ -74,11 +73,9 @@
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
     <RelativityDataExchangeClientSDK>2.9.1001</RelativityDataExchangeClientSDK>
-	<RelativityDataGrid>16.9.1</RelativityDataGrid>
+    <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
-    <KeplerVersion>2.15.6</KeplerVersion>
-    <RelativityKeplerService>2.7.0</RelativityKeplerService>
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
     <TelemetryMetricsCollectionClient>3003.1.0</TelemetryMetricsCollectionClient>
@@ -100,9 +97,9 @@
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
     <RelativityTransferClient>7.7.1001</RelativityTransferClient>
-    <RelativityEnvironmentSDK>2.0.4</RelativityEnvironmentSDK>
+    <RelativityEnvironmentSDK>5000.0.1</RelativityEnvironmentSDK>
     <RelativityARMSDK>11.3.0</RelativityARMSDK>
-	<Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
+    <Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
     <RelativityOAuth2ClientImplicit>1.5.2</RelativityOAuth2ClientImplicit>
     <RelativitySecretCatalog>1.0.19</RelativitySecretCatalog>
     <SystemReactiveLinq>4.4.1</SystemReactiveLinq>
@@ -111,6 +108,7 @@
     <SeleniumWebDriverChromeDriver>78.0.3904.1100-beta</SeleniumWebDriverChromeDriver>
     <SeleniumWebDriverGeckoDriver>0.24.0</SeleniumWebDriverGeckoDriver>
     <SemanticVersioning>1.2.2</SemanticVersioning>
+    <RelativityKepler>5000.0.0</RelativityKepler>
     <Serilog>1.5.14</Serilog>
     <SerilogSinksSeq>1.5.36</SerilogSinksSeq>
     <StyleCopAnalyzers>1.1.118</StyleCopAnalyzers>
@@ -118,16 +116,18 @@
     <SystemValueTuple>4.5.0</SystemValueTuple>
     <SystemWrapperWrappers>0.27.0</SystemWrapperWrappers>
     <SSHNET>2016.0.0</SSHNET>
-	<SemanticVersioning>1.2.2</SemanticVersioning>
+    <SemanticVersioning>1.2.2</SemanticVersioning>
     <SystemBuffers>4.5.1</SystemBuffers>
-    <SystemDiagnosticsDiagnosticSource>5.0.0</SystemDiagnosticsDiagnosticSource>
-    <SystemMemory>4.5.4</SystemMemory>
+    <SystemDiagnosticsDiagnosticSource>8.0.0</SystemDiagnosticsDiagnosticSource>
+    <SystemMemory>4.5.5</SystemMemory>
     <SystemNumericsVectors>4.5.0</SystemNumericsVectors>
-    <SystemRuntimeCompilerServicesUnsafe>5.0.0</SystemRuntimeCompilerServicesUnsafe>
+    <SystemRuntimeCompilerServicesUnsafe>6.0.0</SystemRuntimeCompilerServicesUnsafe>
+    <SystemThreadingTasksExtensions>4.5.4</SystemThreadingTasksExtensions>
     <SystemDataSqlClient>4.8.5</SystemDataSqlClient>
-	<SystemConfigurationConfigurationManager>4.5.0</SystemConfigurationConfigurationManager>
+    <SystemConfigurationConfigurationManager>4.5.0</SystemConfigurationConfigurationManager>
     <SystemSecurityAccessControl>4.7.0</SystemSecurityAccessControl>
     <SystemSecurityPermissions>4.7.0</SystemSecurityPermissions>
+    <RelativityServicesLayoutInterfaces>10.1.4</RelativityServicesLayoutInterfaces>
     <SystemSecurityPrincipalWindows>4.7.0</SystemSecurityPrincipalWindows>
     <WebGrease>1.6.0</WebGrease>
     <ZetaLongPaths>1.0.0.16</ZetaLongPaths>
@@ -145,7 +145,7 @@
     <PackageVersion Include="Banzai" Version="$(Banzai)" />
     <PackageVersion Include="BCrypt.Net-Core" Version="$(BCryptNetCore)" />
     <PackageVersion Include="Banzai.Autofac" Version="$(BanzaiAutofac)" />
-	  <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)" />
+    <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)" />
     <PackageVersion Include="Castle.Core" Version="$(CastleCore)" />
     <PackageVersion Include="Castle.Windsor" Version="$(CastleCore)" />
     <PackageVersion Include="CSharpGuidelineAnalyzer" Version="$(CSharpGuidelineAnalyzer)" />
@@ -185,29 +185,28 @@
     <PackageVersion Include="Microsoft.Azure.Cosmos.Table" Version="$(MicrosoftAzureCosmosTable)" />
     <PackageVersion Include="Microsoft.Azure.KeyVault.Core" Version="$(MicrosoftAzureKeyVaultCore)" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="$(MicrosoftReactiveTesting)" />
-	<PackageVersion Include="Microsoft.ApplicationInsights" Version="$(MicrosoftApplicationInsights)" />
-	<PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfiguration)" />
-	<PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractions)" />
-	<PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftExtensionsConfigurationBinder)" />
-	<PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariables)" />
-	<PackageVersion Include="Microsoft.Extensions.Primitives" Version="$(MicrosoftExtensionsPrimitives)" />
-	<PackageVersion Include="Microsoft.AspNet.Razor" Version="$(MicrosoftAspNetRazor)" />
-	<PackageVersion Include="Microsoft.AspNet.WebApi.Client" Version="$(MicrosoftAspNetWebApiClient)" />
-	<PackageVersion Include="Microsoft.AspNet.WebPages" Version="$(MicrosoftAspNetWebPages)" />
-	<PackageVersion Include="Microsoft.Bcl" Version="$(MicrosoftBcl)" />
-	<PackageVersion Include="Microsoft.Bcl.Build" Version="$(MicrosoftBclBuild)" />
-	<PackageVersion Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="$(MicrosoftjQueryUnobtrusiveAjax)" />
-	<PackageVersion Include="Microsoft.jQuery.Unobtrusive.Validation" Version="$(MicrosoftjQueryUnobtrusiveValidation)" />
-	<PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
+    <PackageVersion Include="Microsoft.ApplicationInsights" Version="$(MicrosoftApplicationInsights)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfiguration)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationAbstractions)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftExtensionsConfigurationBinder)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariables)" />
+    <PackageVersion Include="Microsoft.Extensions.Primitives" Version="$(MicrosoftExtensionsPrimitives)" />
+    <PackageVersion Include="Microsoft.AspNet.Razor" Version="$(MicrosoftAspNetRazor)" />
+    <PackageVersion Include="Microsoft.AspNet.WebApi.Client" Version="$(MicrosoftAspNetWebApiClient)" />
+    <PackageVersion Include="Microsoft.AspNet.WebPages" Version="$(MicrosoftAspNetWebPages)" />
+    <PackageVersion Include="Microsoft.Bcl" Version="$(MicrosoftBcl)" />
+    <PackageVersion Include="Microsoft.Bcl.Build" Version="$(MicrosoftBclBuild)" />
+    <PackageVersion Include="Microsoft.jQuery.Unobtrusive.Ajax" Version="$(MicrosoftjQueryUnobtrusiveAjax)" />
+    <PackageVersion Include="Microsoft.jQuery.Unobtrusive.Validation" Version="$(MicrosoftjQueryUnobtrusiveValidation)" />
+    <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
     <PackageVersion Include="NLog" Version="$(NLog)" />
     <PackageVersion Include="netDumbster" Version="$(netDumbster)" />
     <PackageVersion Include="NSubstitute" Version="$(NSubstitute)" />
     <PackageVersion Include="NUnit" Version="$(NUnit)" />
     <PackageVersion Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapter)" />
-	<PackageVersion Include="NLog" Version="$(NLog)" />
-	<PackageVersion Include="NuGetPowerTools" Version="$(NuGetPowerTools)" />
-	<PackageVersion Include="NUnitExtras.HierarchicalCategories" Version="$(NUnitExtrasHierarchicalCategories)" />
+    <PackageVersion Include="NuGetPowerTools" Version="$(NuGetPowerTools)" />
+    <PackageVersion Include="NUnitExtras.HierarchicalCategories" Version="$(NUnitExtrasHierarchicalCategories)" />
     <PackageVersion Include="Polly" Version="$(Polly)" />
     <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribWaitAndRetry)" />
     <PackageVersion Include="Relativity" Version="$(RelativityCore)" />
@@ -219,11 +218,11 @@
     <PackageVersion Include="Relativity.DataGrid" Version="$(RelativityDataGrid)" />
     <PackageVersion Include="Relativity.DataTransfer.Legacy.SDK" Version="$(RelativityDataTransferLegacySDK)" />
     <PackageVersion Include="Relativity.DataTransfer.MessageService" Version="$(RelativityDataTransferMessageService)" />
-    <PackageVersion Include="Relativity.Kepler" Version="$(KeplerVersion)" />
-    <PackageVersion Include="Relativity.Kepler.Client" Version="$(KeplerVersion)" />
-    <PackageVersion Include="Relativity.Kepler.Service" Version="$(KeplerVersion)" />
-	<PackageVersion Include="kCura.Injection" Version="$(kCuraInjection)" />
-	<PackageVersion Include="kCura.Relativity.Client" Version="$(kCuraRelativityClient)" />
+    <PackageVersion Include="Relativity.Kepler" Version="$(RelativityKepler)" />
+    <PackageVersion Include="Relativity.Kepler.Client" Version="$(RelativityKepler)" />
+    <PackageVersion Include="Relativity.Kepler.Service" Version="$(RelativityKepler)" />
+    <PackageVersion Include="kCura.Injection" Version="$(kCuraInjection)" />
+    <PackageVersion Include="kCura.Relativity.Client" Version="$(kCuraRelativityClient)" />
     <PackageVersion Include="Relativity.Logging" Version="$(RelativityLogging)" />
     <PackageVersion Include="Relativity.Logging.Interfaces" Version="$(RelativityLogging)" />
     <PackageVersion Include="Relativity.OAuth2Client" Version="$(RelativityOAuth2Client)" />
@@ -247,11 +246,12 @@
     <PackageVersion Include="Relativity.Testing.Identification" Version="$(RelativityTestingIdentification)" />
     <PackageVersion Include="Relativity.Toggles" Version="$(Toggles)" />
     <PackageVersion Include="Relativity.Transfer.Client" Version="$(RelativityTransferClient)" />
-	<PackageVersion Include="relativity.faspmanager" Version="$(Relativityfaspmanager)" />
-	<PackageVersion Include="Relativity.OAuth2Client.Implicit" Version="$(RelativityOAuth2ClientImplicit)" />
-	<PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
+    <PackageVersion Include="relativity.faspmanager" Version="$(Relativityfaspmanager)" />
+    <PackageVersion Include="Relativity.OAuth2Client.Implicit" Version="$(RelativityOAuth2ClientImplicit)" />
+    <PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
     <PackageVersion Include="Selenium.Support" Version="$(SeleniumSupport)" />
     <PackageVersion Include="Selenium.WebDriver" Version="$(SeleniumSupport)" />
+    <PackageVersion Include="Relativity.Services.Layout.Interfaces" Version="$(RelativityServicesLayoutInterfaces)" />
     <PackageVersion Include="Selenium.WebDriver.ChromeDriver" Version="$(SeleniumWebDriverChromeDriver)" />
     <PackageVersion Include="Selenium.WebDriver.GeckoDriver" Version="$(SeleniumWebDriverGeckoDriver)" />
     <PackageVersion Include="SemanticVersioning" Version="$(SemanticVersioning)" />
@@ -260,23 +260,24 @@
     <PackageVersion Include="SSH.NET" Version="$(SSHNET)" />
     <PackageVersion Include="StyleCop.Analyzers" Version="$(StyleCopAnalyzers)" />
     <PackageVersion Include="System.Reactive" Version="$(SystemReactive)" />
-    <PackageVersion Include="System.ValueTuple" Version="$(SystemValueTuple)" />
     <PackageVersion Include="SystemWrapper.Wrappers" Version="$(SystemWrapperWrappers)" />
-    <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />  
-	<PackageVersion Include="SemanticVersioning" Version="$(SemanticVersioning)" />
-	<PackageVersion Include="System.Buffers" Version="$(SystemBuffers)" />
-	<PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsDiagnosticSource)" />
-	<PackageVersion Include="System.Memory" Version="$(SystemMemory)" />
-	<PackageVersion Include="System.Numerics.Vectors" Version="$(SystemNumericsVectors)" />
-	<PackageVersion Include="System.Runtime.CompilerServices.Unsafe" version="$(SystemRuntimeCompilerServicesUnsafe)" />
-	<PackageVersion Include="System.Data.SqlClient" Version="$(SystemDataSqlClient)"  />
-	<PackageVersion Include="System.Configuration.ConfigurationManager" Version="$(SystemConfigurationConfigurationManager)" />
-	<PackageVersion Include="System.Security.AccessControl" Version="$(SystemSecurityAccessControl)" />
-	<PackageVersion Include="System.Security.Permissions" Version="$(SystemSecurityPermissions)" />
-	<PackageVersion Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindows)" />
+    <PackageVersion Include="SystemWrapper.Interfaces" Version="$(SystemWrapperWrappers)" />
+    <PackageVersion Include="SemanticVersioning" Version="$(SemanticVersioning)" />
+    <PackageVersion Include="System.Buffers" Version="$(SystemBuffers)" />
+    <PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsDiagnosticSource)" />
+    <PackageVersion Include="System.Memory" Version="$(SystemMemory)" />
+    <PackageVersion Include="System.Numerics.Vectors" Version="$(SystemNumericsVectors)" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" version="$(SystemRuntimeCompilerServicesUnsafe)" />
+    <PackageVersion Include="System.Threading.Tasks.Extensions" version="$(SystemThreadingTasksExtensions)" />
+    <PackageVersion Include="System.ValueTuple" version="$(SystemValueTuple)" />
+    <PackageVersion Include="System.Data.SqlClient" Version="$(SystemDataSqlClient)"  />
+    <PackageVersion Include="System.Configuration.ConfigurationManager" Version="$(SystemConfigurationConfigurationManager)" />
+    <PackageVersion Include="System.Security.AccessControl" Version="$(SystemSecurityAccessControl)" />
+    <PackageVersion Include="System.Security.Permissions" Version="$(SystemSecurityPermissions)" />
+    <PackageVersion Include="System.Security.Principal.Windows" Version="$(SystemSecurityPrincipalWindows)" />
     <PackageVersion Include="Relativity.Environment.SDK" Version="$(RelativityEnvironmentSDK)" />
     <PackageVersion Include="Relativity.ARM.SDK" Version="$(RelativityARMSDK)" />
-	  <PackageVersion Include="System.Reactive.Linq" Version="$(SystemReactiveLinq)" />
+    <PackageVersion Include="System.Reactive.Linq" Version="$(SystemReactiveLinq)" />
     <PackageVersion Include="WebGrease" Version="$(WebGrease)" />
     <PackageVersion Include="ZetaLongPaths" Version="$(ZetaLongPaths)" />
     <PackageVersion Include="coverlet.msbuild" Version="$(coverletmsbuild)">
@@ -284,7 +285,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="NunitXml.TestLogger" Version="$(NunitXmlTestLogger)" />
-
     <PackageVersion Include="jQuery" Version="3.6.1" />
     <PackageVersion Include="jquery.jstree" Version="3.3.7" />
     <PackageVersion Include="jQuery.UI.Combined" Version="1.13.2" />
@@ -298,6 +298,6 @@
     <PackageVersion Include="normalize.css" Version="3.0.1" />
     <PackageVersion Include="Q" Version="1.4.1" />
     <PackageVersion Include="Select2.js" Version="3.5.1" />
-    <PackageVersion Include="Trirand.jqGrid" Version="4.5.4" />  
+    <PackageVersion Include="Trirand.jqGrid" Version="4.5.4" />
   </ItemGroup>
 </Project>
