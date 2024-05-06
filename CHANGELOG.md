@@ -1,3 +1,9 @@
+## [23013.2.2003] - 01-MAY-2024
+
+### Changed
+
+- [REL-931516](https://jira.kcura.com/browse/REL-931516) Server 2023 Patch 2 - Update RAPCI repos to upgrade hopper with hotfix/patch.
+
 ## [23013.2.2002] - 19-APR-2024
 
 ### Changed
