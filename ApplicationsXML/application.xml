@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <DeploymentTarget>Server</DeploymentTarget>
   <ArtifactViewFields>
     <ArtifactViewField>
       <ArtifactViewFieldId>1003322</ArtifactViewFieldId>
