@@ -3,6 +3,11 @@
 ### Changed
 - [REL-913766](https://jira.kcura.com/browse/REL-913766) - [Server Backport] [Sync] GetNextItemsFromBatchAsync Not Supporting Cancel or Drain-Stop Properly and Timeouts - Backported https://github.com/relativityone/sync/pull/332, https://github.com/relativityone/sync/pull/334, https://github.com/relativityone/sync/pull/336
 
+## [24000.0.10] - 24-APR-2024
+
+### Changed
+- [REL-931883](https://jira.kcura.com/browse/REL-931883) - Update OTEL Dependencies and Verify Kepler Services.
+
 ## [24000.0.9] - 19-APR-2024
 
 ### Changed
