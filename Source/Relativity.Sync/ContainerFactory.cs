@@ -8,6 +8,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.DbContext;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Kepler.Snapshot;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Progress;
 using Relativity.Sync.RDOs.Framework;

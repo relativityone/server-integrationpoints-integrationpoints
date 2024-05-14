@@ -25,33 +25,33 @@
     <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
     <!-- Relativity Packages with Release Versioning Schema -->
     <ItemGroup>
-        <PackageReference Include="Polly.Contrib.WaitAndRetry"  />
+        <PackageReference Include="Polly.Contrib.WaitAndRetry" />
         <PackageReference Include="Relativity" />
-        <PackageReference Include="Relativity.DataExchange.Client.SDK"  />
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
         <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" />
         <PackageReference Include="Relativity.Services.Interfaces" />
-        <PackageReference Include="Relativity.Services.Interfaces.Helpers"  />
+        <PackageReference Include="Relativity.Services.Interfaces.Helpers" />
         <PackageReference Include="Relativity.Services.Interfaces.Private" />
     </ItemGroup>
     <!-- Relativity Packages with Unknown Versioning Schema -->
     <ItemGroup>
         <PackageReference Include="Relativity.API" />
-        <PackageReference Include="Relativity.Kepler.Client"  />
+        <PackageReference Include="Relativity.Kepler.Client" />
         <PackageReference Include="Relativity.OAuth2Client" />
-        <PackageReference Include="Relativity.OAuth2Client.Interfaces"  />
+        <PackageReference Include="Relativity.OAuth2Client.Interfaces" />
         <PackageReference Include="Relativity.Telemetry.APM" />
         <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" />
-        <PackageReference Include="Relativity.Telemetry.Services.Interface"  />
-        <PackageReference Include="Relativity.Environment.SDK"  />
+        <PackageReference Include="Relativity.Telemetry.Services.Interface" />
+        <PackageReference Include="Relativity.Environment.SDK" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
     <!-- Third Party Packages -->
     <ItemGroup>
         <PackageReference Include="Autofac" />
         <PackageReference Include="Polly" />
-        <PackageReference Include="Castle.Core"  />
+        <PackageReference Include="Castle.Core" />
         <PackageReference Include="Banzai.Autofac" />
-        <PackageReference Include="Newtonsoft.Json"  />
+        <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="Relativity.Toggles" />
         <PackageReference Include="System.Reactive.Linq"  />
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe"  />

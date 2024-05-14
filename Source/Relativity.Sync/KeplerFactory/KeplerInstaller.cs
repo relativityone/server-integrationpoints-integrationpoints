@@ -2,6 +2,9 @@
 using Autofac;
 using Autofac.Core;
 using Relativity.Sync.Authentication;
+using Relativity.Sync.Executors.Tagging;
+using Relativity.Sync.Kepler.Document;
+using Relativity.Sync.Kepler.Snapshot;
 
 namespace Relativity.Sync.KeplerFactory
 {
@@ -18,6 +21,7 @@ namespace Relativity.Sync.KeplerFactory
             builder.RegisterType<ServiceFactoryForUser>()
                 .As<ISourceServiceFactoryForUser>()
                 .As<IDestinationServiceFactoryForUser>()
+                .As<IServiceFactoryForUser>()
                 .SingleInstance();
 
             builder.RegisterType<ServiceFactoryForAdmin>()
@@ -29,6 +33,10 @@ namespace Relativity.Sync.KeplerFactory
             builder.RegisterType<DynamicProxyFactory>().As<IDynamicProxyFactory>().SingleInstance();
 
             builder.RegisterType<ServiceFactoryFactory>().As<IServiceFactoryFactory>();
+            builder.RegisterType<SnapshotRepository>().As<ISnapshotRepository>();
+            builder.RegisterType<TaggingRepository>().As<ITaggingRepository>();
+            builder.RegisterType<DocumentRepository>().As<IDocumentRepository>();
+            builder.RegisterType<ProxyFactoryDocument>().As<IProxyFactoryDocument>();
         }
     }
 }

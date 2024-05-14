@@ -9,6 +9,11 @@ namespace Relativity.Sync.Storage
     public sealed class FieldMap
     {
         /// <summary>
+        /// Gets or sets the index of the field in ordered collection.
+        /// </summary>
+        public int FieldIndex { get; set; }
+
+        /// <summary>
         /// Gets or sets the field in the source where the data is stored.
         /// </summary>
         public FieldEntry SourceField { get; set; }

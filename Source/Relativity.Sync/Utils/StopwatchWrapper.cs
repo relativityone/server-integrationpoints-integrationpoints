@@ -21,6 +21,13 @@ namespace Relativity.Sync.Utils
             _stopwatch.Start();
         }
 
+        public IStopwatch StartNew()
+        {
+            var stopwatch = new StopwatchWrapper();
+            stopwatch.Start();
+            return stopwatch;
+        }
+
         /// <inheritdoc />
         public void Stop()
         {

@@ -25,4 +25,9 @@ namespace Relativity.Sync
 
         Task<string> GetIntegrationPointsWebAPIUrl();
     }
+
+    internal interface IInstanceSettingsDocument
+    {
+        Task<int> GetSyncDocumentTaggingBatchSizeAsync(int defaultValue = 10000);
+    }
 }

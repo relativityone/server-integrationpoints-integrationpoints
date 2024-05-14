@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Kepler.Snapshot;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
@@ -17,9 +19,10 @@ namespace Relativity.Sync.Tests.Unit
         public void SetUp()
         {
             Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            Mock<ISnapshotRepository> snapshotRepository = new Mock<ISnapshotRepository>();
             Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
 
-            _instance = new RelativityExportBatcherFactory(serviceFactoryForUser.Object, configuration.Object);
+            _instance = new RelativityExportBatcherFactory(serviceFactoryForUser.Object, snapshotRepository.Object, configuration.Object, Mock.Of<IAPILog>());
         }
 
         [Test]

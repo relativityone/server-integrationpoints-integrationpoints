@@ -8,7 +8,7 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync
 {
-    internal sealed class InstanceSettings : IInstanceSettings
+    internal sealed class InstanceSettings : IInstanceSettings, IInstanceSettingsDocument
     {
         private const string _RELATIVITY_CORE_SETTING_SECTION = "Relativity.Core";
         private const string _SYNC_SECTION = "Relativity.Sync";
@@ -92,9 +92,15 @@ namespace Relativity.Sync
 
         public async Task<string> GetIntegrationPointsWebAPIUrl()
         {
-	        return await GetAsync<string>("WebAPIPath", "kCura.IntegrationPoints", string.Empty).ConfigureAwait(false);
+            return await GetAsync<string>("WebAPIPath", "kCura.IntegrationPoints", string.Empty).ConfigureAwait(false);
         }
-        
+
+        public async Task<int> GetSyncDocumentTaggingBatchSizeAsync(int defaultValue = 10000)
+        {
+            return await GetAsync("SyncDocumentTaggingBatchSize", _SYNC_SECTION, defaultValue)
+                .ConfigureAwait(false);
+        }
+
         private async Task<InstanceSettingQueryResultSet> TryReadInstanceSettingAsync(string name, string section)
         {
             try
@@ -146,5 +152,6 @@ namespace Relativity.Sync
         {
             _logger.LogInformation($"Warning: Retrieve '{name}' setting from section '{section}' failed, default value was returned: '{defaultValue}' (Error Message: {errorMessage})");
         }
+
     }
 }

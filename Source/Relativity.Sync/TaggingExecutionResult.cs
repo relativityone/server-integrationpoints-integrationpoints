@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Relativity.Sync.Storage;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Relativity.Sync
@@ -6,6 +8,8 @@ namespace Relativity.Sync
     internal sealed class TaggingExecutionResult : ExecutionResult
     {
         public int TaggedDocumentsCount { get; set; }
+
+        public List<JobHistoryCreateItemError> FailedDocuments { get; set; } = new List<JobHistoryCreateItemError>();
 
         internal TaggingExecutionResult(ExecutionStatus status, string message, Exception exception) : base(status, message, exception)
         {
@@ -22,6 +26,12 @@ namespace Relativity.Sync
         /// </summary>
         public static new TaggingExecutionResult Success()
             => new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, null);
+
+        /// <summary>
+        /// Creates a <see cref="TaggingExecutionResult"/> for a completed with errors operation.
+        /// </summary>
+        public static new TaggingExecutionResult SuccessWithErrors()
+            => new TaggingExecutionResult(ExecutionStatus.CompletedWithErrors, string.Empty, null);
 
         /// <summary>
         /// Creates a <see cref="TaggingExecutionResult"/> for a transfer where tagging is disabled by user.
