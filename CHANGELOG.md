@@ -1,3 +1,9 @@
+## [24000.0.11] - 17-May-2024
+
+### Changed
+
+- [REL-946043](https://jira.kcura.com/browse/REL-946043) - Revved latest package for Relativity.DataExchange.Client.SDK and Relativity.Transfer.Client
+
 ## [24000.0.11] - 08-May-2024
 
 ### Changed
