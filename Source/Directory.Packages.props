@@ -72,9 +72,9 @@
     <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
-    <RelativityDataExchangeClientSDK>2.9.1001</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>3.0.4</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
-    <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
+    <RelativityDataTransferLegacySDK>24000.0.6</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
     <RelativityLogging>3000.0.1</RelativityLogging>
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
@@ -96,7 +96,7 @@
     <RelativityTestingFrameworkApi>10.3.0</RelativityTestingFrameworkApi>
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
-    <RelativityTransferClient>7.7.1001</RelativityTransferClient>
+    <RelativityTransferClient>8.0.2</RelativityTransferClient>
     <RelativityEnvironmentSDK>5000.0.1</RelativityEnvironmentSDK>
     <RelativityARMSDK>11.3.0</RelativityARMSDK>
     <Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
