@@ -1,3 +1,9 @@
+## [24000.0.13] - 04-June-2024
+
+### Changed
+
+- [REL-944166](https://jira.kcura.com/browse/REL-944166) - Consumed oauth2 client into RIP
+
 ## [24000.0.12] - 17-May-2024
 
 ### Changed
