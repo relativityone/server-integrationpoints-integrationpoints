@@ -1,3 +1,11 @@
+## [24000.0.13] - 12-June-2024
+
+### Changed
+
+- [REL-944166](https://jira.kcura.com/browse/REL-944166) - Consumed oauth2 client into RIP
+- Revved latest IAPI and that has unified RDC and SDK version
+- Revved latest relativity outsidein upgraded to match IAPI version
+
 ## [24000.0.12] - 17-May-2024
 
 ### Changed
