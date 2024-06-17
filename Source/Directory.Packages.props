@@ -48,7 +48,7 @@
     <PollyContribWaitAndRetry>1.1.1</PollyContribWaitAndRetry>
     <RelativityAutomatedWorkflowsSDK>1.0.8</RelativityAutomatedWorkflowsSDK>
     <RelativityCore>48.2.17</RelativityCore>
-    <RelativityDataExchangeClientSDK>2.9.1001</RelativityDataExchangeClientSDK>
+    <RelativityDataExchangeClientSDK>2.9.1006-pre.7</RelativityDataExchangeClientSDK>
     <RelativityDataGrid>16.9.1</RelativityDataGrid>
     <RelativityDataTransferLegacySDK>23000.19.1</RelativityDataTransferLegacySDK>
     <RelativityDataTransferMessageService>10.2.0</RelativityDataTransferMessageService>
