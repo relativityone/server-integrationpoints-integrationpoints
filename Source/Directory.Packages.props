@@ -96,7 +96,7 @@
     <RelativityTestingFrameworkApi>10.3.0</RelativityTestingFrameworkApi>
     <RelativityTestingFrameworkRingSetup>10.3.0</RelativityTestingFrameworkRingSetup>
     <RelativityTestingFrameworkWeb>10.3.0</RelativityTestingFrameworkWeb>
-    <RelativityTransferClient>8.0.2</RelativityTransferClient>
+    <RelativityTransferClient>24000.0.1</RelativityTransferClient>
     <RelativityEnvironmentSDK>5000.0.1</RelativityEnvironmentSDK>
     <RelativityARMSDK>11.3.0</RelativityARMSDK>
     <Relativityfaspmanager>3.7.2.0</Relativityfaspmanager>
