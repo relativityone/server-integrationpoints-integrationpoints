@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Globalization;
+
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
+
 using Relativity.API;
 using Relativity.Services.Choice;
-using Relativity.Telemetry.APM;
-using Client = Relativity.Telemetry.APM.Client;
+
+using Constants = kCura.IntegrationPoints.Core.Constants;
+using OtelSdk = Relativity.OpenTelemetry.OtelSdk;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -110,10 +113,15 @@ namespace kCura.IntegrationPoints.Core
 
         private void SendHealthCheck(string jobId, long workspaceID)
         {
-            IHealthMeasure healthCheck = Client.APMClient.HealthCheckOperation(
-                Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
-                () => HealthCheck.CreateJobFailedMetric(jobId, workspaceID));
-            healthCheck.Write();
+            OtelSdk.Instance.RecordHealthCheck(
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_MESSAGE,
+                    jobId, workspaceID),
+                isHealthy: false,
+                workspaceId: Convert.ToInt32(workspaceID));
         }
 
         private bool IsJobFailed(ChoiceRef jobStatusChoice)
