@@ -1,3 +1,9 @@
+## [24000.0.16] - 02-July-2024
+
+### Changed
+
+- [REL-955277](https://jira.kcura.com/browse/REL-955277) - Migrated the failed job IAPM.HealthCheckOperation to OTEL SDK
+
 ## [24000.0.15] - 28-June-2024
 
 ### Changed
