@@ -18,7 +18,7 @@ resources:
 stages:
 - template: rapci-server.yml@azdo_templates  # Template reference
   parameters:
-    RelativityBranch: ''
+    RelativityBranch: 'release-24.0-2024'
     TemplateName: 'aio-server-2023-ga'
     buildSteps:
       - checkout: self
