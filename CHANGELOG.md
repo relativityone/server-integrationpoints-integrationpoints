@@ -1,3 +1,9 @@
+## [24000.0.14] - 26-June-2024
+
+### Changed
+
+- [REL-870855](https://jira.kcura.com/browse/REL-870855) [RIP] Remove 'EnableSyncNonDocumentFlowToggle' Toggle - Backported from [REL-808758](https://jira.kcura.com/browse/REL-808758)
+
 ## [24000.0.13] - 12-June-2024
 
 ### Changed

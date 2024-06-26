@@ -68,11 +68,6 @@
             });
             return enableSyncNonDocumentFlowToggleValue;
         }
-
-        var promise = getEnableSyncNonDocumentFlowToggleValue();
-        promise.then(function (result) {
-            IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
-        });
 		
 		var getEnableTaggingToggleValue = function () {
 			var enableTaggingToggleValue = IP.data.ajax({
