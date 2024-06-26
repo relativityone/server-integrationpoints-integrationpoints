@@ -54,6 +54,13 @@ namespace kCura.IntegrationPoints.Core
                 public static readonly string ExportName = @"Export";
             }
 
+            public static class OpenTelemetry
+            {
+                public const string HEALTH_CHECK_JOB_FAILED_NAME = "relsvr.integrationpoints.job.failure";
+                public const string HEALTH_CHECK_AGENT_EVENT_SOURCE = "relsvr.integrationpoints.agent";
+                public const string HEALTH_CHECK_JOB_FAILED_MESSAGE = "Integration Points job failed! Job Id {0} in Workspace {1}!";
+            }
+
             public static class PermissionErrors
             {
                 public const string UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE = "Unable to save the Integration Point. Please contact your system administrator.";

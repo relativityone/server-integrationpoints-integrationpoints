@@ -60,6 +60,7 @@
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Relativity" />
     <PackageReference Include="Relativity.API" />
+    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
     <PackageReference Include="Relativity.Kepler" />
     <PackageReference Include="Relativity.Toggles" />
     <PackageReference Include="Relativity.DataExchange.Client.SDK" />
@@ -67,7 +68,7 @@
     <PackageReference Include="Relativity.Telemetry.APM" />
     <PackageReference Include="Relativity.DataTransfer.MessageService" />
     <PackageReference Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" />
-    <PackageReference Include="Relativity.AutomatedWorkflows.SDK" />
+    <PackageReference Include="Relativity.Server.OpenTelemetry.SDK" />
     <PackageReference Include="iTextSharp" />
     <PackageReference Include="Relativity.Services.Interfaces.Private" />
   </ItemGroup>
