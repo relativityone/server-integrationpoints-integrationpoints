@@ -3,8 +3,6 @@
 ### Changed
 
 - [REL-973479](https://jira.kcura.com/browse/REL-973479) - Upgrade latest IAPI into SFU, Sync and RIP
-- Revved latest package for Relativity.DataExchange.Client.SDK
-- Revved latest package for Relativity.Testing.Framework 
 
 ## [24000.0.13] - 12-June-2024
 
