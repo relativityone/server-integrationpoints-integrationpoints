@@ -1,3 +1,8 @@
+## [24000.0.14] - 27-Jun-2024
+
+### Changed
+- [REL-913766](https://jira.kcura.com/browse/REL-913766) - [Server Backport] [Sync] GetNextItemsFromBatchAsync Not Supporting Cancel or Drain-Stop Properly and Timeouts
+
 ## [24000.0.13] - 12-June-2024
 
 ### Changed

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 
 namespace Relativity.Sync.Transfer
 {
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Transfer
             RelativityObjectSlim[] batch;
             try
             {
-                batch = await _exportBatcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+                batch = await _exportBatcher.GetNextItemsFromBatchAsync(_cancellationToken).ConfigureAwait(false);
                 _logger.LogInformation("Export API batch read. Items count: {count}", batch?.Length);
             }
             catch (Exception ex)

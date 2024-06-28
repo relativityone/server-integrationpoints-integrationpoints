@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             instance.Read();
 
             // Assert
-            _exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync());
+            _exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync(CancellationToken.None));
         }
 
         [Test]
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             instance.Read();
 
             // Assert
-            _exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync(), Times.Exactly(1));
+            _exportBatcher.Verify(x => x.GetNextItemsFromBatchAsync(CancellationToken.None), Times.Exactly(1));
         }
 
         [Test]
@@ -317,7 +317,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void Read_ShouldThrowProperException_WhenExportBatcherThrows()
         {
             // Arrange
-            _exportBatcher.Setup(x => x.GetNextItemsFromBatchAsync())
+            _exportBatcher.Setup(x => x.GetNextItemsFromBatchAsync(CancellationToken.None))
                 .Throws(new ServiceException("Foo"));
             SourceWorkspaceDataReader instance = BuildInstanceUnderTest();
 
@@ -377,7 +377,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private void ExportBatcherReturnsBatches(params RelativityObjectSlim[][] batches)
         {
-            ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextItemsFromBatchAsync());
+            ISetupSequentialResult<Task<RelativityObjectSlim[]>> setupAssertion = _exportBatcher.SetupSequence(x => x.GetNextItemsFromBatchAsync(CancellationToken.None));
             foreach (RelativityObjectSlim[] batch in batches)
             {
                 setupAssertion.ReturnsAsync(batch);

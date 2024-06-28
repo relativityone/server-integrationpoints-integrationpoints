@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             RelativityExportBatcher sut = new RelativityExportBatcher(_serviceFactoryForUserStub.Object, batch.Object, It.IsAny<int>());
 
             // Act
-            await sut.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+            await sut.GetNextItemsFromBatchAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
@@ -67,8 +68,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_serviceFactoryForUserStub.Object, batch.Object, 0);
 
             // act
-            Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
-            Task<RelativityObjectSlim[]> secondResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
+            Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync(CancellationToken.None);
+            Task<RelativityObjectSlim[]> secondResultsBlock = exportBatcher.GetNextItemsFromBatchAsync(CancellationToken.None);
 
             // assert
             firstResultsBlock.Result.Length.Should().Be(totalItemsCount);
@@ -88,9 +89,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // act
             SetupRetrieveResultsBlock(maxResultsBlockSize);
-            Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
+            Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync(CancellationToken.None);
             SetupRetrieveResultsBlock(totalItemsCount - maxResultsBlockSize);
-            Task<RelativityObjectSlim[]> secondResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
+            Task<RelativityObjectSlim[]> secondResultsBlock = exportBatcher.GetNextItemsFromBatchAsync(CancellationToken.None);
 
             // assert
             firstResultsBlock.Result.Length.Should().Be(maxResultsBlockSize);
@@ -112,7 +113,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             RelativityExportBatcher batcher = new RelativityExportBatcher(_serviceFactoryForUserStub.Object, batchStub.Object, 0);
 
             // act
-            RelativityObjectSlim[] batches = await batcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
+            RelativityObjectSlim[] batches = await batcher.GetNextItemsFromBatchAsync(CancellationToken.None).ConfigureAwait(false);
 
             // assert
             _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(0, Guid.Empty, 0, It.IsAny<int>()), Times.Never);
