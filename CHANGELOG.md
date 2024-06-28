@@ -1,8 +1,14 @@
-## [24000.0.14] - 26-June-2024
+## [24000.0.15] - 26-June-2024
 
 ### Changed
 
 - [REL-870855](https://jira.kcura.com/browse/REL-870855) [RIP] Remove 'EnableSyncNonDocumentFlowToggle' Toggle - Backported from [REL-808758](https://jira.kcura.com/browse/REL-808758)
+
+## [24000.0.14] - 24-June-2024
+
+### Changed
+
+- [REL-973479](https://jira.kcura.com/browse/REL-973479) - Upgrade latest IAPI into SFU, Sync and RIP
 
 ## [24000.0.13] - 12-June-2024
 
