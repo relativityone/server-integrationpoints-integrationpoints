@@ -36,7 +36,6 @@
 					<Assembly>Source\Relativity.IntegrationPoints.SourceProviderInstaller\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Runtime.CompilerServices.Unsafe.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Environment.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
@@ -63,8 +62,6 @@
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\ZetaLongPaths.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Productions.Services.Interfaces.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\LanguageExt.Core.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.Core\bin\System.ValueTuple.dll</Assembly>
-					<Assembly>Source\kCura.IntegrationPoints.Core\bin\System.Threading.Tasks.Extensions.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Core\bin\itextsharp.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Reactive.dll</Assembly>
 					<Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.SDK.dll</Assembly>
