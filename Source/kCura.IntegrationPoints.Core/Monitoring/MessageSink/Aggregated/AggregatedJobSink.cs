@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
+
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
-using kCura.IntegrationPoints.Data;
+
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
+
 using OtelSdk = Relativity.OpenTelemetry.OtelSdk;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
@@ -266,7 +269,26 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
                 jobStatistics.CustomData.Remove(JobStatistics.AVERAGE_METADATA_THROUGHPUT_NAME);
                 jobStatistics.CustomData.Remove(JobStatistics.LAST_THROUGHPUT_CHECK_NAME);
 
-                _metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+                const string _JOB_STATS_BUCKET_NAME = "IntegrationPoints.Performance.JobStatistics";
+                _metricsManagerFactory.CreateAPMManager().LogDouble(_JOB_STATS_BUCKET_NAME, jobSize, jobStatistics);
+
+                // Server 2024 EW Preview: send job statistics to OpenTelemetry
+                using (var instrumentation = new kCura.IntegrationPoints.Core.Telemetry.Instrumentation())
+                {
+                    // Note: the Activity is always NULL when EW is disabled.
+                    const string _JOB_STATS_ACTIVITY_NAME = "relsvr_integrationpoints_job_statistics";
+                    var activity = instrumentation.ActivitySource?.StartActivity(_JOB_STATS_ACTIVITY_NAME, ActivityKind.Server);
+                    if (activity != null)
+                    {
+                        activity.DisplayName = _JOB_STATS_ACTIVITY_NAME;
+                        foreach (string key in jobStatistics.CustomData.Keys)
+                        {
+                            activity.SetTag(key, jobStatistics.CustomData[key]);
+                        }
+
+                        activity.Dispose();
+                    }
+                }
             }
         }
 
