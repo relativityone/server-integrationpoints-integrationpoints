@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core
             jobHistory.EndTimeUTC = _dateTimeHelper.Now();
 
             ChoiceRef newStatus = _updater.GenerateStatus(jobHistory, job.JobId);
-            SendHealthCheck(jobHistory.JobID, job.WorkspaceID, !IsJobFailed(newStatus));
+            SendHealthCheck(job.JobId, job.WorkspaceID, !IsJobFailed(newStatus));
             UpdateJobHistory(jobHistory, newStatus, job.JobId);
         }
 
@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Core
             }
         }
 
-        private void SendHealthCheck(string jobId, long workspaceId, bool isHealthy)
+        private void SendHealthCheck(long jobId, long workspaceId, bool isHealthy)
         {
             OtelSdk.Instance.RecordHealthCheck(
                 Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_NAME,
