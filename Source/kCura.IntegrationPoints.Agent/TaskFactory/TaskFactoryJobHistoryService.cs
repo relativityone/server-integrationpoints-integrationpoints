@@ -104,11 +104,11 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
             // No updates to IP since the job history error service handles IP updates
             OtelSdk.Instance.RecordHealthCheck(
-                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_NAME,
                 Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
                 string.Format(
                     CultureInfo.CurrentCulture,
-                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_MESSAGE,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_FAILED_MESSAGE,
                     jobHistory.JobID, job.WorkspaceID),
                 isHealthy: false,
                 workspaceId: job.WorkspaceID);

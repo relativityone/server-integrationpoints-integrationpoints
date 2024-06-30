@@ -11,11 +11,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring
 
         public static readonly string InvalidJobMessage = "Jobs with invalid status found.";
 
-        public static HealthCheckOperationResult CreateJobFailedMetric(string jobId, long workspaceId)
-        {
-            return new HealthCheckOperationResult($"Integration Points job failed! Job Id {jobId} in Workspace {workspaceId}!");
-        }
-
         public static HealthCheckOperationResult CreateJobsWithInvalidStatusMetric(IDictionary<int, IList<JobHistory>> jobHistories)
         {
             Dictionary<string, object> customData = CreateJobHistoryCustomData(jobHistories);
