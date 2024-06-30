@@ -12,7 +12,6 @@ using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.Services.Choice;
 
-using Constants = kCura.IntegrationPoints.Core.Constants;
 using OtelSdk = Relativity.OpenTelemetry.OtelSdk;
 
 namespace kCura.IntegrationPoints.Core
@@ -68,11 +67,7 @@ namespace kCura.IntegrationPoints.Core
             jobHistory.EndTimeUTC = _dateTimeHelper.Now();
 
             ChoiceRef newStatus = _updater.GenerateStatus(jobHistory, job.JobId);
-            if (IsJobFailed(newStatus))
-            {
-                SendHealthCheck(jobHistory.JobID, job.WorkspaceID);
-            }
-
+            SendHealthCheck(jobHistory.JobID, job.WorkspaceID, !IsJobFailed(newStatus));
             UpdateJobHistory(jobHistory, newStatus, job.JobId);
         }
 
@@ -111,17 +106,18 @@ namespace kCura.IntegrationPoints.Core
             }
         }
 
-        private void SendHealthCheck(string jobId, long workspaceID)
+        private void SendHealthCheck(string jobId, long workspaceId, bool isHealthy)
         {
             OtelSdk.Instance.RecordHealthCheck(
-                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_NAME,
                 Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
-                string.Format(
-                    CultureInfo.CurrentCulture,
-                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_MESSAGE,
-                    jobId, workspaceID),
-                isHealthy: false,
-                workspaceId: Convert.ToInt32(workspaceID));
+                string.Format(CultureInfo.CurrentCulture,
+                    isHealthy
+                        ? Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_SUCCESSFUL_MESSAGE
+                        : Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_FAILED_MESSAGE, jobId,
+                    workspaceId),
+                isHealthy: isHealthy,
+                workspaceId: Convert.ToInt32(workspaceId));
         }
 
         private bool IsJobFailed(ChoiceRef jobStatusChoice)

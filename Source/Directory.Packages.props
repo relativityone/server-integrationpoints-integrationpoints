@@ -27,7 +27,7 @@
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
     <kCuraLongPath>1.0.20</kCuraLongPath>
-    <kCuraInjection>12.0.0</kCuraInjection>
+    <kCuraInjection>13.1.0</kCuraInjection>
     <kCuraRelativityClient>11.0.16.1</kCuraRelativityClient>
     <LanguageExtCore>3.1.15</LanguageExtCore>
     <MicrosoftAspNetMvc>5.2.3</MicrosoftAspNetMvc>

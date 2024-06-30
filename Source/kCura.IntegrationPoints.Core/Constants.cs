@@ -56,9 +56,14 @@ namespace kCura.IntegrationPoints.Core
 
             public static class OpenTelemetry
             {
-                public const string HEALTH_CHECK_JOB_FAILED_NAME = "relsvr.integrationpoints.job.failure";
                 public const string HEALTH_CHECK_AGENT_EVENT_SOURCE = "relsvr.integrationpoints.agent";
+                public const string HEALTH_CHECK_JOB_NAME = "relsvr.integrationpoints.health_check.job";
+                public const string HEALTH_CHECK_JOB_COMPLETED_MESSAGE = "Integration Points job completed! Job Id {0} in Workspace {1}!";
                 public const string HEALTH_CHECK_JOB_FAILED_MESSAGE = "Integration Points job failed! Job Id {0} in Workspace {1}!";
+                public const string HEALTH_CHECK_JOB_VALIDATION_FAILED_MESSAGE = "Integration Points job validation failed! Job Id {0} in Workspace {1}!";
+                public const string HEALTH_CHECK_JOB_HISTORY_NAME = "relsvr.integrationpoints.health_check.job_history";
+                public const string HEALTH_CHECK_JOB_HISTORY_FAILED_MESSAGE = "Integration Points job history failed! Job Id {0} in Workspace {1}!";
+                public const string HEALTH_CHECK_JOB_HISTORY_SUCCESSFUL_MESSAGE = "Integration Points job history is successful! Job Id {0} in Workspace {1}!";
             }
 
             public static class PermissionErrors
