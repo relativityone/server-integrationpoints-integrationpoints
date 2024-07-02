@@ -1651,12 +1651,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>4499255</ArtifactId>
-      <Keywords />
-      <Name>System.ValueTuple.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>4663381</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
@@ -1756,18 +1750,6 @@
       <ArtifactId>5511188</ArtifactId>
       <Keywords />
       <Name>Relativity.AutomatedWorkflows.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5511355</ArtifactId>
-      <Keywords />
-      <Name>System.Threading.Tasks.Extensions.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537594</ArtifactId>
-      <Keywords />
-      <Name>System.Runtime.CompilerServices.Unsafe.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
