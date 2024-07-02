@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Globalization;
+
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.DataTransfer.MessageService.Tools;
+
+using OtelSdk = Relativity.OpenTelemetry.OtelSdk;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
 {
@@ -57,7 +63,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             string bucket = JobCompletedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
             _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
-
+            OtelSdk.Instance.RecordHealthCheck(
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_COMPLETED_MESSAGE,
+                    message.JobID, message.WorkspaceID),
+                isHealthy: true,
+                workspaceId: message.WorkspaceID);
             OnJobEnd(message, JobStatus.Completed);
         }
 
@@ -66,6 +80,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             string bucket = JobFailedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
             _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            OtelSdk.Instance.RecordHealthCheck(
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_FAILED_MESSAGE,
+                    message.JobID, message.WorkspaceID),
+                isHealthy: false,
+                workspaceId: message.WorkspaceID);
 
             OnJobEnd(message, JobStatus.Failed);
         }
@@ -75,6 +98,15 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
             string bucket = JobValidationFailedCountMetric(message);
             _metricsManagerFactory.CreateSUMManager().LogCount(bucket, 1, message);
             _ripMetrics.PointInTimeLong(bucket, 1, message.CustomData);
+            OtelSdk.Instance.RecordHealthCheck(
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_VALIDATION_FAILED_MESSAGE,
+                    message.JobID, message.WorkspaceID),
+                isHealthy: false,
+                workspaceId: message.WorkspaceID);
 
             OnJobEnd(message, JobStatus.ValidationFailed);
         }
@@ -237,7 +269,26 @@ namespace kCura.IntegrationPoints.Core.Monitoring.MessageSink.Aggregated
                 jobStatistics.CustomData.Remove(JobStatistics.AVERAGE_METADATA_THROUGHPUT_NAME);
                 jobStatistics.CustomData.Remove(JobStatistics.LAST_THROUGHPUT_CHECK_NAME);
 
-                _metricsManagerFactory.CreateAPMManager().LogDouble("IntegrationPoints.Performance.JobStatistics", jobSize, jobStatistics);
+                const string _JOB_STATS_BUCKET_NAME = "IntegrationPoints.Performance.JobStatistics";
+                _metricsManagerFactory.CreateAPMManager().LogDouble(_JOB_STATS_BUCKET_NAME, jobSize, jobStatistics);
+
+                // Server 2024 EW Preview: send job statistics to OpenTelemetry
+                using (var instrumentation = new kCura.IntegrationPoints.Core.Telemetry.Instrumentation())
+                {
+                    // Note: the Activity is always NULL when EW is disabled.
+                    const string _JOB_STATS_ACTIVITY_NAME = "relsvr_integrationpoints_job_statistics";
+                    var activity = instrumentation.ActivitySource?.StartActivity(_JOB_STATS_ACTIVITY_NAME, ActivityKind.Server);
+                    if (activity != null)
+                    {
+                        activity.DisplayName = _JOB_STATS_ACTIVITY_NAME;
+                        foreach (string key in jobStatistics.CustomData.Keys)
+                        {
+                            activity.SetTag(key, jobStatistics.CustomData[key]);
+                        }
+
+                        activity.Dispose();
+                    }
+                }
             }
         }
 

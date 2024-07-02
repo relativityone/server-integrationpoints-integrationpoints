@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Globalization;
+
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core.Core;
+
 using Relativity.API;
 using Relativity.Services.Choice;
-using Relativity.Telemetry.APM;
+
 using Constants = kCura.IntegrationPoints.Core.Constants;
+using OtelSdk = Relativity.OpenTelemetry.OtelSdk;
 
 namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
@@ -104,8 +106,15 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 
             // No updates to IP since the job history error service handles IP updates
-            IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory.JobID, job.WorkspaceID));
-            healthcheck.Write();
+            OtelSdk.Instance.RecordHealthCheck(
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_NAME,
+                Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_AGENT_EVENT_SOURCE,
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    Constants.IntegrationPoints.OpenTelemetry.HEALTH_CHECK_JOB_HISTORY_FAILED_MESSAGE,
+                    jobHistory.JobID, job.WorkspaceID),
+                isHealthy: false,
+                workspaceId: job.WorkspaceID);
             LogUpdateJobHistoryOnFailureSuccesfulEnd(job);
         }
 

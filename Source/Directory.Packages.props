@@ -27,7 +27,7 @@
     <kCuraEventHandler>15.1.0</kCuraEventHandler>
     <kCuraFreeImage>3.17.0.1</kCuraFreeImage>
     <kCuraLongPath>1.0.20</kCuraLongPath>
-    <kCuraInjection>12.0.0</kCuraInjection>
+    <kCuraInjection>13.1.0</kCuraInjection>
     <kCuraRelativityClient>11.0.16.1</kCuraRelativityClient>
     <LanguageExtCore>3.1.15</LanguageExtCore>
     <MicrosoftAspNetMvc>5.2.3</MicrosoftAspNetMvc>
@@ -80,6 +80,7 @@
     <TelemetryKeplerInterfaces>3003.0.2</TelemetryKeplerInterfaces>
     <TelemetryMetricsCollectionClient>3003.1.0</TelemetryMetricsCollectionClient>
     <RelativityOAuth2Client>1.5.2002</RelativityOAuth2Client>
+    <RelativityOpenTelemetrySDK>0.0.3</RelativityOpenTelemetrySDK>
     <RelativityPlatformAgentWorkloadDiscoverySDK>0.3.0</RelativityPlatformAgentWorkloadDiscoverySDK>
     <RelativityProductionsServicesInterfaces>11.1.0</RelativityProductionsServicesInterfaces>
     <RelativitySecretCatalog>1.0.20</RelativitySecretCatalog>
@@ -231,6 +232,7 @@
     <PackageVersion Include="Relativity.Platform.Agent.WorkloadDiscovery.SDK" Version="$(RelativityPlatformAgentWorkloadDiscoverySDK)" />
     <PackageVersion Include="Relativity.Productions.Services.Interfaces" Version="$(RelativityProductionsServicesInterfaces)" />
     <PackageVersion Include="Relativity.SecretCatalog" Version="$(RelativitySecretCatalog)" />
+    <PackageVersion Include="Relativity.Server.OpenTelemetry.SDK" Version="$(RelativityOpenTelemetrySDK)" />
     <PackageVersion Include="Relativity.Services.DataContracts" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces" Version="$(RelativityServicesSDK)" />
     <PackageVersion Include="Relativity.Services.Interfaces.Private" Version="$(RelativityServicesSDKPrivate)" />

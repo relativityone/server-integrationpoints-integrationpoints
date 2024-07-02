@@ -200,7 +200,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             int jobHistoryArtifactId = 654;
             var jobHistory = new JobHistory
             {
-                ArtifactId = jobHistoryArtifactId
+                ArtifactId = jobHistoryArtifactId,
+                JobID = "123"
             };
             _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
@@ -224,6 +225,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             var jobHistory = new JobHistory
             {
                 ArtifactId = 654,
+                JobID = "123"
             };
             _jobHistoryService.GetRdoWithoutDocuments(Arg.Any<Guid>()).Returns(jobHistory);
 
