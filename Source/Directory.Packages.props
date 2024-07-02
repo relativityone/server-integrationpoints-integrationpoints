@@ -118,7 +118,7 @@
     <SSHNET>2016.0.0</SSHNET>
     <SemanticVersioning>1.2.2</SemanticVersioning>
     <SystemBuffers>4.5.1</SystemBuffers>
-    <SystemDiagnosticsDiagnosticSource>8.0.0</SystemDiagnosticsDiagnosticSource>
+    <SystemDiagnosticsDiagnosticSource>8.0.1</SystemDiagnosticsDiagnosticSource>
     <SystemMemory>4.5.5</SystemMemory>
     <SystemNumericsVectors>4.5.0</SystemNumericsVectors>
     <SystemRuntimeCompilerServicesUnsafe>6.0.0</SystemRuntimeCompilerServicesUnsafe>
