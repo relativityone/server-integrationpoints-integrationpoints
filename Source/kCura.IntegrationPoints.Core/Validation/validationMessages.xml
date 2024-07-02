@@ -73,10 +73,4 @@
 		<troubleshooting>Verify if a user has required permissions for the view or if the view has been deleted. Contact your system administrator to verify view configuration.</troubleshooting>
 	</Message>
 
-	<Message Name="SyncNonDocumentFlowToggleDisabled">
-		<errorCode>20.016</errorCode>
-		<shortMessage>'kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle' toggle is disabled.</shortMessage>
-		<troubleshooting>Enable the 'kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle' toggle to use non-document object flow.</troubleshooting>
-	</Message>
-
 </ValidationMessages>

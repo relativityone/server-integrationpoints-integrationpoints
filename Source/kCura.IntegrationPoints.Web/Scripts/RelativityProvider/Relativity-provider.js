@@ -172,7 +172,7 @@
         var self = this;
         self.SavedSearchService = new SavedSearchService();
 
-        var isNonDocumentObjectFlow = window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && window.parent.IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
+        var isNonDocumentObjectFlow = window.parent.IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
         self.IsNonDocumentObjectFlow = ko.observable();
         self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 

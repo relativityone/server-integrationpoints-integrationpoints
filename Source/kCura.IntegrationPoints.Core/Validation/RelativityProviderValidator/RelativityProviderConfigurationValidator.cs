@@ -60,21 +60,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
             ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
 
             var result = new ValidationResult();
-            result.Add(ValidateSyncNonDocumentFlowToggle(destinationConfiguration));
             result.Add(ValidateSourceWorkspace(sourceConfiguration));
             result.Add(ValidateDestinationWorkspace(integrationModel, sourceConfiguration));
-            return result;
-        }
-
-        private ValidationResult ValidateSyncNonDocumentFlowToggle(ImportSettings destinationConfiguration)
-        {
-            var result = new ValidationResult();
-
-            if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document && !_toggleProvider.IsEnabled<EnableSyncNonDocumentFlowToggle>())
-            {
-                result.Add(ValidationMessages.SyncNonDocumentFlowToggleDisabled);
-            }
-
             return result;
         }
 

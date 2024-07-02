@@ -450,7 +450,6 @@
     <Content Include="node_modules\dompurify\dist\purify.min.js" />
     <Content Include="node_modules\dompurify\dist\purify.min.js.map" />
     <Content Include="package.json" />
-    <Content Include="package-lock.json" />
     <Content Include="node_modules\moment\moment.js" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
