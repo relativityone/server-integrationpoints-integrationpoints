@@ -28,9 +28,9 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*'
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0-default-dev-local")]
+[assembly: AssemblyVersion("24000.0.0.0")]
+[assembly: AssemblyFileVersion("24000.0.0.0")]
+[assembly: AssemblyInformationalVersion("24000.0.0.0-default-dev-local")]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

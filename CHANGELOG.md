@@ -1,3 +1,10 @@
+## [24000.0.16] - 02-Jul-2024
+
+### Changed
+
+- [REL-975487](https://jira.kcura.com/browse/REL-975487) - All binaries should populate correct File version for RIP
+- [REL-974405](https://jira.kcura.com/browse/REL-974405) - Removed OTEL assemblies from the RIP RAP file
+
 ## [24000.0.15] - 28-June-2024
 
 ### Changed
